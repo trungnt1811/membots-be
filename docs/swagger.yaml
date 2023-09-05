@@ -1,0 +1,130 @@
+definitions:
+  dto.CreateLinkPayload:
+    properties:
+      campaign_id:
+        type: integer
+      original_url:
+        type: string
+      shorten_link:
+        type: boolean
+    type: object
+  dto.CreateLinkResponse:
+    properties:
+      aff_link:
+        type: string
+      campaign_id:
+        type: integer
+      original_url:
+        type: string
+      short_link:
+        type: string
+    type: object
+  types.RedeemRequestPayload:
+    properties:
+      redeemCode:
+        description: a unique text to redeem reward
+        type: string
+      walletAddress:
+        description: valid wallet address to send reward to
+        type: string
+    required:
+    - redeemCode
+    - walletAddress
+    type: object
+  types.RedeemRewardResponse:
+    properties:
+      deadline:
+        type: integer
+      holderAddress:
+        type: string
+      signature:
+        type: string
+      walletAddress:
+        type: string
+    type: object
+  util.GeneralError:
+    properties:
+      code:
+        description: HTTP error code, or custom error code
+        type: integer
+      errors:
+        description: List of error send server 2 server
+        items:
+          type: string
+        type: array
+      string:
+        description: Friendly error message
+        type: string
+    type: object
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This Swagger docs for Astra Affiliate System.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Affiliate System API
+  version: "1.0"
+paths:
+  /api/v1/redeem/request:
+    post:
+      consumes:
+      - application/json
+      description: Send cashback to customer wallet by redeem code
+      parameters:
+      - description: Redeem payload, required
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/types.RedeemRequestPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: when redeem code is available, only valid if not claimed yet
+          schema:
+            $ref: '#/definitions/types.RedeemRewardResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      summary: PostRequestRedeem
+      tags:
+      - redeem
+  /api/v1/users/{uid}:
+    get:
+      description: Get a user detail by uid
+      parameters:
+      - description: User uid to query
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: GetUserDetail
+      tags:
+      - user
+securityDefinitions:
+  ApiKeyAuth:
+    description: Use for authorization of reward creator
+    in: header
+    name: Authorization
+    type: apiKey
+  BasicKeyAuth:
+    description: Use for authorization during server to server calls
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

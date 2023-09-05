@@ -1,0 +1,194 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This Swagger docs for Astra Affiliate System.",
+        "title": "Affiliate System API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "API Support",
+            "url": "http://www.swagger.io/support",
+            "email": "support@swagger.io"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "paths": {
+        "/api/v1/redeem/request": {
+            "post": {
+                "description": "Send cashback to customer wallet by redeem code",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "redeem"
+                ],
+                "summary": "PostRequestRedeem",
+                "parameters": [
+                    {
+                        "description": "Redeem payload, required",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.RedeemRequestPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "when redeem code is available, only valid if not claimed yet",
+                        "schema": {
+                            "$ref": "#/definitions/types.RedeemRewardResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "424": {
+                        "description": "Failed Dependency",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/{uid}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get a user detail by uid",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "GetUserDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User uid to query",
+                        "name": "uid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        }
+    },
+    "definitions": {
+        "dto.CreateLinkPayload": {
+            "type": "object",
+            "properties": {
+                "campaign_id": {
+                    "type": "integer"
+                },
+                "original_url": {
+                    "type": "string"
+                },
+                "shorten_link": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "dto.CreateLinkResponse": {
+            "type": "object",
+            "properties": {
+                "aff_link": {
+                    "type": "string"
+                },
+                "campaign_id": {
+                    "type": "integer"
+                },
+                "original_url": {
+                    "type": "string"
+                },
+                "short_link": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.RedeemRequestPayload": {
+            "type": "object",
+            "required": [
+                "redeemCode",
+                "walletAddress"
+            ],
+            "properties": {
+                "redeemCode": {
+                    "description": "a unique text to redeem reward",
+                    "type": "string"
+                },
+                "walletAddress": {
+                    "description": "valid wallet address to send reward to",
+                    "type": "string"
+                }
+            }
+        },
+        "types.RedeemRewardResponse": {
+            "type": "object",
+            "properties": {
+                "deadline": {
+                    "type": "integer"
+                },
+                "holderAddress": {
+                    "type": "string"
+                },
+                "signature": {
+                    "type": "string"
+                },
+                "walletAddress": {
+                    "type": "string"
+                }
+            }
+        },
+        "util.GeneralError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "HTTP error code, or custom error code",
+                    "type": "integer"
+                },
+                "errors": {
+                    "description": "List of error send server 2 server",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "string": {
+                    "description": "Friendly error message",
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "description": "Use for authorization of reward creator",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        },
+        "BasicKeyAuth": {
+            "description": "Use for authorization during server to server calls",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

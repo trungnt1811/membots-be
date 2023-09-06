@@ -11,7 +11,7 @@ import (
 )
 
 func GetWriteDBConnectionURL() string {
-	return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", configuration.Database.WriteDbUser, configuration.Database.WriteDbPassword,
+	return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", configuration.Database.WriteDbUser, configuration.Database.WriteDbPassword,
 		configuration.Database.WriteDbHost, configuration.Database.DbPort, configuration.Database.DbName)
 }
 

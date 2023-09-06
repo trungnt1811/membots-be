@@ -17,19 +17,19 @@ type Repository interface {
 	RemoveItem(key fmt.Stringer) error
 }
 
-type CachingRepository struct {
+type cachingRepository struct {
 	ctx    context.Context
 	client *redis.Client
 }
 
-func NewCachingRepository(ctx context.Context, client *redis.Client) *CachingRepository {
-	return &CachingRepository{
+func NewCachingRepository(ctx context.Context, client *redis.Client) cachingRepository {
+	return cachingRepository{
 		ctx:    ctx,
 		client: client,
 	}
 }
 
-func (repo *CachingRepository) SaveItem(key fmt.Stringer, val interface{}, expire time.Duration) error {
+func (repo *cachingRepository) SaveItem(key fmt.Stringer, val interface{}, expire time.Duration) error {
 	b, err := msgpack.Marshal(val)
 	if err != nil {
 		return err
@@ -42,7 +42,7 @@ func (repo *CachingRepository) SaveItem(key fmt.Stringer, val interface{}, expir
 	return nil
 }
 
-func (repo *CachingRepository) RetrieveItem(key fmt.Stringer, val interface{}) error {
+func (repo *cachingRepository) RetrieveItem(key fmt.Stringer, val interface{}) error {
 	status := repo.client.Get(repo.ctx, key.String())
 	res, err := status.Bytes()
 	if err != nil {
@@ -55,12 +55,12 @@ func (repo *CachingRepository) RetrieveItem(key fmt.Stringer, val interface{}) e
 	return nil
 }
 
-func (repo *CachingRepository) ExpireItem(key fmt.Stringer) error {
+func (repo *cachingRepository) ExpireItem(key fmt.Stringer) error {
 	status := repo.client.Expire(repo.ctx, key.String(), time.Millisecond*100)
 	return status.Err()
 }
 
-func (repo *CachingRepository) RemoveItem(key fmt.Stringer) error {
+func (repo *cachingRepository) RemoveItem(key fmt.Stringer) error {
 	status := repo.client.Del(repo.ctx, key.String())
 	return status.Err()
 }

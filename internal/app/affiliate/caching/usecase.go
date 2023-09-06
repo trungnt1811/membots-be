@@ -4,16 +4,16 @@ type Usecase interface {
 	GetRepo() Repository
 }
 
-type CachingUsecase struct {
+type cachingUsecase struct {
 	repo Repository
 }
 
-func NewCachingUsecase(repo Repository) *CachingUsecase {
-	return &CachingUsecase{
+func NewCachingUsecase(repo Repository) *cachingUsecase {
+	return &cachingUsecase{
 		repo: repo,
 	}
 }
 
-func (u *CachingUsecase) GetRepo() Repository {
+func (u *cachingUsecase) GetRepo() Repository {
 	return u.repo
 }

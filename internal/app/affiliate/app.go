@@ -6,13 +6,12 @@ import (
 	"os/signal"
 	"syscall"
 
+	pagination "github.com/AstraProtocol/reward-libs/middleware"
 	"github.com/astraprotocol/affiliate-system/internal/app/affiliate/middleware"
 	"github.com/astraprotocol/affiliate-system/internal/app/affiliate/util"
 	"github.com/astraprotocol/affiliate-system/internal/app/affiliate/webhook"
 	"github.com/rs/zerolog"
 	"gorm.io/gorm/logger"
-
-	// "github.com/rs/zerolog/log"
 
 	"github.com/astraprotocol/affiliate-system/conf"
 	routeV1 "github.com/astraprotocol/affiliate-system/internal/app/affiliate/route"
@@ -52,6 +51,7 @@ func RunApp(config *conf.Configuration) {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	r := gin.New()
+	r.Use(pagination.Default())
 
 	db := conf.DBConnWithLoglevel(logger.Info)
 

@@ -42,7 +42,7 @@ func (u *CampaignUsecase) GenerateAffLink(user *model.UserEntity, payload *dto.C
 
 	if len(affLinks) == 0 {
 		// If campaign link not available, request to generate new one
-		resp, err := u.ATRepo.CreateTrackingLinks(campaign.AccesstradeId, []string{
+		resp, err := u.ATRepo.CreateTrackingLinks(campaign.AccessTradeId, []string{
 			payload.OriginalUrl,
 		}, map[string]string{})
 		if err != nil {

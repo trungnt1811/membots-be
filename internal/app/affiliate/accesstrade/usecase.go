@@ -1,7 +1,6 @@
 package accesstrade
 
 import (
-	"github.com/astraprotocol/affiliate-system/internal/app/affiliate/accesstrade/types"
 	"github.com/astraprotocol/affiliate-system/internal/app/affiliate/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/app/affiliate/util/log"
 )
@@ -19,12 +18,6 @@ func NewAccessTradeUsecase(repo interfaces.ATRepository, campRepo interfaces.Cam
 }
 
 func (u *AccessTradeUsecase) QueryAndSaveCampaigns(onlyApproval bool) (int, error) {
-	// First query all merchant
-	merchants, err := u.Repo.QueryMerchants()
-	if err != nil {
-		log.LG.Errorf("query merchants error: %v", err)
-		return 0, nil
-	}
 	// Then, query campaigns
 	page := 1
 	limit := 20
@@ -55,17 +48,7 @@ func (u *AccessTradeUsecase) QueryAndSaveCampaigns(onlyApproval bool) (int, erro
 			if _, ok := savedCampaigns[atApproved.Id]; !ok {
 				// Not yet save, insert this new campaign
 				// and find merchant
-				var atMerchant *types.ATMerchant
-				for _, merchant := range merchants {
-					if merchant.LoginName == atApproved.Merchant {
-						atMerchant = &merchant
-					}
-				}
-				if atMerchant == nil {
-					log.LG.Infof("campaign no merchant: %s", atApproved.Merchant)
-					continue
-				}
-				err := u.CampaignRepo.SaveATCampaign(&atApproved, atMerchant)
+				err := u.CampaignRepo.SaveATCampaign(&atApproved)
 				if err != nil {
 					log.LG.Errorf("create campaign error: %v", err)
 					continue

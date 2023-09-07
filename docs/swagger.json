@@ -16,6 +16,64 @@
         "version": "1.0"
     },
     "paths": {
+        "/api/v1/console/aff-campaign": {
+            "get": {
+                "description": "Get list aff campaign",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "console"
+                ],
+                "summary": "Get list aff campaign",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "by to query, default is all",
+                        "name": "stella_status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "order to query, default is desc",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "page to query, default is 1",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "size to query, default is 10",
+                        "name": "size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.AffCampaignDtoResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/redeem/request": {
             "post": {
                 "description": "Send cashback to customer wallet by redeem code",
@@ -91,6 +149,148 @@
         }
     },
     "definitions": {
+        "dto.AffCampaignDto": {
+            "type": "object",
+            "properties": {
+                "accesstrade_id": {
+                    "type": "string"
+                },
+                "active_status": {
+                    "type": "integer"
+                },
+                "approval": {
+                    "type": "string"
+                },
+                "brand_id": {
+                    "type": "integer"
+                },
+                "category": {
+                    "type": "string"
+                },
+                "category_id": {
+                    "type": "integer"
+                },
+                "cookie_duration": {
+                    "type": "integer"
+                },
+                "cookie_policy": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "$ref": "#/definitions/dto.CampaignDescriptionDto"
+                },
+                "end_time": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "logo": {
+                    "type": "string"
+                },
+                "max_com": {
+                    "type": "string"
+                },
+                "merchant": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "scope": {
+                    "type": "string"
+                },
+                "start_time": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "stella_description": {},
+                "stella_status": {
+                    "type": "string"
+                },
+                "sub_category": {
+                    "type": "string"
+                },
+                "thumbnail": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.AffCampaignDtoResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.AffCampaignDto"
+                    }
+                },
+                "next_page": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.CampaignDescriptionDto": {
+            "type": "object",
+            "properties": {
+                "action_point": {
+                    "type": "string"
+                },
+                "campaign_id": {
+                    "type": "integer"
+                },
+                "commission_policy": {
+                    "type": "string"
+                },
+                "cookie_policy": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "introduction": {
+                    "type": "string"
+                },
+                "other_notice": {
+                    "type": "string"
+                },
+                "rejected_reason": {
+                    "type": "string"
+                },
+                "traffic_building_policy": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.CreateLinkPayload": {
             "type": "object",
             "properties": {

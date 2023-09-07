@@ -4,6 +4,7 @@ import (
 	"github.com/astraprotocol/affiliate-system/conf"
 	"github.com/astraprotocol/affiliate-system/internal/app/affiliate/accesstrade"
 	"github.com/astraprotocol/affiliate-system/internal/app/affiliate/campaign"
+	console "github.com/astraprotocol/affiliate-system/internal/app/affiliate/console/campaign"
 	"github.com/astraprotocol/affiliate-system/internal/app/affiliate/middleware"
 	"github.com/astraprotocol/affiliate-system/internal/app/affiliate/redeem"
 	"github.com/astraprotocol/affiliate-system/internal/app/affiliate/util"
@@ -34,4 +35,10 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 
 	redeemRoute := v1.Group("/redeem")
 	redeemRoute.POST("/request", jwtMiddleware, redeemHandler.PostRequestRedeem)
+
+	consoleCampRepository := console.NewConsoleCampaignRepository(db)
+	consoleCampUCase := console.NewCampaignUCase(consoleCampRepository)
+	consoleCampHandler := console.NewConsoleCampHandler(consoleCampUCase)
+	consoleRouter := v1.Group("console")
+	consoleRouter.GET("/aff-campaign", consoleCampHandler.GetAllCampaign)
 }

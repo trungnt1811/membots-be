@@ -3,6 +3,8 @@ package model
 import (
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/grokify/html-strip-tags-go"
+	"github.com/shopspring/decimal"
+	"gorm.io/datatypes"
 	"time"
 )
 
@@ -63,10 +65,11 @@ type AffCampaign struct {
 	Description       CampaignDescription `json:"description" gorm:"foreignKey:CampaignId;references:ID"`
 	StartTime         *time.Time          `json:"start_time"`
 	EndTime           *time.Time          `json:"end_time"`
-	StellaDescription interface{}         `json:"stella_description"`
+	StellaDescription datatypes.JSON      `json:"stella_description"`
 	CategoryId        uint                `json:"category_id"`
 	StellaStatus      string              `json:"stella_status"`
 	Thumbnail         string              `json:"thumbnail"`
+	StellaMaxCom      decimal.Decimal     `json:"stella_max_com" gorm:"type:decimal(4,2);"`
 }
 
 func (c *AffCampaign) TableName() string {
@@ -91,6 +94,7 @@ func (c *AffCampaign) ToDto() dto.AffCampaignDto {
 		EndTime:           c.EndTime,
 		StellaDescription: c.StellaDescription,
 		StellaStatus:      c.StellaStatus,
+		StellaMaxCom:      c.StellaMaxCom,
 	}
 	campDto.Description = c.Description.ToDto()
 	return campDto

@@ -1,6 +1,7 @@
 package dto
 
 import (
+	"github.com/shopspring/decimal"
 	"time"
 )
 
@@ -45,6 +46,7 @@ type AffCampaignDto struct {
 	CategoryId        uint                    `json:"category_id"`
 	StellaStatus      string                  `json:"stella_status"`
 	Thumbnail         string                  `json:"thumbnail"`
+	StellaMaxCom      decimal.Decimal         `json:"stella_max_com"`
 }
 
 type AffCampaignDtoResponse struct {

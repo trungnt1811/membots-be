@@ -10,6 +10,10 @@ type affCampaignRepository struct {
 	Db *gorm.DB
 }
 
+func (a *affCampaignRepository) UpdateCampaign(id uint, updates map[string]interface{}) error {
+	return a.Db.Table("aff_campaign").Where("id = ?", id).Updates(updates).Error
+}
+
 func (a *affCampaignRepository) GetAllCampaign(listStatus []string, page, size int) ([]model.AffCampaign, error) {
 	var listAffCampaign []model.AffCampaign
 	offset := (page - 1) * size

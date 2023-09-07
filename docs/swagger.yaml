@@ -116,6 +116,8 @@ definitions:
       status:
         type: integer
       stella_description: {}
+      stella_max_com:
+        type: number
       stella_status:
         type: string
       sub_category:
@@ -305,6 +307,43 @@ paths:
           schema:
             $ref: '#/definitions/util.GeneralError'
       summary: Get list aff campaign
+      tags:
+      - console
+  /api/v1/console/aff-campaign/{id}:
+    put:
+      consumes:
+      - application/json
+      description: update campaign info
+      parameters:
+      - description: Campaign info to update, required
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AffCampaignDto'
+      - description: id to query
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AffCampaignDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: update campaign info
       tags:
       - console
   /api/v1/order/postback:

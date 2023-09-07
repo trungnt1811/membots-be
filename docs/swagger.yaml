@@ -1,4 +1,98 @@
 definitions:
+  dto.AffCampaignDto:
+    properties:
+      accesstrade_id:
+        type: string
+      active_status:
+        type: integer
+      approval:
+        type: string
+      brand_id:
+        type: integer
+      category:
+        type: string
+      category_id:
+        type: integer
+      cookie_duration:
+        type: integer
+      cookie_policy:
+        type: string
+      created_at:
+        type: string
+      description:
+        $ref: '#/definitions/dto.CampaignDescriptionDto'
+      end_time:
+        type: string
+      id:
+        type: integer
+      logo:
+        type: string
+      max_com:
+        type: string
+      merchant:
+        type: string
+      name:
+        type: string
+      scope:
+        type: string
+      start_time:
+        type: string
+      status:
+        type: integer
+      stella_description: {}
+      stella_status:
+        type: string
+      sub_category:
+        type: string
+      thumbnail:
+        type: string
+      type:
+        type: integer
+      updated_at:
+        type: string
+      url:
+        type: string
+    type: object
+  dto.AffCampaignDtoResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto.AffCampaignDto'
+        type: array
+      next_page:
+        type: integer
+      page:
+        type: integer
+      size:
+        type: integer
+      total:
+        type: integer
+    type: object
+  dto.CampaignDescriptionDto:
+    properties:
+      action_point:
+        type: string
+      campaign_id:
+        type: integer
+      commission_policy:
+        type: string
+      cookie_policy:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      introduction:
+        type: string
+      other_notice:
+        type: string
+      rejected_reason:
+        type: string
+      traffic_building_policy:
+        type: string
+      updated_at:
+        type: string
+    type: object
   dto.CreateLinkPayload:
     properties:
       campaign_id:
@@ -69,6 +163,44 @@ info:
   title: Affiliate System API
   version: "1.0"
 paths:
+  /api/v1/console/aff-campaign:
+    get:
+      description: Get list aff campaign
+      parameters:
+      - description: by to query, default is all
+        in: query
+        name: stella_status
+        type: string
+      - description: order to query, default is desc
+        in: query
+        name: order
+        type: string
+      - description: page to query, default is 1
+        in: query
+        name: page
+        type: string
+      - description: size to query, default is 10
+        in: query
+        name: size
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AffCampaignDtoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      summary: Get list aff campaign
+      tags:
+      - console
   /api/v1/redeem/request:
     post:
       consumes:

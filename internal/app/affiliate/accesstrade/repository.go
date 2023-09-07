@@ -45,6 +45,7 @@ func (r *AccessTradeRepository) initWithHeaders() *resty.Request {
 func (r *AccessTradeRepository) QueryMerchants() ([]types.ATMerchant, error) {
 	url := fmt.Sprintf("%s/offers_informations/merchant_list", ACCESSTRADE_ENDPOINT)
 	req := r.initWithHeaders()
+	fmt.Println("QueryMerchants", url)
 
 	resp, err := req.Get(url)
 	if err != nil {

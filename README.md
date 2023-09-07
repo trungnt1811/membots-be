@@ -94,6 +94,9 @@ your preferred browser.
 127.0.0.1:8080
 ```
 
+## Swagger init
+    swag init -g internal/app.go
+
 ## CI/CD at TIKI
 
 Read document here: https://docs.tiki.com.vn/pages/viewpage.action?spaceKey=HAN&title=Tiki+CI

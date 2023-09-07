@@ -1,6 +1,7 @@
 package campaign
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/astraprotocol/affiliate-system/internal/app/affiliate/accesstrade/types"
@@ -19,28 +20,28 @@ func NewCampaignRepository(db *gorm.DB) *CampaignRepository {
 	}
 }
 
-func (repo *CampaignRepository) RetrieveCampaignsByAccessTradeIds(ids []string) (map[string]*model.Campaign, error) {
-	var data []model.Campaign
-	err := repo.Db.Preload("Description").Where("accesstrade_id IN ?", ids).Find(&data).Error
-
+func (repo *CampaignRepository) RetrieveCampaignsByAccessTradeIds(ids []string) (map[string]*model.AffCampaign, error) {
+	var data []model.AffCampaign
+	err := repo.Db.Table("aff_campaign").
+		Joins("Description").
+		Where("accesstrade_id IN ?", ids).Find(&data).Error
 	if err != nil {
 		return nil, err
 	}
-	mapped := map[string]*model.Campaign{}
+	mapped := map[string]*model.AffCampaign{}
 	for _, it := range data {
-		mapped[it.AccesstradeId] = &it
+		mapped[it.AccessTradeId] = &it
 	}
 
 	return mapped, nil
 }
 
-func (repo *CampaignRepository) SaveATCampaign(atCampaign *types.ATCampaign, atMerchant *types.ATMerchant) error {
+func (repo *CampaignRepository) SaveATCampaign(atCampaign *types.ATCampaign) error {
 	// First create campaign
-	newCampaign := model.Campaign{
+	fmt.Println("SaveATCampaign", atCampaign.Id)
+	newCampaign := model.AffCampaign{
 		ActiveStatus:   1,
-		AccesstradeId:  atCampaign.Id,
-		CreatedAt:      time.Now(),
-		UpdatedAt:      time.Now(),
+		AccessTradeId:  atCampaign.Id,
 		Logo:           atCampaign.Logo,
 		MaxCom:         atCampaign.MaxCom,
 		Merchant:       atCampaign.Merchant,
@@ -76,37 +77,14 @@ func (repo *CampaignRepository) SaveATCampaign(atCampaign *types.ATCampaign, atM
 
 	err := repo.Db.Transaction(func(tx *gorm.DB) error {
 		// First find brand, and create if not exist
-		var brand model.AffBrand
-		txErr := tx.First(&brand, "slug = ?", newCampaign.Merchant).Error
-		if txErr != nil {
-			if txErr.Error() == "record not found" {
-				// When brand record not found
-				// create the brand for this merchant
-				brand = model.AffBrand{
-					Name:      atMerchant.DisplayName[0],
-					Slug:      atMerchant.LoginName,
-					Status:    "active",
-					CreatedAt: time.Now(),
-					UpdatedAt: time.Now(),
-				}
-				crErr := tx.Create(&brand).Error
-				if crErr != nil {
-					return errors.Errorf("create merchant %s error: %v", newCampaign.Merchant, crErr)
-				}
-			} else {
-				return txErr
-			}
-		}
-		newCampaign.BrandId = brand.ID
-
-		txErr = tx.Create(&newCampaign).Error
-		if txErr != nil {
-			return txErr
+		err := tx.Create(&newCampaign).Error
+		if err != nil {
+			return err
 		}
 		campaignDescription.CampaignId = newCampaign.ID
-		txErr = tx.Create(&campaignDescription).Error
-		if txErr != nil {
-			return txErr
+		err = tx.Create(&campaignDescription).Error
+		if err != nil {
+			return err
 		}
 		return nil
 	})
@@ -117,8 +95,8 @@ func (repo *CampaignRepository) SaveATCampaign(atCampaign *types.ATCampaign, atM
 	return nil
 }
 
-func (repo *CampaignRepository) RetrieveCampaigns(q map[string]any) ([]model.Campaign, error) {
-	var data []model.Campaign
+func (repo *CampaignRepository) RetrieveCampaigns(q map[string]any) ([]model.AffCampaign, error) {
+	var data []model.AffCampaign
 	err := repo.Db.Preload("Description").Find(&data, q).Error
 
 	if err != nil {
@@ -127,7 +105,7 @@ func (repo *CampaignRepository) RetrieveCampaigns(q map[string]any) ([]model.Cam
 	return data, nil
 }
 
-func (repo *CampaignRepository) CreateCampaigns(data []model.Campaign) ([]model.Campaign, error) {
+func (repo *CampaignRepository) CreateCampaigns(data []model.AffCampaign) ([]model.AffCampaign, error) {
 	err := repo.Db.Create(&data).Error
 
 	if err != nil {
@@ -136,7 +114,7 @@ func (repo *CampaignRepository) CreateCampaigns(data []model.Campaign) ([]model.
 	return data, nil
 }
 
-func (repo *CampaignRepository) UpdateCampaigns(data []model.Campaign) ([]model.Campaign, error) {
+func (repo *CampaignRepository) UpdateCampaigns(data []model.AffCampaign) ([]model.AffCampaign, error) {
 	err := repo.Db.Updates(&data).Error
 
 	if err != nil {
@@ -145,7 +123,7 @@ func (repo *CampaignRepository) UpdateCampaigns(data []model.Campaign) ([]model.
 	return data, nil
 }
 
-func (repo *CampaignRepository) DeactivateCampaigns(data []model.Campaign) error {
+func (repo *CampaignRepository) DeactivateCampaigns(data []model.AffCampaign) error {
 	err := repo.Db.Updates(&data).Error
 
 	if err != nil {

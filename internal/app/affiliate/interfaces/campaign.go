@@ -7,13 +7,13 @@ import (
 )
 
 type CampaignRepository interface {
-	RetrieveCampaigns(q map[string]any) ([]model.Campaign, error)
-	RetrieveCampaignsByAccessTradeIds(ids []string) (map[string]*model.Campaign, error)
-	SaveATCampaign(atCampaign *types.ATCampaign, atMerchant *types.ATMerchant) error
+	RetrieveCampaigns(q map[string]any) ([]model.AffCampaign, error)
+	RetrieveCampaignsByAccessTradeIds(ids []string) (map[string]*model.AffCampaign, error)
+	SaveATCampaign(atCampaign *types.ATCampaign) error
 
-	CreateCampaigns(data []model.Campaign) ([]model.Campaign, error)
-	UpdateCampaigns(data []model.Campaign) ([]model.Campaign, error)
-	DeactivateCampaigns(data []model.Campaign) error
+	CreateCampaigns(data []model.AffCampaign) ([]model.AffCampaign, error)
+	UpdateCampaigns(data []model.AffCampaign) ([]model.AffCampaign, error)
+	DeactivateCampaigns(data []model.AffCampaign) error
 
 	RetrieveAffLinks(campaignId uint) ([]model.AffLink, error)
 	CreateAffLinks(data []model.AffLink) error

@@ -27,6 +27,8 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	campaignRoute := v1.Group("/campaign")
 	campaignRoute.POST("/link", jwtMiddleware, campaignHandler.PostGenerateAffLink)
 
+	// SECTION: Order Module and link
+
 	// SECTION: Redeem module
 	redeemRepo := redeem.NewRedeemRepository(db)
 	redeemUsecase := redeem.NewRedeemUsecase(redeemRepo)

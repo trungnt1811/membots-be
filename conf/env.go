@@ -96,6 +96,7 @@ func init() {
 
 	fmt.Println("EVM ChainId:", configuration.EvmRpc.EVMChainID)
 	fmt.Println("EVM Rpc URL:", configuration.EvmRpc.EndPoint)
+	fmt.Println("DB url", configuration.Database.WriteDbHost)
 }
 
 func GetConfiguration() *Configuration {

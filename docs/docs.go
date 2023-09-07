@@ -587,12 +587,6 @@ const docTemplate = `{
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"
-        },
-        "BasicKeyAuth": {
-            "description": "Use for authorization during server to server calls",
-            "type": "apiKey",
-            "name": "Authorization",
-            "in": "header"
         }
     }
 }`
@@ -604,7 +598,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "",
 	Schemes:          []string{},
 	Title:            "Affiliate System API",
-	Description:      "This Swagger docs for Astra Affiliate System.",
+	Description:      "Use for authorization during server to server calls",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

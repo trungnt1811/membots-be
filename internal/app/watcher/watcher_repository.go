@@ -29,7 +29,7 @@ func (rp *WatcherRepository) PushToTxReceiptQueue(msg kafka.Message) error {
 	return rp.TxReceiptQ.Writer.WriteMessages(context.Background(), msg)
 }
 
-func (rp *WatcherRepository) FetchPendindTx() (kafka.Message, util.TxInfo, error) {
+func (rp *WatcherRepository) FetchPendingTx() (kafka.Message, util.TxInfo, error) {
 	var txinfo util.TxInfo
 
 	m, err := rp.pendingTxQ.Reader.FetchMessage(context.Background())

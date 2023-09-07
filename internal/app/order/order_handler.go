@@ -6,7 +6,7 @@ import (
 )
 
 type OrderHandler struct {
-	usecase interfaces.OrderUsecase
+	usecase interfaces.OrderUCase
 }
 
 // PostBackOrderHandle A callback to receive order from AccessTrade

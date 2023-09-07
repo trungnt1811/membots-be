@@ -10,7 +10,7 @@ import (
 	"github.com/segmentio/kafka-go"
 )
 
-type WatcherUsecase interface {
+type WatcherUCase interface {
 	DoCheckEvmUnconfirmTx(tx util.TxInfo) (*types.Receipt, error)
 	CheckFinality(blocknumber uint64) error
 	ClassifyTx(txinfo util.TxInfo, result int, res *types.Receipt, channel *util.Channel) error
@@ -23,7 +23,7 @@ type WatcherUsecase interface {
 type WatcherRepository interface {
 	CommitPendingTx(msg kafka.Message) error
 	PushToTxReceiptQueue(msg kafka.Message) error
-	FetchPendindTx() (kafka.Message, util.TxInfo, error)
+	FetchPendingTx() (kafka.Message, util.TxInfo, error)
 }
 
 type WatchingEvmClient interface {

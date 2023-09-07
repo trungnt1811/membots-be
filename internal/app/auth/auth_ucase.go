@@ -11,14 +11,14 @@ import (
 	"time"
 )
 
-type AuthHandler struct {
+type authHandler struct {
 	HttpClient     *req.Client
 	CreatorAuthUrl string
 	AppAuthUrl     string
 	RedisClient    caching.Repository
 }
 
-func (s *AuthHandler) CheckAdminHeader() gin.HandlerFunc {
+func (s *authHandler) CheckAdminHeader() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var token struct {
 			Authorization *string `json:"Authorization" binding:"required"`
@@ -47,7 +47,7 @@ func (s *AuthHandler) CheckAdminHeader() gin.HandlerFunc {
 	}
 }
 
-func (s *AuthHandler) CheckUserHeader() gin.HandlerFunc {
+func (s *authHandler) CheckUserHeader() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var token struct {
 			Authorization *string `json:"Authorization" binding:"required"`
@@ -76,7 +76,7 @@ func (s *AuthHandler) CheckUserHeader() gin.HandlerFunc {
 	}
 }
 
-func (s *AuthHandler) creatorTokenInfo(jwtToken string) (dto.UserDto, error) {
+func (s *authHandler) creatorTokenInfo(jwtToken string) (dto.UserDto, error) {
 	var authInfo dto.UserDto
 	key := fmt.Sprint("token_", jwtToken[200:len(jwtToken)-1])
 	keyer := &caching.Keyer{Raw: key}
@@ -99,7 +99,7 @@ func (s *AuthHandler) creatorTokenInfo(jwtToken string) (dto.UserDto, error) {
 	return authInfo, nil
 }
 
-func (s *AuthHandler) appTokenInfo(jwtToken string) (dto.UserDto, error) {
+func (s *authHandler) appTokenInfo(jwtToken string) (dto.UserDto, error) {
 	var authInfo dto.UserDto
 	key := fmt.Sprint("token_", jwtToken[200:len(jwtToken)-1])
 	keyer := &caching.Keyer{Raw: key}
@@ -125,7 +125,7 @@ func (s *AuthHandler) appTokenInfo(jwtToken string) (dto.UserDto, error) {
 func NewAuthUseCase(redisClient caching.Repository,
 	creatorAuthUrl string,
 	appAuthUrl string,
-) *AuthHandler {
+) *authHandler {
 	client := req.C().
 		SetUserAgent("affiliate-system"). // Chainable client settings.
 		SetTimeout(3 * time.Second).
@@ -145,7 +145,7 @@ func NewAuthUseCase(redisClient caching.Repository,
 			}
 			return nil
 		})
-	return &AuthHandler{
+	return &authHandler{
 		CreatorAuthUrl: creatorAuthUrl,
 		AppAuthUrl:     appAuthUrl,
 		HttpClient:     client,

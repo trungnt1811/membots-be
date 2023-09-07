@@ -38,7 +38,7 @@ import (
 // @name						Authorization
 // @description			Use for authorization of reward creator
 
-// @securityDefinitions.apiKey	BasicKeyAuth
+// RunApp @securityDefinitions.apiKey	BasicKeyAuth
 // @in							header
 // @name						Authorization
 // @description			Use for authorization during server to server calls
@@ -92,7 +92,7 @@ func RunApp(config *conf.Configuration) {
 	}
 
 	// SECTION: Run worker
-	RegisterCronjobs(config, db)
+	RegisterCronJobs(config, db)
 
 	// SECTION: Run Gin router
 	err = r.Run(fmt.Sprintf("0.0.0.0:%v", config.AppPort))

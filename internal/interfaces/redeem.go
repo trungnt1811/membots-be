@@ -8,6 +8,6 @@ type RedeemRepository interface {
 	TopUpCashBack(userId int, amount float32) error
 }
 
-type RedeemUsecase interface {
+type RedeemUCase interface {
 	RedeemCashback(types.RedeemRequestPayload) (*types.RedeemRewardResponse, error)
 }

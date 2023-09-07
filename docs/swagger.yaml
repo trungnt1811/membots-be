@@ -231,7 +231,7 @@ info:
     email: support@swagger.io
     name: API Support
     url: http://www.swagger.io/support
-  description: This Swagger docs for Astra Affiliate System.
+  description: Use for authorization during server to server calls
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
@@ -387,11 +387,6 @@ paths:
 securityDefinitions:
   ApiKeyAuth:
     description: Use for authorization of reward creator
-    in: header
-    name: Authorization
-    type: apiKey
-  BasicKeyAuth:
-    description: Use for authorization during server to server calls
     in: header
     name: Authorization
     type: apiKey

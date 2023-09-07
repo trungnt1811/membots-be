@@ -35,7 +35,7 @@ func NewWatcherUsecase(evmclient interfaces.WatchingEvmClient, repo interfaces.W
 
 func (w *WatcherUsecase) ListenNewBroadCastTx(channel *util2.Channel) {
 	for {
-		m, txinfo, err := w.repo.FetchPendindTx()
+		m, txinfo, err := w.repo.FetchPendingTx()
 		if err != nil {
 			log.LG.Errorf("pendingTxQ.Reader.FetchMessage error: %v", err.Error())
 			continue

@@ -11,10 +11,10 @@ import (
 )
 
 type RedeemHandler struct {
-	usecase interfaces.RedeemUsecase
+	usecase interfaces.RedeemUCase
 }
 
-func NewRedeemHandler(usecase interfaces.RedeemUsecase) *RedeemHandler {
+func NewRedeemHandler(usecase interfaces.RedeemUCase) *RedeemHandler {
 	return &RedeemHandler{
 		usecase: usecase,
 	}

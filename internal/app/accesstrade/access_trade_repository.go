@@ -116,7 +116,7 @@ func (r *AccessTradeRepository) QueryOrders(q types.ATOrderQuery, page int, limi
 	return &body, nil
 }
 
-// The `CreateTrackingLinks` function is used to create tracking links for a campaign in the
+// CreateTrackingLinks The `CreateTrackingLinks` function is used to create tracking links for a campaign in the
 // AccessTrade API. It takes in parameters such as `campaignId` (string), `urls` (slice of strings),
 // and `additional` (map[string]string).
 func (r *AccessTradeRepository) CreateTrackingLinks(campaignId string, urls []string, additional map[string]string) (*types.ATLinkResp, error) {

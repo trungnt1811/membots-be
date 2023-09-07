@@ -14,4 +14,4 @@ type OrderRepository interface {
 	) ([]model.OrderEntity, error)
 }
 
-type OrderUsecase interface{}
+type OrderUCase interface{}

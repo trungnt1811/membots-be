@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/astraprotocol/affiliate-system/conf"
 	_ "github.com/astraprotocol/affiliate-system/docs"
-	app "github.com/astraprotocol/affiliate-system/internal/app/affiliate"
+	app "github.com/astraprotocol/affiliate-system/internal"
 )
 
 func main() {

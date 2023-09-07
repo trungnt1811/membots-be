@@ -30,7 +30,7 @@ func NewCampaignHandler(usecase interfaces.CampaignUsecase) *CampaignHandler {
 // @Success 200 		{object}	dto.CreateLinkResponse "when success, return the created link for this request campaign"
 // @Failure 424 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
-// @Router 	/api/v1/redeem/request [post]
+// @Router 	/api/v1/campaign/link [post]
 func (handler *CampaignHandler) PostGenerateAffLink(c *gin.Context) {
 	// First, take user from JWT
 	user, err := middleware.GetAuthUser(c)

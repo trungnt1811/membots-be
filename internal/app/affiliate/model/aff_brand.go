@@ -14,3 +14,14 @@ type AffBrand struct {
 func (c *AffBrand) TableName() string {
 	return "brand"
 }
+
+type AffMerchantBrand struct {
+	ID       uint      `gorm:"primarykey" json:"id"`
+	Merchant string    `json:"merchant"`
+	BrandId  uint      `json:"brand_id"`
+	Brand    *AffBrand `gorm:"foreignKey:ID;references:BrandId" json:"brand"`
+}
+
+func (c *AffMerchantBrand) TableName() string {
+	return "aff_merchant_brand"
+}

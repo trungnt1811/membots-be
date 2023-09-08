@@ -10,6 +10,16 @@ type affCampaignRepository struct {
 	Db *gorm.DB
 }
 
+func (a *affCampaignRepository) GetCampaignById(id uint) (model.AffCampaign, error) {
+	var affCampaign model.AffCampaign
+	if err := a.Db.Table("aff_campaign").
+		Joins("Description").
+		Where("aff_campaign.id = ?", id).First(&affCampaign).Error; err != nil {
+		return affCampaign, err
+	}
+	return affCampaign, nil
+}
+
 func (a *affCampaignRepository) UpdateCampaign(id uint, updates map[string]interface{}) error {
 	return a.Db.Table("aff_campaign").Where("id = ?", id).Updates(updates).Error
 }

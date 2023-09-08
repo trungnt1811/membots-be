@@ -340,6 +340,32 @@ paths:
       tags:
       - console
   /api/v1/console/aff-campaign/{id}:
+    get:
+      description: Get campaign by id
+      parameters:
+      - description: id to query
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AffCampaignDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      summary: Get campaign by id
+      tags:
+      - console
     put:
       consumes:
       - application/json

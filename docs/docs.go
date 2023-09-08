@@ -507,6 +507,9 @@ const docTemplate = `{
                 "approval": {
                     "type": "string"
                 },
+                "brand": {
+                    "$ref": "#/definitions/dto.BrandDto"
+                },
                 "brand_id": {
                     "type": "integer"
                 },
@@ -599,6 +602,23 @@ const docTemplate = `{
                 },
                 "total": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.BrandDto": {
+            "type": "object",
+            "properties": {
+                "cover_photo": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "logo": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         },

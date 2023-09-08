@@ -23,6 +23,7 @@ type AffCampaignDto struct {
 	ID                uint                    `json:"id"`
 	ActiveStatus      int                     `json:"active_status"`
 	BrandId           uint                    `json:"brand_id"`
+	Brand             BrandDto                `json:"brand"`
 	AccessTradeId     string                  `json:"accesstrade_id"`
 	CreatedAt         time.Time               `json:"created_at"`
 	UpdatedAt         time.Time               `json:"updated_at"`

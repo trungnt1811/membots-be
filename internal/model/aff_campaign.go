@@ -46,6 +46,7 @@ type AffCampaign struct {
 	ID                uint                `gorm:"primarykey" json:"id"`
 	ActiveStatus      int                 `json:"active_status"`
 	BrandId           uint                `json:"brand_id"`
+	Brand             Brand               `json:"brand" gorm:"foreignKey:BrandId"`
 	AccessTradeId     string              `json:"accesstrade_id" gorm:"column:accesstrade_id"`
 	CreatedAt         time.Time           `json:"created_at"`
 	UpdatedAt         time.Time           `json:"updated_at"`
@@ -97,5 +98,6 @@ func (c *AffCampaign) ToDto() dto.AffCampaignDto {
 		StellaMaxCom:      c.StellaMaxCom,
 	}
 	campDto.Description = c.Description.ToDto()
+	campDto.Brand = c.Brand.ToBrandDto()
 	return campDto
 }

@@ -1,11 +1,12 @@
 package model
 
 import (
+	"time"
+
 	"github.com/astraprotocol/affiliate-system/internal/dto"
-	"github.com/grokify/html-strip-tags-go"
+	strip "github.com/grokify/html-strip-tags-go"
 	"github.com/shopspring/decimal"
 	"gorm.io/datatypes"
-	"time"
 )
 
 type CampaignDescription struct {
@@ -98,4 +99,23 @@ func (c *AffCampaign) ToDto() dto.AffCampaignDto {
 	}
 	campDto.Description = c.Description.ToDto()
 	return campDto
+}
+
+func (c *AffCampaign) ToAffCampaignAppDto() dto.AffCampaignAppDto {
+	return dto.AffCampaignAppDto{
+		ID:                c.ID,
+		BrandId:           c.BrandId,
+		AccessTradeId:     c.AccessTradeId,
+		CreatedAt:         c.CreatedAt,
+		UpdatedAt:         c.UpdatedAt,
+		Thumbnail:         c.Thumbnail,
+		Name:              c.Name,
+		Url:               c.Url,
+		CategoryId:        c.CategoryId,
+		StartTime:         c.StartTime,
+		EndTime:           c.EndTime,
+		StellaDescription: c.StellaDescription,
+		StellaStatus:      c.StellaStatus,
+		StellaMaxCom:      c.StellaMaxCom,
+	}
 }

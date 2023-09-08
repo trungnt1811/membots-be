@@ -15,7 +15,7 @@ type affCampaignRepository struct {
 func (r affCampaignRepository) GetAllAffCampaign(ctx context.Context, page, size int) ([]model.AffCampaign, error) {
 	var listAffCampaign []model.AffCampaign
 	offset := (page - 1) * size
-	query := "SELECT stella_description, name, thumbnail, url, max_com, stella_max_com, start_time, end_time, category_id, brand_id, stella_status " +
+	query := "SELECT id, brand_id, accesstrade_id, created_at, updated_at, thumbnail, name, url, category_id, start_time, end_time, stella_description, stella_status, stella_max_com " +
 		"FROM aff_campaign " +
 		"ORDER BY id ASC LIMIT ? OFFSET ?"
 	err := r.db.Raw(query, size+1, offset).Scan(&listAffCampaign).Error
@@ -24,7 +24,7 @@ func (r affCampaignRepository) GetAllAffCampaign(ctx context.Context, page, size
 
 func (r affCampaignRepository) GetAffCampaignByAccesstradeId(ctx context.Context, accesstradeId uint64) (model.AffCampaign, error) {
 	var affCampaign model.AffCampaign
-	query := "SELECT stella_description, name, thumbnail, url, max_com, stella_max_com, start_time, end_time, category_id, brand_id, stella_status " +
+	query := "SELECT id, brand_id, accesstrade_id, created_at, updated_at, thumbnail, name, url, category_id, start_time, end_time, stella_description, stella_status, stella_max_com " +
 		"FROM aff_campaign " +
 		"WHERE accesstrade_id = ?"
 	err := r.db.Raw(query, accesstradeId).Scan(&affCampaign).Error

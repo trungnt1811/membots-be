@@ -21,14 +21,11 @@ func (c *campaignUCase) UpdateCampaign(id uint, campaign dto.AffCampaignDto) err
 	if len(strings.TrimSpace(campaign.Thumbnail)) > 0 {
 		updates["thumbnail"] = campaign.Thumbnail
 	}
-	if len(strings.TrimSpace(campaign.Thumbnail)) > 0 {
-		updates["thumbnail"] = campaign.Thumbnail
-	}
 	if len(strings.TrimSpace(campaign.Url)) > 0 {
 		updates["url"] = campaign.Url
 	}
 	if len(strings.TrimSpace(campaign.MaxCom)) > 0 {
-		updates["url"] = campaign.Url
+		updates["max_con"] = campaign.MaxCom
 	}
 	if !campaign.StellaMaxCom.IsZero() {
 		updates["stella_max_com"] = campaign.StellaMaxCom

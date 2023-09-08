@@ -62,7 +62,7 @@ func (handler *ConsoleCampHandler) GetAllCampaign(ctx *gin.Context) {
 // @Tags 	console
 // @Accept	json
 // @Produce json
-// @Param 	payload	body 			dto.AffCampaignDto true "Campaign info to update, required"
+// @Param 	payload	body 			dto.AffCampaignAppDto true "Campaign info to update, required"
 // @Param id path int true "id to query"
 // @Success 200 		{object}	dto.AffCampaignAppDto
 // @Failure 401 		{object}	util.GeneralError

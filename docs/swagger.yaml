@@ -350,7 +350,7 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/dto.AffCampaignDto'
+          $ref: '#/definitions/dto.AffCampaignAppDto'
       - description: id to query
         in: path
         name: id

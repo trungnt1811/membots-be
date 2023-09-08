@@ -49,6 +49,23 @@ type AffCampaignDto struct {
 	StellaMaxCom      decimal.Decimal         `json:"stella_max_com"`
 }
 
+type AffCampaignAppDto struct {
+	ID                uint            `json:"id"`
+	BrandId           uint            `json:"brand_id"`
+	AccessTradeId     string          `json:"accesstrade_id"`
+	CreatedAt         time.Time       `json:"created_at"`
+	UpdatedAt         time.Time       `json:"updated_at"`
+	Name              string          `json:"name"`
+	Url               string          `json:"url"`
+	StartTime         *time.Time      `json:"start_time"`
+	EndTime           *time.Time      `json:"end_time"`
+	StellaDescription interface{}     `json:"stella_description"`
+	CategoryId        uint            `json:"category_id"`
+	StellaStatus      string          `json:"stella_status"`
+	Thumbnail         string          `json:"thumbnail"`
+	StellaMaxCom      decimal.Decimal `json:"stella_max_com"`
+}
+
 type AffCampaignDtoResponse struct {
 	NextPage int              `json:"next_page"`
 	Page     int              `json:"page"`

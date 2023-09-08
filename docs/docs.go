@@ -169,7 +169,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.AffCampaignDto"
+                            "$ref": "#/definitions/dto.AffCampaignAppDto"
                         }
                     },
                     "400": {
@@ -408,6 +408,51 @@ const docTemplate = `{
                 },
                 "success": {
                     "type": "boolean"
+                }
+            }
+        },
+        "dto.AffCampaignAppDto": {
+            "type": "object",
+            "properties": {
+                "accesstrade_id": {
+                    "type": "string"
+                },
+                "brand_id": {
+                    "type": "integer"
+                },
+                "category_id": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "end_time": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "start_time": {
+                    "type": "string"
+                },
+                "stella_description": {},
+                "stella_max_com": {
+                    "type": "number"
+                },
+                "stella_status": {
+                    "type": "string"
+                },
+                "thumbnail": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
                 }
             }
         },

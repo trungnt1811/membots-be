@@ -64,7 +64,7 @@ func (handler *ConsoleCampHandler) GetAllCampaign(ctx *gin.Context) {
 // @Produce json
 // @Param 	payload	body 			dto.AffCampaignDto true "Campaign info to update, required"
 // @Param id path int true "id to query"
-// @Success 200 		{object}	dto.AffCampaignDto
+// @Success 200 		{object}	dto.AffCampaignAppDto
 // @Failure 401 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
 // @Security ApiKeyAuth
@@ -75,7 +75,7 @@ func (handler *ConsoleCampHandler) UpdateCampaignInfo(ctx *gin.Context) {
 		util.RespondError(ctx, http.StatusBadRequest, "id is required", err)
 		return
 	}
-	var payload dto.AffCampaignDto
+	var payload dto.AffCampaignAppDto
 	if err := ctx.ShouldBindJSON(&payload); err != nil {
 		util.RespondError(ctx, http.StatusBadRequest, "send payload is required", err)
 		return

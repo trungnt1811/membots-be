@@ -13,5 +13,5 @@ type ConsoleCampRepository interface {
 
 type ConsoleCampUCase interface {
 	GetAllCampaign(status []string, page, size int) (dto.AffCampaignDtoResponse, error)
-	UpdateCampaign(id uint, campaign dto.AffCampaignDto) error
+	UpdateCampaign(id uint, campaign dto.AffCampaignAppDto) error
 }

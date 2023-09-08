@@ -10,7 +10,7 @@ type campaignUCase struct {
 	Repo interfaces.ConsoleCampRepository
 }
 
-func (c *campaignUCase) UpdateCampaign(id uint, campaign dto.AffCampaignDto) error {
+func (c *campaignUCase) UpdateCampaign(id uint, campaign dto.AffCampaignAppDto) error {
 	updates := make(map[string]interface{})
 	if campaign.StellaDescription != nil {
 		updates["stella_description"] = campaign.StellaDescription
@@ -23,9 +23,6 @@ func (c *campaignUCase) UpdateCampaign(id uint, campaign dto.AffCampaignDto) err
 	}
 	if len(strings.TrimSpace(campaign.Url)) > 0 {
 		updates["url"] = campaign.Url
-	}
-	if len(strings.TrimSpace(campaign.MaxCom)) > 0 {
-		updates["max_con"] = campaign.MaxCom
 	}
 	if !campaign.StellaMaxCom.IsZero() {
 		updates["stella_max_com"] = campaign.StellaMaxCom

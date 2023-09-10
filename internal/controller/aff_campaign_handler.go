@@ -32,7 +32,7 @@ func NewAffCampaignHandler(
 // @Success 200 		{object}	dto.AffCampaignAppDtoResponse
 // @Failure 401 		{object}	dto.GeneralError
 // @Failure 400 		{object}	dto.GeneralError
-// @Router 	/api/v1/app//aff-campaign [get]
+// @Router 	/api/v1/app/aff-campaign [get]
 func (handler *AffCampaignHandler) GetAllAffCampaign(ctx *gin.Context) {
 	page := ctx.GetInt("page")
 	size := ctx.GetInt("size")
@@ -55,16 +55,15 @@ func (handler *AffCampaignHandler) GetAllAffCampaign(ctx *gin.Context) {
 // @Success 200 		{object}	dto.AffCampaignAppDto
 // @Failure 401 		{object}	dto.GeneralError
 // @Failure 400 		{object}	dto.GeneralError
-// @Router 	/api/v1/app//aff-campaign [get]
+// @Router 	/api/v1/app/aff-campaign/{accresstradeId} [get]
 func (handler *AffCampaignHandler) GetAffCampaignByAccesstradeId(ctx *gin.Context) {
-	accesstrade := ctx.DefaultQuery("accesstradeId", "")
-	accesstradeId, err := strconv.ParseUint(accesstrade, 10, 64)
+	accesstradeId, err := strconv.Atoi(ctx.Param("accresstradeId"))
 	if err != nil {
-		util.RespondError(ctx, http.StatusBadRequest, "get accesstradeId param error: ", err)
+		util.RespondError(ctx, http.StatusBadRequest, "accresstradeId is invalid", err)
 		return
 	}
 
-	response, err := handler.AffCampaignService.GetAffCampaignByAccesstradeId(ctx, accesstradeId)
+	response, err := handler.AffCampaignService.GetAffCampaignByAccesstradeId(ctx, uint64(accesstradeId))
 	if err != nil {
 		util.RespondError(ctx, http.StatusInternalServerError, "Get list of all aff campaign error: ", err)
 		return

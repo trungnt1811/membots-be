@@ -14,7 +14,7 @@ const cacheTimeAffCampaign = 3 * time.Second
 
 type affCampaignCache struct {
 	AffCampaignRepository interfaces.AffCampaignRepository
-	Cache                 Repository
+	Cache                 cachingRepository
 }
 
 func (c affCampaignCache) GetAllAffCampaign(ctx context.Context, page, size int) ([]model.AffCampaign, error) {
@@ -52,7 +52,7 @@ func (c affCampaignCache) GetAffCampaignByAccesstradeId(ctx context.Context, acc
 }
 
 func NewAffCampaignCacheRepository(repo interfaces.AffCampaignRepository,
-	cache Repository,
+	cache cachingRepository,
 ) interfaces.AffCampaignRepository {
 	return &affCampaignCache{
 		AffCampaignRepository: repo,

@@ -6,7 +6,10 @@ import (
 	campaign3 "github.com/astraprotocol/affiliate-system/internal/app/campaign"
 	campaign2 "github.com/astraprotocol/affiliate-system/internal/app/console/campaign"
 	"github.com/astraprotocol/affiliate-system/internal/app/redeem"
+	"github.com/astraprotocol/affiliate-system/internal/controller"
+	"github.com/astraprotocol/affiliate-system/internal/infra/mysql"
 	"github.com/astraprotocol/affiliate-system/internal/middleware"
+	"github.com/astraprotocol/affiliate-system/internal/service"
 	"github.com/astraprotocol/affiliate-system/internal/util"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -44,4 +47,12 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	consoleRouter := v1.Group("console")
 	consoleRouter.GET("/aff-campaign", consoleCampHandler.GetAllCampaign)
 	consoleRouter.PUT("/aff-campaign/:id", consoleCampHandler.UpdateCampaignInfo)
+
+	// SECTION: App module
+	affCampaignRepository := mysql.NewAffCampaignRepository(db)
+	affCampaignService := service.NewAffCampaignService(affCampaignRepository)
+	affCampaignHandler := controller.NewAffCampaignHandler(affCampaignService)
+	appRouter := v1.Group("/app")
+	appRouter.GET("/aff-campaign", affCampaignHandler.GetAllAffCampaign)
+	appRouter.GET("/aff-campaign/:accesstradeId", affCampaignHandler.GetAffCampaignByAccesstradeId)
 }

@@ -74,9 +74,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/app/aff-campaign/{accresstradeId}": {
+        "/api/v1/app/aff-campaign/{id}": {
             "get": {
-                "description": "Get aff campaign by accesstrade id",
+                "description": "Get aff campaign by id",
                 "consumes": [
                     "application/json"
                 ],
@@ -86,12 +86,12 @@ const docTemplate = `{
                 "tags": [
                     "app"
                 ],
-                "summary": "Get aff campaign by accesstrade id",
+                "summary": "Get aff campaign by id",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "accesstradeId to query",
-                        "name": "accesstradeId",
+                        "description": "id to query",
+                        "name": "id",
                         "in": "query"
                     }
                 ],

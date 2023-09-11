@@ -318,15 +318,15 @@ paths:
       summary: Get list of all aff campaign
       tags:
       - app
-  /api/v1/app/aff-campaign/{accresstradeId}:
+  /api/v1/app/aff-campaign/{id}:
     get:
       consumes:
       - application/json
-      description: Get aff campaign by accesstrade id
+      description: Get aff campaign by id
       parameters:
-      - description: accesstradeId to query
+      - description: id to query
         in: query
-        name: accesstradeId
+        name: id
         type: string
       produces:
       - application/json
@@ -343,7 +343,7 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/util.GeneralError'
-      summary: Get aff campaign by accesstrade id
+      summary: Get aff campaign by id
       tags:
       - app
   /api/v1/campaign/link:

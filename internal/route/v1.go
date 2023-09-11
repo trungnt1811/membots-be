@@ -54,11 +54,11 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	consoleRouter.PUT("/aff-campaign/:id", consoleCampHandler.UpdateCampaignInfo)
 
 	// SECTION: App module
-	appCampRepository := aff_camp_app.NewAffCampAppRepository(db)
-	appCampCache := aff_camp_app.NewAffCampAppCacheRepository(appCampRepository, redisClient)
-	appCampService := aff_camp_app.NewAffCampAppService(appCampCache)
-	appCampHandler := aff_camp_app.NewAffCampAppHandler(appCampService)
 	appRouter := v1.Group("/app")
-	appRouter.GET("/aff-campaign", appCampHandler.GetAllAffCampaign)
-	appRouter.GET("/aff-campaign/:accesstradeId", appCampHandler.GetAffCampaignByAccesstradeId)
+	affCampAppRepository := aff_camp_app.NewAffCampAppRepository(db)
+	affCampAppCache := aff_camp_app.NewAffCampAppCacheRepository(affCampAppRepository, redisClient)
+	affCampAppService := aff_camp_app.NewAffCampAppService(affCampAppCache)
+	affCampAppHandler := aff_camp_app.NewAffCampAppHandler(affCampAppService)
+	appRouter.GET("/aff-campaign", affCampAppHandler.GetAllAffCampaign)
+	appRouter.GET("/aff-campaign/:accesstradeId", affCampAppHandler.GetAffCampaignByAccesstradeId)
 }

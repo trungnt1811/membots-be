@@ -52,9 +52,7 @@ func (order *AffOrder) TableName() string {
 
 func NewOrderFromATOrder(atOrder *types.ATOrder) *AffOrder {
 	orderStatus := "initial"
-	if atOrder.IsConfirmed == 1 {
-		orderStatus = ""
-	} else if atOrder.OrderPending == 1 {
+	if atOrder.OrderPending == 1 {
 		orderStatus = "pending"
 	} else if atOrder.OrderApproved == 1 {
 		orderStatus = "approved"

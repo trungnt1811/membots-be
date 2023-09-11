@@ -325,9 +325,10 @@ paths:
       description: Get aff campaign by id
       parameters:
       - description: id to query
-        in: query
+        in: path
         name: id
-        type: string
+        required: true
+        type: integer
       produces:
       - application/json
       responses:

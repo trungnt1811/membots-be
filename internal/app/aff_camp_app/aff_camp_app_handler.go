@@ -51,7 +51,7 @@ func (handler *AffCampAppHandler) GetAllAffCampaign(ctx *gin.Context) {
 // @Tags 	app
 // @Accept	json
 // @Produce json
-// @Param id query string false "id to query"
+// @Param id path int true "id to query"
 // @Success 200 		{object}	dto.AffCampaignAppDto
 // @Failure 401 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError

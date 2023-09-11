@@ -89,10 +89,11 @@ const docTemplate = `{
                 "summary": "Get aff campaign by id",
                 "parameters": [
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "id to query",
                         "name": "id",
-                        "in": "query"
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {

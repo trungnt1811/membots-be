@@ -1,4 +1,4 @@
-package controller
+package app_camp
 
 import (
 	"net/http"
@@ -9,15 +9,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type AffCampaignHandler struct {
-	AffCampaignService interfaces.AffCampaignService
+type AppCampHandler struct {
+	AppCampService interfaces.AppCampService
 }
 
-func NewAffCampaignHandler(
-	affCampaignService interfaces.AffCampaignService,
-) *AffCampaignHandler {
-	return &AffCampaignHandler{
-		AffCampaignService: affCampaignService,
+func NewAppCampHandler(
+	appCampService interfaces.AppCampService,
+) *AppCampHandler {
+	return &AppCampHandler{
+		AppCampService: appCampService,
 	}
 }
 
@@ -33,11 +33,11 @@ func NewAffCampaignHandler(
 // @Failure 401 		{object}	dto.GeneralError
 // @Failure 400 		{object}	dto.GeneralError
 // @Router 	/api/v1/app/aff-campaign [get]
-func (handler *AffCampaignHandler) GetAllAffCampaign(ctx *gin.Context) {
+func (handler *AppCampHandler) GetAllAffCampaign(ctx *gin.Context) {
 	page := ctx.GetInt("page")
 	size := ctx.GetInt("size")
 
-	response, err := handler.AffCampaignService.GetAllAffCampaign(ctx, page, size)
+	response, err := handler.AppCampService.GetAllAffCampaign(ctx, page, size)
 	if err != nil {
 		util.RespondError(ctx, http.StatusInternalServerError, "Get list of all aff campaign error: ", err)
 		return
@@ -53,17 +53,17 @@ func (handler *AffCampaignHandler) GetAllAffCampaign(ctx *gin.Context) {
 // @Produce json
 // @Param accesstradeId query string false "accesstradeId to query"
 // @Success 200 		{object}	dto.AffCampaignAppDto
-// @Failure 401 		{object}	dto.GeneralError
-// @Failure 400 		{object}	dto.GeneralError
+// @Failure 401 		{object}	util.GeneralError
+// @Failure 400 		{object}	util.GeneralError
 // @Router 	/api/v1/app/aff-campaign/{accresstradeId} [get]
-func (handler *AffCampaignHandler) GetAffCampaignByAccesstradeId(ctx *gin.Context) {
+func (handler *AppCampHandler) GetAffCampaignByAccesstradeId(ctx *gin.Context) {
 	accesstradeId, err := strconv.Atoi(ctx.Param("accresstradeId"))
 	if err != nil {
 		util.RespondError(ctx, http.StatusBadRequest, "accresstradeId is invalid", err)
 		return
 	}
 
-	response, err := handler.AffCampaignService.GetAffCampaignByAccesstradeId(ctx, uint64(accesstradeId))
+	response, err := handler.AppCampService.GetAffCampaignByAccesstradeId(ctx, uint64(accesstradeId))
 	if err != nil {
 		util.RespondError(ctx, http.StatusInternalServerError, "Get list of all aff campaign error: ", err)
 		return

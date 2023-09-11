@@ -9,21 +9,21 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/model"
 )
 
-const keyPrefixAffCampaign = "aff_campaign_"
+const keyPrefixAffCampaign = "app_camp_"
 const cacheTimeAffCampaign = 3 * time.Second
 
-type affCampaignCache struct {
-	AffCampaignRepository interfaces.AffCampaignRepository
-	Cache                 cachingRepository
+type appCampCache struct {
+	AppCampRepository interfaces.AppCampRepository
+	Cache             cachingRepository
 }
 
-func (c affCampaignCache) GetAllAffCampaign(ctx context.Context, page, size int) ([]model.AffCampaign, error) {
+func (c appCampCache) GetAllAffCampaign(ctx context.Context, page, size int) ([]model.AffCampaign, error) {
 	key := &Keyer{Raw: keyPrefixAffCampaign + fmt.Sprint("GetAllAffCampaign_", page, "_", size)}
 	var listAffCampaign []model.AffCampaign
 	err := c.Cache.RetrieveItem(key, &listAffCampaign)
 	if err != nil {
 		// cache miss
-		listAffCampaign, err = c.AffCampaignRepository.GetAllAffCampaign(ctx, page, size)
+		listAffCampaign, err = c.AppCampRepository.GetAllAffCampaign(ctx, page, size)
 		if err != nil {
 			return listAffCampaign, err
 		}
@@ -34,13 +34,13 @@ func (c affCampaignCache) GetAllAffCampaign(ctx context.Context, page, size int)
 	return listAffCampaign, nil
 }
 
-func (c affCampaignCache) GetAffCampaignByAccesstradeId(ctx context.Context, accesstradeId uint64) (model.AffCampaign, error) {
+func (c appCampCache) GetAffCampaignByAccesstradeId(ctx context.Context, accesstradeId uint64) (model.AffCampaign, error) {
 	key := &Keyer{Raw: keyPrefixAffCampaign + fmt.Sprint("GetAffCampaignByAccesstradeId_", accesstradeId)}
 	var affCampaign model.AffCampaign
 	err := c.Cache.RetrieveItem(key, &affCampaign)
 	if err != nil {
 		// cache miss
-		affCampaign, err = c.AffCampaignRepository.GetAffCampaignByAccesstradeId(ctx, accesstradeId)
+		affCampaign, err = c.AppCampRepository.GetAffCampaignByAccesstradeId(ctx, accesstradeId)
 		if err != nil {
 			return affCampaign, err
 		}
@@ -51,11 +51,11 @@ func (c affCampaignCache) GetAffCampaignByAccesstradeId(ctx context.Context, acc
 	return affCampaign, nil
 }
 
-func NewAffCampaignCacheRepository(repo interfaces.AffCampaignRepository,
+func NewAppCampCacheRepository(repo interfaces.AppCampRepository,
 	cache cachingRepository,
-) interfaces.AffCampaignRepository {
-	return &affCampaignCache{
-		AffCampaignRepository: repo,
-		Cache:                 cache,
+) interfaces.AppCampRepository {
+	return &appCampCache{
+		AppCampRepository: repo,
+		Cache:             cache,
 	}
 }

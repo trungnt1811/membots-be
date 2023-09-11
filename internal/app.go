@@ -2,21 +2,21 @@ package internal
 
 import (
 	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
+
 	"github.com/astraprotocol/affiliate-system/internal/middleware"
 	routeV1 "github.com/astraprotocol/affiliate-system/internal/route"
 	"github.com/astraprotocol/affiliate-system/internal/util"
 	"github.com/astraprotocol/affiliate-system/internal/util/log"
 	"github.com/astraprotocol/affiliate-system/internal/webhook"
-	"os"
-	"os/signal"
-	"syscall"
 
 	pagination "github.com/AstraProtocol/reward-libs/middleware"
 	"github.com/rs/zerolog"
 	"gorm.io/gorm/logger"
 
 	"github.com/astraprotocol/affiliate-system/conf"
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	ginPrometheus "github.com/mcuadros/go-gin-prometheus"
 	swaggerFiles "github.com/swaggo/files"
@@ -62,10 +62,6 @@ func RunApp(config *conf.Configuration) {
 	// r.Use(middleware.StructuredLogger())
 	r.Use(middleware.RequestLogger(log.LG.Instance))
 	r.Use(gin.Recovery())
-
-	if config.Env != "prod" {
-		r.Use(cors.Default())
-	}
 
 	// SECTION: Register routes
 	routeV1.RegisterRoutes(r, config, db, channel)

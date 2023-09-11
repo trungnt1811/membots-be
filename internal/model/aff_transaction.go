@@ -1,20 +1,22 @@
 package model
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade/types"
+	"github.com/astraprotocol/affiliate-system/internal/util/log"
+	"gorm.io/datatypes"
 )
 
 type AffTransaction struct {
 	ID                      uint           `gorm:"primarykey" json:"id"`
-	CampaignId              uint           `json:"campaign_id"`
 	UserId                  uint           `json:"user_id"`
 	CreatedAt               time.Time      `json:"created_at"`
 	UpdatedAt               time.Time      `json:"updated_at"`
-	AccessTradeId           string         `json:"accesstrade_id"`
-	AccessTradeOrderId      string         `json:"accesstrade_order_id"` // NOTE: AccessTrade Order ID
-	AccessTradeConversionId int64          `json:"accesstrade_conversion_id"`
+	AccessTradeId           string         `json:"accesstrade_id" gorm:"column:accesstrade_id"`
+	AccessTradeOrderId      string         `json:"accesstrade_order_id" gorm:"column:accesstrade_order_id"` // NOTE: AccessTrade Order ID
+	AccessTradeConversionId int64          `json:"accesstrade_conversion_id" gorm:"column:accesstrade_conversion_id"`
 	Merchant                string         `json:"merchant"`
 	Status                  uint8          `json:"status"`
 	ClickTime               time.Time      `json:"click_time"`
@@ -30,7 +32,7 @@ type AffTransaction struct {
 	ProductQuantity         int            `json:"product_quantity"`
 	ProductImage            string         `json:"product_image"`
 	ProductCategory         string         `json:"product_category"`
-	Extra                   map[string]any `json:"extra"`
+	Extra                   datatypes.JSON `json:"extra"`
 	CategoryName            string         `json:"category_name"`
 	ConversionPlatform      string         `json:"conversion_platform"`
 	ClickURL                string         `json:"click_url"`
@@ -48,6 +50,11 @@ func (m *AffTransaction) TableName() string {
 }
 
 func NewAffTransactionFromAT(order *AffOrder, atTx *types.ATTransaction) *AffTransaction {
+	extraBytes, err := json.Marshal(atTx.Extra)
+	if err != nil {
+		log.LG.Errorf("cannot unmarshal extra: %v", err)
+		extraBytes = []byte("{}")
+	}
 	return &AffTransaction{
 		UserId:                  order.UserId,
 		Merchant:                atTx.Merchant,
@@ -64,7 +71,7 @@ func NewAffTransactionFromAT(order *AffOrder, atTx *types.ATTransaction) *AffTra
 		TransactionTime:         atTx.TransactionTime.Time,
 		ProductImage:            atTx.ProductImage,
 		TransactionValue:        atTx.TransactionValue,
-		Extra:                   atTx.Extra,
+		Extra:                   datatypes.JSON(extraBytes),
 		ReasonRejected:          atTx.ReasonRejected,
 		CategoryName:            atTx.CategoryName,
 		ProductId:               atTx.ProductId,

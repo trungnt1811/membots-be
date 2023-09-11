@@ -10,7 +10,6 @@ import (
 
 type AffOrder struct {
 	ID                 uint      `gorm:"primarykey" json:"id"`
-	CampaignId         uint      `json:"campaign_id"`
 	AffLink            string    `json:"aff_link"`
 	CreatedAt          time.Time `json:"created_at"`
 	UpdatedAt          time.Time `json:"updated_at"`
@@ -28,12 +27,12 @@ type AffOrder struct {
 	IsConfirmed        uint8     `json:"is_confirmed"`
 	LandingPage        string    `json:"landing_page"`
 	Merchant           string    `json:"merchant"`
-	AccessTradeOrderId string    `json:"accesstrade_order_id"`
+	AccessTradeOrderId string    `json:"accesstrade_order_id" gorm:"column:accesstrade_order_id"`
 	OrderPending       uint8     `json:"order_pending"`
 	OrderReject        uint8     `json:"order_reject"`
 	OrderApproved      uint8     `json:"order_approved"`
 	ProductCategory    string    `json:"product_category"`
-	ProductCount       int       `json:"products_count"`
+	ProductsCount      int       `json:"products_count"`
 	PubCommission      float32   `json:"pub_commission"`
 	SalesTime          time.Time `json:"sales_time"`
 	UpdateTime         time.Time `json:"update_time"`
@@ -85,7 +84,7 @@ func NewOrderFromATOrder(atOrder *types.ATOrder) *AffOrder {
 		OrderPending:       atOrder.OrderPending,
 		OrderReject:        atOrder.OrderReject,
 		ProductCategory:    atOrder.ProductCategory,
-		ProductCount:       atOrder.ProductsCount,
+		ProductsCount:      atOrder.ProductsCount,
 		PubCommission:      atOrder.PubCommission,
 		SalesTime:          atOrder.SalesTime.Time,
 		UpdateTime:         atOrder.UpdateTime.Time,

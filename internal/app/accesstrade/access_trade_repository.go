@@ -127,10 +127,12 @@ func (r *AccessTradeRepository) QueryOrders(q types.ATOrderQuery, page int, limi
 	url := fmt.Sprintf("%s/order-list", ACCESSTRADE_ENDPOINT)
 	req := r.initWithHeaders()
 
-	req.SetQueryParams(map[string]string{
-		"page":  fmt.Sprint(page),
-		"limit": fmt.Sprint(limit),
-	})
+	if page != 0 {
+		req.SetQueryParam("page", fmt.Sprint(page))
+	}
+	if limit != 0 {
+		req.SetQueryParam("limit", fmt.Sprint(limit))
+	}
 
 	params, err := query.Values(&q)
 	if err != nil {

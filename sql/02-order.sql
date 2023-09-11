@@ -18,8 +18,8 @@ CREATE TABLE aff_transaction (
   updated_at DATETIME,
   -- ACCESS TRADE DATA
   accesstrade_id NVARCHAR(256),
-  accesstrade_transaction_id NVARCHAR(256),
-  accesstrade_conversion_id INT,
+  accesstrade_order_id NVARCHAR(256),
+  accesstrade_conversion_id BIGINT,
   merchant NVARCHAR(256),
   status SMALLINT,
   click_time DATETIME,
@@ -53,6 +53,7 @@ CREATE TABLE aff_transaction (
 
 CREATE INDEX aff_transaction_created ON aff_transaction (created_at);
 CREATE INDEX aff_transaction_updated ON aff_transaction (updated_at);
+CREATE INDEX aff_transaction_accesstrade_order_id ON aff_transaction (accesstrade_order_id);
 
 
 CREATE TABLE aff_order (
@@ -99,4 +100,18 @@ CREATE TABLE aff_order (
 
 CREATE INDEX aff_order_created ON aff_order (created_at);
 CREATE INDEX aff_order_updated ON aff_order (updated_at);
+CREATE INDEX aff_order_accesstrade_order_id ON aff_order (accesstrade_order_id);
 
+
+CREATE TABLE aff_postback_log (
+  id INT NOT NULL AUTO_INCREMENT,
+  order_id NVARCHAR(256),
+  created_at DATETIME,
+  updated_at DATETIME,
+  data JSON,
+  PRIMARY KEY (id)
+) ENGINE = InnoDB;
+
+CREATE INDEX aff_postback_log_order_id ON aff_postback_log (order_id);
+CREATE INDEX aff_postback_log_created ON aff_postback_log (created_at);
+CREATE INDEX aff_postback_log_updated ON aff_postback_log (updated_at);

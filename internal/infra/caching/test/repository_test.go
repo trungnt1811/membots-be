@@ -2,12 +2,13 @@ package test
 
 import (
 	"context"
-	"github.com/astraprotocol/affiliate-system/internal/infra/caching"
 	"os"
 	"testing"
 	"time"
 
-	"github.com/go-redis/redis/v8"
+	"github.com/astraprotocol/affiliate-system/internal/infra/caching"
+
+	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
 )
 

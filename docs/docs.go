@@ -24,6 +24,99 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/app/aff-campaign": {
+            "get": {
+                "description": "Get list of all aff campaign",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "app"
+                ],
+                "summary": "Get list of all aff campaign",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "page to query, default is 1",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "size to query, default is 10",
+                        "name": "size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.AffCampaignAppDtoResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/app/aff-campaign/{id}": {
+            "get": {
+                "description": "Get aff campaign by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "app"
+                ],
+                "summary": "Get aff campaign by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id to query",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.AffCampaignAppDto"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/campaign/link": {
             "post": {
                 "description": "Request create a new campaign link or pick the active old one",
@@ -225,7 +318,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/order/postback": {
+        "/api/v1/order/post-back": {
             "post": {
                 "description": "A callback to receive order from AccessTrade",
                 "consumes": [
@@ -256,8 +349,8 @@ const docTemplate = `{
                             "$ref": "#/definitions/dto.ATPostBackResponse"
                         }
                     },
-                    "400": {
-                        "description": "Bad Request",
+                    "417": {
+                        "description": "Expectation Failed",
                         "schema": {
                             "$ref": "#/definitions/util.GeneralError"
                         }
@@ -607,6 +700,29 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.AffCampaignAppDtoResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.AffCampaignAppDto"
+                    }
+                },
+                "next_page": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
         "dto.AffCampaignDto": {
             "type": "object",
             "properties": {
@@ -619,17 +735,8 @@ const docTemplate = `{
                 "approval": {
                     "type": "string"
                 },
-                "brand": {
-                    "$ref": "#/definitions/dto.BrandDto"
-                },
-                "brand_id": {
-                    "type": "integer"
-                },
                 "category": {
                     "type": "string"
-                },
-                "category_id": {
-                    "type": "integer"
                 },
                 "cookie_duration": {
                     "type": "integer"
@@ -643,9 +750,6 @@ const docTemplate = `{
                 "description": {
                     "$ref": "#/definitions/dto.CampaignDescriptionDto"
                 },
-                "end_time": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "integer"
                 },
@@ -658,38 +762,22 @@ const docTemplate = `{
                 "merchant": {
                     "type": "string"
                 },
-                "name": {
-                    "type": "string"
-                },
                 "scope": {
-                    "type": "string"
-                },
-                "start_time": {
                     "type": "string"
                 },
                 "status": {
                     "type": "integer"
                 },
-                "stella_description": {},
-                "stella_max_com": {
-                    "type": "number"
-                },
-                "stella_status": {
-                    "type": "string"
+                "stella_info": {
+                    "$ref": "#/definitions/dto.StellaInfoDto"
                 },
                 "sub_category": {
-                    "type": "string"
-                },
-                "thumbnail": {
                     "type": "string"
                 },
                 "type": {
                     "type": "integer"
                 },
                 "updated_at": {
-                    "type": "string"
-                },
-                "url": {
                     "type": "string"
                 }
             }
@@ -901,6 +989,42 @@ const docTemplate = `{
                 },
                 "total": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.StellaInfoDto": {
+            "type": "object",
+            "properties": {
+                "brand": {
+                    "$ref": "#/definitions/dto.BrandDto"
+                },
+                "brand_id": {
+                    "type": "integer"
+                },
+                "category_id": {
+                    "type": "integer"
+                },
+                "end_time": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "start_time": {
+                    "type": "string"
+                },
+                "stella_description": {},
+                "stella_max_com": {
+                    "type": "number"
+                },
+                "stella_status": {
+                    "type": "string"
+                },
+                "thumbnail": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
                 }
             }
         },

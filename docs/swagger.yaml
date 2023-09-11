@@ -105,6 +105,21 @@ definitions:
       url:
         type: string
     type: object
+  dto.AffCampaignAppDtoResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto.AffCampaignAppDto'
+        type: array
+      next_page:
+        type: integer
+      page:
+        type: integer
+      size:
+        type: integer
+      total:
+        type: integer
+    type: object
   dto.AffCampaignDto:
     properties:
       accesstrade_id:
@@ -113,14 +128,8 @@ definitions:
         type: integer
       approval:
         type: string
-      brand:
-        $ref: '#/definitions/dto.BrandDto'
-      brand_id:
-        type: integer
       category:
         type: string
-      category_id:
-        type: integer
       cookie_duration:
         type: integer
       cookie_policy:
@@ -129,8 +138,6 @@ definitions:
         type: string
       description:
         $ref: '#/definitions/dto.CampaignDescriptionDto'
-      end_time:
-        type: string
       id:
         type: integer
       logo:
@@ -139,28 +146,17 @@ definitions:
         type: string
       merchant:
         type: string
-      name:
-        type: string
       scope:
-        type: string
-      start_time:
         type: string
       status:
         type: integer
-      stella_description: {}
-      stella_max_com:
-        type: number
-      stella_status:
-        type: string
+      stella_info:
+        $ref: '#/definitions/dto.StellaInfoDto'
       sub_category:
-        type: string
-      thumbnail:
         type: string
       type:
         type: integer
       updated_at:
-        type: string
-      url:
         type: string
     type: object
   dto.AffCampaignDtoResponse:
@@ -300,6 +296,30 @@ definitions:
       total:
         type: integer
     type: object
+  dto.StellaInfoDto:
+    properties:
+      brand:
+        $ref: '#/definitions/dto.BrandDto'
+      brand_id:
+        type: integer
+      category_id:
+        type: integer
+      end_time:
+        type: string
+      name:
+        type: string
+      start_time:
+        type: string
+      stella_description: {}
+      stella_max_com:
+        type: number
+      stella_status:
+        type: string
+      thumbnail:
+        type: string
+      url:
+        type: string
+    type: object
   types.RedeemRequestPayload:
     properties:
       redeemCode:
@@ -350,6 +370,67 @@ info:
   title: Affiliate System API
   version: "1.0"
 paths:
+  /api/v1/app/aff-campaign:
+    get:
+      consumes:
+      - application/json
+      description: Get list of all aff campaign
+      parameters:
+      - description: page to query, default is 1
+        in: query
+        name: page
+        type: string
+      - description: size to query, default is 10
+        in: query
+        name: size
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AffCampaignAppDtoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      summary: Get list of all aff campaign
+      tags:
+      - app
+  /api/v1/app/aff-campaign/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get aff campaign by id
+      parameters:
+      - description: id to query
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AffCampaignAppDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      summary: Get aff campaign by id
+      tags:
+      - app
   /api/v1/campaign/link:
     post:
       consumes:
@@ -481,7 +562,7 @@ paths:
       summary: update campaign info
       tags:
       - console
-  /api/v1/order/postback:
+  /api/v1/order/post-back:
     post:
       consumes:
       - application/json
@@ -500,8 +581,8 @@ paths:
           description: when success, return the modified order for this post back
           schema:
             $ref: '#/definitions/dto.ATPostBackResponse'
-        "400":
-          description: Bad Request
+        "417":
+          description: Expectation Failed
           schema:
             $ref: '#/definitions/util.GeneralError'
         "424":

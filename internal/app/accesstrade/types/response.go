@@ -89,16 +89,16 @@ type ATLinkResp struct {
 
 type ATTransaction struct {
 	Id                 string         `json:"id"`
-	ConversionId       int            `json:"conversion_id"`
+	ConversionId       int64          `json:"conversion_id"`
 	Merchant           string         `json:"merchant"`
-	Status             int            `json:"status"`
+	Status             uint8          `json:"status"`
 	ClickTime          CustomTime     `json:"click_time"`
 	TransactionId      string         `json:"transaction_id"`
 	TransactionTime    CustomTime     `json:"transaction_time"`
 	TransactionValue   float32        `json:"transaction_value"`
 	UpdateTime         CustomTime     `json:"update_time"`
 	ConfirmedTime      CustomTime     `json:"confirmed_time"`
-	IsConfirmed        int            `json:"is_confirmed"`
+	IsConfirmed        uint8          `json:"is_confirmed"`
 	Commission         float32        `json:"commission"`
 	ProductId          string         `json:"product_id"`
 	ProductName        string         `json:"product_name"`
@@ -136,12 +136,13 @@ type ATOrder struct {
 	ConfirmedTime      CustomTime `json:"confirmed_time"`
 	ConversionPlatform string     `json:"conversion_platform"`
 	CustomerType       string     `json:"customer_type"`
-	IsConfirmed        int        `json:"is_confirmed"`
+	IsConfirmed        uint8      `json:"is_confirmed"`
 	LandingPage        string     `json:"landing_page"`
 	Merchant           string     `json:"merchant"`
 	OrderId            string     `json:"order_id"`
-	OrderApproved      int        `json:"order_approved"`
-	OrderReject        int        `json:"order_reject"`
+	OrderApproved      uint8      `json:"order_approved"`
+	OrderPending       uint8      `json:"order_pending"`
+	OrderReject        uint8      `json:"order_reject"`
 	ProductCategory    string     `json:"product_category"`
 	ProductsCount      int        `json:"products_count"`
 	PubCommission      float32    `json:"pub_commission"`

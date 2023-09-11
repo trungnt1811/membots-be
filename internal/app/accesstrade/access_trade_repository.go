@@ -3,8 +3,9 @@ package accesstrade
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade/types"
 	"time"
+
+	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade/types"
 
 	"github.com/go-resty/resty/v2"
 	"github.com/google/go-querystring/query"
@@ -66,10 +67,12 @@ func (r *AccessTradeRepository) QueryCampaigns(onlyApproval bool, page int, limi
 	if onlyApproval {
 		req.SetQueryParam("approval", "successful")
 	}
-	req.SetQueryParams(map[string]string{
-		"page":  fmt.Sprint(page),
-		"limit": fmt.Sprint(limit),
-	})
+	if page != 0 {
+		req.SetQueryParam("page", fmt.Sprint(page))
+	}
+	if limit != 0 {
+		req.SetQueryParam("limit", fmt.Sprint(limit))
+	}
 
 	resp, err := req.Get(url)
 	if err != nil {
@@ -84,8 +87,42 @@ func (r *AccessTradeRepository) QueryCampaigns(onlyApproval bool, page int, limi
 	return &body, nil
 }
 
+// The `QueryTransactions` function is used to query transactions from the AccessTrade API. It takes in parameters
+// such as `q` (of type `types.ATTransactionQuery`), `page`, and `limit`.
+func (r *AccessTradeRepository) QueryTransactions(q types.ATTransactionQuery, page int, limit int) (*types.ATTransactionResp, error) {
+	url := fmt.Sprintf("%s/transactions", ACCESSTRADE_ENDPOINT)
+	req := r.initWithHeaders()
+
+	if page != 0 {
+		req.SetQueryParam("page", fmt.Sprint(page))
+	}
+	if limit != 0 {
+		req.SetQueryParam("limit", fmt.Sprint(limit))
+	}
+
+	params, err := query.Values(&q)
+	if err != nil {
+		return nil, err
+	}
+	req.SetQueryString(params.Encode())
+
+	// Start the connection
+	resp, err := req.Get(url)
+	if err != nil {
+		return nil, errors.Errorf("request error: %v", err)
+	}
+
+	// Parse response body
+	var body types.ATTransactionResp
+	err = json.Unmarshal(resp.Body(), &body)
+	if err != nil {
+		return nil, errors.Errorf("parse json resp error: %v", err)
+	}
+	return &body, nil
+}
+
 // The `QueryOrders` function is used to query orders from the AccessTrade API. It takes in parameters
-// such as `q` (of type `types.OrderQuery`), `page`, and `limit`.
+// such as `q` (of type `types.ATOrderQuery`), `page`, and `limit`.
 func (r *AccessTradeRepository) QueryOrders(q types.ATOrderQuery, page int, limit int) (*types.ATOrderListResp, error) {
 	url := fmt.Sprintf("%s/order-list", ACCESSTRADE_ENDPOINT)
 	req := r.initWithHeaders()

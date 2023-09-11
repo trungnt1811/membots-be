@@ -1,11 +1,12 @@
 package model
 
 import (
+	"time"
+
 	"github.com/astraprotocol/affiliate-system/internal/dto"
-	"github.com/grokify/html-strip-tags-go"
+	strip "github.com/grokify/html-strip-tags-go"
 	"github.com/shopspring/decimal"
 	"gorm.io/datatypes"
-	"time"
 )
 
 type CampaignDescription struct {
@@ -79,16 +80,61 @@ func (c *AffCampaign) TableName() string {
 
 func (c *AffCampaign) ToDto() dto.AffCampaignDto {
 	campDto := dto.AffCampaignDto{
+		ID:            c.ID,
+		AccessTradeId: c.AccessTradeId,
+		CreatedAt:     c.CreatedAt,
+		UpdatedAt:     c.UpdatedAt,
+		MaxCom:        c.MaxCom,
+		Merchant:      c.Merchant,
+		Status:        c.Status,
+		StellaInfo: dto.StellaInfoDto{
+			Url:               c.Url,
+			CategoryId:        c.CategoryId,
+			StartTime:         c.StartTime,
+			EndTime:           c.EndTime,
+			StellaDescription: c.StellaDescription,
+			StellaStatus:      c.StellaStatus,
+			StellaMaxCom:      c.StellaMaxCom,
+			Thumbnail:         c.Thumbnail,
+			Name:              c.Name,
+			BrandId:           c.BrandId,
+			Brand:             c.Brand.ToBrandDto(),
+		},
+	}
+	campDto.Description = c.Description.ToDto()
+	return campDto
+}
+
+type AffCampaignApp struct {
+	ID                uint            `gorm:"primarykey" json:"id"`
+	BrandId           uint            `json:"brand_id"`
+	AccessTradeId     string          `json:"accesstrade_id" gorm:"column:accesstrade_id"`
+	CreatedAt         time.Time       `json:"created_at"`
+	UpdatedAt         time.Time       `json:"updated_at"`
+	Name              string          `json:"name"`
+	Url               string          `json:"url"`
+	StartTime         *time.Time      `json:"start_time"`
+	EndTime           *time.Time      `json:"end_time"`
+	StellaDescription datatypes.JSON  `json:"stella_description"`
+	CategoryId        uint            `json:"category_id"`
+	StellaStatus      string          `json:"stella_status"`
+	Thumbnail         string          `json:"thumbnail"`
+	StellaMaxCom      decimal.Decimal `json:"stella_max_com" gorm:"type:decimal(4,2);"`
+}
+
+func (c *AffCampaignApp) TableName() string {
+	return "aff_campaign"
+}
+
+func (c *AffCampaignApp) ToAffCampaignAppDto() dto.AffCampaignAppDto {
+	return dto.AffCampaignAppDto{
 		ID:                c.ID,
 		BrandId:           c.BrandId,
 		AccessTradeId:     c.AccessTradeId,
 		CreatedAt:         c.CreatedAt,
 		UpdatedAt:         c.UpdatedAt,
 		Thumbnail:         c.Thumbnail,
-		MaxCom:            c.MaxCom,
-		Merchant:          c.Merchant,
 		Name:              c.Name,
-		Status:            c.Status,
 		Url:               c.Url,
 		CategoryId:        c.CategoryId,
 		StartTime:         c.StartTime,
@@ -97,7 +143,4 @@ func (c *AffCampaign) ToDto() dto.AffCampaignDto {
 		StellaStatus:      c.StellaStatus,
 		StellaMaxCom:      c.StellaMaxCom,
 	}
-	campDto.Description = c.Description.ToDto()
-	campDto.Brand = c.Brand.ToBrandDto()
-	return campDto
 }

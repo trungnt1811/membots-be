@@ -30,8 +30,8 @@ func NewAppCampHandler(
 // @Param page query string false "page to query, default is 1"
 // @Param size query string false "size to query, default is 10"
 // @Success 200 		{object}	dto.AffCampaignAppDtoResponse
-// @Failure 401 		{object}	dto.GeneralError
-// @Failure 400 		{object}	dto.GeneralError
+// @Failure 401 		{object}	util.GeneralError
+// @Failure 400 		{object}	util.GeneralError
 // @Router 	/api/v1/app/aff-campaign [get]
 func (handler *AppCampHandler) GetAllAffCampaign(ctx *gin.Context) {
 	page := ctx.GetInt("page")

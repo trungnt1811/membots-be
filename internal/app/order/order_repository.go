@@ -65,6 +65,8 @@ func (repo *OrderRepository) UpdateOrCreateATTransactions(newTxs []model.AffTran
 			if err != nil {
 				if err.Error() == "record not found" {
 					// If tx is not found, create one
+					newTx.CreatedAt = time.Now()
+					newTx.UpdatedAt = time.Now()
 					crErr := tx.Create(newTx).Error
 					if crErr != nil {
 						return crErr
@@ -76,6 +78,7 @@ func (repo *OrderRepository) UpdateOrCreateATTransactions(newTxs []model.AffTran
 			}
 			// When found one, compare and update
 			newTx.ID = oldTx.ID
+			newTx.UpdatedAt = time.Now()
 			upErr := tx.Model(&oldTx).Updates(newTx).Error
 			if upErr != nil {
 				return upErr

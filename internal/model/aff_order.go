@@ -66,8 +66,8 @@ func NewOrderFromATOrder(atOrder *types.ATOrder) *AffOrder {
 	}
 
 	return &AffOrder{
-		OrderStatus:        orderStatus,
 		UserId:             uint(utmNum),
+		OrderStatus:        orderStatus,
 		ATProductLink:      atOrder.ATProductLink,
 		Billing:            atOrder.Billing,
 		Browser:            atOrder.Browser,

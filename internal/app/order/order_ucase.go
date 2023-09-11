@@ -66,6 +66,8 @@ func (u *OrderUcase) PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*m
 		if err.Error() == "record not found" {
 			// Order not exist, create new one
 			order = model.NewOrderFromATOrder(atOrder)
+			order.CreatedAt = time.Now()
+			order.UpdatedAt = time.Now()
 			crErr := u.Repo.CreateOrder(order)
 			if crErr != nil {
 				return nil, fmt.Errorf("create order failed: %v", crErr)
@@ -77,6 +79,7 @@ func (u *OrderUcase) PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*m
 	} else {
 		// Or update exist order
 		updated := model.NewOrderFromATOrder(atOrder)
+		order.UpdatedAt = time.Now()
 		updated.ID = order.ID
 		_, err = u.Repo.UpdateOrder(updated)
 		if err != nil {

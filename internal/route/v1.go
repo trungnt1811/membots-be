@@ -55,4 +55,5 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	rewardRouter.GET("/by-order-id", rewardHandler.GetRewardByOrderId)
 	rewardRouter.GET("", rewardHandler.GetAllReward)
 	rewardRouter.GET("/history", rewardHandler.GetRewardHistory)
+	consoleRouter.GET("/aff-campaign/:id", consoleCampHandler.GetCampaignById)
 }

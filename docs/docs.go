@@ -129,6 +129,45 @@ const docTemplate = `{
             }
         },
         "/api/v1/console/aff-campaign/{id}": {
+            "get": {
+                "description": "Get campaign by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "console"
+                ],
+                "summary": "Get campaign by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id to query",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.AffCampaignDto"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            },
             "put": {
                 "security": [
                     {
@@ -580,6 +619,9 @@ const docTemplate = `{
                 "approval": {
                     "type": "string"
                 },
+                "brand": {
+                    "$ref": "#/definitions/dto.BrandDto"
+                },
                 "brand_id": {
                     "type": "integer"
                 },
@@ -672,6 +714,23 @@ const docTemplate = `{
                 },
                 "total": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.BrandDto": {
+            "type": "object",
+            "properties": {
+                "cover_photo": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "logo": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         },

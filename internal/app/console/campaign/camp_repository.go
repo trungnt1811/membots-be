@@ -10,6 +10,17 @@ type affCampaignRepository struct {
 	Db *gorm.DB
 }
 
+func (a *affCampaignRepository) GetCampaignById(id uint) (model.AffCampaign, error) {
+	var affCampaign model.AffCampaign
+	if err := a.Db.Table("aff_campaign").
+		Joins("Description").
+		Joins("Brand").
+		Where("aff_campaign.id = ?", id).First(&affCampaign).Error; err != nil {
+		return affCampaign, err
+	}
+	return affCampaign, nil
+}
+
 func (a *affCampaignRepository) UpdateCampaign(id uint, updates map[string]interface{}) error {
 	return a.Db.Table("aff_campaign").Where("id = ?", id).Updates(updates).Error
 }
@@ -19,6 +30,7 @@ func (a *affCampaignRepository) GetAllCampaign(listStatus []string, page, size i
 	offset := (page - 1) * size
 	if err := a.Db.Table("aff_campaign").
 		Joins("Description").
+		Joins("Brand").
 		Where("aff_campaign.stella_status IN ?", listStatus).
 		Limit(size + 1).
 		Offset(offset).

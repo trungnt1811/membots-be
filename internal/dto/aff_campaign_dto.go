@@ -1,8 +1,9 @@
 package dto
 
 import (
-	"github.com/shopspring/decimal"
 	"time"
+
+	"github.com/shopspring/decimal"
 )
 
 type CampaignDescriptionDto struct {
@@ -77,4 +78,12 @@ type AffCampaignDtoResponse struct {
 	Size     int              `json:"size"`
 	Total    int64            `json:"total"`
 	Data     []AffCampaignDto `json:"data"`
+}
+
+type AffCampaignAppDtoResponse struct {
+	NextPage int                 `json:"next_page"`
+	Page     int                 `json:"page"`
+	Size     int                 `json:"size"`
+	Total    int64               `json:"total,omitempty"`
+	Data     []AffCampaignAppDto `json:"data"`
 }

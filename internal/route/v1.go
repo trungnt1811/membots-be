@@ -1,12 +1,16 @@
 package route
 
 import (
+	"context"
+
 	"github.com/astraprotocol/affiliate-system/conf"
 	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade"
+	"github.com/astraprotocol/affiliate-system/internal/app/aff_camp_app"
 	campaign3 "github.com/astraprotocol/affiliate-system/internal/app/campaign"
 	campaign2 "github.com/astraprotocol/affiliate-system/internal/app/console/campaign"
 	"github.com/astraprotocol/affiliate-system/internal/app/order"
 	"github.com/astraprotocol/affiliate-system/internal/app/redeem"
+	"github.com/astraprotocol/affiliate-system/internal/infra/caching"
 	"github.com/astraprotocol/affiliate-system/internal/middleware"
 	"github.com/astraprotocol/affiliate-system/internal/util"
 	"github.com/gin-gonic/gin"
@@ -15,6 +19,10 @@ import (
 
 func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, channel *util.Channel) {
 	v1 := r.Group("/api/v1")
+
+	// SECTION: Create redis client
+	rdb := conf.RedisConn()
+	redisClient := caching.NewCachingRepository(context.Background(), rdb)
 
 	// SECTION: Create auth middleware
 	jwtMiddleware := middleware.CreateJWTMiddleware(db)
@@ -51,4 +59,13 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	consoleRouter.GET("/aff-campaign", consoleCampHandler.GetAllCampaign)
 	consoleRouter.PUT("/aff-campaign/:id", consoleCampHandler.UpdateCampaignInfo)
 	consoleRouter.GET("/aff-campaign/:id", consoleCampHandler.GetCampaignById)
+
+	// SECTION: App module
+	appRouter := v1.Group("/app")
+	affCampAppRepository := aff_camp_app.NewAffCampAppRepository(db)
+	affCampAppCache := aff_camp_app.NewAffCampAppCacheRepository(affCampAppRepository, redisClient)
+	affCampAppService := aff_camp_app.NewAffCampAppService(affCampAppCache)
+	affCampAppHandler := aff_camp_app.NewAffCampAppHandler(affCampAppService)
+	appRouter.GET("/aff-campaign", affCampAppHandler.GetAllAffCampaign)
+	appRouter.GET("/aff-campaign/:id", affCampAppHandler.GetAffCampaignById)
 }

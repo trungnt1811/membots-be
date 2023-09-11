@@ -105,6 +105,21 @@ definitions:
       url:
         type: string
     type: object
+  dto.AffCampaignAppDtoResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto.AffCampaignAppDto'
+        type: array
+      next_page:
+        type: integer
+      page:
+        type: integer
+      size:
+        type: integer
+      total:
+        type: integer
+    type: object
   dto.AffCampaignDto:
     properties:
       accesstrade_id:
@@ -271,6 +286,66 @@ info:
   title: Affiliate System API
   version: "1.0"
 paths:
+  /api/v1/app/aff-campaign:
+    get:
+      consumes:
+      - application/json
+      description: Get list of all aff campaign
+      parameters:
+      - description: page to query, default is 1
+        in: query
+        name: page
+        type: string
+      - description: size to query, default is 10
+        in: query
+        name: size
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AffCampaignAppDtoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      summary: Get list of all aff campaign
+      tags:
+      - app
+  /api/v1/app/aff-campaign/{accresstradeId}:
+    get:
+      consumes:
+      - application/json
+      description: Get aff campaign by accesstrade id
+      parameters:
+      - description: accesstradeId to query
+        in: query
+        name: accesstradeId
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AffCampaignAppDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      summary: Get aff campaign by accesstrade id
+      tags:
+      - app
   /api/v1/campaign/link:
     post:
       consumes:

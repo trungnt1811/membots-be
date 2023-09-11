@@ -25,6 +25,98 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/app/aff-campaign": {
+            "get": {
+                "description": "Get list of all aff campaign",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "app"
+                ],
+                "summary": "Get list of all aff campaign",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "page to query, default is 1",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "size to query, default is 10",
+                        "name": "size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.AffCampaignAppDtoResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/app/aff-campaign/{accresstradeId}": {
+            "get": {
+                "description": "Get aff campaign by accesstrade id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "app"
+                ],
+                "summary": "Get aff campaign by accesstrade id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "accesstradeId to query",
+                        "name": "accesstradeId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.AffCampaignAppDto"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/campaign/link": {
             "post": {
                 "description": "Request create a new campaign link or pick the active old one",
@@ -453,6 +545,29 @@ const docTemplate = `{
                 },
                 "url": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.AffCampaignAppDtoResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.AffCampaignAppDto"
+                    }
+                },
+                "next_page": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
                 }
             }
         },

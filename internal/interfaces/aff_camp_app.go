@@ -7,12 +7,12 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/model"
 )
 
-type AppCampRepository interface {
+type AffCampAppRepository interface {
 	GetAllAffCampaign(ctx context.Context, page, size int) ([]model.AffCampaign, error)
 	GetAffCampaignByAccesstradeId(ctx context.Context, accesstradeId uint64) (model.AffCampaign, error)
 }
 
-type AppCampService interface {
+type AffCampAppService interface {
 	GetAllAffCampaign(ctx context.Context, page, size int) (dto.AffCampaignAppDtoResponse, error)
 	GetAffCampaignByAccesstradeId(ctx context.Context, accesstradeId uint64) (dto.AffCampaignAppDto, error)
 }

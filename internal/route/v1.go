@@ -5,7 +5,7 @@ import (
 
 	"github.com/astraprotocol/affiliate-system/conf"
 	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade"
-	"github.com/astraprotocol/affiliate-system/internal/app/app_camp"
+	"github.com/astraprotocol/affiliate-system/internal/app/aff_camp_app"
 	campaign3 "github.com/astraprotocol/affiliate-system/internal/app/campaign"
 	campaign2 "github.com/astraprotocol/affiliate-system/internal/app/console/campaign"
 	"github.com/astraprotocol/affiliate-system/internal/app/redeem"
@@ -54,10 +54,10 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	consoleRouter.PUT("/aff-campaign/:id", consoleCampHandler.UpdateCampaignInfo)
 
 	// SECTION: App module
-	appCampRepository := app_camp.NewAppCampRepository(db)
-	appCampCache := app_camp.NewAppCampCacheRepository(appCampRepository, redisClient)
-	appCampService := app_camp.NewAppCampService(appCampCache)
-	appCampHandler := app_camp.NewAppCampHandler(appCampService)
+	appCampRepository := aff_camp_app.NewAffCampAppRepository(db)
+	appCampCache := aff_camp_app.NewAffCampAppCacheRepository(appCampRepository, redisClient)
+	appCampService := aff_camp_app.NewAffCampAppService(appCampCache)
+	appCampHandler := aff_camp_app.NewAffCampAppHandler(appCampService)
 	appRouter := v1.Group("/app")
 	appRouter.GET("/aff-campaign", appCampHandler.GetAllAffCampaign)
 	appRouter.GET("/aff-campaign/:accesstradeId", appCampHandler.GetAffCampaignByAccesstradeId)

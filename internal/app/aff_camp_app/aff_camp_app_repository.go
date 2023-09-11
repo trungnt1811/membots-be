@@ -1,4 +1,4 @@
-package app_camp
+package aff_camp_app
 
 import (
 	"context"
@@ -8,11 +8,17 @@ import (
 	"gorm.io/gorm"
 )
 
-type appCampRepository struct {
+type affCampAppRepository struct {
 	db *gorm.DB
 }
 
-func (r appCampRepository) GetAllAffCampaign(ctx context.Context, page, size int) ([]model.AffCampaign, error) {
+func NewAffCampAppRepository(db *gorm.DB) interfaces.AffCampAppRepository {
+	return &affCampAppRepository{
+		db: db,
+	}
+}
+
+func (r affCampAppRepository) GetAllAffCampaign(ctx context.Context, page, size int) ([]model.AffCampaign, error) {
 	var listAffCampaign []model.AffCampaign
 	offset := (page - 1) * size
 	query := "SELECT id, brand_id, accesstrade_id, created_at, updated_at, thumbnail, name, url, category_id, start_time, end_time, stella_description, stella_status, stella_max_com " +
@@ -22,17 +28,11 @@ func (r appCampRepository) GetAllAffCampaign(ctx context.Context, page, size int
 	return listAffCampaign, err
 }
 
-func (r appCampRepository) GetAffCampaignByAccesstradeId(ctx context.Context, accesstradeId uint64) (model.AffCampaign, error) {
+func (r affCampAppRepository) GetAffCampaignByAccesstradeId(ctx context.Context, accesstradeId uint64) (model.AffCampaign, error) {
 	var affCampaign model.AffCampaign
 	query := "SELECT id, brand_id, accesstrade_id, created_at, updated_at, thumbnail, name, url, category_id, start_time, end_time, stella_description, stella_status, stella_max_com " +
 		"FROM aff_campaign " +
 		"WHERE accesstrade_id = ?"
 	err := r.db.Raw(query, accesstradeId).Scan(&affCampaign).Error
 	return affCampaign, err
-}
-
-func NewAppCampRepository(db *gorm.DB) interfaces.AppCampRepository {
-	return &appCampRepository{
-		db: db,
-	}
 }

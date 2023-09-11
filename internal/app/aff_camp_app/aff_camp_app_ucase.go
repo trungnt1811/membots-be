@@ -1,4 +1,4 @@
-package app_camp
+package aff_camp_app
 
 import (
 	"context"
@@ -7,12 +7,18 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 )
 
-type appCampService struct {
-	AppCampRepository interfaces.AppCampRepository
+type affCampAppService struct {
+	AffCampAppRepository interfaces.AffCampAppRepository
 }
 
-func (s appCampService) GetAffCampaignByAccesstradeId(ctx context.Context, accesstradeId uint64) (dto.AffCampaignAppDto, error) {
-	affCampaign, err := s.AppCampRepository.GetAffCampaignByAccesstradeId(ctx, accesstradeId)
+func NewAffCampAppService(repository interfaces.AffCampAppRepository) interfaces.AffCampAppService {
+	return &affCampAppService{
+		AffCampAppRepository: repository,
+	}
+}
+
+func (s affCampAppService) GetAffCampaignByAccesstradeId(ctx context.Context, accesstradeId uint64) (dto.AffCampaignAppDto, error) {
+	affCampaign, err := s.AffCampAppRepository.GetAffCampaignByAccesstradeId(ctx, accesstradeId)
 	if err != nil {
 		return dto.AffCampaignAppDto{}, err
 	}
@@ -20,8 +26,8 @@ func (s appCampService) GetAffCampaignByAccesstradeId(ctx context.Context, acces
 	return affCampaignAppDto, nil
 }
 
-func (s appCampService) GetAllAffCampaign(ctx context.Context, page, size int) (dto.AffCampaignAppDtoResponse, error) {
-	listAffCampaign, err := s.AppCampRepository.GetAllAffCampaign(ctx, page, size)
+func (s affCampAppService) GetAllAffCampaign(ctx context.Context, page, size int) (dto.AffCampaignAppDtoResponse, error) {
+	listAffCampaign, err := s.AffCampAppRepository.GetAllAffCampaign(ctx, page, size)
 	if err != nil {
 		return dto.AffCampaignAppDtoResponse{}, err
 	}
@@ -42,10 +48,4 @@ func (s appCampService) GetAllAffCampaign(ctx context.Context, page, size int) (
 		Size:     size,
 		Data:     listAffCampaignAppDto,
 	}, nil
-}
-
-func NewAppCampService(repository interfaces.AppCampRepository) interfaces.AppCampService {
-	return &appCampService{
-		AppCampRepository: repository,
-	}
 }

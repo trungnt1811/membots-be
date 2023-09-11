@@ -2,7 +2,7 @@ package conf
 
 import (
 	"fmt"
-	"log"
+	"github.com/rs/zerolog/log"
 	"os"
 
 	"github.com/spf13/viper"
@@ -80,30 +80,23 @@ func init() {
 	if envFile == "" {
 		envFile = ".env"
 	}
-
-	err := LoadEnv(envFile)
-	if err != nil {
-		depth := 0
-		for err != nil && depth < 10 {
-			envFile = "../" + envFile
-			err = LoadEnv(envFile)
-			depth += 1
+	fmt.Println(envFile)
+	viper.SetConfigFile("./.env")
+	viper.AutomaticEnv()
+	if err := viper.ReadInConfig(); err != nil {
+		viper.SetConfigFile(fmt.Sprintf("../%s", envFile))
+		if err := viper.ReadInConfig(); err != nil {
+			log.Logger.Printf("Error reading config file \"%s\", %v", envFile, err)
 		}
 	}
-
-	err = viper.Unmarshal(&configuration)
+	err := viper.Unmarshal(&configuration)
 	if err != nil {
-		log.Fatalf("Unable to decode config into map, %v", err)
+		log.Logger.Printf("Unable to decode config into map, %v", err)
 	}
 
 	fmt.Println("EVM ChainId:", configuration.EvmRpc.EVMChainID)
 	fmt.Println("EVM Rpc URL:", configuration.EvmRpc.EndPoint)
-}
-
-func LoadEnv(envFile string) error {
-	viper.SetConfigFile("./" + envFile)
-	viper.AutomaticEnv()
-	return viper.ReadInConfig()
+	fmt.Println("DB url", configuration.Database.WriteDbHost)
 }
 
 func GetConfiguration() *Configuration {

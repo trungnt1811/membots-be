@@ -49,4 +49,6 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	consoleCampHandler := campaign2.NewConsoleCampHandler(consoleCampUCase)
 	consoleRouter := v1.Group("console")
 	consoleRouter.GET("/aff-campaign", consoleCampHandler.GetAllCampaign)
+	consoleRouter.PUT("/aff-campaign/:id", consoleCampHandler.UpdateCampaignInfo)
+	consoleRouter.GET("/aff-campaign/:id", consoleCampHandler.GetCampaignById)
 }

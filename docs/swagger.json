@@ -120,6 +120,103 @@
                 }
             }
         },
+        "/api/v1/console/aff-campaign/{id}": {
+            "get": {
+                "description": "Get campaign by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "console"
+                ],
+                "summary": "Get campaign by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id to query",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.AffCampaignDto"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "update campaign info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "console"
+                ],
+                "summary": "update campaign info",
+                "parameters": [
+                    {
+                        "description": "Campaign info to update, required",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.AffCampaignAppDto"
+                        }
+                    },
+                    {
+                        "type": "integer",
+                        "description": "id to query",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.AffCampaignAppDto"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/order/postback": {
             "post": {
                 "description": "A callback to receive order from AccessTrade",
@@ -344,6 +441,51 @@
                 }
             }
         },
+        "dto.AffCampaignAppDto": {
+            "type": "object",
+            "properties": {
+                "accesstrade_id": {
+                    "type": "string"
+                },
+                "brand_id": {
+                    "type": "integer"
+                },
+                "category_id": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "end_time": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "start_time": {
+                    "type": "string"
+                },
+                "stella_description": {},
+                "stella_max_com": {
+                    "type": "number"
+                },
+                "stella_status": {
+                    "type": "string"
+                },
+                "thumbnail": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.AffCampaignDto": {
             "type": "object",
             "properties": {
@@ -355,6 +497,9 @@
                 },
                 "approval": {
                     "type": "string"
+                },
+                "brand": {
+                    "$ref": "#/definitions/dto.BrandDto"
                 },
                 "brand_id": {
                     "type": "integer"
@@ -405,6 +550,9 @@
                     "type": "integer"
                 },
                 "stella_description": {},
+                "stella_max_com": {
+                    "type": "number"
+                },
                 "stella_status": {
                     "type": "string"
                 },
@@ -445,6 +593,23 @@
                 },
                 "total": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.BrandDto": {
+            "type": "object",
+            "properties": {
+                "cover_photo": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "logo": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         },

@@ -75,6 +75,36 @@ definitions:
       success:
         type: boolean
     type: object
+  dto.AffCampaignAppDto:
+    properties:
+      accesstrade_id:
+        type: string
+      brand_id:
+        type: integer
+      category_id:
+        type: integer
+      created_at:
+        type: string
+      end_time:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      start_time:
+        type: string
+      stella_description: {}
+      stella_max_com:
+        type: number
+      stella_status:
+        type: string
+      thumbnail:
+        type: string
+      updated_at:
+        type: string
+      url:
+        type: string
+    type: object
   dto.AffCampaignDto:
     properties:
       accesstrade_id:
@@ -83,6 +113,8 @@ definitions:
         type: integer
       approval:
         type: string
+      brand:
+        $ref: '#/definitions/dto.BrandDto'
       brand_id:
         type: integer
       category:
@@ -116,6 +148,8 @@ definitions:
       status:
         type: integer
       stella_description: {}
+      stella_max_com:
+        type: number
       stella_status:
         type: string
       sub_category:
@@ -143,6 +177,17 @@ definitions:
         type: integer
       total:
         type: integer
+    type: object
+  dto.BrandDto:
+    properties:
+      cover_photo:
+        type: string
+      id:
+        type: integer
+      logo:
+        type: string
+      name:
+        type: string
     type: object
   dto.CampaignDescriptionDto:
     properties:
@@ -305,6 +350,69 @@ paths:
           schema:
             $ref: '#/definitions/util.GeneralError'
       summary: Get list aff campaign
+      tags:
+      - console
+  /api/v1/console/aff-campaign/{id}:
+    get:
+      description: Get campaign by id
+      parameters:
+      - description: id to query
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AffCampaignDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      summary: Get campaign by id
+      tags:
+      - console
+    put:
+      consumes:
+      - application/json
+      description: update campaign info
+      parameters:
+      - description: Campaign info to update, required
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AffCampaignAppDto'
+      - description: id to query
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AffCampaignAppDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: update campaign info
       tags:
       - console
   /api/v1/order/postback:

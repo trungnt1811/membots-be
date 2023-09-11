@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade/types"
 	model2 "github.com/astraprotocol/affiliate-system/internal/model"
+	"gorm.io/datatypes"
 	"time"
 
 	"github.com/pkg/errors"
@@ -55,6 +56,13 @@ func (repo *CampaignRepository) SaveATCampaign(atCampaign *types.ATCampaign) err
 		SubCategory:    atCampaign.SubCategory,
 		CookiePolicy:   atCampaign.CookiePolicy,
 		CookieDuration: atCampaign.CookieDuration,
+		StellaDescription: datatypes.JSON(`{
+			"action_point": "",
+			"commission_policy": "",
+			"introduction": "",
+			"other_notice": "",
+			"rejected_reason": "",
+			"traffic_building_policy": ""}`),
 	}
 	if !atCampaign.StartTime.IsZero() {
 		newCampaign.StartTime = &atCampaign.StartTime.Time

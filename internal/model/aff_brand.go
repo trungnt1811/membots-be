@@ -1,25 +1,32 @@
 package model
 
-import "time"
+import "github.com/astraprotocol/affiliate-system/internal/dto"
 
-type AffBrand struct {
-	ID        uint      `gorm:"primarykey" json:"id"`
-	Name      string    `json:"name"`
-	Status    string    `json:"status"`
-	Slug      string    `json:"slug"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-}
-
-func (c *AffBrand) TableName() string {
+func (e *Brand) TableName() string {
 	return "brand"
 }
 
+type Brand struct {
+	ID         uint32  `json:"id" gorm:"primaryKey"`
+	Name       string  `json:"name"`
+	Logo       string  `json:"logo"`
+	CoverPhoto *string `json:"cover_photo"`
+}
+
+func (c *Brand) ToBrandDto() dto.BrandDto {
+	return dto.BrandDto{
+		ID:         c.ID,
+		Logo:       c.Logo,
+		Name:       c.Name,
+		CoverPhoto: c.CoverPhoto,
+	}
+}
+
 type AffMerchantBrand struct {
-	ID       uint      `gorm:"primarykey" json:"id"`
-	Merchant string    `json:"merchant"`
-	BrandId  uint      `json:"brand_id"`
-	Brand    *AffBrand `gorm:"foreignKey:ID;references:BrandId" json:"brand"`
+	ID       uint   `gorm:"primarykey" json:"id"`
+	Merchant string `json:"merchant"`
+	BrandId  uint   `json:"brand_id"`
+	Brand    *Brand `gorm:"foreignKey:ID;references:BrandId" json:"brand"`
 }
 
 func (c *AffMerchantBrand) TableName() string {

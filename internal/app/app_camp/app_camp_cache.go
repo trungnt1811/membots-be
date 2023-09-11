@@ -1,10 +1,11 @@
-package caching
+package app_camp
 
 import (
 	"context"
 	"fmt"
 	"time"
 
+	"github.com/astraprotocol/affiliate-system/internal/infra/caching"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/model"
 )
@@ -14,11 +15,11 @@ const cacheTimeAffCampaign = 3 * time.Second
 
 type appCampCache struct {
 	AppCampRepository interfaces.AppCampRepository
-	Cache             cachingRepository
+	Cache             caching.Repository
 }
 
 func (c appCampCache) GetAllAffCampaign(ctx context.Context, page, size int) ([]model.AffCampaign, error) {
-	key := &Keyer{Raw: keyPrefixAffCampaign + fmt.Sprint("GetAllAffCampaign_", page, "_", size)}
+	key := &caching.Keyer{Raw: keyPrefixAffCampaign + fmt.Sprint("GetAllAffCampaign_", page, "_", size)}
 	var listAffCampaign []model.AffCampaign
 	err := c.Cache.RetrieveItem(key, &listAffCampaign)
 	if err != nil {
@@ -35,7 +36,7 @@ func (c appCampCache) GetAllAffCampaign(ctx context.Context, page, size int) ([]
 }
 
 func (c appCampCache) GetAffCampaignByAccesstradeId(ctx context.Context, accesstradeId uint64) (model.AffCampaign, error) {
-	key := &Keyer{Raw: keyPrefixAffCampaign + fmt.Sprint("GetAffCampaignByAccesstradeId_", accesstradeId)}
+	key := &caching.Keyer{Raw: keyPrefixAffCampaign + fmt.Sprint("GetAffCampaignByAccesstradeId_", accesstradeId)}
 	var affCampaign model.AffCampaign
 	err := c.Cache.RetrieveItem(key, &affCampaign)
 	if err != nil {
@@ -52,7 +53,7 @@ func (c appCampCache) GetAffCampaignByAccesstradeId(ctx context.Context, accesst
 }
 
 func NewAppCampCacheRepository(repo interfaces.AppCampRepository,
-	cache cachingRepository,
+	cache caching.Repository,
 ) interfaces.AppCampRepository {
 	return &appCampCache{
 		AppCampRepository: repo,

@@ -23,6 +23,32 @@ func (r *RewardRepository) GetRewardByOrderId(ctx context.Context, affOrderId ui
 	return reward, err
 }
 
+func (r *RewardRepository) GetInProgressRewards(ctx context.Context, userId uint) ([]model.Reward, error) {
+	var rewards []model.Reward
+	err := r.db.Model(&model.Reward{}).Where("user_id = ? AND status = ?", userId, model.RewardStatusInProgress).Order("id DESC").Scan(&rewards).Error
+	return rewards, err
+}
+
+func (r *RewardRepository) GetRewardedAmountByReward(ctx context.Context, rewardIds []uint) (map[uint]float64, error) {
+	rewardedByReward := make(map[uint]float64)
+
+	var rewards []model.RewardedByReward
+	query := "SELECT reward_id, rewarded_amount FROM " +
+		"( SELECT reward_id, cumulative_amount AS rewarded_amount, " +
+		"RANK() OVER (PARTITION BY aff_reward_history ORDER BY id DESC) last_rank " +
+		"FROM aff_reward_history WHERE reward_id IN ? )" +
+		"WHERE last_rank = 1"
+	err := r.db.Raw(query, rewardIds).Scan(&rewards).Error
+	if err != nil {
+		return rewardedByReward, err
+	}
+
+	for _, item := range rewards {
+		rewardedByReward[item.RewardID] = item.RewardedAmount
+	}
+	return rewardedByReward, err
+}
+
 func (r *RewardRepository) GetAllReward(ctx context.Context, userId uint, page, size int) ([]model.Reward, error) {
 	var rewards []model.Reward
 	offset := (page - 1) * size

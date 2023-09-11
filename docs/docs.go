@@ -507,17 +507,8 @@ const docTemplate = `{
                 "approval": {
                     "type": "string"
                 },
-                "brand": {
-                    "$ref": "#/definitions/dto.BrandDto"
-                },
-                "brand_id": {
-                    "type": "integer"
-                },
                 "category": {
                     "type": "string"
-                },
-                "category_id": {
-                    "type": "integer"
                 },
                 "cookie_duration": {
                     "type": "integer"
@@ -531,9 +522,6 @@ const docTemplate = `{
                 "description": {
                     "$ref": "#/definitions/dto.CampaignDescriptionDto"
                 },
-                "end_time": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "integer"
                 },
@@ -546,38 +534,22 @@ const docTemplate = `{
                 "merchant": {
                     "type": "string"
                 },
-                "name": {
-                    "type": "string"
-                },
                 "scope": {
-                    "type": "string"
-                },
-                "start_time": {
                     "type": "string"
                 },
                 "status": {
                     "type": "integer"
                 },
-                "stella_description": {},
-                "stella_max_com": {
-                    "type": "number"
-                },
-                "stella_status": {
-                    "type": "string"
+                "stella_info": {
+                    "$ref": "#/definitions/dto.StellaInfoDto"
                 },
                 "sub_category": {
-                    "type": "string"
-                },
-                "thumbnail": {
                     "type": "string"
                 },
                 "type": {
                     "type": "integer"
                 },
                 "updated_at": {
-                    "type": "string"
-                },
-                "url": {
                     "type": "string"
                 }
             }
@@ -687,6 +659,42 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "short_link": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.StellaInfoDto": {
+            "type": "object",
+            "properties": {
+                "brand": {
+                    "$ref": "#/definitions/dto.BrandDto"
+                },
+                "brand_id": {
+                    "type": "integer"
+                },
+                "category_id": {
+                    "type": "integer"
+                },
+                "end_time": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "start_time": {
+                    "type": "string"
+                },
+                "stella_description": {},
+                "stella_max_com": {
+                    "type": "number"
+                },
+                "stella_status": {
+                    "type": "string"
+                },
+                "thumbnail": {
+                    "type": "string"
+                },
+                "url": {
                     "type": "string"
                 }
             }

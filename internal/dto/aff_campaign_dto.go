@@ -20,34 +20,38 @@ type CampaignDescriptionDto struct {
 }
 
 type AffCampaignDto struct {
-	ID                uint                    `json:"id"`
-	ActiveStatus      int                     `json:"active_status"`
-	BrandId           uint                    `json:"brand_id"`
-	Brand             BrandDto                `json:"brand"`
-	AccessTradeId     string                  `json:"accesstrade_id"`
-	CreatedAt         time.Time               `json:"created_at"`
-	UpdatedAt         time.Time               `json:"updated_at"`
-	Logo              string                  `json:"logo"`
-	MaxCom            string                  `json:"max_com"`
-	Merchant          string                  `json:"merchant"`
-	Name              string                  `json:"name"`
-	Scope             string                  `json:"scope"`
-	Approval          string                  `json:"approval"`
-	Status            int                     `json:"status"`
-	Type              int                     `json:"type"`
-	Url               string                  `json:"url"`
-	Category          string                  `json:"category"`
-	SubCategory       string                  `json:"sub_category"`
-	CookieDuration    int                     `json:"cookie_duration"`
-	CookiePolicy      string                  `json:"cookie_policy"`
-	Description       *CampaignDescriptionDto `json:"description"`
-	StartTime         *time.Time              `json:"start_time"`
-	EndTime           *time.Time              `json:"end_time"`
-	StellaDescription interface{}             `json:"stella_description"`
-	CategoryId        uint                    `json:"category_id"`
-	StellaStatus      string                  `json:"stella_status"`
-	Thumbnail         string                  `json:"thumbnail"`
-	StellaMaxCom      decimal.Decimal         `json:"stella_max_com"`
+	ID             uint                    `json:"id"`
+	ActiveStatus   int                     `json:"active_status"`
+	AccessTradeId  string                  `json:"accesstrade_id"`
+	CreatedAt      time.Time               `json:"created_at"`
+	UpdatedAt      time.Time               `json:"updated_at"`
+	Logo           string                  `json:"logo"`
+	MaxCom         string                  `json:"max_com"`
+	Merchant       string                  `json:"merchant"`
+	Scope          string                  `json:"scope"`
+	Approval       string                  `json:"approval"`
+	Status         int                     `json:"status"`
+	Type           int                     `json:"type"`
+	Category       string                  `json:"category"`
+	SubCategory    string                  `json:"sub_category"`
+	CookieDuration int                     `json:"cookie_duration"`
+	CookiePolicy   string                  `json:"cookie_policy"`
+	Description    *CampaignDescriptionDto `json:"description"`
+	StellaInfo     StellaInfoDto           `json:"stella_info"`
+}
+
+type StellaInfoDto struct {
+	StartTime         *time.Time      `json:"start_time"`
+	EndTime           *time.Time      `json:"end_time"`
+	StellaDescription interface{}     `json:"stella_description"`
+	CategoryId        uint            `json:"category_id"`
+	StellaStatus      string          `json:"stella_status"`
+	Thumbnail         string          `json:"thumbnail"`
+	StellaMaxCom      decimal.Decimal `json:"stella_max_com"`
+	Url               string          `json:"url"`
+	Name              string          `json:"name"`
+	BrandId           uint            `json:"brand_id"`
+	Brand             BrandDto        `json:"brand"`
 }
 
 type AffCampaignAppDto struct {

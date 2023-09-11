@@ -79,25 +79,27 @@ func (c *AffCampaign) TableName() string {
 
 func (c *AffCampaign) ToDto() dto.AffCampaignDto {
 	campDto := dto.AffCampaignDto{
-		ID:                c.ID,
-		BrandId:           c.BrandId,
-		AccessTradeId:     c.AccessTradeId,
-		CreatedAt:         c.CreatedAt,
-		UpdatedAt:         c.UpdatedAt,
-		Thumbnail:         c.Thumbnail,
-		MaxCom:            c.MaxCom,
-		Merchant:          c.Merchant,
-		Name:              c.Name,
-		Status:            c.Status,
-		Url:               c.Url,
-		CategoryId:        c.CategoryId,
-		StartTime:         c.StartTime,
-		EndTime:           c.EndTime,
-		StellaDescription: c.StellaDescription,
-		StellaStatus:      c.StellaStatus,
-		StellaMaxCom:      c.StellaMaxCom,
+		ID:            c.ID,
+		AccessTradeId: c.AccessTradeId,
+		CreatedAt:     c.CreatedAt,
+		UpdatedAt:     c.UpdatedAt,
+		MaxCom:        c.MaxCom,
+		Merchant:      c.Merchant,
+		Status:        c.Status,
+		StellaInfo: dto.StellaInfoDto{
+			Url:               c.Url,
+			CategoryId:        c.CategoryId,
+			StartTime:         c.StartTime,
+			EndTime:           c.EndTime,
+			StellaDescription: c.StellaDescription,
+			StellaStatus:      c.StellaStatus,
+			StellaMaxCom:      c.StellaMaxCom,
+			Thumbnail:         c.Thumbnail,
+			Name:              c.Name,
+			BrandId:           c.BrandId,
+			Brand:             c.Brand.ToBrandDto(),
+		},
 	}
 	campDto.Description = c.Description.ToDto()
-	campDto.Brand = c.Brand.ToBrandDto()
 	return campDto
 }

@@ -221,6 +221,72 @@ definitions:
       short_link:
         type: string
     type: object
+  dto.RewardDto:
+    properties:
+      aff_order_id:
+        type: integer
+      amount:
+        type: number
+      created_at:
+        type: string
+      id:
+        type: integer
+      status:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  dto.RewardHistoryDto:
+    properties:
+      aff_order_id:
+        type: integer
+      amount:
+        type: number
+      created_at:
+        type: string
+      id:
+        type: integer
+      reward_id:
+        type: integer
+      type:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  dto.RewardHistoryResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto.RewardHistoryDto'
+        type: array
+      next_page:
+        type: integer
+      page:
+        type: integer
+      size:
+        type: integer
+      total:
+        type: integer
+    type: object
+  dto.RewardResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto.RewardDto'
+        type: array
+      next_page:
+        type: integer
+      page:
+        type: integer
+      size:
+        type: integer
+      total:
+        type: integer
+    type: object
   types.RedeemRequestPayload:
     properties:
       redeemCode:
@@ -436,6 +502,80 @@ paths:
       summary: PostRequestRedeem
       tags:
       - redeem
+  /api/v1/rewards:
+    get:
+      consumes:
+      - application/json
+      description: Get all rewards
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RewardResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      summary: Get all rewards
+      tags:
+      - reward
+  /api/v1/rewards/by-order-id:
+    get:
+      consumes:
+      - application/json
+      description: Get reward by affiliate order
+      parameters:
+      - description: affiliate order id to query
+        in: query
+        name: affOrderId
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RewardDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      summary: PostRequestRedeem Get reward by affiliate order
+      tags:
+      - reward
+  /api/v1/rewards/history:
+    get:
+      consumes:
+      - application/json
+      description: Get reward history records
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RewardHistoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      summary: Get reward history records
+      tags:
+      - reward
   /api/v1/users/{uid}:
     get:
       description: Get a user detail by uid

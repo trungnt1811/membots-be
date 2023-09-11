@@ -6,6 +6,7 @@ import (
 	campaign3 "github.com/astraprotocol/affiliate-system/internal/app/campaign"
 	campaign2 "github.com/astraprotocol/affiliate-system/internal/app/console/campaign"
 	"github.com/astraprotocol/affiliate-system/internal/app/redeem"
+	"github.com/astraprotocol/affiliate-system/internal/app/reward"
 	"github.com/astraprotocol/affiliate-system/internal/middleware"
 	"github.com/astraprotocol/affiliate-system/internal/util"
 	"github.com/gin-gonic/gin"
@@ -44,4 +45,14 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	consoleRouter := v1.Group("console")
 	consoleRouter.GET("/aff-campaign", consoleCampHandler.GetAllCampaign)
 	consoleRouter.PUT("/aff-campaign/:id", consoleCampHandler.UpdateCampaignInfo)
+
+	// SECTION: Reward module
+	rewardRepo := reward.NewRewardRepository(db)
+	rewardUsecase := reward.NewRewardUsecase(rewardRepo)
+	rewardHandler := reward.NewRewardHandler(rewardUsecase)
+
+	rewardRouter := v1.Group("/rewards")
+	rewardRouter.GET("/by-order-id", rewardHandler.GetRewardByOrderId)
+	rewardRouter.GET("", rewardHandler.GetAllReward)
+	rewardRouter.GET("/history", rewardHandler.GetRewardHistory)
 }

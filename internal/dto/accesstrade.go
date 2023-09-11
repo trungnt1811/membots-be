@@ -1,5 +1,11 @@
 package dto
 
+const (
+	REQ_STATUS_NEW      = 0
+	REQ_STATUS_APPROVED = 1
+	REQ_STATUS_REJECTED = 2
+)
+
 type ATPostBackRequest struct {
 	TransactionId      string  `json:"transaction_id"`      // Mã unique trên hệ thống AccessTrade
 	OrderId            string  `json:"order_id"`            // Mã đơn hàng hiển thị trên trang pub
@@ -17,10 +23,10 @@ type ATPostBackRequest struct {
 	Referrer           string  `json:"referrer"`            // click_referrer
 	ClickTime          string  `json:"click_time"`          // Thời gian phát sinh click
 	IsConfirmed        uint8   `json:"is_confirmed"`        // Đơn hàng khóa data và được thanh toán: 0: chưa đối soát, 1: đã đối soát
-	UtmSource          string  `json:"utm_source"`          // Thông tin tùy biến pub truyền vào url trong param utm_source
-	UtmCampaign        string  `json:"utm_campaign"`        // Thông tin tùy biến pub truyền vào url trong param utm_campaign
-	UtmContent         string  `json:"utm_content"`         // Thông tin tùy biến pub truyền vào url trong param utm_content
-	UtmMedium          string  `json:"utm_medium"`          // Thông tin tùy biến pub truyền vào url trong param utm_medium
+	UTMSource          string  `json:"utm_source"`          // Thông tin tùy biến pub truyền vào url trong param utm_source
+	UTMCampaign        string  `json:"utm_campaign"`        // Thông tin tùy biến pub truyền vào url trong param utm_campaign
+	UTMContent         string  `json:"utm_content"`         // Thông tin tùy biến pub truyền vào url trong param utm_content
+	UTMMedium          string  `json:"utm_medium"`          // Thông tin tùy biến pub truyền vào url trong param utm_medium
 	CustomerType       string  `json:"customer_type"`       // Thuộc tính của khách hàng phụ thuộc theo campaigns
 	PublisherLoginName string  `json:"publisher_login_name"`
 }

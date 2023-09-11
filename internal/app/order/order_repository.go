@@ -1,8 +1,9 @@
 package order
 
 import (
-	"github.com/astraprotocol/affiliate-system/internal/model"
 	"time"
+
+	"github.com/astraprotocol/affiliate-system/internal/model"
 
 	"gorm.io/gorm"
 )
@@ -22,8 +23,8 @@ func (repo *OrderRepository) FindNonRewardOrders(
 	fromDate time.Time,
 	minValue int64,
 	additionalFilter map[string]interface{},
-) ([]model.OrderEntity, error) {
-	var entities []model.OrderEntity
+) ([]model.AffOrder, error) {
+	var entities []model.AffOrder
 	err := repo.db.
 		Table("order").
 		Where("customer_id = ?", customerId).
@@ -37,4 +38,60 @@ func (repo *OrderRepository) FindNonRewardOrders(
 		return nil, err
 	}
 	return entities, nil
+}
+
+func (repo *OrderRepository) SavePostBackLog(req *model.AffPostBackLog) error {
+	return repo.db.Create(req).Error
+}
+
+func (repo *OrderRepository) CreateOrder(order *model.AffOrder) error {
+	return repo.db.Create(order).Error
+}
+
+func (repo *OrderRepository) UpdateOrder(updated *model.AffOrder) (int, error) {
+	result := repo.db.Model(updated).Where("id = ?", updated.ID).Updates(updated)
+	if result.Error != nil {
+		return 0, result.Error
+	}
+	return int(result.RowsAffected), nil
+}
+
+func (repo *OrderRepository) UpdateOrCreateATTransactions(newTxs []model.AffTransaction) error {
+	err := repo.db.Transaction(func(tx *gorm.DB) error {
+		for _, newTx := range newTxs {
+			// Find by id
+			var oldTx model.AffTransaction
+			err := tx.First(&oldTx, "accesstrade_id = ?", newTx.AccessTradeId).Error
+			if err != nil {
+				if err.Error() == "record not found" {
+					// If tx is not found, create one
+					crErr := tx.Create(newTx).Error
+					if crErr != nil {
+						return crErr
+					}
+					continue
+				} else {
+					return err
+				}
+			}
+			// When found one, compare and update
+			newTx.ID = oldTx.ID
+			upErr := tx.Model(&oldTx).Updates(newTx).Error
+			if upErr != nil {
+				return upErr
+			}
+		}
+
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (repo *OrderRepository) FindOrderByAccessTradeId(atOrderId string) (*model.AffOrder, error) {
+	var order model.AffOrder
+	err := repo.db.First(&order, "accesstrade_order_id = ?", atOrderId).Error
+	return &order, err
 }

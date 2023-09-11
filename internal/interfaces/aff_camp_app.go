@@ -8,11 +8,11 @@ import (
 )
 
 type AffCampAppRepository interface {
-	GetAllAffCampaign(ctx context.Context, page, size int) ([]model.AffCampaign, error)
-	GetAffCampaignByAccesstradeId(ctx context.Context, accesstradeId uint64) (model.AffCampaign, error)
+	GetAllAffCampaign(ctx context.Context, page, size int) ([]model.AffCampaignApp, error)
+	GetAffCampaignById(ctx context.Context, accesstradeId uint64) (model.AffCampaignApp, error)
 }
 
 type AffCampAppService interface {
 	GetAllAffCampaign(ctx context.Context, page, size int) (dto.AffCampaignAppDtoResponse, error)
-	GetAffCampaignByAccesstradeId(ctx context.Context, accesstradeId uint64) (dto.AffCampaignAppDto, error)
+	GetAffCampaignById(ctx context.Context, accesstradeId uint64) (dto.AffCampaignAppDto, error)
 }

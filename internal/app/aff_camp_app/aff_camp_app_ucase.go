@@ -17,8 +17,8 @@ func NewAffCampAppService(repository interfaces.AffCampAppRepository) interfaces
 	}
 }
 
-func (s affCampAppService) GetAffCampaignByAccesstradeId(ctx context.Context, accesstradeId uint64) (dto.AffCampaignAppDto, error) {
-	affCampaign, err := s.AffCampAppRepository.GetAffCampaignByAccesstradeId(ctx, accesstradeId)
+func (s affCampAppService) GetAffCampaignById(ctx context.Context, id uint64) (dto.AffCampaignAppDto, error) {
+	affCampaign, err := s.AffCampAppRepository.GetAffCampaignById(ctx, id)
 	if err != nil {
 		return dto.AffCampaignAppDto{}, err
 	}

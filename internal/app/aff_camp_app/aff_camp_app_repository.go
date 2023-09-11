@@ -18,21 +18,15 @@ func NewAffCampAppRepository(db *gorm.DB) interfaces.AffCampAppRepository {
 	}
 }
 
-func (r affCampAppRepository) GetAllAffCampaign(ctx context.Context, page, size int) ([]model.AffCampaign, error) {
-	var listAffCampaign []model.AffCampaign
+func (r affCampAppRepository) GetAllAffCampaign(ctx context.Context, page, size int) ([]model.AffCampaignApp, error) {
+	var listAffCampaign []model.AffCampaignApp
 	offset := (page - 1) * size
-	query := "SELECT id, brand_id, accesstrade_id, created_at, updated_at, thumbnail, name, url, category_id, start_time, end_time, stella_description, stella_status, stella_max_com " +
-		"FROM aff_campaign " +
-		"ORDER BY id ASC LIMIT ? OFFSET ?"
-	err := r.db.Raw(query, size+1, offset).Scan(&listAffCampaign).Error
+	err := r.db.Find(&listAffCampaign).Limit(size + 1).Offset(offset).Error
 	return listAffCampaign, err
 }
 
-func (r affCampAppRepository) GetAffCampaignByAccesstradeId(ctx context.Context, accesstradeId uint64) (model.AffCampaign, error) {
-	var affCampaign model.AffCampaign
-	query := "SELECT id, brand_id, accesstrade_id, created_at, updated_at, thumbnail, name, url, category_id, start_time, end_time, stella_description, stella_status, stella_max_com " +
-		"FROM aff_campaign " +
-		"WHERE accesstrade_id = ?"
-	err := r.db.Raw(query, accesstradeId).Scan(&affCampaign).Error
+func (r affCampAppRepository) GetAffCampaignById(ctx context.Context, id uint64) (model.AffCampaignApp, error) {
+	var affCampaign model.AffCampaignApp
+	err := r.db.Where("id = ?", id).First(&affCampaign).Error
 	return affCampaign, err
 }

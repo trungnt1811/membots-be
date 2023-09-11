@@ -101,7 +101,28 @@ func (c *AffCampaign) ToDto() dto.AffCampaignDto {
 	return campDto
 }
 
-func (c *AffCampaign) ToAffCampaignAppDto() dto.AffCampaignAppDto {
+type AffCampaignApp struct {
+	ID                uint            `gorm:"primarykey" json:"id"`
+	BrandId           uint            `json:"brand_id"`
+	AccessTradeId     string          `json:"accesstrade_id" gorm:"column:accesstrade_id"`
+	CreatedAt         time.Time       `json:"created_at"`
+	UpdatedAt         time.Time       `json:"updated_at"`
+	Name              string          `json:"name"`
+	Url               string          `json:"url"`
+	StartTime         *time.Time      `json:"start_time"`
+	EndTime           *time.Time      `json:"end_time"`
+	StellaDescription datatypes.JSON  `json:"stella_description"`
+	CategoryId        uint            `json:"category_id"`
+	StellaStatus      string          `json:"stella_status"`
+	Thumbnail         string          `json:"thumbnail"`
+	StellaMaxCom      decimal.Decimal `json:"stella_max_com" gorm:"type:decimal(4,2);"`
+}
+
+func (c *AffCampaignApp) TableName() string {
+	return "aff_campaign"
+}
+
+func (c *AffCampaignApp) ToAffCampaignAppDto() dto.AffCampaignAppDto {
 	return dto.AffCampaignAppDto{
 		ID:                c.ID,
 		BrandId:           c.BrandId,

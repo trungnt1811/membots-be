@@ -27,9 +27,9 @@ func NewAffCampAppCacheRepository(repo interfaces.AffCampAppRepository,
 	}
 }
 
-func (c affCampAppCache) GetAllAffCampaign(ctx context.Context, page, size int) ([]model.AffCampaign, error) {
+func (c affCampAppCache) GetAllAffCampaign(ctx context.Context, page, size int) ([]model.AffCampaignApp, error) {
 	key := &caching.Keyer{Raw: keyPrefixAffCampaign + fmt.Sprint("GetAllAffCampaign_", page, "_", size)}
-	var listAffCampaign []model.AffCampaign
+	var listAffCampaign []model.AffCampaignApp
 	err := c.Cache.RetrieveItem(key, &listAffCampaign)
 	if err != nil {
 		// cache miss
@@ -44,13 +44,13 @@ func (c affCampAppCache) GetAllAffCampaign(ctx context.Context, page, size int) 
 	return listAffCampaign, nil
 }
 
-func (c affCampAppCache) GetAffCampaignByAccesstradeId(ctx context.Context, accesstradeId uint64) (model.AffCampaign, error) {
-	key := &caching.Keyer{Raw: keyPrefixAffCampaign + fmt.Sprint("GetAffCampaignByAccesstradeId_", accesstradeId)}
-	var affCampaign model.AffCampaign
+func (c affCampAppCache) GetAffCampaignById(ctx context.Context, accesstradeId uint64) (model.AffCampaignApp, error) {
+	key := &caching.Keyer{Raw: keyPrefixAffCampaign + fmt.Sprint("GetAffCampaignById_", accesstradeId)}
+	var affCampaign model.AffCampaignApp
 	err := c.Cache.RetrieveItem(key, &affCampaign)
 	if err != nil {
 		// cache miss
-		affCampaign, err = c.AffCampAppRepository.GetAffCampaignByAccesstradeId(ctx, accesstradeId)
+		affCampaign, err = c.AffCampAppRepository.GetAffCampaignById(ctx, accesstradeId)
 		if err != nil {
 			return affCampaign, err
 		}

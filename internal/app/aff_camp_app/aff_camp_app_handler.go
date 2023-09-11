@@ -45,25 +45,25 @@ func (handler *AffCampAppHandler) GetAllAffCampaign(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response)
 }
 
-// GetAffCampaignByAccesstradeId Get aff campaign by accesstrade id
-// @Summary Get aff campaign by accesstrade id
-// @Description Get aff campaign by accesstrade id
+// GetAffCampaignById Get aff campaign by id
+// @Summary Get aff campaign by id
+// @Description Get aff campaign by id
 // @Tags 	app
 // @Accept	json
 // @Produce json
-// @Param accesstradeId query string false "accesstradeId to query"
+// @Param id query string false "id to query"
 // @Success 200 		{object}	dto.AffCampaignAppDto
 // @Failure 401 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
-// @Router 	/api/v1/app/aff-campaign/{accresstradeId} [get]
-func (handler *AffCampAppHandler) GetAffCampaignByAccesstradeId(ctx *gin.Context) {
-	accesstradeId, err := strconv.Atoi(ctx.Param("accresstradeId"))
+// @Router 	/api/v1/app/aff-campaign/{id} [get]
+func (handler *AffCampAppHandler) GetAffCampaignById(ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		util.RespondError(ctx, http.StatusBadRequest, "accresstradeId is invalid", err)
+		util.RespondError(ctx, http.StatusBadRequest, "id is invalid", err)
 		return
 	}
 
-	response, err := handler.AffCampAppService.GetAffCampaignByAccesstradeId(ctx, uint64(accesstradeId))
+	response, err := handler.AffCampAppService.GetAffCampaignById(ctx, uint64(id))
 	if err != nil {
 		util.RespondError(ctx, http.StatusInternalServerError, "Get list of all aff campaign error: ", err)
 		return

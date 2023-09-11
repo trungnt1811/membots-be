@@ -60,5 +60,5 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	affCampAppService := aff_camp_app.NewAffCampAppService(affCampAppCache)
 	affCampAppHandler := aff_camp_app.NewAffCampAppHandler(affCampAppService)
 	appRouter.GET("/aff-campaign", affCampAppHandler.GetAllAffCampaign)
-	appRouter.GET("/aff-campaign/:accesstradeId", affCampAppHandler.GetAffCampaignByAccesstradeId)
+	appRouter.GET("/aff-campaign/:id", affCampAppHandler.GetAffCampaignById)
 }

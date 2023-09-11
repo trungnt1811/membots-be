@@ -10,8 +10,8 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/model"
 )
 
-const keyPrefixAffCampaign = "aff_camp_app_"
-const cacheTimeAffCampaign = 3 * time.Second
+const keyPrefixAffCampApp = "aff_camp_app_"
+const cacheTimeAffCampApp = 3 * time.Second
 
 type affCampAppCache struct {
 	AffCampAppRepository interfaces.AffCampAppRepository
@@ -28,7 +28,7 @@ func NewAffCampAppCacheRepository(repo interfaces.AffCampAppRepository,
 }
 
 func (c affCampAppCache) GetAllAffCampaign(ctx context.Context, page, size int) ([]model.AffCampaignApp, error) {
-	key := &caching.Keyer{Raw: keyPrefixAffCampaign + fmt.Sprint("GetAllAffCampaign_", page, "_", size)}
+	key := &caching.Keyer{Raw: keyPrefixAffCampApp + fmt.Sprint("GetAllAffCampaign_", page, "_", size)}
 	var listAffCampaign []model.AffCampaignApp
 	err := c.Cache.RetrieveItem(key, &listAffCampaign)
 	if err != nil {
@@ -37,24 +37,24 @@ func (c affCampAppCache) GetAllAffCampaign(ctx context.Context, page, size int) 
 		if err != nil {
 			return listAffCampaign, err
 		}
-		if err = c.Cache.SaveItem(key, listAffCampaign, cacheTimeAffCampaign); err != nil {
+		if err = c.Cache.SaveItem(key, listAffCampaign, cacheTimeAffCampApp); err != nil {
 			return listAffCampaign, err
 		}
 	}
 	return listAffCampaign, nil
 }
 
-func (c affCampAppCache) GetAffCampaignById(ctx context.Context, accesstradeId uint64) (model.AffCampaignApp, error) {
-	key := &caching.Keyer{Raw: keyPrefixAffCampaign + fmt.Sprint("GetAffCampaignById_", accesstradeId)}
+func (c affCampAppCache) GetAffCampaignById(ctx context.Context, id uint64) (model.AffCampaignApp, error) {
+	key := &caching.Keyer{Raw: keyPrefixAffCampApp + fmt.Sprint("GetAffCampaignById_", id)}
 	var affCampaign model.AffCampaignApp
 	err := c.Cache.RetrieveItem(key, &affCampaign)
 	if err != nil {
 		// cache miss
-		affCampaign, err = c.AffCampAppRepository.GetAffCampaignById(ctx, accesstradeId)
+		affCampaign, err = c.AffCampAppRepository.GetAffCampaignById(ctx, id)
 		if err != nil {
 			return affCampaign, err
 		}
-		if err = c.Cache.SaveItem(key, affCampaign, cacheTimeAffCampaign); err != nil {
+		if err = c.Cache.SaveItem(key, affCampaign, cacheTimeAffCampApp); err != nil {
 			return affCampaign, err
 		}
 	}

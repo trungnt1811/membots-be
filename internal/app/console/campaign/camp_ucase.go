@@ -10,6 +10,14 @@ type campaignUCase struct {
 	Repo interfaces.ConsoleCampRepository
 }
 
+func (c *campaignUCase) GetCampaignById(id uint) (dto.AffCampaignDto, error) {
+	affCampaign, err := c.Repo.GetCampaignById(id)
+	if err != nil {
+		return dto.AffCampaignDto{}, err
+	}
+	return affCampaign.ToDto(), nil
+}
+
 func (c *campaignUCase) UpdateCampaign(id uint, campaign dto.AffCampaignAppDto) error {
 	updates := make(map[string]interface{})
 	if campaign.StellaDescription != nil {

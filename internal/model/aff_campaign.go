@@ -47,6 +47,7 @@ type AffCampaign struct {
 	ID                uint                `gorm:"primarykey" json:"id"`
 	ActiveStatus      int                 `json:"active_status"`
 	BrandId           uint                `json:"brand_id"`
+	Brand             Brand               `json:"brand" gorm:"foreignKey:BrandId"`
 	AccessTradeId     string              `json:"accesstrade_id" gorm:"column:accesstrade_id"`
 	CreatedAt         time.Time           `json:"created_at"`
 	UpdatedAt         time.Time           `json:"updated_at"`
@@ -79,23 +80,26 @@ func (c *AffCampaign) TableName() string {
 
 func (c *AffCampaign) ToDto() dto.AffCampaignDto {
 	campDto := dto.AffCampaignDto{
-		ID:                c.ID,
-		BrandId:           c.BrandId,
-		AccessTradeId:     c.AccessTradeId,
-		CreatedAt:         c.CreatedAt,
-		UpdatedAt:         c.UpdatedAt,
-		Thumbnail:         c.Thumbnail,
-		MaxCom:            c.MaxCom,
-		Merchant:          c.Merchant,
-		Name:              c.Name,
-		Status:            c.Status,
-		Url:               c.Url,
-		CategoryId:        c.CategoryId,
-		StartTime:         c.StartTime,
-		EndTime:           c.EndTime,
-		StellaDescription: c.StellaDescription,
-		StellaStatus:      c.StellaStatus,
-		StellaMaxCom:      c.StellaMaxCom,
+		ID:            c.ID,
+		AccessTradeId: c.AccessTradeId,
+		CreatedAt:     c.CreatedAt,
+		UpdatedAt:     c.UpdatedAt,
+		MaxCom:        c.MaxCom,
+		Merchant:      c.Merchant,
+		Status:        c.Status,
+		StellaInfo: dto.StellaInfoDto{
+			Url:               c.Url,
+			CategoryId:        c.CategoryId,
+			StartTime:         c.StartTime,
+			EndTime:           c.EndTime,
+			StellaDescription: c.StellaDescription,
+			StellaStatus:      c.StellaStatus,
+			StellaMaxCom:      c.StellaMaxCom,
+			Thumbnail:         c.Thumbnail,
+			Name:              c.Name,
+			BrandId:           c.BrandId,
+			Brand:             c.Brand.ToBrandDto(),
+		},
 	}
 	campDto.Description = c.Description.ToDto()
 	return campDto

@@ -89,3 +89,30 @@ func (handler *ConsoleCampHandler) UpdateCampaignInfo(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, "success")
 }
+
+// GetCampaignById Get campaign by id
+// @Summary Get campaign by id
+// @Description Get campaign by id
+// @Tags console
+// @Produce json
+// @Param id path int true "id to query"
+// @Success 200 		{object}	dto.AffCampaignDto
+// @Failure 401 		{object}	util.GeneralError
+// @Failure 400 		{object}	util.GeneralError
+// @Router /api/v1/console/aff-campaign/{id} [get]
+func (handler *ConsoleCampHandler) GetCampaignById(ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		util.RespondError(ctx, http.StatusBadRequest, "id is required", err)
+		return
+	}
+
+	affCampaign, err := handler.UCase.GetCampaignById(uint(id))
+	if err != nil {
+		util2.RespondError(ctx, http.StatusInternalServerError, "get aff-campaign error", err)
+		return
+	}
+
+	// Response transaction status
+	ctx.JSON(http.StatusOK, affCampaign)
+}

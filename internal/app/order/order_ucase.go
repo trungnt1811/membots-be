@@ -1,6 +1,7 @@
 package order
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -10,6 +11,7 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/model"
 	"github.com/astraprotocol/affiliate-system/internal/util"
 	"github.com/astraprotocol/affiliate-system/internal/util/log"
+	"gorm.io/datatypes"
 )
 
 type OrderUcase struct {
@@ -26,14 +28,19 @@ func NewOrderUcase(repo interfaces.OrderRepository, atRepo interfaces.ATReposito
 
 func (u *OrderUcase) PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*model.AffOrder, error) {
 	// First, save log
-	err := u.Repo.SavePostBackLog(&model.AffPostBackLog{
-		OrderId:   postBackReq.OrderId,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-		Data:      postBackReq,
-	})
+	bytes, err := json.Marshal(postBackReq)
 	if err != nil {
-		log.LG.Errorf("save aff_post_back_log error: %v", err)
+		log.LG.Errorf("cannot marshall post-back req: %v", err)
+	} else {
+		err := u.Repo.SavePostBackLog(&model.AffPostBackLog{
+			OrderId:   postBackReq.OrderId,
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+			Data:      datatypes.JSON(bytes),
+		})
+		if err != nil {
+			log.LG.Errorf("save aff_post_back_log error: %v", err)
+		}
 	}
 
 	// Parse sale time for later request
@@ -72,7 +79,6 @@ func (u *OrderUcase) PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*m
 			if crErr != nil {
 				return nil, fmt.Errorf("create order failed: %v", crErr)
 			}
-			return order, nil
 		} else {
 			return nil, err
 		}

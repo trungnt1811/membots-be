@@ -12,7 +12,6 @@ CREATE INDEX aff_merchant_brand_idx ON aff_merchant_brand (merchant);
 -- AFF TRANSACTIONS AND ORDERS
 CREATE TABLE aff_transaction (
   id INT NOT NULL AUTO_INCREMENT,
-  campaign_id INT,
   user_id INT NOT NULL,
   created_at DATETIME,
   updated_at DATETIME,
@@ -47,18 +46,15 @@ CREATE TABLE aff_transaction (
   reason_rejected TEXT,
   customer_type NVARCHAR(256),
   -- INDEXING
-  PRIMARY KEY (id),
-  FOREIGN KEY (campaign_id) REFERENCES aff_campaign(id)
+  PRIMARY KEY (id)
 ) ENGINE = InnoDB;
 
 CREATE INDEX aff_transaction_created ON aff_transaction (created_at);
 CREATE INDEX aff_transaction_updated ON aff_transaction (updated_at);
 CREATE INDEX aff_transaction_accesstrade_order_id ON aff_transaction (accesstrade_order_id);
 
-
 CREATE TABLE aff_order (
   id INT NOT NULL AUTO_INCREMENT,
-  campaign_id INT NOT NULL,
   aff_link NVARCHAR(1024),
   created_at DATETIME,
   updated_at DATETIME,
@@ -94,8 +90,7 @@ CREATE TABLE aff_order (
   utm_medium NVARCHAR(256),
   utm_content NVARCHAR(256),
   -- INDEXING
-  PRIMARY KEY (id),
-  FOREIGN KEY (campaign_id) REFERENCES aff_campaign(id)
+  PRIMARY KEY (id)
 ) ENGINE = InnoDB;
 
 CREATE INDEX aff_order_created ON aff_order (created_at);

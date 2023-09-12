@@ -158,14 +158,14 @@ func (r *AccessTradeRepository) QueryOrders(q types.ATOrderQuery, page int, limi
 // CreateTrackingLinks The `CreateTrackingLinks` function is used to create tracking links for a campaign in the
 // AccessTrade API. It takes in parameters such as `campaignId` (string), `urls` (slice of strings),
 // and `additional` (map[string]string).
-func (r *AccessTradeRepository) CreateTrackingLinks(campaignId string, urls []string, additional map[string]string) (*types.ATLinkResp, error) {
+func (r *AccessTradeRepository) CreateTrackingLinks(campaignId string, shorten bool, urls []string, additional map[string]string) (*types.ATLinkResp, error) {
 	url := fmt.Sprintf("%s/product_link/create", ACCESSTRADE_ENDPOINT)
 	req := r.initWithHeaders()
 
 	reqBody := map[string]any{
 		"campaign_id":    campaignId,
 		"urls":           urls,
-		"create_shorten": true,
+		"create_shorten": shorten,
 		"url_enc":        true,
 		"utm_source":     "stella",
 	}

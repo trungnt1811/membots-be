@@ -2,10 +2,11 @@ package campaign
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade/types"
 	model2 "github.com/astraprotocol/affiliate-system/internal/model"
 	"gorm.io/datatypes"
-	"time"
 
 	"github.com/pkg/errors"
 	"gorm.io/gorm"

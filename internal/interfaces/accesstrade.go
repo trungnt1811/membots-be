@@ -9,7 +9,7 @@ type ATRepository interface {
 	QueryCampaigns(onlyApproval bool, page int, limit int) (*types.ATCampaignListResp, error)
 	QueryTransactions(q types.ATTransactionQuery, page int, limit int) (*types.ATTransactionResp, error)
 	QueryOrders(q types.ATOrderQuery, page int, limit int) (*types.ATOrderListResp, error)
-	CreateTrackingLinks(campaignId string, urls []string, utm map[string]string) (*types.ATLinkResp, error)
+	CreateTrackingLinks(campaignId string, shorten bool, urls []string, utm map[string]string) (*types.ATLinkResp, error)
 }
 
 type ATUCase interface {

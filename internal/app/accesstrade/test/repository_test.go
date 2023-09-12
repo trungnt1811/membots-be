@@ -1,11 +1,12 @@
 package test
 
 import (
+	"testing"
+	"time"
+
 	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade"
 	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade/types"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
-	"testing"
-	"time"
 
 	"github.com/stretchr/testify/suite"
 )
@@ -62,7 +63,7 @@ func (s *RepositoryTestSuite) TestCreateLink() {
 	url := camp.Url
 	s.NotEmpty(url)
 
-	linkResp, err := s.repository.CreateTrackingLinks(camp.Id, []string{url}, map[string]string{
+	linkResp, err := s.repository.CreateTrackingLinks(camp.Id, true, []string{url}, map[string]string{
 		"utm_campaign": "stella",
 		"utm_source":   "testing",
 	})

@@ -157,6 +157,11 @@
         },
         "/api/v1/console/aff-campaign": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get list aff campaign",
                 "produces": [
                     "application/json"
@@ -215,6 +220,11 @@
         },
         "/api/v1/console/aff-campaign/{id}": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get campaign by id",
                 "produces": [
                     "application/json"
@@ -358,6 +368,11 @@
         },
         "/api/v1/redeem/request": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Send cashback to customer wallet by redeem code",
                 "consumes": [
                     "application/json"
@@ -895,11 +910,14 @@
                 "created_at": {
                     "type": "string"
                 },
+                "ended_at": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
-                "status": {
-                    "type": "string"
+                "rewarded_amount": {
+                    "type": "number"
                 },
                 "updated_at": {
                     "type": "string"

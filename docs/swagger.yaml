@@ -238,10 +238,12 @@ definitions:
         type: number
       created_at:
         type: string
+      ended_at:
+        type: string
       id:
         type: integer
-      status:
-        type: string
+      rewarded_amount:
+        type: number
       updated_at:
         type: string
       user_id:
@@ -496,6 +498,8 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
       summary: Get list aff campaign
       tags:
       - console
@@ -523,6 +527,8 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
       summary: Get campaign by id
       tags:
       - console
@@ -619,6 +625,8 @@ paths:
           description: Failed Dependency
           schema:
             $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
       summary: PostRequestRedeem
       tags:
       - redeem

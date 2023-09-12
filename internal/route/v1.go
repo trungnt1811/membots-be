@@ -59,6 +59,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	consoleRouter := v1.Group("console")
 	consoleRouter.GET("/aff-campaign", authHandler.CheckAdminHeader(), consoleCampHandler.GetAllCampaign)
 	consoleRouter.PUT("/aff-campaign/:id", authHandler.CheckAdminHeader(), consoleCampHandler.UpdateCampaignInfo)
+	consoleRouter.GET("/aff-campaign/:id", authHandler.CheckAdminHeader(), consoleCampHandler.GetCampaignById)
 
 	// SECTION: Reward module
 	rewardRepo := reward.NewRewardRepository(db)
@@ -69,7 +70,6 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	rewardRouter.GET("/by-order-id", rewardHandler.GetRewardByOrderId)
 	rewardRouter.GET("", rewardHandler.GetAllReward)
 	rewardRouter.GET("/history", rewardHandler.GetRewardHistory)
-	consoleRouter.GET("/aff-campaign/:id", consoleCampHandler.GetCampaignById)
 
 	// SECTION: App module
 	appRouter := v1.Group("/app")

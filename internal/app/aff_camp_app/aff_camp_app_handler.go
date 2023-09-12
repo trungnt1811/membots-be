@@ -65,7 +65,7 @@ func (handler *AffCampAppHandler) GetAffCampaignById(ctx *gin.Context) {
 
 	response, err := handler.AffCampAppService.GetAffCampaignById(ctx, uint64(id))
 	if err != nil {
-		util.RespondError(ctx, http.StatusInternalServerError, "Get list of all aff campaign error: ", err)
+		util.RespondError(ctx, http.StatusInternalServerError, "Get aff campaign by id error: ", err)
 		return
 	}
 	ctx.JSON(http.StatusOK, response)

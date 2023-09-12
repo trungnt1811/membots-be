@@ -25,7 +25,6 @@ RUN go mod download
 
 COPY . .
 COPY dev.env .env
-COPY --from=builder /app/internal/infra/msgqueue/ca-dev.crt ./internal/infra/msgqueue/ca-dev.crt
 
 # Build the Go app
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main ./cmd/main.go
@@ -39,6 +38,7 @@ WORKDIR /root/
 # Copy the Pre-built binary file from the previous stage
 COPY --from=builder /app/main .
 COPY --from=builder /app/.env .
+COPY --from=builder /app/internal/infra/msgqueue/ca-dev.crt ./internal/infra/msgqueue/ca-dev.crt
 
 # Expose port 8888 to the outside world
 EXPOSE 8080

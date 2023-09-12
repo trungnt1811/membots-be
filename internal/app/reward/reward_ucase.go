@@ -9,6 +9,10 @@ import (
 	"github.com/samber/lo"
 )
 
+const (
+	MinClaimReward = 0.01
+)
+
 type RewardUsecase struct {
 	repo interfaces.RewardRepository
 }
@@ -19,8 +23,27 @@ func NewRewardUsecase(repo interfaces.RewardRepository) *RewardUsecase {
 	}
 }
 
-func (u *RewardUsecase) GetRewardByOrderId(ctx context.Context, affOrderId uint) (model.Reward, error) {
-	return u.repo.GetRewardByOrderId(ctx, affOrderId)
+func (u *RewardUsecase) ClaimReward(ctx context.Context, userId uint, rewardId uint) (dto.ClaimRewardResponse, error) {
+	reward, err := u.repo.GetRewardById(ctx, userId, rewardId)
+	if err != nil {
+		return dto.ClaimRewardResponse{}, err
+	}
+	claimableReward := reward.GetClaimableReward()
+	if claimableReward < MinClaimReward {
+		return dto.ClaimRewardResponse{
+			Execute: false,
+			Amount:  claimableReward,
+		}, nil
+	}
+	// TODO: call send
+	return dto.ClaimRewardResponse{
+		Execute: true,
+		Amount:  claimableReward,
+	}, nil
+}
+
+func (u *RewardUsecase) GetRewardByOrderId(ctx context.Context, userId uint, affOrderId uint) (model.Reward, error) {
+	return u.repo.GetRewardByOrderId(ctx, userId, affOrderId)
 }
 
 func (u *RewardUsecase) GetPendingRewards(ctx context.Context, userId uint) ([]dto.RewardWithPendingDto, error) {

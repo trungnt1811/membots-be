@@ -17,9 +17,15 @@ func NewRewardRepository(db *gorm.DB) *RewardRepository {
 	}
 }
 
-func (r *RewardRepository) GetRewardByOrderId(ctx context.Context, affOrderId uint) (model.Reward, error) {
+func (r *RewardRepository) GetRewardByOrderId(ctx context.Context, userId uint, affOrderId uint) (model.Reward, error) {
 	var reward model.Reward
-	err := r.db.Model(&model.Reward{}).Where("aff_order_id = ?", affOrderId).First(&reward).Error
+	err := r.db.Model(&model.Reward{}).Where("user_id = ? AND aff_order_id = ?", userId, affOrderId).First(&reward).Error
+	return reward, err
+}
+
+func (r *RewardRepository) GetRewardById(ctx context.Context, userId uint, affOrderId uint) (model.Reward, error) {
+	var reward model.Reward
+	err := r.db.Model(&model.Reward{}).Where("user_id = ? AND id = ?", affOrderId).First(&reward).Error
 	return reward, err
 }
 
@@ -60,6 +66,10 @@ func (r *RewardRepository) CountReward(ctx context.Context, userId uint) (int64,
 	var count int64
 	err := r.db.Model(&model.Reward{}).Where("user_id = ?", userId).Order("id DESC").Count(&count).Error
 	return count, err
+}
+
+func (r *RewardRepository) CreateRewardHistory(ctx context.Context, rewardHistory *model.RewardHistory) error {
+	return r.db.Create(rewardHistory).Error
 }
 
 func (r *RewardRepository) GetRewardHistory(ctx context.Context, userId uint, page, size int) ([]model.RewardHistoryFull, error) {

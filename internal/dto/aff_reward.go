@@ -9,7 +9,7 @@ import (
 type RewardDto struct {
 	ID             uint      `json:"id"`
 	UserId         uint      `json:"user_id"`
-	AffOrderID     uint      `json:"aff_order_id"`
+	AtOrderID      string    `json:"accesstrade_order_id"`
 	Amount         float64   `json:"amount"`
 	RewardedAmount float64   `json:"rewarded_amount"`
 	EndedAt        time.Time `json:"ended_at"`
@@ -38,14 +38,14 @@ type RewardResponse struct {
 // REWARD HISTORY
 
 type RewardHistoryDto struct {
-	ID         uint      `json:"id"`
-	RewardID   uint      `json:"reward_id"`
-	UserId     uint      `json:"user_id"`
-	AffOrderID uint      `json:"aff_order_id"`
-	Amount     float64   `json:"amount"`
-	Type       string    `json:"type"`
-	CreatedAt  time.Time `json:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
+	ID        uint      `json:"id"`
+	RewardID  uint      `json:"reward_id"`
+	UserId    uint      `json:"user_id"`
+	AtOrderID string    `json:"accesstrade_order_id"`
+	Amount    float64   `json:"amount"`
+	Type      string    `json:"type"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type RewardHistoryResponse struct {

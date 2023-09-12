@@ -2,11 +2,17 @@ package conf
 
 import (
 	"fmt"
-	"github.com/rs/zerolog/log"
 	"os"
+
+	"github.com/rs/zerolog/log"
 
 	"github.com/spf13/viper"
 )
+
+type RewardShippingConfiguration struct {
+	BaseUrl string `mapstructure:"REWARD_SHIPPING_URL"`
+	ApiKey  string `mapstructure:"REWARD_SHIPPING_KEY"`
+}
 
 type RedisConfiguration struct {
 	RedisAddress string `mapstructure:"REDIS_ADDRESS"`
@@ -65,6 +71,7 @@ type Configuration struct {
 	EvmRpc            EvmRpcEndpointConfiguration `mapstructure:",squash"`
 	Kafka             KafkaConfiguration          `mapstructure:",squash"`
 	Webhook           WebhookConfiguration        `mapstructure:",squash"`
+	RewardShipping    RewardShippingConfiguration `mapstructure:",squash"`
 	AccessTradeAPIKey string                      `mapstructure:"ACCESSTRADE_APIKEY"`
 	CreatorBEToken    string                      `mapstructure:"CREATOR_BE_TOKEN"`
 	AppName           string                      `mapstructure:"APP_NAME"`

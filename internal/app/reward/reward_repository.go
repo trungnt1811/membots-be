@@ -17,6 +17,10 @@ func NewRewardRepository(db *gorm.DB) *RewardRepository {
 	}
 }
 
+func (r *RewardRepository) CreateReward(ctx context.Context, reward *model.Reward) error {
+	return r.db.Create(reward).Error
+}
+
 func (r *RewardRepository) GetRewardByOrderId(ctx context.Context, userId uint, affOrderId uint) (model.Reward, error) {
 	var reward model.Reward
 	err := r.db.Model(&model.Reward{}).Where("user_id = ? AND aff_order_id = ?", userId, affOrderId).First(&reward).Error

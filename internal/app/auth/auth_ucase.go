@@ -30,18 +30,17 @@ func (s *authHandler) CheckAdminHeader() gin.HandlerFunc {
 
 		err := c.ShouldBindHeader(&token)
 		if err != nil {
-			c.Next()
+			util.RespondError(c, http.StatusUnauthorized, "no token provided", err)
 			return
 		}
 
-		if len(*token.Authorization) < 300 {
-			c.Next()
+		if len(*token.Authorization) < 200 {
+			util.RespondError(c, http.StatusUnauthorized, "invalid token", err)
 			return
 		}
 
 		info, err := s.creatorTokenInfo(*token.Authorization)
 		if err != nil {
-			fmt.Println(err)
 			util.RespondError(c, http.StatusUnauthorized, err.Error())
 			return
 		}

@@ -16,6 +16,7 @@ import (
 )
 
 const (
+	CaCertLocalPath                  = "./internal/infra/msgqueue/ca-dev.crt"
 	KAFKA_NEW_DATA_MAX_WAIT          = time.Minute * 1
 	KAFKA_TIME_OUT                   = time.Second * 3
 	KAFKA_READ_BATCH_TIME_OUT        = time.Second * 60
@@ -120,13 +121,12 @@ func newKafkaReader(config *conf.Configuration, topic, groupId string, brokers [
 }
 
 func GetDialer(c *conf.Configuration) (*kafka.Dialer, error) {
-	if c.Env == "dev" {
-		return &kafka.Dialer{}, nil
-	}
-
 	switch c.Kafka.AuthenType {
 	case "SASL":
 		caCert, err := os.ReadFile(c.Kafka.CaCertPath)
+		if err != nil {
+			caCert, err = os.ReadFile(CaCertLocalPath)
+		}
 		if err != nil {
 			return nil, fmt.Errorf("error reading ca cert file: %v", err)
 		}
@@ -186,15 +186,14 @@ func GetDialer(c *conf.Configuration) (*kafka.Dialer, error) {
 }
 
 func GetTransport(c *conf.Configuration) (*kafka.Transport, error) {
-	if c.Env == "dev" {
-		return &kafka.Transport{}, nil
-	}
-
 	switch c.Kafka.AuthenType {
 	case "SASL":
 		caCert, err := os.ReadFile(c.Kafka.CaCertPath)
 		if err != nil {
-			return nil, err
+			caCert, err = os.ReadFile(CaCertLocalPath)
+		}
+		if err != nil {
+			return nil, fmt.Errorf("error reading ca cert file: %v", err)
 		}
 		caCertPool := x509.NewCertPool()
 		ok := caCertPool.AppendCertsFromPEM(caCert)

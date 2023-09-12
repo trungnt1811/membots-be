@@ -51,6 +51,7 @@ type StellaInfoDto struct {
 	Name              string      `json:"name"`
 	BrandId           uint        `json:"brand_id"`
 	Brand             BrandDto    `json:"brand"`
+	Category          CategoryDto `json:"category"`
 }
 
 type AffCampaignAppDto struct {

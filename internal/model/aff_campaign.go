@@ -68,6 +68,7 @@ type AffCampaign struct {
 	EndTime           *time.Time          `json:"end_time"`
 	StellaDescription datatypes.JSON      `json:"stella_description"`
 	CategoryId        uint                `json:"category_id"`
+	StellaCategory    Category            `json:"stella_category" gorm:"foreignKey:CategoryId;references:ID"`
 	StellaStatus      string              `json:"stella_status"`
 	Thumbnail         string              `json:"thumbnail"`
 	StellaMaxCom      string              `json:"stella_max_com"`
@@ -98,6 +99,7 @@ func (c *AffCampaign) ToDto() dto.AffCampaignDto {
 			Name:              c.Name,
 			BrandId:           c.BrandId,
 			Brand:             c.Brand.ToBrandDto(),
+			Category:          c.StellaCategory.ToCategoryDto(),
 		},
 	}
 	campDto.Description = c.Description.ToDto()

@@ -12,12 +12,8 @@ func IsValidOrder(order string) bool {
 
 func NormalizeStatus(queryStatus string) []string {
 	switch queryStatus {
-	case "EXPIRED":
-		return []string{"EXPIRED"}
 	case "IN_PROGRESS":
 		return []string{"IN_PROGRESS"}
-	case "SCHEDULED":
-		return []string{"SCHEDULED"}
 	case "DRAFT":
 		return []string{"DRAFT"}
 	case "PAUSED":
@@ -27,6 +23,6 @@ func NormalizeStatus(queryStatus string) []string {
 	case "DELETED":
 		return []string{"DELETED"}
 	default:
-		return []string{"EXPIRED", "IN_PROGRESS", "SCHEDULED", "DRAFT", "PAUSED", "ENDED", "DELETED"}
+		return []string{"IN_PROGRESS", "DRAFT", "PAUSED", "ENDED", "DELETED"}
 	}
 }

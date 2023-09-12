@@ -56,6 +56,7 @@ func (repo *CampaignRepository) SaveATCampaign(atCampaign *types.ATCampaign) err
 		SubCategory:    atCampaign.SubCategory,
 		CookiePolicy:   atCampaign.CookiePolicy,
 		CookieDuration: atCampaign.CookieDuration,
+		StellaStatus:   "DRAFT",
 		StellaDescription: datatypes.JSON(`{
 			"action_point": "",
 			"commission_policy": "",

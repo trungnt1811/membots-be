@@ -15,6 +15,7 @@ func (a *affCampaignRepository) GetCampaignById(id uint) (model.AffCampaign, err
 	if err := a.Db.Table("aff_campaign").
 		Joins("Description").
 		Joins("Brand").
+		Joins("StellaCategory").
 		Where("aff_campaign.id = ?", id).First(&affCampaign).Error; err != nil {
 		return affCampaign, err
 	}
@@ -31,6 +32,7 @@ func (a *affCampaignRepository) GetAllCampaign(listStatus []string, page, size i
 	if err := a.Db.Table("aff_campaign").
 		Joins("Description").
 		Joins("Brand").
+		Joins("StellaCategory").
 		Where("aff_campaign.stella_status IN ?", listStatus).
 		Limit(size + 1).
 		Offset(offset).

@@ -95,7 +95,7 @@ definitions:
         type: string
       stella_description: {}
       stella_max_com:
-        type: number
+        type: string
       stella_status:
         type: string
       thumbnail:
@@ -238,10 +238,12 @@ definitions:
         type: number
       created_at:
         type: string
+      ended_at:
+        type: string
       id:
         type: integer
-      status:
-        type: string
+      rewarded_amount:
+        type: number
       updated_at:
         type: string
       user_id:
@@ -312,7 +314,7 @@ definitions:
         type: string
       stella_description: {}
       stella_max_com:
-        type: number
+        type: string
       stella_status:
         type: string
       thumbnail:

@@ -5,7 +5,6 @@ import (
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	strip "github.com/grokify/html-strip-tags-go"
-	"github.com/shopspring/decimal"
 	"gorm.io/datatypes"
 )
 
@@ -71,7 +70,7 @@ type AffCampaign struct {
 	CategoryId        uint                `json:"category_id"`
 	StellaStatus      string              `json:"stella_status"`
 	Thumbnail         string              `json:"thumbnail"`
-	StellaMaxCom      decimal.Decimal     `json:"stella_max_com" gorm:"type:decimal(4,2);"`
+	StellaMaxCom      string              `json:"stella_max_com"`
 }
 
 func (c *AffCampaign) TableName() string {
@@ -106,20 +105,20 @@ func (c *AffCampaign) ToDto() dto.AffCampaignDto {
 }
 
 type AffCampaignApp struct {
-	ID                uint            `gorm:"primarykey" json:"id"`
-	BrandId           uint            `json:"brand_id"`
-	AccessTradeId     string          `json:"accesstrade_id" gorm:"column:accesstrade_id"`
-	CreatedAt         time.Time       `json:"created_at"`
-	UpdatedAt         time.Time       `json:"updated_at"`
-	Name              string          `json:"name"`
-	Url               string          `json:"url"`
-	StartTime         *time.Time      `json:"start_time"`
-	EndTime           *time.Time      `json:"end_time"`
-	StellaDescription datatypes.JSON  `json:"stella_description"`
-	CategoryId        uint            `json:"category_id"`
-	StellaStatus      string          `json:"stella_status"`
-	Thumbnail         string          `json:"thumbnail"`
-	StellaMaxCom      decimal.Decimal `json:"stella_max_com" gorm:"type:decimal(4,2);"`
+	ID                uint           `gorm:"primarykey" json:"id"`
+	BrandId           uint           `json:"brand_id"`
+	AccessTradeId     string         `json:"accesstrade_id" gorm:"column:accesstrade_id"`
+	CreatedAt         time.Time      `json:"created_at"`
+	UpdatedAt         time.Time      `json:"updated_at"`
+	Name              string         `json:"name"`
+	Url               string         `json:"url"`
+	StartTime         *time.Time     `json:"start_time"`
+	EndTime           *time.Time     `json:"end_time"`
+	StellaDescription datatypes.JSON `json:"stella_description"`
+	CategoryId        uint           `json:"category_id"`
+	StellaStatus      string         `json:"stella_status"`
+	Thumbnail         string         `json:"thumbnail"`
+	StellaMaxCom      string         `json:"stella_max_com"`
 }
 
 func (c *AffCampaignApp) TableName() string {

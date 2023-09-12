@@ -2,8 +2,9 @@ package conf
 
 import (
 	"fmt"
-	"github.com/rs/zerolog/log"
 	"os"
+
+	"github.com/rs/zerolog/log"
 
 	"github.com/spf13/viper"
 )
@@ -71,6 +72,8 @@ type Configuration struct {
 	AppPort           uint32                      `mapstructure:"APP_PORT"`
 	Env               string                      `mapstructure:"ENV"`
 	WebhookEndPoint   string                      `mapstructure:"WEBHOOK_ENDPOINT"`
+	CreatorAuthUrl    string                      `mapstructure:"CREATOR_AUTH_URL"`
+	AppAuthUrl        string                      `mapstructure:"APP_AUTH_URL"`
 }
 
 var configuration Configuration

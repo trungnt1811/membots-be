@@ -6,13 +6,13 @@ import (
 	"github.com/astraprotocol/affiliate-system/conf"
 	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade"
 	"github.com/astraprotocol/affiliate-system/internal/app/aff_camp_app"
+	"github.com/astraprotocol/affiliate-system/internal/app/auth"
 	campaign3 "github.com/astraprotocol/affiliate-system/internal/app/campaign"
 	campaign2 "github.com/astraprotocol/affiliate-system/internal/app/console/campaign"
 	"github.com/astraprotocol/affiliate-system/internal/app/order"
 	"github.com/astraprotocol/affiliate-system/internal/app/redeem"
 	"github.com/astraprotocol/affiliate-system/internal/app/reward"
 	"github.com/astraprotocol/affiliate-system/internal/infra/caching"
-	"github.com/astraprotocol/affiliate-system/internal/middleware"
 	"github.com/astraprotocol/affiliate-system/internal/util"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -25,8 +25,8 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	rdb := conf.RedisConn()
 	redisClient := caching.NewCachingRepository(context.Background(), rdb)
 
-	// SECTION: Create auth middleware
-	jwtMiddleware := middleware.CreateJWTMiddleware(db)
+	// SECTION: Create auth handler
+	authHandler := auth.NewAuthUseCase(redisClient, config.CreatorAuthUrl, config.AppAuthUrl)
 
 	// SECTION: AT Module
 	atRepo := accesstrade.NewAccessTradeRepository(config.AccessTradeAPIKey, 3, 30)
@@ -36,7 +36,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	campaignUsecase := campaign3.NewCampaignUsecase(campaignRepo, atRepo)
 	campaignHandler := campaign3.NewCampaignHandler(campaignUsecase)
 	campaignRoute := v1.Group("/campaign")
-	campaignRoute.POST("/link", jwtMiddleware, campaignHandler.PostGenerateAffLink)
+	campaignRoute.POST("/link", authHandler.CheckUserHeader(), campaignHandler.PostGenerateAffLink)
 
 	// SECTION: Order Module and link
 	orderRepo := order.NewOrderRepository(db)
@@ -51,14 +51,14 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	redeemHandler := redeem.NewRedeemHandler(redeemUsecase)
 
 	redeemRoute := v1.Group("/redeem")
-	redeemRoute.POST("/request", jwtMiddleware, redeemHandler.PostRequestRedeem)
+	redeemRoute.POST("/request", authHandler.CheckUserHeader(), redeemHandler.PostRequestRedeem)
 
 	consoleCampRepository := campaign2.NewConsoleCampaignRepository(db)
 	consoleCampUCase := campaign2.NewCampaignUCase(consoleCampRepository)
 	consoleCampHandler := campaign2.NewConsoleCampHandler(consoleCampUCase)
 	consoleRouter := v1.Group("console")
-	consoleRouter.GET("/aff-campaign", consoleCampHandler.GetAllCampaign)
-	consoleRouter.PUT("/aff-campaign/:id", consoleCampHandler.UpdateCampaignInfo)
+	consoleRouter.GET("/aff-campaign", authHandler.CheckAdminHeader(), consoleCampHandler.GetAllCampaign)
+	consoleRouter.PUT("/aff-campaign/:id", authHandler.CheckAdminHeader(), consoleCampHandler.UpdateCampaignInfo)
 
 	// SECTION: Reward module
 	rewardRepo := reward.NewRewardRepository(db)

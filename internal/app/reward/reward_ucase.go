@@ -6,6 +6,11 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/model"
+	"github.com/samber/lo"
+)
+
+const (
+	MinClaimReward = 0.01
 )
 
 type RewardUsecase struct {
@@ -18,8 +23,51 @@ func NewRewardUsecase(repo interfaces.RewardRepository) *RewardUsecase {
 	}
 }
 
-func (u *RewardUsecase) GetRewardByOrderId(ctx context.Context, affOrderId uint) (model.Reward, error) {
-	return u.repo.GetRewardByOrderId(ctx, affOrderId)
+func (u *RewardUsecase) ClaimReward(ctx context.Context, userId uint, rewardId uint) (dto.ClaimRewardResponse, error) {
+	reward, err := u.repo.GetRewardById(ctx, userId, rewardId)
+	if err != nil {
+		return dto.ClaimRewardResponse{}, err
+	}
+	claimableReward := reward.GetClaimableReward()
+	if claimableReward < MinClaimReward {
+		return dto.ClaimRewardResponse{
+			Execute: false,
+			Amount:  claimableReward,
+		}, nil
+	}
+	// TODO: call send
+	return dto.ClaimRewardResponse{
+		Execute: true,
+		Amount:  claimableReward,
+	}, nil
+}
+
+func (u *RewardUsecase) GetRewardByOrderId(ctx context.Context, userId uint, affOrderId uint) (model.Reward, error) {
+	return u.repo.GetRewardByOrderId(ctx, userId, affOrderId)
+}
+
+func (u *RewardUsecase) GetPendingRewards(ctx context.Context, userId uint) ([]dto.RewardWithPendingDto, error) {
+	inProgressReward, err := u.repo.GetInProgressRewards(ctx, userId)
+	if err != nil {
+		return []dto.RewardWithPendingDto{}, err
+	}
+	rewardIds := lo.Map(inProgressReward, func(item model.Reward, _ int) uint {
+		return item.ID
+	})
+	rewardedReward, err := u.repo.GetRewardedAmountByReward(ctx, rewardIds)
+	if err != nil {
+		return []dto.RewardWithPendingDto{}, err
+	}
+
+	rewardWithPending := make([]dto.RewardWithPendingDto, len(inProgressReward))
+	for idx, item := range inProgressReward {
+		rewardWithPending[idx] = dto.RewardWithPendingDto{
+			ID:            item.ID,
+			PendingAmount: item.Amount - rewardedReward[item.ID],
+		}
+	}
+
+	return rewardWithPending, nil
 }
 
 func (u *RewardUsecase) GetAllReward(ctx context.Context, userId uint, page, size int) (dto.RewardResponse, error) {

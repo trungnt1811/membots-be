@@ -50,17 +50,13 @@ func (handler *RewardHandler) GetRewardByOrderId(ctx *gin.Context) {
 	}
 
 	// get reward
-	res, err := handler.usecase.GetRewardByOrderId(ctx, uint(orderId))
+	res, err := handler.usecase.GetRewardByOrderId(ctx, user.ID, uint(orderId))
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			util.RespondError(ctx, http.StatusNotFound, "failed to get reward", errors.New("reward not found"))
 			return
 		}
 		util.RespondError(ctx, http.StatusFailedDependency, "failed to get reward", err)
-		return
-	}
-	if res.UserId != user.ID {
-		util.RespondError(ctx, http.StatusUnauthorized, "failed to get reward", errors.New("user do not have authorization"))
 		return
 	}
 

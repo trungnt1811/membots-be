@@ -25,6 +25,7 @@ RUN go mod download
 
 COPY . .
 COPY dev.env .env
+COPY --from=builder /app/internal/infra/msgqueue/ca-dev.crt ./internal/infra/msgqueue/ca-dev.crt
 
 # Build the Go app
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main ./cmd/main.go

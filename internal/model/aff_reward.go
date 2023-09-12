@@ -25,7 +25,7 @@ type RewardedByReward struct {
 type Reward struct {
 	ID             uint      `gorm:"primarykey" json:"id"`
 	UserId         uint      `json:"user_id"`
-	AffOrderID     uint      `json:"aff_order_id"`
+	AtOrderID      string    `json:"accesstrade_order_id"`
 	Amount         float64   `json:"amount"`
 	RewardedAmount float64   `json:"rewarded_amount"`
 	Fee            float64   `json:"fee"`
@@ -36,13 +36,13 @@ type Reward struct {
 
 func (r *Reward) ToRewardDto() dto.RewardDto {
 	return dto.RewardDto{
-		ID:         r.ID,
-		UserId:     r.UserId,
-		AffOrderID: r.AffOrderID,
-		Amount:     r.Amount,
-		EndedAt:    r.EndedAt,
-		CreatedAt:  r.CreatedAt,
-		UpdatedAt:  r.UpdatedAt,
+		ID:        r.ID,
+		UserId:    r.UserId,
+		AtOrderID: r.AtOrderID,
+		Amount:    r.Amount,
+		EndedAt:   r.EndedAt,
+		CreatedAt: r.CreatedAt,
+		UpdatedAt: r.UpdatedAt,
 	}
 }
 

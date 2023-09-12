@@ -700,7 +700,7 @@ const docTemplate = `{
                 },
                 "stella_description": {},
                 "stella_max_com": {
-                    "type": "number"
+                    "type": "string"
                 },
                 "stella_status": {
                     "type": "string"
@@ -1034,7 +1034,7 @@ const docTemplate = `{
                 },
                 "stella_description": {},
                 "stella_max_com": {
-                    "type": "number"
+                    "type": "string"
                 },
                 "stella_status": {
                     "type": "string"

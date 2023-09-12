@@ -25,6 +25,95 @@ const (
 	"is_confirmed": 0,
 	"customer_type": ""
 }`
+	SAMPLE_CAMPAIGNS = `
+	{
+		"data": [
+			{
+				"approval": "successful",
+				"category": "E-COMMERCE",
+				"cookie_duration": 2592000,
+				"cookie_policy": "",
+				"description": {
+					"action_point": "",
+					"commission_policy": "",
+					"cookie_policy": "",
+					"introduction": "",
+					"other_notice": "",
+					"rejected_reason": "",
+					"traffic_building_policy": "",
+				},
+				"end_time": null,
+				"id": "5979386823886321997",
+				"logo": "https://content.accesstrade.vn/adv/1669171559_avatar_1669171559.gif",
+				"max_com": "4,000",
+				"merchant": "highland_redeem",
+				"name": "Highlands Redeem",
+				"scope": "public",
+				"start_time": "2022-08-03T11:34:15.225000",
+				"status": 1,
+				"sub_category": "Voucher & D\u1ecbch v\u1ee5,Th\u1ef1c ph\u1ea9m \u0111\u1ed3 u\u1ed1ng",
+				"type": 1,
+				"url": "https://promo.highlandscoffee.com.vn/uudai4"
+			},
+			{
+				"approval": "successful",
+				"category": "E-COMMERCE",
+				"cookie_duration": 604800,
+				"cookie_policy": "",
+				"description": {
+					"action_point": "",
+					"commission_policy": "",
+					"cookie_policy": "",
+					"introduction": "",
+					"other_notice": "",
+					"rejected_reason": "",
+					"traffic_building_policy": "",
+				},
+				"end_time": null,
+				"id": "5127144557053758578",
+				"logo": "https://content.accesstrade.vn/adv/1693989452_avatar_1693989452.gif",
+				"max_com": "26.4%",
+				"merchant": "lazadacps",
+				"name": "LAZADA (CPS)",
+				"scope": "public",
+				"start_time": "2019-05-15T14:41:00.070000",
+				"status": 1,
+				"sub_category": "\u0110i\u1ec7n tho\u1ea1i - M\u00e1y t\u00ednh b\u1ea3ng,Tivi-\u00e2m thanh,Thi\u1ebft b\u1ecb gia d\u1ee5ng,\u0110i\u1ec7n l\u1ea1nh - \u0111i\u1ec7n m\u00e1y,M\u00e1y \u1ea3nh - m\u00e1y quay phim ,M\u00e1y t\u00ednh - Laptop - Ph\u1ee5 ki\u1ec7n ,M\u1eb9 v\u00e0 b\u00e9,S\u1ee9c kh\u1ecfe - L\u00e0m \u0111\u1eb9p,B\u00e1ch h\u00f3a,N\u1ed9i th\u1ea5t,S\u00e1ch - VPP - Qu\u00e0 t\u1eb7ng,Nh\u1ea1c c\u1ee5,\u0110\u1ed3 th\u1ec3 thao,M\u00e1y c\u00f4ng nghi\u1ec7p,Th\u1eddi trang,Th\u1ef1c ph\u1ea9m \u0111\u1ed3 u\u1ed1ng,\u00d4 t\u00f4, xe m\u00e1y, xe \u0111\u1ea1p,Voucher & D\u1ecbch v\u1ee5,C\u00f4ng ngh\u1ec7,Tin h\u1ecdc,\u0110\u1ed3 d\u00f9ng du l\u1ecbch, th\u1ec3 thao, d\u00e3 ngo\u1ea1i,Nh\u00e0 c\u1eeda \u0111\u1eddi s\u1ed1ng,D\u1ecbch v\u1ee5 du l\u1ecbch,Th\u1eddi trang,H\u00e0ng nh\u1eadp ngo\u1ea1i,Th\u1ef1c ph\u1ea9m ch\u1ee9c n\u0103ng,\u0110\u1ed3 ch\u01a1i,Th\u1ee9c \u0103n th\u00fa c\u01b0ng,Other,\u0110i\u1ec7n t\u1eed v\u00e0 c\u00f4ng ngh\u1ec7",
+				"type": 3,
+				"url": "https://www.lazada.vn/"
+			},
+			{
+				"approval": "successful",
+				"category": "E-COMMERCE",
+				"cookie_duration": 604800,
+				"cookie_policy": "",
+				"description": {
+					"action_point": "",
+					"commission_policy": "",
+					"cookie_policy": "",
+					"introduction": "",
+					"other_notice": "",
+					"rejected_reason": "",
+					"traffic_building_policy": "",
+				},
+				"end_time": null,
+				"id": "4751584435713464237",
+				"logo": "https://content.accesstrade.vn/adv/1693886266_avatar_1693886266.gif",
+				"max_com": "45.000",
+				"merchant": "shopee",
+				"name": "Shopee Vi\u1ec7t Nam Smartlink cho t\u1ea5t c\u1ea3 thi\u1ebft b\u1ecb",
+				"scope": "public",
+				"start_time": "2018-04-24T00:00:00",
+				"status": 1,
+				"sub_category": "\u0110i\u1ec7n tho\u1ea1i - M\u00e1y t\u00ednh b\u1ea3ng,Tivi-\u00e2m thanh,Thi\u1ebft b\u1ecb gia d\u1ee5ng,\u0110i\u1ec7n l\u1ea1nh - \u0111i\u1ec7n m\u00e1y,M\u00e1y \u1ea3nh - m\u00e1y quay phim ,M\u00e1y t\u00ednh - Laptop - Ph\u1ee5 ki\u1ec7n ,M\u1eb9 v\u00e0 b\u00e9,S\u1ee9c kh\u1ecfe - L\u00e0m \u0111\u1eb9p,B\u00e1ch h\u00f3a,N\u1ed9i th\u1ea5t,S\u00e1ch - VPP - Qu\u00e0 t\u1eb7ng,Nh\u1ea1c c\u1ee5,\u0110\u1ed3 th\u1ec3 thao,M\u00e1y c\u00f4ng nghi\u1ec7p,Th\u1eddi trang,Th\u1ef1c ph\u1ea9m \u0111\u1ed3 u\u1ed1ng,\u00d4 t\u00f4, xe m\u00e1y, xe \u0111\u1ea1p,Voucher & D\u1ecbch v\u1ee5,C\u00f4ng ngh\u1ec7,Tin h\u1ecdc,\u0110\u1ed3 d\u00f9ng du l\u1ecbch, th\u1ec3 thao, d\u00e3 ngo\u1ea1i,Nh\u00e0 c\u1eeda \u0111\u1eddi s\u1ed1ng,D\u1ecbch v\u1ee5 du l\u1ecbch,Th\u1eddi trang,H\u00e0ng nh\u1eadp ngo\u1ea1i,Th\u1ef1c ph\u1ea9m ch\u1ee9c n\u0103ng,\u0110\u1ed3 ch\u01a1i,Th\u1ee9c \u0103n th\u00fa c\u01b0ng,Other,\u0110i\u1ec7n t\u1eed v\u00e0 c\u00f4ng ngh\u1ec7",
+				"type": 3,
+				"url": "https://shopee.vn/"
+			}
+		],
+		"page": 1,
+		"total_page": 1.0
+	}
+`
 	SAMPLE_ORDER_LIST_RESP = `
 {
 	"data": [

@@ -2,10 +2,11 @@ package campaign
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade/types"
 	model2 "github.com/astraprotocol/affiliate-system/internal/model"
 	"gorm.io/datatypes"
-	"time"
 
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
@@ -56,6 +57,7 @@ func (repo *CampaignRepository) SaveATCampaign(atCampaign *types.ATCampaign) err
 		SubCategory:    atCampaign.SubCategory,
 		CookiePolicy:   atCampaign.CookiePolicy,
 		CookieDuration: atCampaign.CookieDuration,
+		StellaStatus:   "DRAFT",
 		StellaDescription: datatypes.JSON(`{
 			"action_point": "",
 			"commission_policy": "",

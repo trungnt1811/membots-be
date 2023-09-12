@@ -2,8 +2,6 @@ package dto
 
 import (
 	"time"
-
-	"github.com/shopspring/decimal"
 )
 
 type CampaignDescriptionDto struct {
@@ -42,34 +40,35 @@ type AffCampaignDto struct {
 }
 
 type StellaInfoDto struct {
-	StartTime         *time.Time      `json:"start_time"`
-	EndTime           *time.Time      `json:"end_time"`
-	StellaDescription interface{}     `json:"stella_description"`
-	CategoryId        uint            `json:"category_id"`
-	StellaStatus      string          `json:"stella_status"`
-	Thumbnail         string          `json:"thumbnail"`
-	StellaMaxCom      decimal.Decimal `json:"stella_max_com"`
-	Url               string          `json:"url"`
-	Name              string          `json:"name"`
-	BrandId           uint            `json:"brand_id"`
-	Brand             BrandDto        `json:"brand"`
+	StartTime         *time.Time  `json:"start_time"`
+	EndTime           *time.Time  `json:"end_time"`
+	StellaDescription interface{} `json:"stella_description"`
+	CategoryId        uint        `json:"category_id"`
+	StellaStatus      string      `json:"stella_status"`
+	Thumbnail         string      `json:"thumbnail"`
+	StellaMaxCom      string      `json:"stella_max_com"`
+	Url               string      `json:"url"`
+	Name              string      `json:"name"`
+	BrandId           uint        `json:"brand_id"`
+	Brand             BrandDto    `json:"brand"`
+	Category          CategoryDto `json:"category"`
 }
 
 type AffCampaignAppDto struct {
-	ID                uint            `json:"id"`
-	BrandId           uint            `json:"brand_id"`
-	AccessTradeId     string          `json:"accesstrade_id"`
-	CreatedAt         time.Time       `json:"created_at"`
-	UpdatedAt         time.Time       `json:"updated_at"`
-	Name              string          `json:"name"`
-	Url               string          `json:"url"`
-	StartTime         *time.Time      `json:"start_time"`
-	EndTime           *time.Time      `json:"end_time"`
-	StellaDescription interface{}     `json:"stella_description"`
-	CategoryId        uint            `json:"category_id"`
-	StellaStatus      string          `json:"stella_status"`
-	Thumbnail         string          `json:"thumbnail"`
-	StellaMaxCom      decimal.Decimal `json:"stella_max_com"`
+	ID                uint        `json:"id"`
+	BrandId           uint        `json:"brand_id"`
+	AccessTradeId     string      `json:"accesstrade_id"`
+	CreatedAt         time.Time   `json:"created_at"`
+	UpdatedAt         time.Time   `json:"updated_at"`
+	Name              string      `json:"name"`
+	Url               string      `json:"url"`
+	StartTime         *time.Time  `json:"start_time"`
+	EndTime           *time.Time  `json:"end_time"`
+	StellaDescription interface{} `json:"stella_description"`
+	CategoryId        uint        `json:"category_id"`
+	StellaStatus      string      `json:"stella_status"`
+	Thumbnail         string      `json:"thumbnail"`
+	StellaMaxCom      string      `json:"stella_max_com"`
 }
 
 type AffCampaignDtoResponse struct {

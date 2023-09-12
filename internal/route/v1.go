@@ -13,6 +13,8 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/app/redeem"
 	"github.com/astraprotocol/affiliate-system/internal/app/reward"
 	"github.com/astraprotocol/affiliate-system/internal/infra/caching"
+	"github.com/astraprotocol/affiliate-system/internal/infra/msgqueue"
+	"github.com/astraprotocol/affiliate-system/internal/infra/shipping"
 	"github.com/astraprotocol/affiliate-system/internal/middleware"
 	"github.com/astraprotocol/affiliate-system/internal/util"
 	"github.com/gin-gonic/gin"
@@ -34,6 +36,16 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 
 	// SECTION: AT Module
 	atRepo := accesstrade.NewAccessTradeRepository(config.AccessTradeAPIKey, 3, 30)
+
+	// SECTION: Shipping Reward Service
+	shippingClientConf := shipping.ShippingClientConfig{
+		BaseUrl: config.RewardShipping.BaseUrl,
+		ApiKey:  config.RewardShipping.ApiKey,
+	}
+	shippingClient := shipping.NewShippingClient(shippingClientConf)
+
+	// SECTION: Kafka Queue
+	orderApproveQueue := msgqueue.NewKafkaConsumer(msgqueue.KAFKA_TOPIC_AFF_ORDER_APPROVE, msgqueue.KAFKA_GROUP_ID)
 
 	// SECTION: Campaign and link
 	campaignRepo := campaign3.NewCampaignRepository(db)
@@ -67,7 +79,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 
 	// SECTION: Reward module
 	rewardRepo := reward.NewRewardRepository(db)
-	rewardUsecase := reward.NewRewardUsecase(rewardRepo)
+	rewardUsecase := reward.NewRewardUsecase(rewardRepo, orderRepo, shippingClient, orderApproveQueue)
 	rewardHandler := reward.NewRewardHandler(rewardUsecase)
 
 	rewardRouter := v1.Group("/rewards")

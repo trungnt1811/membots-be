@@ -32,7 +32,7 @@ func (c *campaignUCase) UpdateCampaign(id uint, campaign dto.AffCampaignAppDto) 
 	if len(strings.TrimSpace(campaign.Url)) > 0 {
 		updates["url"] = campaign.Url
 	}
-	if !campaign.StellaMaxCom.IsZero() {
+	if len(strings.TrimSpace(campaign.StellaMaxCom)) > 0 {
 		updates["stella_max_com"] = campaign.StellaMaxCom
 	}
 	if campaign.StartTime != nil {

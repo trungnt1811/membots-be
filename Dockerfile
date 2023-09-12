@@ -1,5 +1,5 @@
 # Start from golang base image
-FROM golang:alpine as builder
+FROM golang:1.20-alpine as builder
 
 # ENV GO111MODULE=on
 
@@ -38,6 +38,7 @@ WORKDIR /root/
 # Copy the Pre-built binary file from the previous stage
 COPY --from=builder /app/main .
 COPY --from=builder /app/.env .
+COPY --from=builder /app/internal/infra/msgqueue/ca-dev.crt ./internal/infra/msgqueue/ca-dev.crt
 
 # Expose port 8888 to the outside world
 EXPOSE 8080

@@ -1,11 +1,12 @@
 package redeem
 
 import (
-	"github.com/astraprotocol/affiliate-system/internal/app/redeem/types"
-	"github.com/astraprotocol/affiliate-system/internal/interfaces"
-	"github.com/astraprotocol/affiliate-system/internal/middleware"
-	"github.com/astraprotocol/affiliate-system/internal/util"
 	"net/http"
+
+	"github.com/astraprotocol/affiliate-system/internal/app/redeem/types"
+	"github.com/astraprotocol/affiliate-system/internal/dto"
+	"github.com/astraprotocol/affiliate-system/internal/interfaces"
+	"github.com/astraprotocol/affiliate-system/internal/util"
 
 	"github.com/gin-gonic/gin"
 )
@@ -30,10 +31,11 @@ func NewRedeemHandler(usecase interfaces.RedeemUCase) *RedeemHandler {
 // @Success 200 		{object}	types.RedeemRewardResponse "when redeem code is available, only valid if not claimed yet"
 // @Failure 424 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
+// @Security ApiKeyAuth
 // @Router 	/api/v1/redeem/request [post]
 func (handler *RedeemHandler) PostRequestRedeem(c *gin.Context) {
 	// First, take user from JWT
-	_, err := middleware.GetAuthUser(c)
+	_, err := dto.GetUserInfo(c)
 	if err != nil {
 		util.RespondError(c, http.StatusBadRequest, "logged in user required", err)
 		return

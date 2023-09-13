@@ -20,8 +20,8 @@ definitions:
         description: IP phát sinh đơn hàng
         type: string
       is_confirmed:
-        description: 'Đơn hàng khóa data và được thanh toán: 0: chưa đối soát, 1:
-          đã đối soát'
+        description: "Đơn hàng khóa data và được thanh toán: 0: chưa đối soát, 1:
+          đã đối soát"
         type: string
       order_id:
         description: Mã đơn hàng hiển thị trên trang pub
@@ -50,7 +50,7 @@ definitions:
         description: Thời gian phát sinh của đơn hàng
         type: string
       status:
-        description: 'Status của đơn hàng gồm 3 giá trị: 0: new, 1: approved, 2: rejected'
+        description: "Status của đơn hàng gồm 3 giá trị: 0: new, 1: approved, 2: rejected"
         type: string
       transaction_id:
         description: Mã unique trên hệ thống AccessTrade
@@ -109,7 +109,7 @@ definitions:
     properties:
       data:
         items:
-          $ref: '#/definitions/dto.AffCampaignAppDto'
+          $ref: "#/definitions/dto.AffCampaignAppDto"
         type: array
       next_page:
         type: integer
@@ -137,7 +137,7 @@ definitions:
       created_at:
         type: string
       description:
-        $ref: '#/definitions/dto.CampaignDescriptionDto'
+        $ref: "#/definitions/dto.CampaignDescriptionDto"
       id:
         type: integer
       logo:
@@ -151,7 +151,7 @@ definitions:
       status:
         type: integer
       stella_info:
-        $ref: '#/definitions/dto.StellaInfoDto'
+        $ref: "#/definitions/dto.StellaInfoDto"
       sub_category:
         type: string
       type:
@@ -163,7 +163,7 @@ definitions:
     properties:
       data:
         items:
-          $ref: '#/definitions/dto.AffCampaignDto'
+          $ref: "#/definitions/dto.AffCampaignDto"
         type: array
       next_page:
         type: integer
@@ -249,7 +249,7 @@ definitions:
       user_id:
         type: integer
     type: object
-  dto.RewardHistoryDto:
+  dto.OrderRewardHistoryDto:
     properties:
       aff_order_id:
         type: integer
@@ -272,7 +272,7 @@ definitions:
     properties:
       data:
         items:
-          $ref: '#/definitions/dto.RewardHistoryDto'
+          $ref: "#/definitions/dto.OrderRewardHistoryDto"
         type: array
       next_page:
         type: integer
@@ -287,7 +287,7 @@ definitions:
     properties:
       data:
         items:
-          $ref: '#/definitions/dto.RewardDto'
+          $ref: "#/definitions/dto.RewardDto"
         type: array
       next_page:
         type: integer
@@ -301,7 +301,7 @@ definitions:
   dto.StellaInfoDto:
     properties:
       brand:
-        $ref: '#/definitions/dto.BrandDto'
+        $ref: "#/definitions/dto.BrandDto"
       brand_id:
         type: integer
       category_id:
@@ -331,8 +331,8 @@ definitions:
         description: valid wallet address to send reward to
         type: string
     required:
-    - redeemCode
-    - walletAddress
+      - redeemCode
+      - walletAddress
     type: object
   types.RedeemRewardResponse:
     properties:
@@ -375,346 +375,346 @@ paths:
   /api/v1/app/aff-campaign:
     get:
       consumes:
-      - application/json
+        - application/json
       description: Get list of all aff campaign
       parameters:
-      - description: page to query, default is 1
-        in: query
-        name: page
-        type: string
-      - description: size to query, default is 10
-        in: query
-        name: size
-        type: string
+        - description: page to query, default is 1
+          in: query
+          name: page
+          type: string
+        - description: size to query, default is 10
+          in: query
+          name: size
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.AffCampaignAppDtoResponse'
+            $ref: "#/definitions/dto.AffCampaignAppDtoResponse"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.GeneralError'
+            $ref: "#/definitions/util.GeneralError"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/util.GeneralError'
+            $ref: "#/definitions/util.GeneralError"
       summary: Get list of all aff campaign
       tags:
-      - app
+        - app
   /api/v1/app/aff-campaign/{id}:
     get:
       consumes:
-      - application/json
+        - application/json
       description: Get aff campaign by id
       parameters:
-      - description: id to query
-        in: path
-        name: id
-        required: true
-        type: integer
+        - description: id to query
+          in: path
+          name: id
+          required: true
+          type: integer
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.AffCampaignAppDto'
+            $ref: "#/definitions/dto.AffCampaignAppDto"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.GeneralError'
+            $ref: "#/definitions/util.GeneralError"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/util.GeneralError'
+            $ref: "#/definitions/util.GeneralError"
       summary: Get aff campaign by id
       tags:
-      - app
+        - app
   /api/v1/campaign/link:
     post:
       consumes:
-      - application/json
+        - application/json
       description: Request create a new campaign link or pick the active old one
       parameters:
-      - description: Request create link payload, required
-        in: body
-        name: payload
-        required: true
-        schema:
-          $ref: '#/definitions/dto.CreateLinkPayload'
+        - description: Request create link payload, required
+          in: body
+          name: payload
+          required: true
+          schema:
+            $ref: "#/definitions/dto.CreateLinkPayload"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: when success, return the created link for this request campaign
           schema:
-            $ref: '#/definitions/dto.CreateLinkResponse'
+            $ref: "#/definitions/dto.CreateLinkResponse"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.GeneralError'
+            $ref: "#/definitions/util.GeneralError"
         "424":
           description: Failed Dependency
           schema:
-            $ref: '#/definitions/util.GeneralError'
+            $ref: "#/definitions/util.GeneralError"
       summary: PostGenerateAffLink
       tags:
-      - redeem
+        - redeem
   /api/v1/console/aff-campaign:
     get:
       description: Get list aff campaign
       parameters:
-      - description: by to query, default is all
-        in: query
-        name: stella_status
-        type: string
-      - description: order to query, default is desc
-        in: query
-        name: order
-        type: string
-      - description: page to query, default is 1
-        in: query
-        name: page
-        type: string
-      - description: size to query, default is 10
-        in: query
-        name: size
-        type: string
+        - description: by to query, default is all
+          in: query
+          name: stella_status
+          type: string
+        - description: order to query, default is desc
+          in: query
+          name: order
+          type: string
+        - description: page to query, default is 1
+          in: query
+          name: page
+          type: string
+        - description: size to query, default is 10
+          in: query
+          name: size
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.AffCampaignDtoResponse'
+            $ref: "#/definitions/dto.AffCampaignDtoResponse"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.GeneralError'
+            $ref: "#/definitions/util.GeneralError"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/util.GeneralError'
+            $ref: "#/definitions/util.GeneralError"
       summary: Get list aff campaign
       tags:
-      - console
+        - console
   /api/v1/console/aff-campaign/{id}:
     get:
       description: Get campaign by id
       parameters:
-      - description: id to query
-        in: path
-        name: id
-        required: true
-        type: integer
+        - description: id to query
+          in: path
+          name: id
+          required: true
+          type: integer
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.AffCampaignDto'
+            $ref: "#/definitions/dto.AffCampaignDto"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.GeneralError'
+            $ref: "#/definitions/util.GeneralError"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/util.GeneralError'
+            $ref: "#/definitions/util.GeneralError"
       summary: Get campaign by id
       tags:
-      - console
+        - console
     put:
       consumes:
-      - application/json
+        - application/json
       description: update campaign info
       parameters:
-      - description: Campaign info to update, required
-        in: body
-        name: payload
-        required: true
-        schema:
-          $ref: '#/definitions/dto.AffCampaignAppDto'
-      - description: id to query
-        in: path
-        name: id
-        required: true
-        type: integer
+        - description: Campaign info to update, required
+          in: body
+          name: payload
+          required: true
+          schema:
+            $ref: "#/definitions/dto.AffCampaignAppDto"
+        - description: id to query
+          in: path
+          name: id
+          required: true
+          type: integer
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.AffCampaignAppDto'
+            $ref: "#/definitions/dto.AffCampaignAppDto"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.GeneralError'
+            $ref: "#/definitions/util.GeneralError"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/util.GeneralError'
+            $ref: "#/definitions/util.GeneralError"
       security:
-      - ApiKeyAuth: []
+        - ApiKeyAuth: []
       summary: update campaign info
       tags:
-      - console
+        - console
   /api/v1/order/post-back:
     post:
       consumes:
-      - application/json
+        - application/json
       description: A callback to receive order from AccessTrade
       parameters:
-      - description: Request create link payload, required
-        in: body
-        name: payload
-        required: true
-        schema:
-          $ref: '#/definitions/dto.ATPostBackRequest'
+        - description: Request create link payload, required
+          in: body
+          name: payload
+          required: true
+          schema:
+            $ref: "#/definitions/dto.ATPostBackRequest"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: when success, return the modified order for this post back
           schema:
-            $ref: '#/definitions/dto.ATPostBackResponse'
+            $ref: "#/definitions/dto.ATPostBackResponse"
         "417":
           description: Expectation Failed
           schema:
-            $ref: '#/definitions/util.GeneralError'
+            $ref: "#/definitions/util.GeneralError"
         "424":
           description: Failed Dependency
           schema:
-            $ref: '#/definitions/util.GeneralError'
+            $ref: "#/definitions/util.GeneralError"
       summary: PostBackOrderHandle
       tags:
-      - redeem
+        - redeem
   /api/v1/redeem/request:
     post:
       consumes:
-      - application/json
+        - application/json
       description: Send cashback to customer wallet by redeem code
       parameters:
-      - description: Redeem payload, required
-        in: body
-        name: payload
-        required: true
-        schema:
-          $ref: '#/definitions/types.RedeemRequestPayload'
+        - description: Redeem payload, required
+          in: body
+          name: payload
+          required: true
+          schema:
+            $ref: "#/definitions/types.RedeemRequestPayload"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: when redeem code is available, only valid if not claimed yet
           schema:
-            $ref: '#/definitions/types.RedeemRewardResponse'
+            $ref: "#/definitions/types.RedeemRewardResponse"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.GeneralError'
+            $ref: "#/definitions/util.GeneralError"
         "424":
           description: Failed Dependency
           schema:
-            $ref: '#/definitions/util.GeneralError'
+            $ref: "#/definitions/util.GeneralError"
       summary: PostRequestRedeem
       tags:
-      - redeem
+        - redeem
   /api/v1/rewards:
     get:
       consumes:
-      - application/json
+        - application/json
       description: Get all rewards
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.RewardResponse'
+            $ref: "#/definitions/dto.RewardResponse"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.GeneralError'
+            $ref: "#/definitions/util.GeneralError"
         "424":
           description: Failed Dependency
           schema:
-            $ref: '#/definitions/util.GeneralError'
+            $ref: "#/definitions/util.GeneralError"
       summary: Get all rewards
       tags:
-      - reward
+        - reward
   /api/v1/rewards/by-order-id:
     get:
       consumes:
-      - application/json
+        - application/json
       description: Get reward by affiliate order
       parameters:
-      - description: affiliate order id to query
-        in: query
-        name: affOrderId
-        type: number
+        - description: affiliate order id to query
+          in: query
+          name: affOrderId
+          type: number
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.RewardDto'
+            $ref: "#/definitions/dto.RewardDto"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.GeneralError'
+            $ref: "#/definitions/util.GeneralError"
         "424":
           description: Failed Dependency
           schema:
-            $ref: '#/definitions/util.GeneralError'
+            $ref: "#/definitions/util.GeneralError"
       summary: PostRequestRedeem Get reward by affiliate order
       tags:
-      - reward
+        - reward
   /api/v1/rewards/history:
     get:
       consumes:
-      - application/json
+        - application/json
       description: Get reward history records
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.RewardHistoryResponse'
+            $ref: "#/definitions/dto.RewardHistoryResponse"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.GeneralError'
+            $ref: "#/definitions/util.GeneralError"
         "424":
           description: Failed Dependency
           schema:
-            $ref: '#/definitions/util.GeneralError'
+            $ref: "#/definitions/util.GeneralError"
       summary: Get reward history records
       tags:
-      - reward
+        - reward
   /api/v1/users/{uid}:
     get:
       description: Get a user detail by uid
       parameters:
-      - description: User uid to query
-        in: path
-        name: uid
-        required: true
-        type: string
+        - description: User uid to query
+          in: path
+          name: uid
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses: {}
       security:
-      - ApiKeyAuth: []
+        - ApiKeyAuth: []
       summary: GetUserDetail
       tags:
-      - user
+        - user
 securityDefinitions:
   ApiKeyAuth:
     description: Use for authorization of reward creator

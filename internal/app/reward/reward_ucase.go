@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"math"
 	"time"
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
@@ -11,11 +12,10 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/infra/shipping"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/model"
-	"github.com/samber/lo"
 )
 
 const (
-	MinClaimReward         = 0.01    // asa
+	MinClaimReward         = 0.001   // asa
 	RewardLockTime         = 60 * 24 // hours
 	AffRewardFee           = 0       // percentage preserve for stella from affiliate reward
 	StellaSellerId         = 119
@@ -78,27 +78,61 @@ func (u *RewardUsecase) ListenOrderApproved() {
 	}
 }
 
-func (u *RewardUsecase) ClaimReward(ctx context.Context, userId uint, userWallet string, rewardId uint) (dto.ClaimRewardResponse, error) {
-	reward, err := u.repo.GetRewardById(ctx, userId, rewardId)
+func (u *RewardUsecase) ClaimReward(ctx context.Context, userId uint, userWallet string) (dto.ClaimRewardResponse, error) {
+	rewards, err := u.repo.GetInProgressRewards(ctx, userId)
 	if err != nil {
 		return dto.ClaimRewardResponse{}, err
 	}
-	claimableReward := reward.GetClaimableReward()
-	if claimableReward < MinClaimReward {
+
+	// Calculating Reward
+	shippingRequestId := fmt.Sprintf("affiliate-%v:%v", userId, time.Now().UnixMilli())
+	rewardClaim := model.RewardClaim{
+		UserId:            userId,
+		ShippingRequestID: shippingRequestId,
+		Amount:            0,
+	}
+	rewardToClaim := []model.Reward{}
+	orderRewardHistories := []model.OrderRewardHistory{}
+
+	for idx := range rewards {
+		orderReward, ended := rewards[idx].GetClaimableReward()
+		if orderReward < MinClaimReward {
+			continue
+		}
+
+		roundReward := math.Round(orderReward*100) / 100
+		orderRewardHistories = append(orderRewardHistories, model.OrderRewardHistory{
+			RewardID: rewards[idx].ID,
+			Amount:   roundReward,
+		})
+
+		// Update total claim amount
+		rewardClaim.Amount += roundReward
+
+		// Update reward
+		rewards[idx].RewardedAmount += roundReward
+		if ended {
+			rewards[idx].EndedAt = time.Now()
+		}
+		rewardToClaim = append(rewardToClaim, rewards[idx])
+	}
+
+	if len(rewardToClaim) == 0 {
 		return dto.ClaimRewardResponse{
 			Execute: false,
-			Amount:  claimableReward,
+			Amount:  rewardClaim.Amount,
 		}, nil
 	}
-	// TODO: claim all reward, not by reward id
+
+	// Call service send reward
 	sendReq := shipping.ReqSendPayload{
 		SellerId:       StellaSellerId,
 		ProgramAddress: StellaAffRewardProgram,
-		RequestId:      fmt.Sprintf("affiliate-%v-%v:%v", reward.ID, time.Now().UnixMilli(), reward.AtOrderID),
+		RequestId:      rewardClaim.ShippingRequestID,
 		Items: []shipping.ReqSendItem{
 			{
 				WalletAddress: userWallet,
-				Amount:        fmt.Sprint(claimableReward),
+				Amount:        fmt.Sprint(rewardClaim.Amount),
 			},
 		},
 	}
@@ -107,9 +141,15 @@ func (u *RewardUsecase) ClaimReward(ctx context.Context, userId uint, userWallet
 		return dto.ClaimRewardResponse{}, err
 	}
 
+	// Update Db
+	err = u.repo.SaveRewardClaim(ctx, &rewardClaim, rewardToClaim, orderRewardHistories)
+	if err != nil {
+		return dto.ClaimRewardResponse{}, err
+	}
+
 	return dto.ClaimRewardResponse{
 		Execute: true,
-		Amount:  claimableReward,
+		Amount:  rewardClaim.Amount,
 	}, nil
 }
 
@@ -117,28 +157,34 @@ func (u *RewardUsecase) GetRewardByOrderId(ctx context.Context, userId uint, aff
 	return u.repo.GetRewardByOrderId(ctx, userId, affOrderId)
 }
 
-func (u *RewardUsecase) GetPendingRewards(ctx context.Context, userId uint) ([]dto.RewardWithPendingDto, error) {
-	inProgressReward, err := u.repo.GetInProgressRewards(ctx, userId)
+func (u *RewardUsecase) GetRewardSummary(ctx context.Context, userId uint) (dto.RewardSummary, error) {
+	inProgressRewards, err := u.repo.GetInProgressRewards(ctx, userId)
 	if err != nil {
-		return []dto.RewardWithPendingDto{}, err
-	}
-	rewardIds := lo.Map(inProgressReward, func(item model.Reward, _ int) uint {
-		return item.ID
-	})
-	rewardedReward, err := u.repo.GetRewardedAmountByReward(ctx, rewardIds)
-	if err != nil {
-		return []dto.RewardWithPendingDto{}, err
+		return dto.RewardSummary{}, err
 	}
 
-	rewardWithPending := make([]dto.RewardWithPendingDto, len(inProgressReward))
-	for idx, item := range inProgressReward {
-		rewardWithPending[idx] = dto.RewardWithPendingDto{
-			ID:            item.ID,
-			PendingAmount: item.Amount - rewardedReward[item.ID],
-		}
+	var totalOrderReward float64 = 0
+	for _, item := range inProgressRewards {
+		totalOrderReward += item.Amount - item.RewardedAmount
 	}
 
-	return rewardWithPending, nil
+	rewardsInDay, err := u.repo.GetRewardsInDay(ctx)
+	if err != nil {
+		return dto.RewardSummary{}, err
+	}
+	var totalOrderRewardInDay float64 = 0
+	for _, item := range rewardsInDay {
+		totalOrderRewardInDay += item.Amount * model.FirstPartRewardPercent
+	}
+
+	rewardClaim, _, _ := u.calculateClaimableReward(inProgressRewards, userId)
+
+	return dto.RewardSummary{
+		ClaimableReward:     rewardClaim.Amount,
+		RewardInDay:         totalOrderRewardInDay,
+		PendingRewardOrder:  len(inProgressRewards),
+		PendingRewardAmount: totalOrderReward - rewardClaim.Amount,
+	}, nil
 }
 
 func (u *RewardUsecase) GetAllReward(ctx context.Context, userId uint, page, size int) (dto.RewardResponse, error) {
@@ -171,10 +217,10 @@ func (u *RewardUsecase) GetAllReward(ctx context.Context, userId uint, page, siz
 	}, nil
 }
 
-func (u *RewardUsecase) GetRewardHistory(ctx context.Context, userId uint, page, size int) (dto.RewardHistoryResponse, error) {
-	rewards, err := u.repo.GetRewardHistory(ctx, userId, page, size)
+func (u *RewardUsecase) GetClaimHistory(ctx context.Context, userId uint, page, size int) (dto.RewardClaimResponse, error) {
+	rewards, err := u.repo.GetClaimHistory(ctx, userId, page, size)
 	if err != nil {
-		return dto.RewardHistoryResponse{}, err
+		return dto.RewardClaimResponse{}, err
 	}
 
 	nextPage := page
@@ -182,17 +228,17 @@ func (u *RewardUsecase) GetRewardHistory(ctx context.Context, userId uint, page,
 		nextPage = page + 1
 	}
 
-	rewardDtos := make([]dto.RewardHistoryDto, len(rewards))
+	rewardDtos := make([]dto.RewardClaimDto, len(rewards))
 	for idx, item := range rewards {
-		rewardDtos[idx] = item.ToRewardHistoryDto()
+		rewardDtos[idx] = item.ToRewardClaimDto()
 	}
 
-	totalRewardHistory, err := u.repo.CountRewardHistory(ctx, userId)
+	totalRewardHistory, err := u.repo.CountClaimHistory(ctx, userId)
 	if err != nil {
-		return dto.RewardHistoryResponse{}, err
+		return dto.RewardClaimResponse{}, err
 	}
 
-	return dto.RewardHistoryResponse{
+	return dto.RewardClaimResponse{
 		NextPage: nextPage,
 		Page:     page,
 		Size:     size,

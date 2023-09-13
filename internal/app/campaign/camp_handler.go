@@ -1,10 +1,10 @@
 package campaign
 
 import (
-	"github.com/astraprotocol/affiliate-system/internal/interfaces"
-	"github.com/astraprotocol/affiliate-system/internal/middleware"
-	"github.com/astraprotocol/affiliate-system/internal/util"
 	"net/http"
+
+	"github.com/astraprotocol/affiliate-system/internal/interfaces"
+	"github.com/astraprotocol/affiliate-system/internal/util"
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/gin-gonic/gin"
@@ -30,10 +30,11 @@ func NewCampaignHandler(usecase interfaces.CampaignUCase) *CampaignHandler {
 // @Success 200 		{object}	dto.CreateLinkResponse "when success, return the created link for this request campaign"
 // @Failure 424 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
+// @Security ApiKeyAuth
 // @Router 	/api/v1/campaign/link [post]
 func (handler *CampaignHandler) PostGenerateAffLink(c *gin.Context) {
 	// First, take user from JWT
-	user, err := middleware.GetAuthUser(c)
+	user, err := dto.GetUserInfo(c)
 	if err != nil {
 		util.RespondError(c, http.StatusBadRequest, "logged in user required", err)
 		return
@@ -46,7 +47,7 @@ func (handler *CampaignHandler) PostGenerateAffLink(c *gin.Context) {
 		return
 	}
 
-	link, err := handler.usecase.GenerateAffLink(user, &payload)
+	link, err := handler.usecase.GenerateAffLink(uint64(user.UserInfo.ID), &payload)
 	if err != nil {
 		util.RespondError(c, http.StatusFailedDependency, "create link fail", err)
 		return

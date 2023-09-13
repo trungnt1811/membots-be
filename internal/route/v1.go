@@ -15,7 +15,6 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/infra/caching"
 	"github.com/astraprotocol/affiliate-system/internal/infra/msgqueue"
 	"github.com/astraprotocol/affiliate-system/internal/infra/shipping"
-	"github.com/astraprotocol/affiliate-system/internal/middleware"
 	"github.com/astraprotocol/affiliate-system/internal/util"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -27,9 +26,6 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	// SECTION: Create redis client
 	rdb := conf.RedisConn()
 	redisClient := caching.NewCachingRepository(context.Background(), rdb)
-
-	// SECTION: Create auth middleware
-	jwtMiddleware := middleware.CreateJWTMiddleware(db)
 
 	// SECTION: Create auth handler
 	authHandler := auth.NewAuthUseCase(redisClient, config.CreatorAuthUrl, config.AppAuthUrl)
@@ -52,7 +48,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	campaignUsecase := campaign3.NewCampaignUsecase(campaignRepo, atRepo)
 	campaignHandler := campaign3.NewCampaignHandler(campaignUsecase)
 	campaignRoute := v1.Group("/campaign")
-	campaignRoute.POST("/link", jwtMiddleware, campaignHandler.PostGenerateAffLink)
+	campaignRoute.POST("/link", authHandler.CheckUserHeader(), campaignHandler.PostGenerateAffLink)
 
 	// SECTION: Order Module and link
 	orderRepo := order.NewOrderRepository(db)

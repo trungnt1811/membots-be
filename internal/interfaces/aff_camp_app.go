@@ -14,5 +14,5 @@ type AffCampAppRepository interface {
 
 type AffCampAppUCase interface {
 	GetAllAffCampaign(ctx context.Context, page, size int) (dto.AffCampaignAppDtoResponse, error)
-	GetAffCampaignById(ctx context.Context, id uint64) (dto.AffCampaignAppDto, error)
+	GetAffCampaignById(ctx context.Context, id uint64, userId uint32) (dto.AffCampaignAppDto, error)
 }

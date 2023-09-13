@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/util"
 	"github.com/gin-gonic/gin"
@@ -32,6 +33,7 @@ func NewAffCampAppHandler(
 // @Success 200 		{object}	dto.AffCampaignAppDtoResponse
 // @Failure 401 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
+// @Security ApiKeyAuth
 // @Router 	/api/v1/app/aff-campaign [get]
 func (handler *AffCampAppHandler) GetAllAffCampaign(ctx *gin.Context) {
 	page := ctx.GetInt("page")
@@ -55,15 +57,23 @@ func (handler *AffCampAppHandler) GetAllAffCampaign(ctx *gin.Context) {
 // @Success 200 		{object}	dto.AffCampaignAppDto
 // @Failure 401 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
+// @Security ApiKeyAuth
 // @Router 	/api/v1/app/aff-campaign/{id} [get]
 func (handler *AffCampAppHandler) GetAffCampaignById(ctx *gin.Context) {
+	// First, take user from JWT
+	user, err := dto.GetUserInfo(ctx)
+	if err != nil {
+		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
+		return
+	}
+
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
 		util.RespondError(ctx, http.StatusBadRequest, "id is invalid", err)
 		return
 	}
 
-	response, err := handler.AffCampAppUCase.GetAffCampaignById(ctx, uint64(id))
+	response, err := handler.AffCampAppUCase.GetAffCampaignById(ctx, uint64(id), user.ID)
 	if err != nil {
 		util.RespondError(ctx, http.StatusInternalServerError, "Get aff campaign by id error: ", err)
 		return

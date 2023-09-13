@@ -12,6 +12,7 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/app/order"
 	"github.com/astraprotocol/affiliate-system/internal/app/redeem"
 	"github.com/astraprotocol/affiliate-system/internal/app/reward"
+	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/infra/caching"
 	"github.com/astraprotocol/affiliate-system/internal/infra/msgqueue"
 	"github.com/astraprotocol/affiliate-system/internal/infra/shipping"
@@ -84,11 +85,13 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	rewardRouter.GET("/history", authHandler.CheckUserHeader(), rewardHandler.GetRewardHistory)
 
 	// SECTION: App module
+	streamChannel := make(chan []*dto.UserViewBrand, 1024)
+
 	appRouter := v1.Group("/app")
 	affCampAppRepository := aff_camp_app.NewAffCampAppRepository(db)
 	affCampAppCache := aff_camp_app.NewAffCampAppCacheRepository(affCampAppRepository, redisClient)
-	affCampAppService := aff_camp_app.NewAffCampAppUCase(affCampAppCache)
-	affCampAppHandler := aff_camp_app.NewAffCampAppHandler(affCampAppService)
-	appRouter.GET("/aff-campaign", affCampAppHandler.GetAllAffCampaign)
-	appRouter.GET("/aff-campaign/:id", affCampAppHandler.GetAffCampaignById)
+	affCampAppUCase := aff_camp_app.NewAffCampAppUCase(affCampAppCache, streamChannel)
+	affCampAppHandler := aff_camp_app.NewAffCampAppHandler(affCampAppUCase)
+	appRouter.GET("/aff-campaign", authHandler.CheckUserHeader(), affCampAppHandler.GetAllAffCampaign)
+	appRouter.GET("/aff-campaign/:id", authHandler.CheckUserHeader(), affCampAppHandler.GetAffCampaignById)
 }

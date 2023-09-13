@@ -9,21 +9,31 @@ import (
 
 type affCampAppUCase struct {
 	AffCampAppRepository interfaces.AffCampAppRepository
+	Stream               chan []*dto.UserViewBrand
 }
 
-func NewAffCampAppUCase(repository interfaces.AffCampAppRepository) interfaces.AffCampAppUCase {
+func NewAffCampAppUCase(repository interfaces.AffCampAppRepository, stream chan []*dto.UserViewBrand) interfaces.AffCampAppUCase {
 	return &affCampAppUCase{
 		AffCampAppRepository: repository,
+		Stream:               stream,
 	}
 }
 
-func (s affCampAppUCase) GetAffCampaignById(ctx context.Context, id uint64) (dto.AffCampaignAppDto, error) {
+func (s affCampAppUCase) GetAffCampaignById(ctx context.Context, id uint64, userId uint32) (dto.AffCampaignAppDto, error) {
 	affCampaign, err := s.AffCampAppRepository.GetAffCampaignById(ctx, id)
 	if err != nil {
 		return dto.AffCampaignAppDto{}, err
 	}
-	affCampaignAppDto := affCampaign.ToAffCampaignAppDto()
-	return affCampaignAppDto, nil
+	if userId > 0 {
+		payload := dto.UserViewBrand{
+			UserId:  userId,
+			BrandId: id,
+		}
+		uv := make([]*dto.UserViewBrand, 0)
+		uv = append(uv, &payload)
+		s.Stream <- uv
+	}
+	return affCampaign.ToAffCampaignAppDto(), nil
 }
 
 func (s affCampAppUCase) GetAllAffCampaign(ctx context.Context, page, size int) (dto.AffCampaignAppDtoResponse, error) {

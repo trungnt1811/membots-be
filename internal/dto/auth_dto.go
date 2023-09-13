@@ -13,6 +13,11 @@ type UserDto struct {
 	Id uint32 `json:"id"`
 }
 
+type UserKeyExpiredDto struct {
+	UserId    uint32 `json:"user_id"`
+	ExpiredAt int64  `json:"expired_at"`
+}
+
 type ErrorMessage struct {
 	Message string `json:"message"`
 }
@@ -34,19 +39,6 @@ type userInfo struct {
 	ID            uint32 `json:"id"`
 	Email         string `json:"email,omitempty"`
 	WalletAddress string `json:"wallet_address,omitempty"`
-}
-
-func GetUserId(ctx *gin.Context) (uint32, error) {
-	tmpUser, exists := ctx.Get(UserInfoKey)
-	if !exists {
-		return 0, fmt.Errorf("no token provided")
-	}
-	userDto := UserDto{}
-	err := mapstructure.Decode(tmpUser, &userDto)
-	if err != nil {
-		return 0, fmt.Errorf("wrong form token")
-	}
-	return userDto.Id, nil
 }
 
 func GetUserInfo(ctx *gin.Context) (JWTClaim, error) {

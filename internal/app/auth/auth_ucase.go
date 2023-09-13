@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/rs/zerolog/log"
@@ -87,13 +88,13 @@ func (s *authHandler) creatorTokenInfo(jwtToken string) (dto.UserDto, error) {
 	keyer := &caching.Keyer{Raw: key}
 	err := s.RedisClient.RetrieveItem(keyer, &authInfo)
 	if err != nil {
-		// cache miss
-		userId, err1 := s.getUserIdFromJWTToken(jwtToken)
+		userExpireInfo, err1 := s.getUserExpireFromJWTToken(jwtToken)
 		if err1 != nil {
 			return authInfo, err1
 		}
+		// cache miss
 		resp, err1 := s.HttpClient.R().SetHeader("Authorization", jwtToken).
-			SetSuccessResult(&authInfo).AddQueryParam("userId", fmt.Sprint(userId)).
+			SetSuccessResult(&authInfo).AddQueryParam("userId", fmt.Sprint(userExpireInfo.UserId)).
 			Get(s.CreatorAuthUrl)
 		if err1 != nil {
 			return authInfo, err1
@@ -101,7 +102,8 @@ func (s *authHandler) creatorTokenInfo(jwtToken string) (dto.UserDto, error) {
 		if !resp.IsSuccessState() {
 			return authInfo, err1
 		}
-		if err = s.RedisClient.SaveItem(keyer, authInfo, time.Minute); err != nil {
+		expireAt := userExpireInfo.ExpiredAt - time.Now().Unix()
+		if err = s.RedisClient.SaveItem(keyer, authInfo, time.Duration(expireAt)*time.Second); err != nil {
 			return authInfo, err
 		}
 	}
@@ -114,6 +116,10 @@ func (s *authHandler) appTokenInfo(jwtToken string) (dto.UserDto, error) {
 	keyer := &caching.Keyer{Raw: key}
 	err := s.RedisClient.RetrieveItem(keyer, &authInfo)
 	if err != nil {
+		userExpireInfo, err1 := s.getUserExpireFromJWTToken(jwtToken)
+		if err1 != nil {
+			return authInfo, err1
+		}
 		// cache miss
 		resp, err1 := s.HttpClient.R().SetHeader("Authorization", jwtToken).
 			SetSuccessResult(&authInfo).
@@ -124,36 +130,60 @@ func (s *authHandler) appTokenInfo(jwtToken string) (dto.UserDto, error) {
 		if !resp.IsSuccessState() {
 			return authInfo, err1
 		}
-		if err = s.RedisClient.SaveItem(keyer, authInfo, time.Minute); err != nil {
+		expireAt := userExpireInfo.ExpiredAt - time.Now().Unix()
+		if err = s.RedisClient.SaveItem(keyer, authInfo, time.Duration(expireAt)*time.Second); err != nil {
 			return authInfo, err
 		}
 	}
 	return authInfo, nil
 }
 
-func (s *authHandler) getUserIdFromJWTToken(jwtToken string) (uint64, error) {
+func (s *authHandler) getUserExpireFromJWTToken(jwtToken string) (dto.UserKeyExpiredDto, error) {
 	claims := jwt.MapClaims{}
+	var userKeyExpire dto.UserKeyExpiredDto
 
 	if jwtToken == "" {
-		return 0, errors.New("jwtToken is empty")
+		return userKeyExpire, errors.New("jwtToken is empty")
 	}
 
 	jwt.ParseWithClaims(jwtToken, claims, func(token *jwt.Token) (interface{}, error) {
-		return 0, errors.New("mock verification key")
+		return userKeyExpire, errors.New("mock verification key")
 	})
 
 	switch v := claims["sub"].(type) {
 	case nil:
-		return 0, errors.New("missing sub field")
+		return userKeyExpire, errors.New("missing sub field")
 	case string:
-		userId, err := strconv.ParseUint(string(v), 10, 64)
+		userId, err := strconv.ParseUint(v, 10, 64)
 		if err != nil {
-			return 0, errors.New("invalid user id")
+			return userKeyExpire, errors.New("invalid user id")
 		}
-		return userId, nil
+		userKeyExpire.UserId = uint32(userId)
 	default:
-		return 0, errors.New("sub must be string format")
+		return userKeyExpire, errors.New("sub must be string format")
 	}
+
+	switch v := claims["exp"].(type) {
+	case nil:
+		return userKeyExpire, errors.New("missing exp field")
+	case float64:
+		if int64(v) < time.Now().Unix() {
+			return userKeyExpire, errors.New("token is expired")
+		}
+		userKeyExpire.ExpiredAt = int64(v)
+	case json.Number:
+		n, err := v.Int64()
+		if err != nil {
+			return userKeyExpire, errors.New("exp must be float64 format")
+		}
+		if n < time.Now().Unix() {
+			return userKeyExpire, errors.New("token is expired")
+		}
+		userKeyExpire.ExpiredAt = n
+	default:
+		return userKeyExpire, errors.New("exp must be float64 format")
+	}
+	return userKeyExpire, nil
 }
 
 func NewAuthUseCase(redisClient caching.Repository,

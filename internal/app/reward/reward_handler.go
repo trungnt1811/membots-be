@@ -2,9 +2,10 @@ package reward
 
 import (
 	"errors"
-	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"net/http"
 	"strconv"
+
+	"github.com/astraprotocol/affiliate-system/internal/dto"
 
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/util"
@@ -50,7 +51,7 @@ func (handler *RewardHandler) GetRewardByOrderId(ctx *gin.Context) {
 	}
 
 	// get reward
-	res, err := handler.usecase.GetRewardByOrderId(ctx, user.UserInfo.ID, uint(orderId))
+	res, err := handler.usecase.GetRewardByOrderId(ctx, user.ID, uint(orderId))
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			util.RespondError(ctx, http.StatusNotFound, "failed to get reward", errors.New("reward not found"))
@@ -86,7 +87,7 @@ func (handler *RewardHandler) GetAllReward(ctx *gin.Context) {
 	size := ctx.GetInt("size")
 
 	// get reward
-	res, err := handler.usecase.GetAllReward(ctx, user.UserInfo.ID, page, size)
+	res, err := handler.usecase.GetAllReward(ctx, user.ID, page, size)
 	if err != nil {
 		util.RespondError(ctx, http.StatusFailedDependency, "failed to get rewards", err)
 		return
@@ -118,7 +119,7 @@ func (handler *RewardHandler) GetRewardHistory(ctx *gin.Context) {
 	size := ctx.GetInt("size")
 
 	// get reward
-	res, err := handler.usecase.GetRewardHistory(ctx, user.UserInfo.ID, page, size)
+	res, err := handler.usecase.GetRewardHistory(ctx, user.ID, page, size)
 	if err != nil {
 		util.RespondError(ctx, http.StatusFailedDependency, "failed to get reward history", err)
 		return

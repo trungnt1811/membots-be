@@ -43,7 +43,7 @@ func (s *CampaignUcaseTestSuite) TestGenerateAffLink() {
 	user := &model.UserEntity{
 		ID: 2449,
 	}
-	resp, err := s.ucase.GenerateAffLink(user, payload)
+	resp, err := s.ucase.GenerateAffLink(uint64(user.ID), payload)
 	s.NoError(err)
 
 	s.Equal(payload.CampaignId, resp.CampaignId)

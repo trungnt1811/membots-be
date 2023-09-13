@@ -2,8 +2,8 @@ package dto
 
 import (
 	"fmt"
+
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v4"
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -26,31 +26,44 @@ func (msg *ErrorMessage) Error() string {
 	return fmt.Sprintf("API Error: %s", msg.Message)
 }
 
-type JWTClaim struct {
-	TokenType string   `json:"token_type"`
-	Version   uint     `json:"version"`
-	UserInfo  userInfo `json:"user"`
-	Id        uint32   `json:"id"`
-	Env       string   `json:"env"`
-	jwt.RegisteredClaims
-}
-
-type userInfo struct {
+type UserInfo struct {
 	ID            uint32 `json:"id"`
 	Email         string `json:"email,omitempty"`
 	WalletAddress string `json:"wallet_address,omitempty"`
 }
 
-func GetUserInfo(ctx *gin.Context) (JWTClaim, error) {
+type UserCreatorResponse struct {
+	Data []UserCreatorData `json:"data"`
+}
+
+type UserCreatorData struct {
+	UserId uint64   `json:"userId"`
+	RoleId uint64   `json:"roleId,omitempty"`
+	User   UserInfo `json:"user"`
+}
+
+func GetUserId(ctx *gin.Context) (uint32, error) {
 	tmpUser, exists := ctx.Get(UserInfoKey)
 	if !exists {
-		return JWTClaim{}, fmt.Errorf("no token provided")
+		return 0, fmt.Errorf("no token provided")
 	}
-
-	userJwt := JWTClaim{}
-	err := mapstructure.Decode(tmpUser, &userJwt)
+	userInfo := UserInfo{}
+	err := mapstructure.Decode(tmpUser, &userInfo)
 	if err != nil {
-		return JWTClaim{}, fmt.Errorf("wrong form token")
+		return 0, fmt.Errorf("cannot decode user info")
 	}
-	return userJwt, nil
+	return userInfo.ID, nil
+}
+
+func GetUserInfo(ctx *gin.Context) (UserInfo, error) {
+	tmpUser, exists := ctx.Get(UserInfoKey)
+	if !exists {
+		return UserInfo{}, fmt.Errorf("no token provided")
+	}
+	userInfo := UserInfo{}
+	err := mapstructure.Decode(tmpUser, &userInfo)
+	if err != nil {
+		return UserInfo{}, fmt.Errorf("cannot decode user info")
+	}
+	return userInfo, nil
 }

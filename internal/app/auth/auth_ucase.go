@@ -44,7 +44,7 @@ func (s *authHandler) CheckAdminHeader() gin.HandlerFunc {
 			return
 		}
 
-		c.Set(dto.UserCreatorInfoKey, info)
+		c.Set(dto.UserInfoKey, info)
 		c.Next()
 	}
 }
@@ -72,12 +72,12 @@ func (s *authHandler) CheckUserHeader() gin.HandlerFunc {
 			return
 		}
 
-		c.Set(dto.UserAppInfoKey, info)
+		c.Set(dto.UserInfoKey, info)
 		c.Next()
 	}
 }
 
-func (s *authHandler) creatorTokenInfo(jwtToken string) (dto.UserCreatorResponse, error) {
+func (s *authHandler) creatorTokenInfo(jwtToken string) (dto.UserInfo, error) {
 	var authInfo dto.UserCreatorResponse
 	key := fmt.Sprint("creator_token_", jwtToken[200:len(jwtToken)-1])
 	keyer := &caching.Keyer{Raw: key}
@@ -86,22 +86,22 @@ func (s *authHandler) creatorTokenInfo(jwtToken string) (dto.UserCreatorResponse
 		// cache miss
 		userId, err1 := s.getUserIdFromJWTToken(jwtToken)
 		if err1 != nil {
-			return authInfo, err1
+			return dto.UserInfo{}, err1
 		}
 		resp, err1 := s.HttpClient.R().SetHeader("Authorization", jwtToken).
 			SetSuccessResult(&authInfo).AddQueryParam("userId", fmt.Sprint(userId)).
 			Get(s.CreatorAuthUrl)
 		if err1 != nil {
-			return authInfo, resp.Err
+			return dto.UserInfo{}, resp.Err
 		}
 		if !resp.IsSuccessState() {
-			return authInfo, resp.Err
+			return dto.UserInfo{}, resp.Err
 		}
 		if err = s.RedisClient.SaveItem(keyer, authInfo, time.Minute); err != nil {
-			return authInfo, err
+			return dto.UserInfo{}, err
 		}
 	}
-	return authInfo, nil
+	return authInfo.Data[0].User, nil
 }
 
 func (s *authHandler) appTokenInfo(jwtToken string) (dto.UserDto, error) {

@@ -4,13 +4,10 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v4"
 	"github.com/mitchellh/mapstructure"
 )
 
 const UserInfoKey = "user"
-const UserCreatorInfoKey = "user_creator"
-const UserAppInfoKey = "user_app"
 
 type UserDto struct {
 	Id uint32 `json:"id"`
@@ -22,15 +19,6 @@ type ErrorMessage struct {
 
 func (msg *ErrorMessage) Error() string {
 	return fmt.Sprintf("API Error: %s", msg.Message)
-}
-
-type JWTClaim struct {
-	TokenType string   `json:"token_type"`
-	Version   uint     `json:"version"`
-	UserInfo  UserInfo `json:"user"`
-	Id        uint32   `json:"id"`
-	Env       string   `json:"env"`
-	jwt.RegisteredClaims
 }
 
 type UserInfo struct {
@@ -54,37 +42,23 @@ func GetUserId(ctx *gin.Context) (uint32, error) {
 	if !exists {
 		return 0, fmt.Errorf("no token provided")
 	}
-	userDto := UserDto{}
-	err := mapstructure.Decode(tmpUser, &userDto)
+	userInfo := UserInfo{}
+	err := mapstructure.Decode(tmpUser, &userInfo)
 	if err != nil {
-		return 0, fmt.Errorf("wrong form token")
+		return 0, fmt.Errorf("cannot decode user creator info")
 	}
-	return userDto.Id, nil
+	return userInfo.ID, nil
 }
 
-func GetUserInfo(ctx *gin.Context) (JWTClaim, error) {
+func GetUserInfo(ctx *gin.Context) (UserInfo, error) {
 	tmpUser, exists := ctx.Get(UserInfoKey)
-	if !exists {
-		return JWTClaim{}, fmt.Errorf("no token provided")
-	}
-
-	userJwt := JWTClaim{}
-	err := mapstructure.Decode(tmpUser, &userJwt)
-	if err != nil {
-		return JWTClaim{}, fmt.Errorf("wrong form token")
-	}
-	return userJwt, nil
-}
-
-func GetUserCreatorInfo(ctx *gin.Context) (UserInfo, error) {
-	tmpUser, exists := ctx.Get(UserCreatorInfoKey)
 	if !exists {
 		return UserInfo{}, fmt.Errorf("no token provided")
 	}
-	userInfoResponse := UserCreatorResponse{}
-	err := mapstructure.Decode(tmpUser, &userInfoResponse)
+	userInfo := UserInfo{}
+	err := mapstructure.Decode(tmpUser, &userInfo)
 	if err != nil {
 		return UserInfo{}, fmt.Errorf("cannot decode user creator info")
 	}
-	return userInfoResponse.Data[0].User, nil
+	return userInfo, nil
 }

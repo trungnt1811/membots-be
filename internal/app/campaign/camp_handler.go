@@ -47,7 +47,7 @@ func (handler *CampaignHandler) PostGenerateAffLink(ctx *gin.Context) {
 		return
 	}
 
-	link, err := handler.usecase.GenerateAffLink(uint64(user.UserInfo.ID), &payload)
+	link, err := handler.usecase.GenerateAffLink(uint64(user.ID), &payload)
 	if err != nil {
 		util.RespondError(ctx, http.StatusFailedDependency, "create link fail", err)
 		return

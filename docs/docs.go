@@ -655,6 +655,9 @@ const docTemplate = `{
                 "accesstrade_id": {
                     "type": "string"
                 },
+                "brand": {
+                    "$ref": "#/definitions/dto.BrandDto"
+                },
                 "brand_id": {
                     "type": "integer"
                 },

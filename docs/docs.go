@@ -937,7 +937,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.RewardHistoryDto": {
+        "dto.OrderRewardHistoryDto": {
             "type": "object",
             "properties": {
                 "accesstrade_order_id": {
@@ -972,7 +972,7 @@ const docTemplate = `{
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/dto.RewardHistoryDto"
+                        "$ref": "#/definitions/dto.OrderRewardHistoryDto"
                     }
                 },
                 "next_page": {

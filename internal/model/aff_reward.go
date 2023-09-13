@@ -9,17 +9,12 @@ import (
 const (
 	RewardStatusInProgress = "in_progress"
 	RewardStatusDone       = "done"
-	FirstHalfReward        = 0.5
+	FirstPartRewardPercent = 0.5
 	OneDay                 = 24 * time.Hour
 )
 
 func (m *Reward) TableName() string {
 	return "aff_reward"
-}
-
-type RewardedByReward struct {
-	RewardID       uint    `json:"reward_id"`
-	RewardedAmount float64 `json:"rewarded_amount"`
 }
 
 type Reward struct {
@@ -46,13 +41,15 @@ func (r *Reward) ToRewardDto() dto.RewardDto {
 	}
 }
 
-func (r *Reward) GetClaimableReward() float64 {
+func (r *Reward) GetClaimableReward() (rewardAmount float64, ended bool) {
 	daysPassed := int(time.Since(r.CreatedAt) / OneDay)   // number of days passed since order created
 	totalDays := int(r.EndedAt.Sub(r.CreatedAt) / OneDay) // total lock days
 	claimablePercent := float64(daysPassed) / float64(totalDays)
 	if claimablePercent > 1 {
 		claimablePercent = 1
+		ended = true
 	}
 
-	return FirstHalfReward*r.Amount + (1-FirstHalfReward)*r.Amount*claimablePercent - r.RewardedAmount
+	rewardAmount = FirstPartRewardPercent*r.Amount + (1-FirstPartRewardPercent)*r.Amount*claimablePercent - r.RewardedAmount
+	return
 }

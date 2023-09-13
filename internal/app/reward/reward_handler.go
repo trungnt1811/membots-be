@@ -65,6 +65,35 @@ func (handler *RewardHandler) GetRewardByOrderId(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
+// GetAllReward Get reward summary of an account
+// @Summary Get reward summary of an account
+// @Description Get reward summary of an account
+// @Tags 	reward
+// @Accept	json
+// @Produce json
+// @Success 200 		{object}	dto.RewardSummary
+// @Failure 424 		{object}	util.GeneralError
+// @Failure 400 		{object}	util.GeneralError
+// @Router 	/api/v1/rewards/summary [get]
+func (handler *RewardHandler) GetRewardSummary(ctx *gin.Context) {
+	// First, take user from JWT
+	user, err := dto.GetUserInfo(ctx)
+	if err != nil {
+		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
+		return
+	}
+
+	// get reward
+	res, err := handler.usecase.GetRewardSummary(ctx, user.ID)
+	if err != nil {
+		util.RespondError(ctx, http.StatusFailedDependency, "failed to get reward summary", err)
+		return
+	}
+
+	// Response transaction status
+	ctx.JSON(http.StatusOK, res)
+}
+
 // GetAllReward Get all rewards
 // @Summary Get all rewards
 // @Description Get all rewards
@@ -106,8 +135,8 @@ func (handler *RewardHandler) GetAllReward(ctx *gin.Context) {
 // @Success 200 		{object}	dto.RewardHistoryResponse
 // @Failure 424 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
-// @Router 	/api/v1/rewards/history [get]
-func (handler *RewardHandler) GetRewardHistory(ctx *gin.Context) {
+// @Router 	/api/v1/rewards/claims [get]
+func (handler *RewardHandler) GetClaimHistory(ctx *gin.Context) {
 	// First, take user from JWT
 	user, err := dto.GetUserInfo(ctx)
 	if err != nil {
@@ -119,9 +148,38 @@ func (handler *RewardHandler) GetRewardHistory(ctx *gin.Context) {
 	size := ctx.GetInt("size")
 
 	// get reward
-	res, err := handler.usecase.GetRewardHistory(ctx, user.ID, page, size)
+	res, err := handler.usecase.GetClaimHistory(ctx, user.ID, page, size)
 	if err != nil {
 		util.RespondError(ctx, http.StatusFailedDependency, "failed to get reward history", err)
+		return
+	}
+
+	// Response transaction status
+	ctx.JSON(http.StatusOK, res)
+}
+
+// GetAllReward Claim reward of all orders
+// @Summary Claim reward of all orders
+// @Description Claim reward of all orders
+// @Tags 	reward
+// @Accept	json
+// @Produce json
+// @Success 200 		{object}	dto.RewardSummary
+// @Failure 424 		{object}	util.GeneralError
+// @Failure 400 		{object}	util.GeneralError
+// @Router 	/api/v1/rewards/claims [post]
+func (handler *RewardHandler) ClaimReward(ctx *gin.Context) {
+	// First, take user from JWT
+	user, err := dto.GetUserInfo(ctx)
+	if err != nil {
+		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
+		return
+	}
+
+	// get reward
+	res, err := handler.usecase.ClaimReward(ctx, user.ID, user.WalletAddress)
+	if err != nil {
+		util.RespondError(ctx, http.StatusFailedDependency, "failed to claim reward", err)
 		return
 	}
 

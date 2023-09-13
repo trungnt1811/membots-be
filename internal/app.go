@@ -11,6 +11,8 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/util"
 	"github.com/astraprotocol/affiliate-system/internal/util/log"
 	"github.com/astraprotocol/affiliate-system/internal/webhook"
+	"github.com/astraprotocol/affiliate-system/internal/worker/cron"
+	"github.com/astraprotocol/affiliate-system/internal/worker/kafkaconsumer"
 
 	pagination "github.com/AstraProtocol/reward-libs/middleware"
 	"github.com/rs/zerolog"
@@ -88,7 +90,10 @@ func RunApp(config *conf.Configuration) {
 	}
 
 	// SECTION: Run worker
-	RegisterCronJobs(config, db)
+	cron.RegisterCronJobs(config, db)
+
+	// SECTION: Run kafka consumer
+	kafkaconsumer.RegisConsumers(config, db)
 
 	// SECTION: Run Gin router
 	err = r.Run(fmt.Sprintf("0.0.0.0:%v", config.AppPort))

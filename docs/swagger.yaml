@@ -721,23 +721,6 @@ paths:
       summary: Get reward history records
       tags:
       - reward
-  /api/v1/users/{uid}:
-    get:
-      description: Get a user detail by uid
-      parameters:
-      - description: User uid to query
-        in: path
-        name: uid
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      security:
-      - ApiKeyAuth: []
-      summary: GetUserDetail
-      tags:
-      - user
 securityDefinitions:
   ApiKeyAuth:
     description: Use for authorization of reward creator

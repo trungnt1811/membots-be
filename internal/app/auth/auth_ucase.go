@@ -1,10 +1,13 @@
 package auth
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/rs/zerolog/log"
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/infra/caching"
@@ -40,6 +43,7 @@ func (s *authHandler) CheckAdminHeader() gin.HandlerFunc {
 
 		info, err := s.creatorTokenInfo(*token.Authorization)
 		if err != nil {
+			log.Error().Msgf("check admin token error", err)
 			util.RespondError(c, http.StatusUnauthorized, err.Error())
 			return
 		}
@@ -68,6 +72,7 @@ func (s *authHandler) CheckUserHeader() gin.HandlerFunc {
 
 		info, err := s.appTokenInfo(*token.Authorization)
 		if err != nil {
+			log.Error().Msgf("check user token error", err)
 			util.RespondError(c, http.StatusUnauthorized, err.Error())
 			return
 		}
@@ -83,13 +88,13 @@ func (s *authHandler) creatorTokenInfo(jwtToken string) (dto.UserInfo, error) {
 	keyer := &caching.Keyer{Raw: key}
 	err := s.RedisClient.RetrieveItem(keyer, &authInfo)
 	if err != nil {
-		// cache miss
-		userId, err1 := s.getUserIdFromJWTToken(jwtToken)
+		userExpireInfo, err1 := s.getUserExpireFromJWTToken(jwtToken)
 		if err1 != nil {
 			return dto.UserInfo{}, err1
 		}
+		// cache miss
 		resp, err1 := s.HttpClient.R().SetHeader("Authorization", jwtToken).
-			SetSuccessResult(&authInfo).AddQueryParam("userId", fmt.Sprint(userId)).
+			SetSuccessResult(&authInfo).AddQueryParam("userId", fmt.Sprint(userExpireInfo.UserId)).
 			Get(s.CreatorAuthUrl)
 		if err1 != nil {
 			return dto.UserInfo{}, err1
@@ -97,8 +102,9 @@ func (s *authHandler) creatorTokenInfo(jwtToken string) (dto.UserInfo, error) {
 		if !resp.IsSuccessState() {
 			return dto.UserInfo{}, err1
 		}
-		if err = s.RedisClient.SaveItem(keyer, authInfo, time.Minute); err != nil {
-			return dto.UserInfo{}, err
+		expireAt := userExpireInfo.ExpiredAt - time.Now().Unix()
+		if err = s.RedisClient.SaveItem(keyer, authInfo, time.Duration(expireAt)*time.Second); err != nil {
+			return authInfo.Data[0].User, err
 		}
 	}
 	return authInfo.Data[0].User, nil
@@ -110,6 +116,10 @@ func (s *authHandler) appTokenInfo(jwtToken string) (dto.UserInfo, error) {
 	keyer := &caching.Keyer{Raw: key}
 	err := s.RedisClient.RetrieveItem(keyer, &authInfo)
 	if err != nil {
+		userExpireInfo, err1 := s.getUserExpireFromJWTToken(jwtToken)
+		if err1 != nil {
+			return authInfo, err1
+		}
 		// cache miss
 		resp, err1 := s.HttpClient.R().SetHeader("Authorization", jwtToken).
 			SetSuccessResult(&authInfo).
@@ -120,36 +130,60 @@ func (s *authHandler) appTokenInfo(jwtToken string) (dto.UserInfo, error) {
 		if !resp.IsSuccessState() {
 			return dto.UserInfo{}, err1
 		}
-		if err = s.RedisClient.SaveItem(keyer, authInfo, time.Minute); err != nil {
-			return dto.UserInfo{}, err
+		expireAt := userExpireInfo.ExpiredAt - time.Now().Unix()
+		if err = s.RedisClient.SaveItem(keyer, authInfo, time.Duration(expireAt)*time.Second); err != nil {
+			return authInfo, err
 		}
 	}
 	return authInfo, nil
 }
 
-func (s *authHandler) getUserIdFromJWTToken(jwtToken string) (uint64, error) {
+func (s *authHandler) getUserExpireFromJWTToken(jwtToken string) (dto.UserKeyExpiredDto, error) {
 	claims := jwt.MapClaims{}
+	var userKeyExpire dto.UserKeyExpiredDto
 
 	if jwtToken == "" {
-		return 0, fmt.Errorf("jwtToken is empty")
+		return userKeyExpire, fmt.Errorf("jwtToken is empty")
 	}
 
 	jwt.ParseWithClaims(jwtToken, claims, func(token *jwt.Token) (interface{}, error) {
-		return 0, fmt.Errorf("mock verification key")
+		return userKeyExpire, fmt.Errorf("mock verification key")
 	})
 
 	switch v := claims["sub"].(type) {
 	case nil:
-		return 0, fmt.Errorf("missing sub field")
+		return userKeyExpire, fmt.Errorf("missing sub field")
 	case string:
-		userId, err := strconv.ParseUint(string(v), 10, 64)
+		userId, err := strconv.ParseUint(v, 10, 64)
 		if err != nil {
-			return 0, fmt.Errorf("invalid user id")
+			return userKeyExpire, fmt.Errorf("invalid user id")
 		}
-		return userId, nil
+		userKeyExpire.UserId = uint32(userId)
 	default:
-		return 0, fmt.Errorf("sub must be string format")
+		return userKeyExpire, fmt.Errorf("sub must be string format")
 	}
+
+	switch v := claims["exp"].(type) {
+	case nil:
+		return userKeyExpire, fmt.Errorf("missing exp field")
+	case float64:
+		if int64(v) < time.Now().Unix() {
+			return userKeyExpire, fmt.Errorf("token is expired")
+		}
+		userKeyExpire.ExpiredAt = int64(v)
+	case json.Number:
+		n, err := v.Int64()
+		if err != nil {
+			return userKeyExpire, fmt.Errorf("exp must be float64 format")
+		}
+		if n < time.Now().Unix() {
+			return userKeyExpire, fmt.Errorf("token is expired")
+		}
+		userKeyExpire.ExpiredAt = n
+	default:
+		return userKeyExpire, fmt.Errorf("exp must be float64 format")
+	}
+	return userKeyExpire, nil
 }
 
 func NewAuthUseCase(redisClient caching.Repository,

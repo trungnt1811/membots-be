@@ -13,6 +13,11 @@ type UserDto struct {
 	Id uint32 `json:"id"`
 }
 
+type UserKeyExpiredDto struct {
+	UserId    uint32 `json:"user_id"`
+	ExpiredAt int64  `json:"expired_at"`
+}
+
 type ErrorMessage struct {
 	Message string `json:"message"`
 }

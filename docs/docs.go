@@ -543,33 +543,6 @@ const docTemplate = `{
                     }
                 }
             }
-        },
-        "/api/v1/users/{uid}": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Get a user detail by uid",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user"
-                ],
-                "summary": "GetUserDetail",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User uid to query",
-                        "name": "uid",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
         }
     },
     "definitions": {

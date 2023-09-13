@@ -58,7 +58,7 @@ func GetUserInfo(ctx *gin.Context) (UserInfo, error) {
 	userInfo := UserInfo{}
 	err := mapstructure.Decode(tmpUser, &userInfo)
 	if err != nil {
-		return UserInfo{}, fmt.Errorf("cannot decode user creator info")
+		return UserInfo{}, fmt.Errorf("cannot decode user info")
 	}
 	return userInfo, nil
 }

@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -45,7 +44,7 @@ func (s *authHandler) CheckAdminHeader() gin.HandlerFunc {
 			return
 		}
 
-		c.Set(dto.UserInfoKey, info)
+		c.Set(dto.UserCreatorInfoKey, info)
 		c.Next()
 	}
 }
@@ -73,14 +72,14 @@ func (s *authHandler) CheckUserHeader() gin.HandlerFunc {
 			return
 		}
 
-		c.Set(dto.UserInfoKey, info)
+		c.Set(dto.UserAppInfoKey, info)
 		c.Next()
 	}
 }
 
-func (s *authHandler) creatorTokenInfo(jwtToken string) (dto.UserDto, error) {
-	var authInfo dto.UserDto
-	key := fmt.Sprint("token_", jwtToken[200:len(jwtToken)-1])
+func (s *authHandler) creatorTokenInfo(jwtToken string) (dto.UserCreatorResponse, error) {
+	var authInfo dto.UserCreatorResponse
+	key := fmt.Sprint("creator_token_", jwtToken[200:len(jwtToken)-1])
 	keyer := &caching.Keyer{Raw: key}
 	err := s.RedisClient.RetrieveItem(keyer, &authInfo)
 	if err != nil {
@@ -93,10 +92,10 @@ func (s *authHandler) creatorTokenInfo(jwtToken string) (dto.UserDto, error) {
 			SetSuccessResult(&authInfo).AddQueryParam("userId", fmt.Sprint(userId)).
 			Get(s.CreatorAuthUrl)
 		if err1 != nil {
-			return authInfo, err1
+			return authInfo, resp.Err
 		}
 		if !resp.IsSuccessState() {
-			return authInfo, err1
+			return authInfo, resp.Err
 		}
 		if err = s.RedisClient.SaveItem(keyer, authInfo, time.Minute); err != nil {
 			return authInfo, err
@@ -107,19 +106,19 @@ func (s *authHandler) creatorTokenInfo(jwtToken string) (dto.UserDto, error) {
 
 func (s *authHandler) appTokenInfo(jwtToken string) (dto.UserDto, error) {
 	var authInfo dto.UserDto
-	key := fmt.Sprint("token_", jwtToken[200:len(jwtToken)-1])
+	key := fmt.Sprint("app_token_", jwtToken[200:len(jwtToken)-1])
 	keyer := &caching.Keyer{Raw: key}
 	err := s.RedisClient.RetrieveItem(keyer, &authInfo)
 	if err != nil {
 		// cache miss
 		resp, err1 := s.HttpClient.R().SetHeader("Authorization", jwtToken).
 			SetSuccessResult(&authInfo).
-			Get(s.CreatorAuthUrl)
+			Get(s.AppAuthUrl)
 		if err1 != nil {
-			return authInfo, err1
+			return authInfo, resp.Err
 		}
 		if !resp.IsSuccessState() {
-			return authInfo, err1
+			return authInfo, resp.Err
 		}
 		if err = s.RedisClient.SaveItem(keyer, authInfo, time.Minute); err != nil {
 			return authInfo, err
@@ -132,24 +131,24 @@ func (s *authHandler) getUserIdFromJWTToken(jwtToken string) (uint64, error) {
 	claims := jwt.MapClaims{}
 
 	if jwtToken == "" {
-		return 0, errors.New("jwtToken is empty")
+		return 0, fmt.Errorf("jwtToken is empty")
 	}
 
 	jwt.ParseWithClaims(jwtToken, claims, func(token *jwt.Token) (interface{}, error) {
-		return 0, errors.New("mock verification key")
+		return 0, fmt.Errorf("mock verification key")
 	})
 
 	switch v := claims["sub"].(type) {
 	case nil:
-		return 0, errors.New("missing sub field")
+		return 0, fmt.Errorf("missing sub field")
 	case string:
 		userId, err := strconv.ParseUint(string(v), 10, 64)
 		if err != nil {
-			return 0, errors.New("invalid user id")
+			return 0, fmt.Errorf("invalid user id")
 		}
 		return userId, nil
 	default:
-		return 0, errors.New("sub must be string format")
+		return 0, fmt.Errorf("sub must be string format")
 	}
 }
 

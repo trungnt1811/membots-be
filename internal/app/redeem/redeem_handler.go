@@ -33,30 +33,30 @@ func NewRedeemHandler(usecase interfaces.RedeemUCase) *RedeemHandler {
 // @Failure 400 		{object}	util.GeneralError
 // @Security ApiKeyAuth
 // @Router 	/api/v1/redeem/request [post]
-func (handler *RedeemHandler) PostRequestRedeem(c *gin.Context) {
+func (handler *RedeemHandler) PostRequestRedeem(ctx *gin.Context) {
 	// First, take user from JWT
-	_, err := dto.GetUserInfo(c)
+	_, err := dto.GetUserInfo(ctx)
 	if err != nil {
-		util.RespondError(c, http.StatusBadRequest, "logged in user required", err)
+		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
 		return
 	}
 	// Then verify payload data
 	var payload types.RedeemRequestPayload
-	if err := c.ShouldBindJSON(&payload); err != nil {
-		util.RespondError(c, http.StatusBadRequest, "request payload required", err)
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		util.RespondError(ctx, http.StatusBadRequest, "request payload required", err)
 		return
 	}
 	if err := payload.Valid(); err != nil {
-		util.RespondError(c, http.StatusBadRequest, "wrong payload format", err)
+		util.RespondError(ctx, http.StatusBadRequest, "wrong payload format", err)
 		return
 	}
 	// send reward with redeem code
 	resp, err := handler.usecase.RedeemCashback(payload)
 	if err != nil {
-		util.RespondError(c, http.StatusFailedDependency, "failed to redeem", err)
+		util.RespondError(ctx, http.StatusFailedDependency, "failed to redeem", err)
 		return
 	}
 
 	// Response transaction status
-	c.JSON(http.StatusOK, resp)
+	ctx.JSON(http.StatusOK, resp)
 }

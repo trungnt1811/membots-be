@@ -32,27 +32,27 @@ func NewCampaignHandler(usecase interfaces.CampaignUCase) *CampaignHandler {
 // @Failure 400 		{object}	util.GeneralError
 // @Security ApiKeyAuth
 // @Router 	/api/v1/campaign/link [post]
-func (handler *CampaignHandler) PostGenerateAffLink(c *gin.Context) {
+func (handler *CampaignHandler) PostGenerateAffLink(ctx *gin.Context) {
 	// First, take user from JWT
-	user, err := dto.GetUserInfo(c)
+	user, err := dto.GetUserInfo(ctx)
 	if err != nil {
-		util.RespondError(c, http.StatusBadRequest, "logged in user required", err)
+		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
 		return
 	}
 	// Then verify payload data
 	var payload dto.CreateLinkPayload
-	err = c.BindJSON(&payload)
+	err = ctx.BindJSON(&payload)
 	if err != nil {
-		util.RespondError(c, http.StatusBadRequest, "payload required", err)
+		util.RespondError(ctx, http.StatusBadRequest, "payload required", err)
 		return
 	}
 
 	link, err := handler.usecase.GenerateAffLink(uint64(user.UserInfo.ID), &payload)
 	if err != nil {
-		util.RespondError(c, http.StatusFailedDependency, "create link fail", err)
+		util.RespondError(ctx, http.StatusFailedDependency, "create link fail", err)
 		return
 	}
 
 	// Response transaction status
-	c.JSON(http.StatusOK, link)
+	ctx.JSON(http.StatusOK, link)
 }

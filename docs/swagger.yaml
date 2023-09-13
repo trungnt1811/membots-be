@@ -418,6 +418,8 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
       summary: Get list of all aff campaign
       tags:
       - app
@@ -447,6 +449,8 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
       summary: Get aff campaign by id
       tags:
       - app

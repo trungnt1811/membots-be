@@ -27,6 +27,11 @@ const docTemplate = `{
     "paths": {
         "/api/v1/app/aff-campaign": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get list of all aff campaign",
                 "consumes": [
                     "application/json"
@@ -76,6 +81,11 @@ const docTemplate = `{
         },
         "/api/v1/app/aff-campaign/{id}": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get aff campaign by id",
                 "consumes": [
                     "application/json"

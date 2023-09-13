@@ -53,6 +53,7 @@ func RespondError(w *gin.Context, status int, msg string, errors ...error) {
 			errResp.Errors = append(errResp.Errors, err.Error())
 		}
 	}
+	w.Abort()
 	w.JSON(status, errResp)
 }
 

@@ -8,10 +8,10 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/model"
 )
 
-func (u *RewardUsecase) calculateClaimableReward(rewards []model.Reward, userId uint) (*model.RewardClaim, []model.Reward, []model.OrderRewardHistory) {
+func (u *RewardUsecase) calculateClaimableReward(rewards []model.Reward, userId uint32) (*model.RewardClaim, []model.Reward, []model.OrderRewardHistory) {
 	shippingRequestId := fmt.Sprintf("affiliate-%v:%v", userId, time.Now().UnixMilli())
 	rewardClaim := model.RewardClaim{
-		UserId:            userId,
+		UserId:            uint(userId),
 		ShippingRequestID: shippingRequestId,
 		Amount:            0,
 	}

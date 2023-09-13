@@ -1,12 +1,13 @@
 package campaign
 
 import (
+	"net/http"
+	"strconv"
+
 	util "github.com/AstraProtocol/reward-libs/utils"
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	util2 "github.com/astraprotocol/affiliate-system/internal/util"
-	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -33,6 +34,7 @@ func NewConsoleCampHandler(uCase interfaces.ConsoleCampUCase) *ConsoleCampHandle
 // @Success 200 		{object}	dto.AffCampaignDtoResponse
 // @Failure 401 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
+// @Security ApiKeyAuth
 // @Router /api/v1/console/aff-campaign [get]
 func (handler *ConsoleCampHandler) GetAllCampaign(ctx *gin.Context) {
 	queryStatus := ctx.DefaultQuery("stella_status", "")
@@ -99,6 +101,7 @@ func (handler *ConsoleCampHandler) UpdateCampaignInfo(ctx *gin.Context) {
 // @Success 200 		{object}	dto.AffCampaignDto
 // @Failure 401 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
+// @Security ApiKeyAuth
 // @Router /api/v1/console/aff-campaign/{id} [get]
 func (handler *ConsoleCampHandler) GetCampaignById(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))

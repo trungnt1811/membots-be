@@ -5,8 +5,9 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/astraprotocol/affiliate-system/internal/dto"
+
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
-	"github.com/astraprotocol/affiliate-system/internal/middleware"
 	"github.com/astraprotocol/affiliate-system/internal/util"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -35,7 +36,7 @@ func NewRewardHandler(usecase interfaces.RewardUCase) *RewardHandler {
 // @Router 	/api/v1/rewards/by-order-id [get]
 func (handler *RewardHandler) GetRewardByOrderId(ctx *gin.Context) {
 	// First, take user from JWT
-	user, err := middleware.GetAuthUser(ctx)
+	user, err := dto.GetUserInfo(ctx)
 	if err != nil {
 		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
 		return
@@ -76,7 +77,7 @@ func (handler *RewardHandler) GetRewardByOrderId(ctx *gin.Context) {
 // @Router 	/api/v1/rewards/summary [get]
 func (handler *RewardHandler) GetRewardSummary(ctx *gin.Context) {
 	// First, take user from JWT
-	user, err := middleware.GetAuthUser(ctx)
+	user, err := dto.GetUserInfo(ctx)
 	if err != nil {
 		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
 		return
@@ -105,7 +106,7 @@ func (handler *RewardHandler) GetRewardSummary(ctx *gin.Context) {
 // @Router 	/api/v1/rewards [get]
 func (handler *RewardHandler) GetAllReward(ctx *gin.Context) {
 	// First, take user from JWT
-	user, err := middleware.GetAuthUser(ctx)
+	user, err := dto.GetUserInfo(ctx)
 	if err != nil {
 		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
 		return
@@ -137,7 +138,7 @@ func (handler *RewardHandler) GetAllReward(ctx *gin.Context) {
 // @Router 	/api/v1/rewards/claims [get]
 func (handler *RewardHandler) GetClaimHistory(ctx *gin.Context) {
 	// First, take user from JWT
-	user, err := middleware.GetAuthUser(ctx)
+	user, err := dto.GetUserInfo(ctx)
 	if err != nil {
 		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
 		return
@@ -169,7 +170,7 @@ func (handler *RewardHandler) GetClaimHistory(ctx *gin.Context) {
 // @Router 	/api/v1/rewards/claims [post]
 func (handler *RewardHandler) ClaimReward(ctx *gin.Context) {
 	// First, take user from JWT
-	user, err := middleware.GetAuthUser(ctx)
+	user, err := dto.GetUserInfo(ctx)
 	if err != nil {
 		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
 		return

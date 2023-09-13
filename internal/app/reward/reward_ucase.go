@@ -37,7 +37,7 @@ func NewRewardUsecase(repo interfaces.RewardRepository,
 	}
 }
 
-func (u *RewardUsecase) ClaimReward(ctx context.Context, userId uint, userWallet string) (dto.ClaimRewardResponse, error) {
+func (u *RewardUsecase) ClaimReward(ctx context.Context, userId uint32, userWallet string) (dto.ClaimRewardResponse, error) {
 	rewards, err := u.repo.GetInProgressRewards(ctx, userId)
 	if err != nil {
 		return dto.ClaimRewardResponse{}, err
@@ -46,7 +46,7 @@ func (u *RewardUsecase) ClaimReward(ctx context.Context, userId uint, userWallet
 	// Calculating Reward
 	shippingRequestId := fmt.Sprintf("affiliate-%v:%v", userId, time.Now().UnixMilli())
 	rewardClaim := model.RewardClaim{
-		UserId:            userId,
+		UserId:            uint(userId),
 		ShippingRequestID: shippingRequestId,
 		Amount:            0,
 	}
@@ -112,11 +112,11 @@ func (u *RewardUsecase) ClaimReward(ctx context.Context, userId uint, userWallet
 	}, nil
 }
 
-func (u *RewardUsecase) GetRewardByOrderId(ctx context.Context, userId uint, affOrderId uint) (model.Reward, error) {
+func (u *RewardUsecase) GetRewardByOrderId(ctx context.Context, userId uint32, affOrderId uint) (model.Reward, error) {
 	return u.repo.GetRewardByOrderId(ctx, userId, affOrderId)
 }
 
-func (u *RewardUsecase) GetRewardSummary(ctx context.Context, userId uint) (dto.RewardSummary, error) {
+func (u *RewardUsecase) GetRewardSummary(ctx context.Context, userId uint32) (dto.RewardSummary, error) {
 	inProgressRewards, err := u.repo.GetInProgressRewards(ctx, userId)
 	if err != nil {
 		return dto.RewardSummary{}, err
@@ -146,7 +146,7 @@ func (u *RewardUsecase) GetRewardSummary(ctx context.Context, userId uint) (dto.
 	}, nil
 }
 
-func (u *RewardUsecase) GetAllReward(ctx context.Context, userId uint, page, size int) (dto.RewardResponse, error) {
+func (u *RewardUsecase) GetAllReward(ctx context.Context, userId uint32, page, size int) (dto.RewardResponse, error) {
 	rewards, err := u.repo.GetAllReward(ctx, userId, page, size)
 	if err != nil {
 		return dto.RewardResponse{}, err
@@ -176,7 +176,7 @@ func (u *RewardUsecase) GetAllReward(ctx context.Context, userId uint, page, siz
 	}, nil
 }
 
-func (u *RewardUsecase) GetClaimHistory(ctx context.Context, userId uint, page, size int) (dto.RewardClaimResponse, error) {
+func (u *RewardUsecase) GetClaimHistory(ctx context.Context, userId uint32, page, size int) (dto.RewardClaimResponse, error) {
 	rewards, err := u.repo.GetClaimHistory(ctx, userId, page, size)
 	if err != nil {
 		return dto.RewardClaimResponse{}, err

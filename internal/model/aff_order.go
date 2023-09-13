@@ -1,11 +1,9 @@
 package model
 
 import (
-	"strconv"
 	"time"
 
 	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade/types"
-	"github.com/astraprotocol/affiliate-system/internal/util/log"
 )
 
 type AffOrder struct {
@@ -49,23 +47,18 @@ func (order *AffOrder) TableName() string {
 	return "aff_order"
 }
 
-func NewOrderFromATOrder(atOrder *types.ATOrder) *AffOrder {
+func NewOrderFromATOrder(userId uint, atOrder *types.ATOrder) *AffOrder {
 	orderStatus := "initial"
-	if atOrder.OrderPending == 1 {
+	if atOrder.OrderPending != 0 {
 		orderStatus = "pending"
-	} else if atOrder.OrderApproved == 1 {
+	} else if atOrder.OrderApproved != 0 {
 		orderStatus = "approved"
-	} else if atOrder.OrderReject == 1 {
+	} else if atOrder.OrderReject != 0 {
 		orderStatus = "rejected"
-	}
-	// Parse user_id from utm_content
-	utmNum, err := strconv.ParseUint(atOrder.UTMContent, 10, 32)
-	if err != nil {
-		log.LG.Errorf("cannot parse utm_content \"%s\": %v", atOrder.UTMContent, err)
 	}
 
 	return &AffOrder{
-		UserId:             uint(utmNum),
+		UserId:             userId,
 		OrderStatus:        orderStatus,
 		ATProductLink:      atOrder.ATProductLink,
 		Billing:            atOrder.Billing,

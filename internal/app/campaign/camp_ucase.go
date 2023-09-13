@@ -82,24 +82,27 @@ func (u *CampaignUsecase) GenerateAffLink(userId uint64, payload *dto.CreateLink
 		isJustCreated = true
 	}
 	link := affLinks[0]
-	// Add user id and other params
-	additionalParams := map[string]string{
-		"utm_content": fmt.Sprint(userId),
-	}
-	clickLink := util.PackQueryParamsToUrl(link.AffLink, additionalParams)
-	shortenLink := util.PackQueryParamsToUrl(link.ShortLink, additionalParams)
 
 	// Create tracked click item
-	err = u.Repo.CreateTrackedClick(&model2.AffTrackedClick{
+	tracked := &model2.AffTrackedClick{
 		UserId:     uint(userId),
 		CampaignId: campaign.ID,
-		AffLink:    clickLink,
-		ShortLink:  shortenLink,
+		LinkId:     link.ID,
+		AffLink:    link.AffLink,
+		ShortLink:  link.ShortLink,
 		UrlOrigin:  payload.OriginalUrl,
-	})
+		CreatedAt:  time.Now(),
+	}
+	err = u.Repo.CreateTrackedClick(tracked)
 	if err != nil {
 		log.LG.Errorf("create tracked click failed: %v", err)
 	}
+	// Add user id and other params
+	additionalParams := map[string]string{
+		"utm_content": util.StringifyUTMContent(uint(userId), tracked.ID),
+	}
+	clickLink := util.PackQueryParamsToUrl(link.AffLink, additionalParams)
+	shortenLink := util.PackQueryParamsToUrl(link.ShortLink, additionalParams)
 
 	linkResp := dto.CreateLinkResponse{
 		CampaignId:  link.CampaignId,

@@ -73,11 +73,14 @@ func (u *OrderUcase) PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*m
 		return nil, fmt.Errorf("not found order \"%s\" in order-list", postBackReq.OrderId)
 	}
 
+	// Parse user_id, tracked_id from utm_content
+	userId, trackedId := util.ParseUTMContent(atOrder.UTMContent)
+
 	order, err := u.Repo.FindOrderByAccessTradeId(atOrder.OrderId)
 	if err != nil {
 		if err.Error() == "record not found" {
 			// Order not exist, create new one
-			order = model.NewOrderFromATOrder(atOrder)
+			order = model.NewOrderFromATOrder(userId, atOrder)
 			order.CreatedAt = time.Now()
 			order.UpdatedAt = time.Now()
 			crErr := u.Repo.CreateOrder(order)
@@ -89,7 +92,7 @@ func (u *OrderUcase) PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*m
 		}
 	} else {
 		// Or update exist order
-		updated := model.NewOrderFromATOrder(atOrder)
+		updated := model.NewOrderFromATOrder(userId, atOrder)
 		order.UpdatedAt = time.Now()
 		updated.ID = order.ID
 		_, err = u.Repo.UpdateOrder(updated)
@@ -117,6 +120,12 @@ func (u *OrderUcase) PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*m
 		if err != nil {
 			log.LG.Errorf("produce order approved msg failed: %v", err)
 		}
+	}
+
+	// And update tracked item
+	err = u.Repo.UpdateTrackedClickOrder(trackedId, order)
+	if err != nil {
+		log.LG.Errorf("update tracked click failed: %v", err)
 	}
 
 	return order, nil

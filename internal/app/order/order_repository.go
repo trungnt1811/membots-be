@@ -98,3 +98,17 @@ func (repo *OrderRepository) FindOrderByAccessTradeId(atOrderId string) (*model.
 	err := repo.db.First(&order, "accesstrade_order_id = ?", atOrderId).Error
 	return &order, err
 }
+
+func (repo *OrderRepository) UpdateTrackedClickOrder(trackedId uint64, order *model.AffOrder) error {
+	// Only update empty order_id item
+	err := repo.db.Model(&model.AffTrackedClick{}).Where(map[string]any{
+		"id":       trackedId,
+		"order_id": "",
+	}).Updates(map[string]any{
+		"order_id":   order.AccessTradeOrderId,
+		"aff_link":   order.AffLink,
+		"updated_at": time.Now(),
+	}).Error
+
+	return err
+}

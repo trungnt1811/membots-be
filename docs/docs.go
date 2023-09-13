@@ -120,6 +120,11 @@ const docTemplate = `{
         },
         "/api/v1/campaign/link": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Request create a new campaign link or pick the active old one",
                 "consumes": [
                     "application/json"
@@ -876,6 +881,23 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.CategoryDto": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "logo": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "total_coupon": {
+                    "type": "integer"
+                }
+            }
+        },
         "dto.CreateLinkPayload": {
             "type": "object",
             "properties": {
@@ -896,6 +918,9 @@ const docTemplate = `{
                 "aff_link": {
                     "type": "string"
                 },
+                "brand_new": {
+                    "type": "boolean"
+                },
                 "campaign_id": {
                     "type": "integer"
                 },
@@ -910,8 +935,8 @@ const docTemplate = `{
         "dto.RewardDto": {
             "type": "object",
             "properties": {
-                "aff_order_id": {
-                    "type": "integer"
+                "accesstrade_order_id": {
+                    "type": "string"
                 },
                 "amount": {
                     "type": "number"
@@ -939,8 +964,8 @@ const docTemplate = `{
         "dto.RewardHistoryDto": {
             "type": "object",
             "properties": {
-                "aff_order_id": {
-                    "type": "integer"
+                "accesstrade_order_id": {
+                    "type": "string"
                 },
                 "amount": {
                     "type": "number"
@@ -1019,6 +1044,9 @@ const docTemplate = `{
                 },
                 "brand_id": {
                     "type": "integer"
+                },
+                "category": {
+                    "$ref": "#/definitions/dto.CategoryDto"
                 },
                 "category_id": {
                     "type": "integer"

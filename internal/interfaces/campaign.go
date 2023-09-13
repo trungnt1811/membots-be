@@ -20,5 +20,5 @@ type CampaignRepository interface {
 }
 
 type CampaignUCase interface {
-	GenerateAffLink(*model2.UserEntity, *dto.CreateLinkPayload) (*dto.CreateLinkResponse, error)
+	GenerateAffLink(uint64, *dto.CreateLinkPayload) (*dto.CreateLinkResponse, error)
 }

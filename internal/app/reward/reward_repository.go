@@ -21,19 +21,19 @@ func (r *RewardRepository) CreateReward(ctx context.Context, reward *model.Rewar
 	return r.db.Create(reward).Error
 }
 
-func (r *RewardRepository) GetRewardByOrderId(ctx context.Context, userId uint, affOrderId uint) (model.Reward, error) {
+func (r *RewardRepository) GetRewardByOrderId(ctx context.Context, userId uint32, affOrderId uint) (model.Reward, error) {
 	var reward model.Reward
 	err := r.db.Model(&model.Reward{}).Where("user_id = ? AND aff_order_id = ?", userId, affOrderId).First(&reward).Error
 	return reward, err
 }
 
-func (r *RewardRepository) GetRewardById(ctx context.Context, userId uint, affOrderId uint) (model.Reward, error) {
+func (r *RewardRepository) GetRewardById(ctx context.Context, userId uint32, affOrderId uint) (model.Reward, error) {
 	var reward model.Reward
 	err := r.db.Model(&model.Reward{}).Where("user_id = ? AND id = ?", affOrderId).First(&reward).Error
 	return reward, err
 }
 
-func (r *RewardRepository) GetInProgressRewards(ctx context.Context, userId uint) ([]model.Reward, error) {
+func (r *RewardRepository) GetInProgressRewards(ctx context.Context, userId uint32) ([]model.Reward, error) {
 	var rewards []model.Reward
 	err := r.db.Model(&model.Reward{}).Where("user_id = ? AND status = ?", userId, model.RewardStatusInProgress).Order("id DESC").Scan(&rewards).Error
 	return rewards, err
@@ -59,14 +59,14 @@ func (r *RewardRepository) GetRewardedAmountByReward(ctx context.Context, reward
 	return rewardedByReward, err
 }
 
-func (r *RewardRepository) GetAllReward(ctx context.Context, userId uint, page, size int) ([]model.Reward, error) {
+func (r *RewardRepository) GetAllReward(ctx context.Context, userId uint32, page, size int) ([]model.Reward, error) {
 	var rewards []model.Reward
 	offset := (page - 1) * size
 	err := r.db.Model(&model.Reward{}).Where("user_id = ?", userId).Order("id DESC").Limit(size + 1).Offset(offset).Scan(&rewards).Error
 	return rewards, err
 }
 
-func (r *RewardRepository) CountReward(ctx context.Context, userId uint) (int64, error) {
+func (r *RewardRepository) CountReward(ctx context.Context, userId uint32) (int64, error) {
 	var count int64
 	err := r.db.Model(&model.Reward{}).Where("user_id = ?", userId).Order("id DESC").Count(&count).Error
 	return count, err
@@ -76,7 +76,7 @@ func (r *RewardRepository) CreateRewardHistory(ctx context.Context, rewardHistor
 	return r.db.Create(rewardHistory).Error
 }
 
-func (r *RewardRepository) GetRewardHistory(ctx context.Context, userId uint, page, size int) ([]model.RewardHistoryFull, error) {
+func (r *RewardRepository) GetRewardHistory(ctx context.Context, userId uint32, page, size int) ([]model.RewardHistoryFull, error) {
 	var rewardHistory []model.RewardHistoryFull
 	offset := (page - 1) * size
 
@@ -92,7 +92,7 @@ func (r *RewardRepository) GetRewardHistory(ctx context.Context, userId uint, pa
 	return rewardHistory, err
 }
 
-func (r *RewardRepository) CountRewardHistory(ctx context.Context, userId uint) (int64, error) {
+func (r *RewardRepository) CountRewardHistory(ctx context.Context, userId uint32) (int64, error) {
 	var count int64
 
 	query := "SELECT count(*) " +

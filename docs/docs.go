@@ -120,6 +120,11 @@ const docTemplate = `{
         },
         "/api/v1/campaign/link": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Request create a new campaign link or pick the active old one",
                 "consumes": [
                     "application/json"
@@ -166,6 +171,11 @@ const docTemplate = `{
         },
         "/api/v1/console/aff-campaign": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get list aff campaign",
                 "produces": [
                     "application/json"
@@ -224,6 +234,11 @@ const docTemplate = `{
         },
         "/api/v1/console/aff-campaign/{id}": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get campaign by id",
                 "produces": [
                     "application/json"
@@ -367,6 +382,11 @@ const docTemplate = `{
         },
         "/api/v1/redeem/request": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Send cashback to customer wallet by redeem code",
                 "consumes": [
                     "application/json"
@@ -522,33 +542,6 @@ const docTemplate = `{
                         }
                     }
                 }
-            }
-        },
-        "/api/v1/users/{uid}": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Get a user detail by uid",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user"
-                ],
-                "summary": "GetUserDetail",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User uid to query",
-                        "name": "uid",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
             }
         }
     },
@@ -861,6 +854,23 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.CategoryDto": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "logo": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "total_coupon": {
+                    "type": "integer"
+                }
+            }
+        },
         "dto.CreateLinkPayload": {
             "type": "object",
             "properties": {
@@ -881,6 +891,9 @@ const docTemplate = `{
                 "aff_link": {
                     "type": "string"
                 },
+                "brand_new": {
+                    "type": "boolean"
+                },
                 "campaign_id": {
                     "type": "integer"
                 },
@@ -895,8 +908,8 @@ const docTemplate = `{
         "dto.RewardDto": {
             "type": "object",
             "properties": {
-                "aff_order_id": {
-                    "type": "integer"
+                "accesstrade_order_id": {
+                    "type": "string"
                 },
                 "amount": {
                     "type": "number"
@@ -924,8 +937,8 @@ const docTemplate = `{
         "dto.RewardHistoryDto": {
             "type": "object",
             "properties": {
-                "aff_order_id": {
-                    "type": "integer"
+                "accesstrade_order_id": {
+                    "type": "string"
                 },
                 "amount": {
                     "type": "number"
@@ -1004,6 +1017,9 @@ const docTemplate = `{
                 },
                 "brand_id": {
                     "type": "integer"
+                },
+                "category": {
+                    "$ref": "#/definitions/dto.CategoryDto"
                 },
                 "category_id": {
                     "type": "integer"

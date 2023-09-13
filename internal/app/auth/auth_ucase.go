@@ -1,14 +1,19 @@
 package auth
 
 import (
+	"errors"
 	"fmt"
+	"github.com/rs/zerolog/log"
+	"net/http"
+	"strconv"
+	"time"
+
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/infra/caching"
 	"github.com/astraprotocol/affiliate-system/internal/util"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/imroc/req/v3"
-	"net/http"
-	"time"
 )
 
 type authHandler struct {
@@ -26,18 +31,18 @@ func (s *authHandler) CheckAdminHeader() gin.HandlerFunc {
 
 		err := c.ShouldBindHeader(&token)
 		if err != nil {
-			c.Next()
+			util.RespondError(c, http.StatusUnauthorized, "no token provided", err)
 			return
 		}
 
-		if len(*token.Authorization) < 300 {
-			c.Next()
+		if len(*token.Authorization) < 200 {
+			util.RespondError(c, http.StatusUnauthorized, "invalid token", err)
 			return
 		}
 
 		info, err := s.creatorTokenInfo(*token.Authorization)
 		if err != nil {
-			fmt.Println(err)
+			log.Error().Msgf("check admin token error", err)
 			util.RespondError(c, http.StatusUnauthorized, err.Error())
 			return
 		}
@@ -55,18 +60,18 @@ func (s *authHandler) CheckUserHeader() gin.HandlerFunc {
 
 		err := c.ShouldBindHeader(&token)
 		if err != nil {
-			c.Next()
+			util.RespondError(c, http.StatusUnauthorized, "no token provided", err)
 			return
 		}
 
-		if len(*token.Authorization) < 300 {
-			c.Next()
+		if len(*token.Authorization) < 200 {
+			util.RespondError(c, http.StatusUnauthorized, "invalid token", err)
 			return
 		}
 
 		info, err := s.appTokenInfo(*token.Authorization)
 		if err != nil {
-			fmt.Println(err)
+			log.Error().Msgf("check user token error", err)
 			util.RespondError(c, http.StatusUnauthorized, err.Error())
 			return
 		}
@@ -83,8 +88,12 @@ func (s *authHandler) creatorTokenInfo(jwtToken string) (dto.UserDto, error) {
 	err := s.RedisClient.RetrieveItem(keyer, &authInfo)
 	if err != nil {
 		// cache miss
+		userId, err1 := s.getUserIdFromJWTToken(jwtToken)
+		if err1 != nil {
+			return authInfo, err1
+		}
 		resp, err1 := s.HttpClient.R().SetHeader("Authorization", jwtToken).
-			SetSuccessResult(&authInfo).
+			SetSuccessResult(&authInfo).AddQueryParam("userId", fmt.Sprint(userId)).
 			Get(s.CreatorAuthUrl)
 		if err1 != nil {
 			return authInfo, err1
@@ -120,6 +129,31 @@ func (s *authHandler) appTokenInfo(jwtToken string) (dto.UserDto, error) {
 		}
 	}
 	return authInfo, nil
+}
+
+func (s *authHandler) getUserIdFromJWTToken(jwtToken string) (uint64, error) {
+	claims := jwt.MapClaims{}
+
+	if jwtToken == "" {
+		return 0, errors.New("jwtToken is empty")
+	}
+
+	jwt.ParseWithClaims(jwtToken, claims, func(token *jwt.Token) (interface{}, error) {
+		return 0, errors.New("mock verification key")
+	})
+
+	switch v := claims["sub"].(type) {
+	case nil:
+		return 0, errors.New("missing sub field")
+	case string:
+		userId, err := strconv.ParseUint(string(v), 10, 64)
+		if err != nil {
+			return 0, errors.New("invalid user id")
+		}
+		return userId, nil
+	default:
+		return 0, errors.New("sub must be string format")
+	}
 }
 
 func NewAuthUseCase(redisClient caching.Repository,

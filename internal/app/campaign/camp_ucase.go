@@ -24,7 +24,7 @@ func NewCampaignUsecase(repo interfaces2.CampaignRepository, atRepo interfaces2.
 	}
 }
 
-func (u *CampaignUsecase) GenerateAffLink(user *model2.UserEntity, payload *dto.CreateLinkPayload) (*dto.CreateLinkResponse, error) {
+func (u *CampaignUsecase) GenerateAffLink(userId uint64, payload *dto.CreateLinkPayload) (*dto.CreateLinkResponse, error) {
 	// First query the campaign
 	campaigns, err := u.Repo.RetrieveCampaigns(map[string]any{
 		"id": payload.CampaignId,
@@ -41,6 +41,9 @@ func (u *CampaignUsecase) GenerateAffLink(user *model2.UserEntity, payload *dto.
 	// Then find campaign link if exist
 	isJustCreated := false
 	affLinks, err := u.Repo.RetrieveAffLinks(campaign.ID)
+	if err != nil {
+		return nil, fmt.Errorf("retrieve aff link fail: %v", err)
+	}
 	if len(affLinks) == 0 {
 		// If campaign link not available, request to generate new one
 		urls := []string{}
@@ -80,7 +83,7 @@ func (u *CampaignUsecase) GenerateAffLink(user *model2.UserEntity, payload *dto.
 	link := affLinks[0]
 	// Add user id and other params
 	additionalParams := map[string]string{
-		"utm_content": fmt.Sprint(user.ID),
+		"utm_content": fmt.Sprint(userId),
 	}
 
 	linkResp := dto.CreateLinkResponse{

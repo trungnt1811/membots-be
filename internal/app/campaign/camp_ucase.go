@@ -8,6 +8,7 @@ import (
 	interfaces2 "github.com/astraprotocol/affiliate-system/internal/interfaces"
 	model2 "github.com/astraprotocol/affiliate-system/internal/model"
 	"github.com/astraprotocol/affiliate-system/internal/util"
+	"github.com/astraprotocol/affiliate-system/internal/util/log"
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 )
@@ -82,11 +83,25 @@ func (u *CampaignUsecase) GenerateAffLink(user *model2.UserEntity, payload *dto.
 	additionalParams := map[string]string{
 		"utm_content": fmt.Sprint(user.ID),
 	}
+	clickLink := util.PackQueryParamsToUrl(link.AffLink, additionalParams)
+	shortenLink := util.PackQueryParamsToUrl(link.ShortLink, additionalParams)
+
+	// Create tracked click item
+	err = u.Repo.CreateTrackedClick(&model2.AffTrackedClick{
+		UserId:     user.ID,
+		CampaignId: campaign.ID,
+		AffLink:    clickLink,
+		ShortLink:  shortenLink,
+		UrlOrigin:  payload.OriginalUrl,
+	})
+	if err != nil {
+		log.LG.Errorf("create tracked click failed: %v", err)
+	}
 
 	linkResp := dto.CreateLinkResponse{
 		CampaignId:  link.CampaignId,
-		AffLink:     util.PackQueryParamsToUrl(link.AffLink, additionalParams),
-		ShortLink:   util.PackQueryParamsToUrl(link.ShortLink, additionalParams),
+		AffLink:     clickLink,
+		ShortLink:   shortenLink,
 		OriginalUrl: link.UrlOrigin,
 		BrandNew:    isJustCreated,
 	}

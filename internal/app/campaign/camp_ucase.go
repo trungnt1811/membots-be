@@ -91,7 +91,7 @@ func (u *CampaignUsecase) GenerateAffLink(userId uint64, payload *dto.CreateLink
 
 	// Create tracked click item
 	err = u.Repo.CreateTrackedClick(&model2.AffTrackedClick{
-		UserId:     user.ID,
+		UserId:     uint(userId),
 		CampaignId: campaign.ID,
 		AffLink:    clickLink,
 		ShortLink:  shortenLink,

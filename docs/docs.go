@@ -120,6 +120,11 @@ const docTemplate = `{
         },
         "/api/v1/campaign/link": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Request create a new campaign link or pick the active old one",
                 "consumes": [
                     "application/json"
@@ -166,6 +171,11 @@ const docTemplate = `{
         },
         "/api/v1/console/aff-campaign": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get list aff campaign",
                 "produces": [
                     "application/json"
@@ -224,6 +234,11 @@ const docTemplate = `{
         },
         "/api/v1/console/aff-campaign/{id}": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get campaign by id",
                 "produces": [
                     "application/json"
@@ -319,7 +334,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/order/postback": {
+        "/api/v1/order/post-back": {
             "post": {
                 "description": "A callback to receive order from AccessTrade",
                 "consumes": [
@@ -350,8 +365,8 @@ const docTemplate = `{
                             "$ref": "#/definitions/dto.ATPostBackResponse"
                         }
                     },
-                    "400": {
-                        "description": "Bad Request",
+                    "417": {
+                        "description": "Expectation Failed",
                         "schema": {
                             "$ref": "#/definitions/util.GeneralError"
                         }
@@ -367,6 +382,11 @@ const docTemplate = `{
         },
         "/api/v1/redeem/request": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Send cashback to customer wallet by redeem code",
                 "consumes": [
                     "application/json"
@@ -411,31 +431,117 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/users/{uid}": {
+        "/api/v1/rewards": {
             "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
+                "description": "Get all rewards",
+                "consumes": [
+                    "application/json"
                 ],
-                "description": "Get a user detail by uid",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "user"
+                    "reward"
                 ],
-                "summary": "GetUserDetail",
+                "summary": "Get all rewards",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.RewardResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "424": {
+                        "description": "Failed Dependency",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/rewards/by-order-id": {
+            "get": {
+                "description": "Get reward by affiliate order",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "reward"
+                ],
+                "summary": "PostRequestRedeem Get reward by affiliate order",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "User uid to query",
-                        "name": "uid",
-                        "in": "path",
-                        "required": true
+                        "type": "number",
+                        "description": "affiliate order id to query",
+                        "name": "affOrderId",
+                        "in": "query"
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.RewardDto"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "424": {
+                        "description": "Failed Dependency",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/rewards/history": {
+            "get": {
+                "description": "Get reward history records",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "reward"
+                ],
+                "summary": "Get reward history records",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.RewardHistoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "424": {
+                        "description": "Failed Dependency",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
             }
         }
     },
@@ -469,7 +575,7 @@ const docTemplate = `{
                 },
                 "is_confirmed": {
                     "description": "Đơn hàng khóa data và được thanh toán: 0: chưa đối soát, 1: đã đối soát",
-                    "type": "integer"
+                    "type": "string"
                 },
                 "order_id": {
                     "description": "Mã đơn hàng hiển thị trên trang pub",
@@ -485,14 +591,14 @@ const docTemplate = `{
                 },
                 "product_price": {
                     "description": "Giá của một sản phẩm",
-                    "type": "number"
+                    "type": "string"
                 },
                 "publisher_login_name": {
                     "type": "string"
                 },
                 "quantity": {
                     "description": "Số lượng sản phẩm",
-                    "type": "integer"
+                    "type": "string"
                 },
                 "referrer": {
                     "description": "click_referrer",
@@ -500,7 +606,7 @@ const docTemplate = `{
                 },
                 "reward": {
                     "description": "Hoa hồng nhận được",
-                    "type": "number"
+                    "type": "string"
                 },
                 "sales_time": {
                     "description": "Thời gian phát sinh của đơn hàng",
@@ -508,7 +614,7 @@ const docTemplate = `{
                 },
                 "status": {
                     "description": "Status của đơn hàng gồm 3 giá trị: 0: new, 1: approved, 2: rejected",
-                    "type": "integer"
+                    "type": "string"
                 },
                 "transaction_id": {
                     "description": "Mã unique trên hệ thống AccessTrade",
@@ -549,6 +655,9 @@ const docTemplate = `{
                 "accesstrade_id": {
                     "type": "string"
                 },
+                "brand": {
+                    "$ref": "#/definitions/dto.BrandDto"
+                },
                 "brand_id": {
                     "type": "integer"
                 },
@@ -572,7 +681,7 @@ const docTemplate = `{
                 },
                 "stella_description": {},
                 "stella_max_com": {
-                    "type": "number"
+                    "type": "string"
                 },
                 "stella_status": {
                     "type": "string"
@@ -748,6 +857,23 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.CategoryDto": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "logo": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "total_coupon": {
+                    "type": "integer"
+                }
+            }
+        },
         "dto.CreateLinkPayload": {
             "type": "object",
             "properties": {
@@ -768,6 +894,9 @@ const docTemplate = `{
                 "aff_link": {
                     "type": "string"
                 },
+                "brand_new": {
+                    "type": "boolean"
+                },
                 "campaign_id": {
                     "type": "integer"
                 },
@@ -779,6 +908,110 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.RewardDto": {
+            "type": "object",
+            "properties": {
+                "accesstrade_order_id": {
+                    "type": "string"
+                },
+                "amount": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "ended_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "rewarded_amount": {
+                    "type": "number"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.RewardHistoryDto": {
+            "type": "object",
+            "properties": {
+                "accesstrade_order_id": {
+                    "type": "string"
+                },
+                "amount": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "reward_id": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.RewardHistoryResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.RewardHistoryDto"
+                    }
+                },
+                "next_page": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.RewardResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.RewardDto"
+                    }
+                },
+                "next_page": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
         "dto.StellaInfoDto": {
             "type": "object",
             "properties": {
@@ -787,6 +1020,9 @@ const docTemplate = `{
                 },
                 "brand_id": {
                     "type": "integer"
+                },
+                "category": {
+                    "$ref": "#/definitions/dto.CategoryDto"
                 },
                 "category_id": {
                     "type": "integer"
@@ -802,7 +1038,7 @@ const docTemplate = `{
                 },
                 "stella_description": {},
                 "stella_max_com": {
-                    "type": "number"
+                    "type": "string"
                 },
                 "stella_status": {
                     "type": "string"

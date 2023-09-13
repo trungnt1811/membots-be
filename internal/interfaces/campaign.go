@@ -17,8 +17,10 @@ type CampaignRepository interface {
 
 	RetrieveAffLinks(campaignId uint) ([]model2.AffLink, error)
 	CreateAffLinks(data []model2.AffLink) error
+
+	CreateTrackedClick(*model2.AffTrackedClick) error
 }
 
 type CampaignUCase interface {
-	GenerateAffLink(*model2.UserEntity, *dto.CreateLinkPayload) (*dto.CreateLinkResponse, error)
+	GenerateAffLink(uint64, *dto.CreateLinkPayload) (*dto.CreateLinkResponse, error)
 }

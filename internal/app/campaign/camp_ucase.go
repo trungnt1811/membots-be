@@ -3,10 +3,12 @@ package campaign
 import (
 	"errors"
 	"fmt"
+	"time"
+
 	interfaces2 "github.com/astraprotocol/affiliate-system/internal/interfaces"
 	model2 "github.com/astraprotocol/affiliate-system/internal/model"
 	"github.com/astraprotocol/affiliate-system/internal/util"
-	"time"
+	"github.com/astraprotocol/affiliate-system/internal/util/log"
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 )
@@ -23,7 +25,7 @@ func NewCampaignUsecase(repo interfaces2.CampaignRepository, atRepo interfaces2.
 	}
 }
 
-func (u *CampaignUsecase) GenerateAffLink(user *model2.UserEntity, payload *dto.CreateLinkPayload) (*dto.CreateLinkResponse, error) {
+func (u *CampaignUsecase) GenerateAffLink(userId uint64, payload *dto.CreateLinkPayload) (*dto.CreateLinkResponse, error) {
 	// First query the campaign
 	campaigns, err := u.Repo.RetrieveCampaigns(map[string]any{
 		"id": payload.CampaignId,
@@ -38,13 +40,18 @@ func (u *CampaignUsecase) GenerateAffLink(user *model2.UserEntity, payload *dto.
 	campaign := campaigns[0]
 
 	// Then find campaign link if exist
+	isJustCreated := false
 	affLinks, err := u.Repo.RetrieveAffLinks(campaign.ID)
-
+	if err != nil {
+		return nil, fmt.Errorf("retrieve aff link fail: %v", err)
+	}
 	if len(affLinks) == 0 {
 		// If campaign link not available, request to generate new one
-		resp, err := u.ATRepo.CreateTrackingLinks(campaign.AccessTradeId, []string{
-			payload.OriginalUrl,
-		}, map[string]string{})
+		urls := []string{}
+		if payload.OriginalUrl != "" {
+			urls = append(urls, payload.OriginalUrl)
+		}
+		resp, err := u.ATRepo.CreateTrackingLinks(campaign.AccessTradeId, payload.ShortenLink, urls, map[string]string{})
 		if err != nil {
 			return nil, fmt.Errorf("fail to create aff link: %v", err)
 		}
@@ -61,6 +68,9 @@ func (u *CampaignUsecase) GenerateAffLink(user *model2.UserEntity, payload *dto.
 				ActiveStatus: model2.AFF_LINK_STATUS_ACTIVE,
 			})
 		}
+		if len(affLinks) == 0 {
+			return nil, errors.New("empty access trade links resp")
+		}
 
 		err = u.Repo.CreateAffLinks(affLinks)
 		if err != nil {
@@ -69,22 +79,34 @@ func (u *CampaignUsecase) GenerateAffLink(user *model2.UserEntity, payload *dto.
 		if len(affLinks) == 0 {
 			return nil, fmt.Errorf("aff links empty")
 		}
+		isJustCreated = true
 	}
 	link := affLinks[0]
-
-	// TODO: Create tracked tx
-
 	// Add user id and other params
 	additionalParams := map[string]string{
-		"utm_content": fmt.Sprint(user.ID),
-		"stella_tx":   fmt.Sprint("tx_"),
+		"utm_content": fmt.Sprint(userId),
+	}
+	clickLink := util.PackQueryParamsToUrl(link.AffLink, additionalParams)
+	shortenLink := util.PackQueryParamsToUrl(link.ShortLink, additionalParams)
+
+	// Create tracked click item
+	err = u.Repo.CreateTrackedClick(&model2.AffTrackedClick{
+		UserId:     uint(userId),
+		CampaignId: campaign.ID,
+		AffLink:    clickLink,
+		ShortLink:  shortenLink,
+		UrlOrigin:  payload.OriginalUrl,
+	})
+	if err != nil {
+		log.LG.Errorf("create tracked click failed: %v", err)
 	}
 
 	linkResp := dto.CreateLinkResponse{
 		CampaignId:  link.CampaignId,
-		AffLink:     util.PackQueryParamsToUrl(link.AffLink, additionalParams),
-		ShortLink:   util.PackQueryParamsToUrl(link.ShortLink, additionalParams),
+		AffLink:     clickLink,
+		ShortLink:   shortenLink,
 		OriginalUrl: link.UrlOrigin,
+		BrandNew:    isJustCreated,
 	}
 
 	return &linkResp, nil

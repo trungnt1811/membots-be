@@ -12,7 +12,6 @@ CREATE INDEX aff_merchant_brand_idx ON aff_merchant_brand (merchant);
 -- AFF TRANSACTIONS AND ORDERS
 CREATE TABLE aff_transaction (
   id INT NOT NULL AUTO_INCREMENT,
-  campaign_id INT,
   user_id INT NOT NULL,
   created_at DATETIME,
   updated_at DATETIME,
@@ -47,18 +46,15 @@ CREATE TABLE aff_transaction (
   reason_rejected TEXT,
   customer_type NVARCHAR(256),
   -- INDEXING
-  PRIMARY KEY (id),
-  FOREIGN KEY (campaign_id) REFERENCES aff_campaign(id)
+  PRIMARY KEY (id)
 ) ENGINE = InnoDB;
 
 CREATE INDEX aff_transaction_created ON aff_transaction (created_at);
 CREATE INDEX aff_transaction_updated ON aff_transaction (updated_at);
 CREATE INDEX aff_transaction_accesstrade_order_id ON aff_transaction (accesstrade_order_id);
 
-
 CREATE TABLE aff_order (
   id INT NOT NULL AUTO_INCREMENT,
-  campaign_id INT NOT NULL,
   aff_link NVARCHAR(1024),
   created_at DATETIME,
   updated_at DATETIME,
@@ -94,8 +90,7 @@ CREATE TABLE aff_order (
   utm_medium NVARCHAR(256),
   utm_content NVARCHAR(256),
   -- INDEXING
-  PRIMARY KEY (id),
-  FOREIGN KEY (campaign_id) REFERENCES aff_campaign(id)
+  PRIMARY KEY (id)
 ) ENGINE = InnoDB;
 
 CREATE INDEX aff_order_created ON aff_order (created_at);
@@ -115,3 +110,19 @@ CREATE TABLE aff_postback_log (
 CREATE INDEX aff_postback_log_order_id ON aff_postback_log (order_id);
 CREATE INDEX aff_postback_log_created ON aff_postback_log (created_at);
 CREATE INDEX aff_postback_log_updated ON aff_postback_log (updated_at);
+
+CREATE TABLE aff_tracked_click (
+  id INT NOT NULL AUTO_INCREMENT,
+  campaign_id INT,
+  user_id INT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  aff_link NVARCHAR(1024),
+  short_link NVARCHAR(1024),
+  url_origin NVARCHAR(1024),
+  order_id NVARCHAR(256),
+  PRIMARY KEY (id),
+  FOREIGN KEY (campaign_id) REFERENCES aff_campaign(id),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+) ENGINE = InnoDB;
+
+CREATE INDEX aff_tracked_click_created ON aff_tracked_click (created_at);

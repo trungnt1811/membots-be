@@ -22,7 +22,7 @@ definitions:
       is_confirmed:
         description: 'Đơn hàng khóa data và được thanh toán: 0: chưa đối soát, 1:
           đã đối soát'
-        type: integer
+        type: string
       order_id:
         description: Mã đơn hàng hiển thị trên trang pub
         type: string
@@ -34,24 +34,24 @@ definitions:
         type: string
       product_price:
         description: Giá của một sản phẩm
-        type: number
+        type: string
       publisher_login_name:
         type: string
       quantity:
         description: Số lượng sản phẩm
-        type: integer
+        type: string
       referrer:
         description: click_referrer
         type: string
       reward:
         description: Hoa hồng nhận được
-        type: number
+        type: string
       sales_time:
         description: Thời gian phát sinh của đơn hàng
         type: string
       status:
         description: 'Status của đơn hàng gồm 3 giá trị: 0: new, 1: approved, 2: rejected'
-        type: integer
+        type: string
       transaction_id:
         description: Mã unique trên hệ thống AccessTrade
         type: string
@@ -79,6 +79,8 @@ definitions:
     properties:
       accesstrade_id:
         type: string
+      brand:
+        $ref: '#/definitions/dto.BrandDto'
       brand_id:
         type: integer
       category_id:
@@ -95,7 +97,7 @@ definitions:
         type: string
       stella_description: {}
       stella_max_com:
-        type: number
+        type: string
       stella_status:
         type: string
       thumbnail:
@@ -210,6 +212,17 @@ definitions:
       updated_at:
         type: string
     type: object
+  dto.CategoryDto:
+    properties:
+      id:
+        type: integer
+      logo:
+        type: string
+      name:
+        type: string
+      total_coupon:
+        type: integer
+    type: object
   dto.CreateLinkPayload:
     properties:
       campaign_id:
@@ -223,6 +236,8 @@ definitions:
     properties:
       aff_link:
         type: string
+      brand_new:
+        type: boolean
       campaign_id:
         type: integer
       original_url:
@@ -230,12 +245,82 @@ definitions:
       short_link:
         type: string
     type: object
+  dto.RewardDto:
+    properties:
+      accesstrade_order_id:
+        type: string
+      amount:
+        type: number
+      created_at:
+        type: string
+      ended_at:
+        type: string
+      id:
+        type: integer
+      rewarded_amount:
+        type: number
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  dto.RewardHistoryDto:
+    properties:
+      accesstrade_order_id:
+        type: string
+      amount:
+        type: number
+      created_at:
+        type: string
+      id:
+        type: integer
+      reward_id:
+        type: integer
+      type:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  dto.RewardHistoryResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto.RewardHistoryDto'
+        type: array
+      next_page:
+        type: integer
+      page:
+        type: integer
+      size:
+        type: integer
+      total:
+        type: integer
+    type: object
+  dto.RewardResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto.RewardDto'
+        type: array
+      next_page:
+        type: integer
+      page:
+        type: integer
+      size:
+        type: integer
+      total:
+        type: integer
+    type: object
   dto.StellaInfoDto:
     properties:
       brand:
         $ref: '#/definitions/dto.BrandDto'
       brand_id:
         type: integer
+      category:
+        $ref: '#/definitions/dto.CategoryDto'
       category_id:
         type: integer
       end_time:
@@ -246,7 +331,7 @@ definitions:
         type: string
       stella_description: {}
       stella_max_com:
-        type: number
+        type: string
       stella_status:
         type: string
       thumbnail:
@@ -392,6 +477,8 @@ paths:
           description: Failed Dependency
           schema:
             $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
       summary: PostGenerateAffLink
       tags:
       - redeem
@@ -430,6 +517,8 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
       summary: Get list aff campaign
       tags:
       - console
@@ -457,6 +546,8 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
       summary: Get campaign by id
       tags:
       - console
@@ -496,7 +587,7 @@ paths:
       summary: update campaign info
       tags:
       - console
-  /api/v1/order/postback:
+  /api/v1/order/post-back:
     post:
       consumes:
       - application/json
@@ -515,8 +606,8 @@ paths:
           description: when success, return the modified order for this post back
           schema:
             $ref: '#/definitions/dto.ATPostBackResponse'
-        "400":
-          description: Bad Request
+        "417":
+          description: Expectation Failed
           schema:
             $ref: '#/definitions/util.GeneralError'
         "424":
@@ -553,26 +644,85 @@ paths:
           description: Failed Dependency
           schema:
             $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
       summary: PostRequestRedeem
       tags:
       - redeem
-  /api/v1/users/{uid}:
+  /api/v1/rewards:
     get:
-      description: Get a user detail by uid
-      parameters:
-      - description: User uid to query
-        in: path
-        name: uid
-        required: true
-        type: string
+      consumes:
+      - application/json
+      description: Get all rewards
       produces:
       - application/json
-      responses: {}
-      security:
-      - ApiKeyAuth: []
-      summary: GetUserDetail
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RewardResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      summary: Get all rewards
       tags:
-      - user
+      - reward
+  /api/v1/rewards/by-order-id:
+    get:
+      consumes:
+      - application/json
+      description: Get reward by affiliate order
+      parameters:
+      - description: affiliate order id to query
+        in: query
+        name: affOrderId
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RewardDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      summary: PostRequestRedeem Get reward by affiliate order
+      tags:
+      - reward
+  /api/v1/rewards/history:
+    get:
+      consumes:
+      - application/json
+      description: Get reward history records
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RewardHistoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      summary: Get reward history records
+      tags:
+      - reward
 securityDefinitions:
   ApiKeyAuth:
     description: Use for authorization of reward creator

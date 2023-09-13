@@ -21,12 +21,12 @@ func NewAffCampAppRepository(db *gorm.DB) interfaces.AffCampAppRepository {
 func (r affCampAppRepository) GetAllAffCampaign(ctx context.Context, page, size int) ([]model.AffCampaignApp, error) {
 	var listAffCampaign []model.AffCampaignApp
 	offset := (page - 1) * size
-	err := r.db.Find(&listAffCampaign).Limit(size + 1).Offset(offset).Error
+	err := r.db.Joins("Brand").Find(&listAffCampaign).Limit(size + 1).Offset(offset).Error
 	return listAffCampaign, err
 }
 
 func (r affCampAppRepository) GetAffCampaignById(ctx context.Context, id uint64) (model.AffCampaignApp, error) {
 	var affCampaign model.AffCampaignApp
-	err := r.db.Where("id = ?", id).First(&affCampaign).Error
+	err := r.db.Joins("Brand").Where("aff_campaign.id = ?", id).First(&affCampaign).Error
 	return affCampaign, err
 }

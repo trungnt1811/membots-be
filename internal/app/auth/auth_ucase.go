@@ -3,6 +3,7 @@ package auth
 import (
 	"errors"
 	"fmt"
+	"github.com/rs/zerolog/log"
 	"net/http"
 	"strconv"
 	"time"
@@ -41,6 +42,7 @@ func (s *authHandler) CheckAdminHeader() gin.HandlerFunc {
 
 		info, err := s.creatorTokenInfo(*token.Authorization)
 		if err != nil {
+			log.Error().Msgf("check admin token error", err)
 			util.RespondError(c, http.StatusUnauthorized, err.Error())
 			return
 		}
@@ -69,6 +71,7 @@ func (s *authHandler) CheckUserHeader() gin.HandlerFunc {
 
 		info, err := s.appTokenInfo(*token.Authorization)
 		if err != nil {
+			log.Error().Msgf("check user token error", err)
 			util.RespondError(c, http.StatusUnauthorized, err.Error())
 			return
 		}

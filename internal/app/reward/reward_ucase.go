@@ -78,7 +78,7 @@ func (u *RewardUsecase) ListenOrderApproved() {
 	}
 }
 
-func (u *RewardUsecase) ClaimReward(ctx context.Context, userId uint, userWallet string, rewardId uint) (dto.ClaimRewardResponse, error) {
+func (u *RewardUsecase) ClaimReward(ctx context.Context, userId uint32, userWallet string, rewardId uint) (dto.ClaimRewardResponse, error) {
 	reward, err := u.repo.GetRewardById(ctx, userId, rewardId)
 	if err != nil {
 		return dto.ClaimRewardResponse{}, err
@@ -113,11 +113,11 @@ func (u *RewardUsecase) ClaimReward(ctx context.Context, userId uint, userWallet
 	}, nil
 }
 
-func (u *RewardUsecase) GetRewardByOrderId(ctx context.Context, userId uint, affOrderId uint) (model.Reward, error) {
+func (u *RewardUsecase) GetRewardByOrderId(ctx context.Context, userId uint32, affOrderId uint) (model.Reward, error) {
 	return u.repo.GetRewardByOrderId(ctx, userId, affOrderId)
 }
 
-func (u *RewardUsecase) GetPendingRewards(ctx context.Context, userId uint) ([]dto.RewardWithPendingDto, error) {
+func (u *RewardUsecase) GetPendingRewards(ctx context.Context, userId uint32) ([]dto.RewardWithPendingDto, error) {
 	inProgressReward, err := u.repo.GetInProgressRewards(ctx, userId)
 	if err != nil {
 		return []dto.RewardWithPendingDto{}, err
@@ -141,7 +141,7 @@ func (u *RewardUsecase) GetPendingRewards(ctx context.Context, userId uint) ([]d
 	return rewardWithPending, nil
 }
 
-func (u *RewardUsecase) GetAllReward(ctx context.Context, userId uint, page, size int) (dto.RewardResponse, error) {
+func (u *RewardUsecase) GetAllReward(ctx context.Context, userId uint32, page, size int) (dto.RewardResponse, error) {
 	rewards, err := u.repo.GetAllReward(ctx, userId, page, size)
 	if err != nil {
 		return dto.RewardResponse{}, err
@@ -171,7 +171,7 @@ func (u *RewardUsecase) GetAllReward(ctx context.Context, userId uint, page, siz
 	}, nil
 }
 
-func (u *RewardUsecase) GetRewardHistory(ctx context.Context, userId uint, page, size int) (dto.RewardHistoryResponse, error) {
+func (u *RewardUsecase) GetRewardHistory(ctx context.Context, userId uint32, page, size int) (dto.RewardHistoryResponse, error) {
 	rewards, err := u.repo.GetRewardHistory(ctx, userId, page, size)
 	if err != nil {
 		return dto.RewardHistoryResponse{}, err

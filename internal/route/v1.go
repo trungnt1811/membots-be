@@ -79,9 +79,9 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	rewardHandler := reward.NewRewardHandler(rewardUsecase)
 
 	rewardRouter := v1.Group("/rewards")
-	rewardRouter.GET("/by-order-id", rewardHandler.GetRewardByOrderId)
-	rewardRouter.GET("", rewardHandler.GetAllReward)
-	rewardRouter.GET("/history", rewardHandler.GetRewardHistory)
+	rewardRouter.GET("/by-order-id", authHandler.CheckUserHeader(), rewardHandler.GetRewardByOrderId)
+	rewardRouter.GET("", authHandler.CheckUserHeader(), rewardHandler.GetAllReward)
+	rewardRouter.GET("/history", authHandler.CheckUserHeader(), rewardHandler.GetRewardHistory)
 
 	// SECTION: App module
 	appRouter := v1.Group("/app")

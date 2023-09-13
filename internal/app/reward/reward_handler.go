@@ -2,11 +2,11 @@ package reward
 
 import (
 	"errors"
+	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"net/http"
 	"strconv"
 
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
-	"github.com/astraprotocol/affiliate-system/internal/middleware"
 	"github.com/astraprotocol/affiliate-system/internal/util"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -35,7 +35,7 @@ func NewRewardHandler(usecase interfaces.RewardUCase) *RewardHandler {
 // @Router 	/api/v1/rewards/by-order-id [get]
 func (handler *RewardHandler) GetRewardByOrderId(ctx *gin.Context) {
 	// First, take user from JWT
-	user, err := middleware.GetAuthUser(ctx)
+	user, err := dto.GetUserInfo(ctx)
 	if err != nil {
 		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
 		return
@@ -50,7 +50,7 @@ func (handler *RewardHandler) GetRewardByOrderId(ctx *gin.Context) {
 	}
 
 	// get reward
-	res, err := handler.usecase.GetRewardByOrderId(ctx, user.ID, uint(orderId))
+	res, err := handler.usecase.GetRewardByOrderId(ctx, user.UserInfo.ID, uint(orderId))
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			util.RespondError(ctx, http.StatusNotFound, "failed to get reward", errors.New("reward not found"))
@@ -76,7 +76,7 @@ func (handler *RewardHandler) GetRewardByOrderId(ctx *gin.Context) {
 // @Router 	/api/v1/rewards [get]
 func (handler *RewardHandler) GetAllReward(ctx *gin.Context) {
 	// First, take user from JWT
-	user, err := middleware.GetAuthUser(ctx)
+	user, err := dto.GetUserInfo(ctx)
 	if err != nil {
 		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
 		return
@@ -86,7 +86,7 @@ func (handler *RewardHandler) GetAllReward(ctx *gin.Context) {
 	size := ctx.GetInt("size")
 
 	// get reward
-	res, err := handler.usecase.GetAllReward(ctx, user.ID, page, size)
+	res, err := handler.usecase.GetAllReward(ctx, user.UserInfo.ID, page, size)
 	if err != nil {
 		util.RespondError(ctx, http.StatusFailedDependency, "failed to get rewards", err)
 		return
@@ -108,7 +108,7 @@ func (handler *RewardHandler) GetAllReward(ctx *gin.Context) {
 // @Router 	/api/v1/rewards/history [get]
 func (handler *RewardHandler) GetRewardHistory(ctx *gin.Context) {
 	// First, take user from JWT
-	user, err := middleware.GetAuthUser(ctx)
+	user, err := dto.GetUserInfo(ctx)
 	if err != nil {
 		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
 		return
@@ -118,7 +118,7 @@ func (handler *RewardHandler) GetRewardHistory(ctx *gin.Context) {
 	size := ctx.GetInt("size")
 
 	// get reward
-	res, err := handler.usecase.GetRewardHistory(ctx, user.ID, page, size)
+	res, err := handler.usecase.GetRewardHistory(ctx, user.UserInfo.ID, page, size)
 	if err != nil {
 		util.RespondError(ctx, http.StatusFailedDependency, "failed to get reward history", err)
 		return

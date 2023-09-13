@@ -73,3 +73,7 @@ func (repo *MockOrderRepository) FindOrderByAccessTradeId(atOrderId string) (*mo
 
 	return found, nil
 }
+
+func (repo *MockOrderRepository) UpdateTrackedClickOrder(trackedId uint64, order *model.AffOrder) error {
+	return nil
+}

@@ -92,10 +92,10 @@ func (s *authHandler) creatorTokenInfo(jwtToken string) (dto.UserInfo, error) {
 			SetSuccessResult(&authInfo).AddQueryParam("userId", fmt.Sprint(userId)).
 			Get(s.CreatorAuthUrl)
 		if err1 != nil {
-			return dto.UserInfo{}, resp.Err
+			return dto.UserInfo{}, err1
 		}
 		if !resp.IsSuccessState() {
-			return dto.UserInfo{}, resp.Err
+			return dto.UserInfo{}, err1
 		}
 		if err = s.RedisClient.SaveItem(keyer, authInfo, time.Minute); err != nil {
 			return dto.UserInfo{}, err
@@ -104,8 +104,8 @@ func (s *authHandler) creatorTokenInfo(jwtToken string) (dto.UserInfo, error) {
 	return authInfo.Data[0].User, nil
 }
 
-func (s *authHandler) appTokenInfo(jwtToken string) (dto.UserDto, error) {
-	var authInfo dto.UserDto
+func (s *authHandler) appTokenInfo(jwtToken string) (dto.UserInfo, error) {
+	var authInfo dto.UserInfo
 	key := fmt.Sprint("app_token_", jwtToken[200:len(jwtToken)-1])
 	keyer := &caching.Keyer{Raw: key}
 	err := s.RedisClient.RetrieveItem(keyer, &authInfo)
@@ -115,13 +115,13 @@ func (s *authHandler) appTokenInfo(jwtToken string) (dto.UserDto, error) {
 			SetSuccessResult(&authInfo).
 			Get(s.AppAuthUrl)
 		if err1 != nil {
-			return authInfo, resp.Err
+			return dto.UserInfo{}, err1
 		}
 		if !resp.IsSuccessState() {
-			return authInfo, resp.Err
+			return dto.UserInfo{}, err1
 		}
 		if err = s.RedisClient.SaveItem(keyer, authInfo, time.Minute); err != nil {
-			return authInfo, err
+			return dto.UserInfo{}, err
 		}
 	}
 	return authInfo, nil

@@ -12,7 +12,7 @@ type AffCampAppRepository interface {
 	GetAffCampaignById(ctx context.Context, id uint64) (model.AffCampaignApp, error)
 }
 
-type AffCampAppService interface {
+type AffCampAppUCase interface {
 	GetAllAffCampaign(ctx context.Context, page, size int) (dto.AffCampaignAppDtoResponse, error)
 	GetAffCampaignById(ctx context.Context, id uint64) (dto.AffCampaignAppDto, error)
 }

@@ -87,7 +87,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	appRouter := v1.Group("/app")
 	affCampAppRepository := aff_camp_app.NewAffCampAppRepository(db)
 	affCampAppCache := aff_camp_app.NewAffCampAppCacheRepository(affCampAppRepository, redisClient)
-	affCampAppService := aff_camp_app.NewAffCampAppService(affCampAppCache)
+	affCampAppService := aff_camp_app.NewAffCampAppUCase(affCampAppCache)
 	affCampAppHandler := aff_camp_app.NewAffCampAppHandler(affCampAppService)
 	appRouter.GET("/aff-campaign", affCampAppHandler.GetAllAffCampaign)
 	appRouter.GET("/aff-campaign/:id", affCampAppHandler.GetAffCampaignById)

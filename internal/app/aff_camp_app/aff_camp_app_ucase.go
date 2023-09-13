@@ -7,17 +7,17 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 )
 
-type affCampAppService struct {
+type affCampAppUCase struct {
 	AffCampAppRepository interfaces.AffCampAppRepository
 }
 
-func NewAffCampAppService(repository interfaces.AffCampAppRepository) interfaces.AffCampAppService {
-	return &affCampAppService{
+func NewAffCampAppUCase(repository interfaces.AffCampAppRepository) interfaces.AffCampAppUCase {
+	return &affCampAppUCase{
 		AffCampAppRepository: repository,
 	}
 }
 
-func (s affCampAppService) GetAffCampaignById(ctx context.Context, id uint64) (dto.AffCampaignAppDto, error) {
+func (s affCampAppUCase) GetAffCampaignById(ctx context.Context, id uint64) (dto.AffCampaignAppDto, error) {
 	affCampaign, err := s.AffCampAppRepository.GetAffCampaignById(ctx, id)
 	if err != nil {
 		return dto.AffCampaignAppDto{}, err
@@ -26,7 +26,7 @@ func (s affCampAppService) GetAffCampaignById(ctx context.Context, id uint64) (d
 	return affCampaignAppDto, nil
 }
 
-func (s affCampAppService) GetAllAffCampaign(ctx context.Context, page, size int) (dto.AffCampaignAppDtoResponse, error) {
+func (s affCampAppUCase) GetAllAffCampaign(ctx context.Context, page, size int) (dto.AffCampaignAppDtoResponse, error) {
 	listAffCampaign, err := s.AffCampAppRepository.GetAllAffCampaign(ctx, page, size)
 	if err != nil {
 		return dto.AffCampaignAppDtoResponse{}, err

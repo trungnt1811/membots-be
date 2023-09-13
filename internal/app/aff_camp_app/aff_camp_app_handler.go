@@ -10,14 +10,14 @@ import (
 )
 
 type AffCampAppHandler struct {
-	AffCampAppService interfaces.AffCampAppService
+	AffCampAppUCase interfaces.AffCampAppUCase
 }
 
 func NewAffCampAppHandler(
-	service interfaces.AffCampAppService,
+	ucase interfaces.AffCampAppUCase,
 ) *AffCampAppHandler {
 	return &AffCampAppHandler{
-		AffCampAppService: service,
+		AffCampAppUCase: ucase,
 	}
 }
 
@@ -37,7 +37,7 @@ func (handler *AffCampAppHandler) GetAllAffCampaign(ctx *gin.Context) {
 	page := ctx.GetInt("page")
 	size := ctx.GetInt("size")
 
-	response, err := handler.AffCampAppService.GetAllAffCampaign(ctx, page, size)
+	response, err := handler.AffCampAppUCase.GetAllAffCampaign(ctx, page, size)
 	if err != nil {
 		util.RespondError(ctx, http.StatusInternalServerError, "Get list of all aff campaign error: ", err)
 		return
@@ -63,7 +63,7 @@ func (handler *AffCampAppHandler) GetAffCampaignById(ctx *gin.Context) {
 		return
 	}
 
-	response, err := handler.AffCampAppService.GetAffCampaignById(ctx, uint64(id))
+	response, err := handler.AffCampAppUCase.GetAffCampaignById(ctx, uint64(id))
 	if err != nil {
 		util.RespondError(ctx, http.StatusInternalServerError, "Get aff campaign by id error: ", err)
 		return

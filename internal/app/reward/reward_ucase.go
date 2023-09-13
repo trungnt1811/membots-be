@@ -3,12 +3,10 @@ package reward
 import (
 	"context"
 	"fmt"
-	"log"
 	"math"
 	"time"
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
-	"github.com/astraprotocol/affiliate-system/internal/infra/msgqueue"
 	"github.com/astraprotocol/affiliate-system/internal/infra/shipping"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/model"
@@ -26,55 +24,16 @@ type RewardUsecase struct {
 	repo      interfaces.RewardRepository
 	orderRepo interfaces.OrderRepository
 	rwService *shipping.ShippingClient
-	approveQ  *msgqueue.QueueReader
 }
 
 func NewRewardUsecase(repo interfaces.RewardRepository,
 	orderRepo interfaces.OrderRepository,
 	rwService *shipping.ShippingClient,
-	approveQ *msgqueue.QueueReader) *RewardUsecase {
+) *RewardUsecase {
 	return &RewardUsecase{
 		repo:      repo,
 		orderRepo: orderRepo,
 		rwService: rwService,
-		approveQ:  approveQ,
-	}
-}
-
-func (u *RewardUsecase) ListenOrderApproved() {
-	for {
-		ctx := context.Background()
-
-		newAtOrderId, err := u.getNewApprovedAtOrderId(ctx)
-		if err != nil {
-			log.Println("Failed to comsume new AccessTrade order id", err)
-			continue
-		}
-
-		order, err := u.orderRepo.FindOrderByAccessTradeId(newAtOrderId)
-		if err != nil {
-			log.Println("Failed to get affiliate order", err)
-			continue
-		}
-
-		now := time.Now()
-		newReward := model.Reward{
-			UserId:         order.UserId,
-			AtOrderID:      newAtOrderId,
-			Amount:         float64(order.PubCommission) * AffRewardFee / 100,
-			RewardedAmount: 0,
-			Fee:            AffRewardFee,
-			EndedAt:        now.Add(RewardLockTime * time.Hour),
-			CreatedAt:      now,
-			UpdatedAt:      now,
-		}
-		err = u.repo.CreateReward(ctx, &newReward)
-		if err != nil {
-			log.Println("Failed to get affiliate order", err)
-			continue
-		}
-
-		// TODO: send notification ?
 	}
 }
 

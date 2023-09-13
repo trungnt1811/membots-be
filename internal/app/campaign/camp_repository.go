@@ -156,3 +156,8 @@ func (repo *CampaignRepository) CreateAffLinks(data []model2.AffLink) error {
 	err := repo.Db.Create(&data).Error
 	return err
 }
+
+func (repo *CampaignRepository) CreateTrackedClick(m *model2.AffTrackedClick) error {
+	err := repo.Db.Create(&m).Error
+	return err
+}

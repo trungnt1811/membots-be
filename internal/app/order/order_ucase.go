@@ -1,28 +1,33 @@
 package order
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"time"
 
 	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade/types"
 	"github.com/astraprotocol/affiliate-system/internal/dto"
+	"github.com/astraprotocol/affiliate-system/internal/infra/msgqueue"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/model"
 	"github.com/astraprotocol/affiliate-system/internal/util"
 	"github.com/astraprotocol/affiliate-system/internal/util/log"
+	"github.com/segmentio/kafka-go"
 	"gorm.io/datatypes"
 )
 
 type OrderUcase struct {
-	Repo   interfaces.OrderRepository
-	ATRepo interfaces.ATRepository
+	Repo     interfaces.OrderRepository
+	ATRepo   interfaces.ATRepository
+	Producer *msgqueue.QueueWriter
 }
 
 func NewOrderUcase(repo interfaces.OrderRepository, atRepo interfaces.ATRepository) *OrderUcase {
 	return &OrderUcase{
-		Repo:   repo,
-		ATRepo: atRepo,
+		Repo:     repo,
+		ATRepo:   atRepo,
+		Producer: msgqueue.NewKafkaProducer(msgqueue.KAFKA_TOPIC_AFF_ORDER_APPROVE),
 	}
 }
 
@@ -93,12 +98,26 @@ func (u *OrderUcase) PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*m
 		}
 	}
 
-	// TODO: After create order, push Kafka msg for sync transactions
+	// After create order, push Kafka msg for sync transactions
 	_, err = u.SyncTransactionsByOrder(order.AccessTradeOrderId)
 	if err != nil {
 		log.LG.Errorf("sync txs failed: %v", err)
 	}
-	// TODO: Send Kafka message if order approved
+	// Send Kafka message if order approved
+	if order.OrderApproved != 0 {
+		// Order has been approved
+		msgValue := []byte(fmt.Sprintf("{\"accesstrade_order_id\":%s}", atOrder.OrderId))
+		err = u.Producer.WriteMessages(
+			context.Background(),
+			kafka.Message{
+				Key:   []byte(atOrder.OrderId),
+				Value: msgValue,
+			},
+		)
+		if err != nil {
+			log.LG.Errorf("produce order approved msg failed: %v", err)
+		}
+	}
 
 	return order, nil
 }

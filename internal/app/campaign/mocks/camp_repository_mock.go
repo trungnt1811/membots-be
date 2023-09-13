@@ -45,3 +45,6 @@ func (repo *CampaignRepoMock) RetrieveAffLinks(campaignId uint) ([]model.AffLink
 func (repo *CampaignRepoMock) CreateAffLinks(data []model.AffLink) error {
 	return nil
 }
+func (repo *CampaignRepoMock) CreateTrackedClick(*model.AffTrackedClick) error {
+	return nil
+}

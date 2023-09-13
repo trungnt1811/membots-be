@@ -110,3 +110,19 @@ CREATE TABLE aff_postback_log (
 CREATE INDEX aff_postback_log_order_id ON aff_postback_log (order_id);
 CREATE INDEX aff_postback_log_created ON aff_postback_log (created_at);
 CREATE INDEX aff_postback_log_updated ON aff_postback_log (updated_at);
+
+CREATE TABLE aff_tracked_click (
+  id INT NOT NULL AUTO_INCREMENT,
+  campaign_id INT,
+  user_id INT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  aff_link NVARCHAR(1024),
+  short_link NVARCHAR(1024),
+  url_origin NVARCHAR(1024),
+  order_id NVARCHAR(256),
+  PRIMARY KEY (id),
+  FOREIGN KEY (campaign_id) REFERENCES aff_campaign(id),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+) ENGINE = InnoDB;
+
+CREATE INDEX aff_tracked_click_created ON aff_tracked_click (created_at);

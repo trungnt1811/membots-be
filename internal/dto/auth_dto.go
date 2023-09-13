@@ -81,10 +81,10 @@ func GetUserCreatorInfo(ctx *gin.Context) (UserInfo, error) {
 	if !exists {
 		return UserInfo{}, fmt.Errorf("no token provided")
 	}
-	userInfo := UserInfo{}
-	err := mapstructure.Decode(tmpUser, &userInfo)
+	userInfoResponse := UserCreatorResponse{}
+	err := mapstructure.Decode(tmpUser, &userInfoResponse)
 	if err != nil {
 		return UserInfo{}, fmt.Errorf("cannot decode user creator info")
 	}
-	return userInfo, nil
+	return userInfoResponse.Data[0].User, nil
 }

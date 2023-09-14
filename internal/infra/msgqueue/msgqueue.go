@@ -30,6 +30,7 @@ const (
 	KAFKA_TOPIC_NOTI_EMAIL           = "notification-EMAIL"
 	KAFKA_TOPIC_NOTI_STATUS_RESPONSE = "notification-status"
 	KAFKA_TOPIC_NOTI_APP_MESSAGE     = "notification-worker-app-noti-message"
+	KAFKA_TOPIC_USER_BRAND_VIEW      = "user-brand-view"
 )
 
 type QueueBasic struct {

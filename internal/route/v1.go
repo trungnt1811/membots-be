@@ -14,6 +14,7 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/app/reward"
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/infra/caching"
+	"github.com/astraprotocol/affiliate-system/internal/infra/msgqueue"
 	"github.com/astraprotocol/affiliate-system/internal/infra/shipping"
 	"github.com/astraprotocol/affiliate-system/internal/util"
 	"github.com/gin-gonic/gin"
@@ -94,4 +95,8 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	affCampAppHandler := aff_camp_app.NewAffCampAppHandler(affCampAppUCase)
 	appRouter.GET("/aff-campaign", authHandler.CheckUserHeader(), affCampAppHandler.GetAllAffCampaign)
 	appRouter.GET("/aff-campaign/:id", authHandler.CheckUserHeader(), affCampAppHandler.GetAffCampaignById)
+
+	kafkaUserViewBrandProducer := msgqueue.NewKafkaProducer(msgqueue.KAFKA_TOPIC_USER_BRAND_VIEW)
+	userViewBrandProducer := msgqueue.NewUserViewBrandProducer(kafkaUserViewBrandProducer, streamChannel)
+	userViewBrandProducer.Start()
 }

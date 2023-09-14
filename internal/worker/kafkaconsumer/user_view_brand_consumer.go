@@ -58,7 +58,7 @@ func (c *UserViewBrandConsumer) StartListen() <-chan error {
 				continue
 			}
 			if err != nil {
-				log.Error().Any("create order item error", err)
+				log.Error().Any("UserViewBrandConsumer commit messages error", err)
 				errChn <- err
 			}
 		}

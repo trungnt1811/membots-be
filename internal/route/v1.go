@@ -96,7 +96,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	appRouter.GET("/aff-campaign", authHandler.CheckUserHeader(), affCampAppHandler.GetAllAffCampaign)
 	appRouter.GET("/aff-campaign/:id", authHandler.CheckUserHeader(), affCampAppHandler.GetAffCampaignById)
 
-	kafkaUserViewBrandProducer := msgqueue.NewKafkaProducer(msgqueue.KAFKA_TOPIC_USER_BRAND_VIEW)
+	kafkaUserViewBrandProducer := msgqueue.NewKafkaProducer(msgqueue.KAFKA_TOPIC_USER_VIEW_BRAND)
 	userViewBrandProducer := msgqueue.NewUserViewBrandProducer(kafkaUserViewBrandProducer, streamChannel)
 	userViewBrandProducer.Start()
 }

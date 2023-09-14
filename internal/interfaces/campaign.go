@@ -15,7 +15,7 @@ type CampaignRepository interface {
 	UpdateCampaigns(data []model2.AffCampaign) ([]model2.AffCampaign, error)
 	DeactivateCampaigns(data []model2.AffCampaign) error
 
-	RetrieveAffLinks(campaignId uint) ([]model2.AffLink, error)
+	RetrieveAffLinks(campaignId uint, originalUrl string) ([]model2.AffLink, error)
 	CreateAffLinks(data []model2.AffLink) error
 
 	CreateTrackedClick(*model2.AffTrackedClick) error

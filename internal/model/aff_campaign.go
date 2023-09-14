@@ -8,6 +8,10 @@ import (
 	"gorm.io/datatypes"
 )
 
+const (
+	StellaStatusInProgress = "IN_PROGRESS"
+)
+
 type CampaignDescription struct {
 	ID                    uint      `gorm:"primarykey" json:"id"`
 	CampaignId            uint      `json:"campaign_id"`

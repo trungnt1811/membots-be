@@ -5,6 +5,12 @@ import (
 )
 
 // REWARD
+type RewardSummary struct {
+	ClaimableReward     float64 `json:"claimable_reward"`
+	RewardInDay         float64 `json:"reward_in_day"`
+	PendingRewardOrder  int     `json:"pending_reward_order"`
+	PendingRewardAmount float64 `json:"pending_reward_amount"`
+}
 
 type RewardDto struct {
 	ID             uint      `json:"id"`
@@ -15,11 +21,6 @@ type RewardDto struct {
 	EndedAt        time.Time `json:"ended_at"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
-}
-
-type RewardWithPendingDto struct {
-	ID            uint    `json:"id"`
-	PendingAmount float64 `json:"pending_amount"`
 }
 
 type ClaimRewardResponse struct {
@@ -37,21 +38,19 @@ type RewardResponse struct {
 
 // REWARD HISTORY
 
-type RewardHistoryDto struct {
-	ID        uint      `json:"id"`
-	RewardID  uint      `json:"reward_id"`
-	UserId    uint      `json:"user_id"`
-	AtOrderID string    `json:"accesstrade_order_id"`
-	Amount    float64   `json:"amount"`
-	Type      string    `json:"type"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+type RewardClaimDto struct {
+	ID                uint      `gorm:"primarykey" json:"id"`
+	UserId            uint      `json:"user_id"`
+	ShippingRequestID string    `json:"shipping_request_id"`
+	Amount            float64   `json:"amount"`
+	CreatedAt         time.Time `json:"created_at"`
+	UpdatedAt         time.Time `json:"updated_at"`
 }
 
-type RewardHistoryResponse struct {
-	NextPage int                `json:"next_page"`
-	Page     int                `json:"page"`
-	Size     int                `json:"size"`
-	Data     []RewardHistoryDto `json:"data"`
-	Total    int64              `json:"total"`
+type RewardClaimResponse struct {
+	NextPage int              `json:"next_page"`
+	Page     int              `json:"page"`
+	Size     int              `json:"size"`
+	Data     []RewardClaimDto `json:"data"`
+	Total    int64            `json:"total"`
 }

@@ -20,6 +20,8 @@ type OrderRepository interface {
 	UpdateOrder(updated *model.AffOrder) (int, error)
 	FindOrderByAccessTradeId(atOrderId string) (*model.AffOrder, error)
 	UpdateOrCreateATTransactions([]model.AffTransaction) error
+
+	UpdateTrackedClickOrder(trackedId uint64, order *model.AffOrder) error
 }
 
 type OrderUcase interface {

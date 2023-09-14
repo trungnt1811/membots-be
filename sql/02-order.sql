@@ -115,14 +115,19 @@ CREATE TABLE aff_tracked_click (
   id INT NOT NULL AUTO_INCREMENT,
   campaign_id INT,
   user_id INT,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  link_id INT,
+  created_at DATETIME,
+  updated_at DATETIME,
   aff_link NVARCHAR(1024),
   short_link NVARCHAR(1024),
   url_origin NVARCHAR(1024),
   order_id NVARCHAR(256),
   PRIMARY KEY (id),
   FOREIGN KEY (campaign_id) REFERENCES aff_campaign(id),
+  FOREIGN KEY (link_id) REFERENCES aff_link(id),
   FOREIGN KEY (user_id) REFERENCES users(id)
 ) ENGINE = InnoDB;
 
 CREATE INDEX aff_tracked_click_created ON aff_tracked_click (created_at);
+CREATE INDEX aff_tracked_click_order_id ON aff_tracked_click (order_id);
+CREATE INDEX aff_tracked_click_updated ON aff_tracked_click (updated_at);

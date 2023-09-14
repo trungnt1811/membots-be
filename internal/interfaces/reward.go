@@ -13,16 +13,18 @@ type RewardRepository interface {
 	GetRewardByOrderId(ctx context.Context, userId uint32, affOrderId uint) (model.Reward, error)
 	GetAllReward(ctx context.Context, userId uint32, page, size int) ([]model.Reward, error)
 	CountReward(ctx context.Context, userId uint32) (int64, error)
+	SaveRewardClaim(ctx context.Context, rewardClaim *model.RewardClaim, rewards []model.Reward, orderRewardHistories []model.OrderRewardHistory) error
 
-	GetRewardHistory(ctx context.Context, userId uint32, page, size int) ([]model.RewardHistoryFull, error)
-	CountRewardHistory(ctx context.Context, userId uint32) (int64, error)
+	GetClaimHistory(ctx context.Context, userId uint32, page, size int) ([]model.RewardClaim, error)
+	CountClaimHistory(ctx context.Context, userId uint32) (int64, error)
 	GetInProgressRewards(ctx context.Context, userId uint32) ([]model.Reward, error)
-	GetRewardedAmountByReward(ctx context.Context, rewardIds []uint) (map[uint]float64, error)
+	GetRewardsInDay(ctx context.Context) ([]model.Reward, error)
 }
 
 type RewardUCase interface {
 	GetRewardByOrderId(ctx context.Context, userId uint32, affOrderId uint) (model.Reward, error)
 	GetAllReward(ctx context.Context, userId uint32, page, size int) (dto.RewardResponse, error)
-	GetRewardHistory(ctx context.Context, userId uint32, page, size int) (dto.RewardHistoryResponse, error)
-	GetPendingRewards(ctx context.Context, userId uint32) ([]dto.RewardWithPendingDto, error)
+	GetRewardSummary(ctx context.Context, userId uint32) (dto.RewardSummary, error)
+	ClaimReward(ctx context.Context, userId uint32, userWallet string) (dto.ClaimRewardResponse, error)
+	GetClaimHistory(ctx context.Context, userId uint32, page, size int) (dto.RewardClaimResponse, error)
 }

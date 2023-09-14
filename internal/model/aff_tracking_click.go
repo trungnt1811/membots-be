@@ -3,10 +3,12 @@ package model
 import "time"
 
 type AffTrackedClick struct {
-	ID         uint      `gorm:"primarykey" json:"id"`
+	ID         uint64    `gorm:"primarykey" json:"id"`
 	CampaignId uint      `json:"campaign_id"`
 	UserId     uint      `json:"user_id"`
+	LinkId     uint      `json:"link_id"`
 	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
 	AffLink    string    `json:"aff_link"`
 	ShortLink  string    `json:"short_link"`
 	UrlOrigin  string    `json:"url_origin"`

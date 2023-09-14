@@ -2,6 +2,7 @@ package reward
 
 import (
 	"context"
+	"time"
 
 	"github.com/astraprotocol/affiliate-system/internal/model"
 	"gorm.io/gorm"
@@ -39,24 +40,17 @@ func (r *RewardRepository) GetInProgressRewards(ctx context.Context, userId uint
 	return rewards, err
 }
 
-func (r *RewardRepository) GetRewardedAmountByReward(ctx context.Context, rewardIds []uint) (map[uint]float64, error) {
-	rewardedByReward := make(map[uint]float64)
+func (r *RewardRepository) GetRewardsInDay(ctx context.Context) ([]model.Reward, error) {
+	startDay := time.Now().UTC().Round(24 * time.Hour)            // 00:00
+	nextDay := startDay.Add(24 * time.Hour).Add(-1 * time.Second) // 23:59
 
-	var rewards []model.RewardedByReward
-	query := "SELECT reward_id, rewarded_amount FROM " +
-		"( SELECT reward_id, cumulative_amount AS rewarded_amount, " +
-		"RANK() OVER (PARTITION BY aff_reward_history ORDER BY id DESC) last_rank " +
-		"FROM aff_reward_history WHERE reward_id IN ? )" +
-		"WHERE last_rank = 1"
-	err := r.db.Raw(query, rewardIds).Scan(&rewards).Error
+	var rewards []model.Reward
+	err := r.db.Where("created_at BETWEEN ? AND ?", startDay, nextDay).Scan(&rewards).Error
 	if err != nil {
-		return rewardedByReward, err
+		return []model.Reward{}, err
 	}
 
-	for _, item := range rewards {
-		rewardedByReward[item.RewardID] = item.RewardedAmount
-	}
-	return rewardedByReward, err
+	return rewards, err
 }
 
 func (r *RewardRepository) GetAllReward(ctx context.Context, userId uint32, page, size int) ([]model.Reward, error) {
@@ -72,36 +66,33 @@ func (r *RewardRepository) CountReward(ctx context.Context, userId uint32) (int6
 	return count, err
 }
 
-func (r *RewardRepository) CreateRewardHistory(ctx context.Context, rewardHistory *model.RewardHistory) error {
-	return r.db.Create(rewardHistory).Error
+func (r *RewardRepository) SaveRewardClaim(ctx context.Context, rewardClaim *model.RewardClaim, rewards []model.Reward, orderRewardHistories []model.OrderRewardHistory) error {
+	return r.db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Create(rewardClaim).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Create(orderRewardHistories).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Save(rewards).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
 }
 
-func (r *RewardRepository) GetRewardHistory(ctx context.Context, userId uint32, page, size int) ([]model.RewardHistoryFull, error) {
-	var rewardHistory []model.RewardHistoryFull
+func (r *RewardRepository) GetClaimHistory(ctx context.Context, userId uint32, page, size int) ([]model.RewardClaim, error) {
+	var claimHistory []model.RewardClaim
 	offset := (page - 1) * size
-
-	query := "SELECT rh.id, rh.reward_id, r.user_id, r.aff_order_id, rh.amount, rh.type, rh.created_at, rh.updated_at " +
-		"FROM aff_reward_history AS rh " +
-		"LEFT JOIN aff_reward AS r " +
-		"ON rh.reward_id = r.id " +
-		"WHERE r.user_id = ? " +
-		"ORDER BY id DESC " +
-		"LIMIT ? OFFSET ?"
-	err := r.db.Raw(query, userId, size+1, offset).Scan(&rewardHistory).Error
-
-	return rewardHistory, err
+	err := r.db.Model(&model.RewardClaim{}).Where("user_id = ?", userId).Limit(size + 1).Offset(offset).Scan(&claimHistory).Error
+	return claimHistory, err
 }
 
-func (r *RewardRepository) CountRewardHistory(ctx context.Context, userId uint32) (int64, error) {
+func (r *RewardRepository) CountClaimHistory(ctx context.Context, userId uint32) (int64, error) {
 	var count int64
-
-	query := "SELECT count(*) " +
-		"FROM aff_reward_history AS rh " +
-		"LEFT JOIN aff_reward AS r " +
-		"ON rh.reward_id = r.id " +
-		"WHERE r.user_id = ? " +
-		"ORDER BY id DESC"
-	err := r.db.Raw(query, userId).Scan(&count).Error
-
+	err := r.db.Model(&model.RewardClaim{}).Where("user_id = ?", userId).Count(&count).Error
 	return count, err
 }

@@ -14,7 +14,6 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/app/reward"
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/infra/caching"
-	"github.com/astraprotocol/affiliate-system/internal/infra/msgqueue"
 	"github.com/astraprotocol/affiliate-system/internal/infra/shipping"
 	"github.com/astraprotocol/affiliate-system/internal/util"
 	"github.com/gin-gonic/gin"
@@ -42,7 +41,6 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	shippingClient := shipping.NewShippingClient(shippingClientConf)
 
 	// SECTION: Kafka Queue
-	orderApproveQueue := msgqueue.NewKafkaConsumer(msgqueue.KAFKA_TOPIC_AFF_ORDER_APPROVE, msgqueue.KAFKA_GROUP_ID)
 
 	// SECTION: Campaign and link
 	campaignRepo := campaign3.NewCampaignRepository(db)
@@ -70,19 +68,21 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	consoleCampUCase := campaign2.NewCampaignUCase(consoleCampRepository)
 	consoleCampHandler := campaign2.NewConsoleCampHandler(consoleCampUCase)
 	consoleRouter := v1.Group("console")
-	consoleRouter.GET("/aff-campaign", authHandler.CheckAdminHeader(), consoleCampHandler.GetAllCampaign)
-	consoleRouter.PUT("/aff-campaign/:id", authHandler.CheckAdminHeader(), consoleCampHandler.UpdateCampaignInfo)
-	consoleRouter.GET("/aff-campaign/:id", authHandler.CheckAdminHeader(), consoleCampHandler.GetCampaignById)
+	consoleRouter.GET("/aff-campaign", consoleCampHandler.GetAllCampaign)
+	consoleRouter.PUT("/aff-campaign/:id", consoleCampHandler.UpdateCampaignInfo)
+	consoleRouter.GET("/aff-campaign/:id", consoleCampHandler.GetCampaignById)
 
 	// SECTION: Reward module
 	rewardRepo := reward.NewRewardRepository(db)
-	rewardUsecase := reward.NewRewardUsecase(rewardRepo, orderRepo, shippingClient, orderApproveQueue)
+	rewardUsecase := reward.NewRewardUsecase(rewardRepo, orderRepo, shippingClient)
 	rewardHandler := reward.NewRewardHandler(rewardUsecase)
 
 	rewardRouter := v1.Group("/rewards")
-	rewardRouter.GET("/by-order-id", authHandler.CheckUserHeader(), rewardHandler.GetRewardByOrderId)
-	rewardRouter.GET("", authHandler.CheckUserHeader(), rewardHandler.GetAllReward)
-	rewardRouter.GET("/history", authHandler.CheckUserHeader(), rewardHandler.GetRewardHistory)
+	rewardRouter.GET("/by-order-id", rewardHandler.GetRewardByOrderId)
+	rewardRouter.GET("", rewardHandler.GetAllReward)
+	rewardRouter.GET("/summary", rewardHandler.GetRewardSummary)
+	rewardRouter.GET("/claims", rewardHandler.GetClaimHistory)
+	rewardRouter.POST("/claims", rewardHandler.ClaimReward)
 
 	// SECTION: App module
 	streamChannel := make(chan []*dto.UserViewBrand, 1024)

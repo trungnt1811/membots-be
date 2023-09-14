@@ -1,10 +1,11 @@
-package accesstrade
+package cron
 
 import (
 	"context"
+	"time"
+
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/util/log"
-	"time"
 
 	"github.com/go-co-op/gocron"
 	"github.com/go-redsync/redsync/v4"

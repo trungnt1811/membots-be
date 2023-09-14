@@ -142,9 +142,14 @@ func (repo *CampaignRepository) DeactivateCampaigns(data []model2.AffCampaign) e
 	return nil
 }
 
-func (repo *CampaignRepository) RetrieveAffLinks(campaignId uint) ([]model2.AffLink, error) {
+func (repo *CampaignRepository) RetrieveAffLinks(campaignId uint, originalUrl string) ([]model2.AffLink, error) {
 	var links []model2.AffLink
-	err := repo.Db.Find(&links, "campaign_id = ? AND active_status = ?", campaignId, model2.AFF_LINK_STATUS_ACTIVE).Error
+	m := repo.Db.Model(&links)
+	if originalUrl != "" {
+		m.Where("url_origin = ?", originalUrl)
+	}
+	m.Where("campaign_id = ? AND active_status = ?", campaignId, model2.AFF_LINK_STATUS_ACTIVE)
+	err := m.Find(&links).Error
 
 	if err != nil {
 		return nil, err

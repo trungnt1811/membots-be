@@ -1,8 +1,10 @@
 package campaign
 
 import (
+	"encoding/json"
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
+	"gorm.io/datatypes"
 	"strings"
 )
 
@@ -21,7 +23,11 @@ func (c *campaignUCase) GetCampaignById(id uint) (dto.AffCampaignDto, error) {
 func (c *campaignUCase) UpdateCampaign(id uint, campaign dto.AffCampaignAppDto) error {
 	updates := make(map[string]interface{})
 	if campaign.StellaDescription != nil {
-		updates["stella_description"] = campaign.StellaDescription
+		b, err := json.Marshal(campaign.StellaDescription)
+		if err != nil {
+			return err
+		}
+		updates["stella_description"] = datatypes.JSON(b)
 	}
 	if len(strings.TrimSpace(campaign.Name)) > 0 {
 		updates["name"] = campaign.Name

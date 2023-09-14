@@ -41,7 +41,7 @@ func (u *CampaignUsecase) GenerateAffLink(userId uint64, payload *dto.CreateLink
 
 	// Then find campaign link if exist
 	isJustCreated := false
-	affLinks, err := u.Repo.RetrieveAffLinks(campaign.ID)
+	affLinks, err := u.Repo.RetrieveAffLinks(campaign.ID, payload.OriginalUrl)
 	if err != nil {
 		return nil, fmt.Errorf("retrieve aff link fail: %v", err)
 	}

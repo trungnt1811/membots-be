@@ -307,7 +307,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.AffCampaignAppDto"
+                            "$ref": "#/definitions/dto.ResponseMessage"
                         }
                     },
                     "400": {
@@ -963,6 +963,14 @@
                     "type": "string"
                 },
                 "short_link": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ResponseMessage": {
+            "type": "object",
+            "properties": {
+                "message": {
                     "type": "string"
                 }
             }

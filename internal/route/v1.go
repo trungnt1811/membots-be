@@ -54,6 +54,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	orderHandler := order.NewOrderHandler(orderUcase)
 	orderRoute := v1.Group("/order")
 	orderRoute.POST("/post-back", orderHandler.PostBackOrderHandle)
+	orderRoute.GET("/:id", orderHandler.GetOrderDetails)
 
 	// SECTION: Redeem module
 	redeemRepo := redeem.NewRedeemRepository(db)
@@ -80,6 +81,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	rewardRouter.GET("", rewardHandler.GetAllReward)
 	rewardRouter.GET("/summary", rewardHandler.GetRewardSummary)
 	rewardRouter.GET("/claims", rewardHandler.GetClaimHistory)
+	rewardRouter.GET("/claims/:id", rewardHandler.GetClaimDetails)
 	rewardRouter.POST("/claims", rewardHandler.ClaimReward)
 
 	// SECTION: App module

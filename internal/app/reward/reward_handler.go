@@ -2,6 +2,7 @@ package reward
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 
@@ -26,6 +27,7 @@ func NewRewardHandler(usecase interfaces.RewardUCase) *RewardHandler {
 // @Tags 	reward
 // @Accept	json
 // @Produce json
+// @Security ApiKeyAuth
 // @Success 200 		{object}	dto.RewardSummary
 // @Failure 424 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
@@ -55,6 +57,7 @@ func (handler *RewardHandler) GetRewardSummary(ctx *gin.Context) {
 // @Tags 	reward
 // @Accept	json
 // @Produce json
+// @Security ApiKeyAuth
 // @Success 200 		{object}	dto.RewardResponse
 // @Failure 424 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
@@ -87,6 +90,7 @@ func (handler *RewardHandler) GetAllReward(ctx *gin.Context) {
 // @Tags 	reward
 // @Accept	json
 // @Produce json
+// @Security ApiKeyAuth
 // @Success 200 		{object}	dto.RewardClaimResponse
 // @Failure 424 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
@@ -113,12 +117,49 @@ func (handler *RewardHandler) GetClaimHistory(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
+// GetRewardHistory Get reward claim details
+// @Summary Get reward claim details
+// @Description Get reward claim details
+// @Tags 	reward
+// @Accept	json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 		{object}	dto.RewardClaimDetailsDto
+// @Failure 424 		{object}	util.GeneralError
+// @Failure 400 		{object}	util.GeneralError
+// @Router 	/api/v1/rewards/claims/{id} [get]
+func (handler *RewardHandler) GetClaimDetails(ctx *gin.Context) {
+	// First, take user from JWT
+	user, err := dto.GetUserInfo(ctx)
+	if err != nil {
+		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
+		return
+	}
+
+	claimId, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		util.RespondError(ctx, http.StatusBadRequest, "id is required", err)
+		return
+	}
+
+	// get reward
+	res, err := handler.usecase.GetClaimDetails(ctx, user.ID, uint(claimId))
+	if err != nil {
+		util.RespondError(ctx, http.StatusFailedDependency, "failed to get reward withdraw details", err)
+		return
+	}
+
+	// Response transaction status
+	ctx.JSON(http.StatusOK, res)
+}
+
 // GetAllReward Claim reward of all orders
 // @Summary Claim reward of all orders
 // @Description Claim reward of all orders
 // @Tags 	reward
 // @Accept	json
 // @Produce json
+// @Security ApiKeyAuth
 // @Success 200 		{object}	dto.RewardSummary
 // @Failure 424 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError

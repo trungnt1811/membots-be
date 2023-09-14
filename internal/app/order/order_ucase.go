@@ -165,3 +165,7 @@ func (u *OrderUcase) SyncTransactionsByOrder(atOrderId string) (int, error) {
 
 	return len(txs.Data), nil
 }
+
+func (u *OrderUcase) GetOrderDetails(ctx context.Context, userId uint32, orderId uint) (*dto.OrderDetailsDto, error) {
+	return u.Repo.GetOrderDetails(ctx, userId, orderId)
+}

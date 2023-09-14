@@ -1,8 +1,12 @@
 package order
 
 import (
+	"context"
+	"database/sql"
+	"encoding/json"
 	"time"
 
+	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/model"
 
 	"gorm.io/gorm"
@@ -111,4 +115,45 @@ func (repo *OrderRepository) UpdateTrackedClickOrder(trackedId uint64, order *mo
 	}).Error
 
 	return err
+}
+
+func (repo *OrderRepository) GetOrderDetails(ctx context.Context, userId uint32, orderId uint) (*dto.OrderDetailsDto, error) {
+	var o dto.OrderDetailsDto
+	query := "o.user_id, o.order_status, o.at_product_link, o.billing, o.category_name, o.confirmed_time, o.merchant, " +
+		"o.accesstrade_order_id, o.pub_commission, o.sales_time, " +
+		"log.created_at, log.data, " +
+		"r.id, r.user_id, r.accesstrade_order_id, r.amount, r.rewarded_amount, " +
+		"r.commission_fee, r.ended_at, r.created_at, r.updated_at " +
+		"FROM aff_order AS o " +
+		"LEFT JOIN aff_postback_log AS log ON log.order_id = o.accesstrade_order_id " +
+		"LEFT JOIN aff_reward AS r ON r.accesstrade_order_id = o.accesstrade_order_id " +
+		"WHERE o.user_id = ? AND o.accesstrade_order_id = ?"
+
+	rows, err := repo.db.Raw(query, userId, orderId).Rows()
+	if err != nil {
+		return &dto.OrderDetailsDto{}, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var postbackDataJson sql.NullString
+		var postbackCreatedAt time.Time
+		err = rows.Scan(&o.UserId, &o.OrderStatus, &o.ATProductLink, &o.Billing, &o.CategoryName, &o.ConfirmedTime, &o.Merchant,
+			&o.AccessTradeOrderId, &o.PubCommission, &o.SalesTime, &postbackCreatedAt, &postbackDataJson,
+			&o.Reward.ID, &o.Reward.UserId, &o.Reward.AtOrderID, &o.Reward.Amount, &o.Reward.RewardedAmount,
+			&o.Reward.CommissionFee, &o.Reward.EndedAt, &o.Reward.CreatedAt, &o.Reward.UpdatedAt)
+		if err != nil {
+			return &dto.OrderDetailsDto{}, err
+		}
+
+		var postbackData dto.ATPostBackRequest
+		err = json.Unmarshal([]byte(postbackDataJson.String), &postbackData)
+		if err != nil {
+			return &dto.OrderDetailsDto{}, err
+		}
+
+		o.Timeline[dto.AtOrderStatusMap[postbackData.Status]] = postbackCreatedAt
+	}
+
+	return &o, err
 }

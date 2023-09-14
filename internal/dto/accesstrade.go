@@ -1,10 +1,16 @@
 package dto
 
 const (
-	REQ_STATUS_NEW      = 0
-	REQ_STATUS_APPROVED = 1
-	REQ_STATUS_REJECTED = 2
+	REQ_STATUS_NEW      = "0"
+	REQ_STATUS_APPROVED = "1"
+	REQ_STATUS_REJECTED = "2"
 )
+
+var AtOrderStatusMap map[string]string = map[string]string{
+	REQ_STATUS_NEW:      "new",
+	REQ_STATUS_APPROVED: "approved",
+	REQ_STATUS_REJECTED: "rejected",
+}
 
 type ATPostBackRequest struct {
 	TransactionId      string `json:"transaction_id"`      // Mã unique trên hệ thống AccessTrade

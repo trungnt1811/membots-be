@@ -175,3 +175,7 @@ func (u *RewardUsecase) GetClaimHistory(ctx context.Context, userId uint32, page
 		Total:    totalRewardHistory,
 	}, nil
 }
+
+func (u *RewardUsecase) GetClaimDetails(ctx context.Context, userId uint32, claimId uint) (dto.RewardClaimDetailsDto, error) {
+	return u.repo.GetClaimDetails(ctx, userId, claimId)
+}

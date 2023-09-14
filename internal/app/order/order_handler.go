@@ -2,9 +2,11 @@ package order
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
+	"github.com/astraprotocol/affiliate-system/internal/util"
 	"github.com/astraprotocol/affiliate-system/internal/util/log"
 	"github.com/gin-gonic/gin"
 )
@@ -25,6 +27,7 @@ func NewOrderHandler(usecase interfaces.OrderUcase) *OrderHandler {
 // @Tags 		redeem
 // @Accept	json
 // @Produce json
+// @Security ApiKeyAuth
 // @Param 	payload	body 			dto.ATPostBackRequest true "Request create link payload, required"
 // @Success 200 		{object}	dto.ATPostBackResponse "when success, return the modified order for this post back"
 // @Failure 424 		{object}	util.GeneralError
@@ -55,4 +58,40 @@ func (handler *OrderHandler) PostBackOrderHandle(c *gin.Context) {
 		Success: true,
 		OrderId: m.AccessTradeOrderId,
 	})
+}
+
+// GetRewardHistory Get affiliate order details
+// @Summary Get affiliate order details
+// @Description Get affiliate order details - include status timeline and reward info
+// @Tags 	reward
+// @Accept	json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 		{object}	dto.OrderDetailsDto
+// @Failure 424 		{object}	util.GeneralError
+// @Failure 400 		{object}	util.GeneralError
+// @Router 	/api/v1/order/{id} [get]
+func (handler *OrderHandler) GetOrderDetails(ctx *gin.Context) {
+	// First, take user from JWT
+	user, err := dto.GetUserInfo(ctx)
+	if err != nil {
+		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
+		return
+	}
+
+	orderId, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		util.RespondError(ctx, http.StatusBadRequest, "id is required", err)
+		return
+	}
+
+	// get reward
+	res, err := handler.usecase.GetOrderDetails(ctx, user.ID, uint(orderId))
+	if err != nil {
+		util.RespondError(ctx, http.StatusFailedDependency, "failed to get order details", err)
+		return
+	}
+
+	// Response transaction status
+	ctx.JSON(http.StatusOK, res)
 }

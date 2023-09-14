@@ -6,6 +6,7 @@ import (
 
 // REWARD
 type RewardSummary struct {
+	TotalClaimedAmount  float64 `json:"total_claimed_amount"`
 	ClaimableReward     float64 `json:"claimable_reward"`
 	RewardInDay         float64 `json:"reward_in_day"`
 	PendingRewardOrder  int     `json:"pending_reward_order"`
@@ -18,6 +19,7 @@ type RewardDto struct {
 	AtOrderID      string    `json:"accesstrade_order_id"`
 	Amount         float64   `json:"amount"`
 	RewardedAmount float64   `json:"rewarded_amount"`
+	CommissionFee  float64   `json:"commission_fee"` // commission fee (in percentage)
 	EndedAt        time.Time `json:"ended_at"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
@@ -43,6 +45,7 @@ type RewardClaimDto struct {
 	UserId            uint      `json:"user_id"`
 	ShippingRequestID string    `json:"shipping_request_id"`
 	Amount            float64   `json:"amount"`
+	Fee               float64   `json:"fee"`
 	CreatedAt         time.Time `json:"created_at"`
 	UpdatedAt         time.Time `json:"updated_at"`
 }

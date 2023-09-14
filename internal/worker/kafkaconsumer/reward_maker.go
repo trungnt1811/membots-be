@@ -54,9 +54,9 @@ func (u *RewardMaker) ListenOrderApproved() {
 		newReward := model.Reward{
 			UserId:         order.UserId,
 			AtOrderID:      newAtOrderId,
-			Amount:         float64(order.PubCommission) * reward.AffRewardFee / 100,
+			Amount:         float64(order.PubCommission) * reward.AffCommissionFee / 100,
 			RewardedAmount: 0,
-			Fee:            reward.AffRewardFee,
+			CommissionFee:  reward.AffCommissionFee,
 			EndedAt:        now.Add(reward.RewardLockTime * time.Hour),
 			CreatedAt:      now,
 			UpdatedAt:      now,

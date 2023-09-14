@@ -96,3 +96,9 @@ func (r *RewardRepository) CountClaimHistory(ctx context.Context, userId uint32)
 	err := r.db.Model(&model.RewardClaim{}).Where("user_id = ?", userId).Count(&count).Error
 	return count, err
 }
+
+func (r *RewardRepository) GetTotalClaimedAmount(ctx context.Context, userId uint32) (float64, error) {
+	var amount float64
+	err := r.db.Model(&model.RewardClaim{}).Select("COUNT(amount)").Where("user_id = ?", userId).Scan(&amount).Error
+	return amount, err
+}

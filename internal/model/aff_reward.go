@@ -21,9 +21,9 @@ type Reward struct {
 	ID             uint      `gorm:"primarykey" json:"id"`
 	UserId         uint      `json:"user_id"`
 	AtOrderID      string    `json:"accesstrade_order_id"`
-	Amount         float64   `json:"amount"`
+	Amount         float64   `json:"amount"` // amount of reward after fee subtractions
 	RewardedAmount float64   `json:"rewarded_amount"`
-	Fee            float64   `json:"fee"`
+	CommissionFee  float64   `json:"commission_fee"` // commission fee (in percentage)
 	EndedAt        time.Time `json:"ended_at"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
@@ -31,13 +31,15 @@ type Reward struct {
 
 func (r *Reward) ToRewardDto() dto.RewardDto {
 	return dto.RewardDto{
-		ID:        r.ID,
-		UserId:    r.UserId,
-		AtOrderID: r.AtOrderID,
-		Amount:    r.Amount,
-		EndedAt:   r.EndedAt,
-		CreatedAt: r.CreatedAt,
-		UpdatedAt: r.UpdatedAt,
+		ID:             r.ID,
+		UserId:         r.UserId,
+		AtOrderID:      r.AtOrderID,
+		Amount:         r.Amount,
+		RewardedAmount: r.RewardedAmount,
+		CommissionFee:  r.CommissionFee,
+		EndedAt:        r.EndedAt,
+		CreatedAt:      r.CreatedAt,
+		UpdatedAt:      r.UpdatedAt,
 	}
 }
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/model"
 	"gorm.io/gorm"
 )
@@ -20,18 +21,6 @@ func NewRewardRepository(db *gorm.DB) *RewardRepository {
 
 func (r *RewardRepository) CreateReward(ctx context.Context, reward *model.Reward) error {
 	return r.db.Create(reward).Error
-}
-
-func (r *RewardRepository) GetRewardByOrderId(ctx context.Context, userId uint32, affOrderId uint) (model.Reward, error) {
-	var reward model.Reward
-	err := r.db.Model(&model.Reward{}).Where("user_id = ? AND aff_order_id = ?", userId, affOrderId).First(&reward).Error
-	return reward, err
-}
-
-func (r *RewardRepository) GetRewardById(ctx context.Context, userId uint32, affOrderId uint) (model.Reward, error) {
-	var reward model.Reward
-	err := r.db.Model(&model.Reward{}).Where("user_id = ? AND id = ?", affOrderId).First(&reward).Error
-	return reward, err
 }
 
 func (r *RewardRepository) GetInProgressRewards(ctx context.Context, userId uint32) ([]model.Reward, error) {
@@ -95,4 +84,31 @@ func (r *RewardRepository) CountClaimHistory(ctx context.Context, userId uint32)
 	var count int64
 	err := r.db.Model(&model.RewardClaim{}).Where("user_id = ?", userId).Count(&count).Error
 	return count, err
+}
+
+type RewardClaimDetailsDto struct {
+	ID                uint      `gorm:"primarykey" json:"id"`
+	UserId            uint      `json:"user_id"`
+	ShippingRequestID string    `json:"shipping_request_id"`
+	Amount            float64   `json:"amount"`
+	Fee               float64   `json:"fee"`
+	CreatedAt         time.Time `json:"created_at"`
+	UpdatedAt         time.Time `json:"updated_at"`
+}
+
+func (r *RewardRepository) GetClaimDetails(ctx context.Context, userId uint32, claimId uint) (dto.RewardClaimDetailsDto, error) {
+	var claimDetails dto.RewardClaimDetailsDto
+	query := "SELECT c.id, c.user_id, c.shipping_request_id, c.amount, c.fee, d.tx_hash, c.created_at, c.updated_at " +
+		"FROM aff_reward_claim AS c " +
+		"LEFT JOIN reward AS r ON c.shipping_request_id = r.request_id " +
+		"LEFT JOIN deliveries AS d ON r.delivery_id = d.id " +
+		"WHERE c.user_id = ? AND c.id = ?"
+	err := r.db.Raw(query, userId, claimId).First(&claimDetails).Error
+	return claimDetails, err
+}
+
+func (r *RewardRepository) GetTotalClaimedAmount(ctx context.Context, userId uint32) (float64, error) {
+	var amount float64
+	err := r.db.Model(&model.RewardClaim{}).Select("COUNT(amount)").Where("user_id = ?", userId).Scan(&amount).Error
+	return amount, err
 }

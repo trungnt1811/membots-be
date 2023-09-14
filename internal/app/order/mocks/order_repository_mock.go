@@ -1,9 +1,11 @@
 package mocks
 
 import (
+	"context"
 	"errors"
 	"time"
 
+	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/model"
 )
 
@@ -76,4 +78,8 @@ func (repo *MockOrderRepository) FindOrderByAccessTradeId(atOrderId string) (*mo
 
 func (repo *MockOrderRepository) UpdateTrackedClickOrder(trackedId uint64, order *model.AffOrder) error {
 	return nil
+}
+
+func (repo *MockOrderRepository) GetOrderDetails(ctx context.Context, userId uint32, orderId uint) (*dto.OrderDetailsDto, error) {
+	return nil, nil
 }

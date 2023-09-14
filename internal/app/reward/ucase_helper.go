@@ -14,6 +14,7 @@ func (u *RewardUsecase) calculateClaimableReward(rewards []model.Reward, userId 
 		UserId:            uint(userId),
 		ShippingRequestID: shippingRequestId,
 		Amount:            0,
+		Fee:               AffRewardTxFee,
 	}
 	rewardToClaim := []model.Reward{}
 	orderRewardHistories := []model.OrderRewardHistory{}

@@ -245,6 +245,11 @@ definitions:
       short_link:
         type: string
     type: object
+  dto.ResponseMessage:
+    properties:
+      message:
+        type: string
+    type: object
   dto.RewardClaimDto:
     properties:
       amount:
@@ -580,7 +585,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.AffCampaignAppDto'
+            $ref: '#/definitions/dto.ResponseMessage'
         "400":
           description: Bad Request
           schema:

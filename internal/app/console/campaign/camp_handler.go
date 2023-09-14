@@ -66,7 +66,7 @@ func (handler *ConsoleCampHandler) GetAllCampaign(ctx *gin.Context) {
 // @Produce json
 // @Param 	payload	body 			dto.AffCampaignAppDto true "Campaign info to update, required"
 // @Param id path int true "id to query"
-// @Success 200 		{object}	dto.AffCampaignAppDto
+// @Success 200 		{object}	dto.ResponseMessage
 // @Failure 401 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
 // @Security ApiKeyAuth
@@ -89,7 +89,9 @@ func (handler *ConsoleCampHandler) UpdateCampaignInfo(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, "success")
+	ctx.JSON(http.StatusOK, dto.ResponseMessage{
+		Message: "success",
+	})
 }
 
 // GetCampaignById Get campaign by id

@@ -7,7 +7,7 @@ type BrandDto struct {
 	CoverPhoto *string `json:"cover_photo"`
 }
 
-type UserViewBrand struct {
+type UserViewBrandDto struct {
 	UserId  uint32 `json:"user_id"`
 	BrandId uint64 `json:"brand_id"`
 }

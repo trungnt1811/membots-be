@@ -11,7 +11,7 @@ func (m *UserViewBrand) TableName() string {
 type UserViewBrand struct {
 	ID        uint32    `json:"id" gorm:"primaryKey"`
 	UserId    uint32    `json:"user_id"`
-	BrandId   uint32    `json:"brand_id"`
+	BrandId   uint64    `json:"brand_id"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }

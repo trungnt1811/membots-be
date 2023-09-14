@@ -86,7 +86,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	rewardRouter.POST("/claims", rewardHandler.ClaimReward)
 
 	// SECTION: App module
-	streamChannel := make(chan []*dto.UserViewBrand, 1024)
+	streamChannel := make(chan []*dto.UserViewBrandDto, 1024)
 
 	appRouter := v1.Group("/app")
 	affCampAppRepository := aff_camp_app.NewAffCampAppRepository(db)

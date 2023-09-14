@@ -9,10 +9,10 @@ import (
 
 type affCampAppUCase struct {
 	AffCampAppRepository interfaces.AffCampAppRepository
-	Stream               chan []*dto.UserViewBrand
+	Stream               chan []*dto.UserViewBrandDto
 }
 
-func NewAffCampAppUCase(repository interfaces.AffCampAppRepository, stream chan []*dto.UserViewBrand) interfaces.AffCampAppUCase {
+func NewAffCampAppUCase(repository interfaces.AffCampAppRepository, stream chan []*dto.UserViewBrandDto) interfaces.AffCampAppUCase {
 	return &affCampAppUCase{
 		AffCampAppRepository: repository,
 		Stream:               stream,
@@ -25,11 +25,11 @@ func (s affCampAppUCase) GetAffCampaignById(ctx context.Context, id uint64, user
 		return dto.AffCampaignAppDto{}, err
 	}
 	if userId > 0 {
-		payload := dto.UserViewBrand{
+		payload := dto.UserViewBrandDto{
 			UserId:  userId,
 			BrandId: id,
 		}
-		uv := make([]*dto.UserViewBrand, 0)
+		uv := make([]*dto.UserViewBrandDto, 0)
 		uv = append(uv, &payload)
 		s.Stream <- uv
 	}

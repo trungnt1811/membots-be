@@ -132,7 +132,7 @@ func (handler *RewardHandler) GetAllReward(ctx *gin.Context) {
 // @Tags 	reward
 // @Accept	json
 // @Produce json
-// @Success 200 		{object}	dto.RewardHistoryResponse
+// @Success 200 		{object}	dto.RewardClaimResponse
 // @Failure 424 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
 // @Router 	/api/v1/rewards/claims [get]

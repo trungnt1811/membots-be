@@ -168,6 +168,7 @@ func (c *AffCampaignComBrand) TableName() string {
 func (c *AffCampaignComBrand) ToAffCampaignComBrandDto() dto.AffCampaignComBrandDto {
 	return dto.AffCampaignComBrandDto{
 		ID:           c.ID,
+		Name:         c.Name,
 		BrandId:      c.BrandId,
 		Brand:        c.Brand.ToBrandDto(),
 		MaxCom:       c.MaxCom,

@@ -164,7 +164,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.UserViewAffCampComBrandDtoResponse"
+                            "$ref": "#/definitions/dto.AffCampaignComBrandDtoResponse"
                         }
                     },
                     "400": {
@@ -1146,8 +1146,34 @@ const docTemplate = `{
                 "max_com": {
                     "type": "string"
                 },
+                "name": {
+                    "type": "string"
+                },
                 "stella_max_com": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.AffCampaignComBrandDtoResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.AffCampaignComBrandDto"
+                    }
+                },
+                "next_page": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
                 }
             }
         },
@@ -1599,52 +1625,6 @@ const docTemplate = `{
                 },
                 "url": {
                     "type": "string"
-                }
-            }
-        },
-        "dto.UserViewAffCampComBrandDto": {
-            "type": "object",
-            "properties": {
-                "aff_camp_id": {
-                    "type": "integer"
-                },
-                "aff_campaign": {
-                    "$ref": "#/definitions/dto.AffCampaignComBrandDto"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "dto.UserViewAffCampComBrandDtoResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/dto.UserViewAffCampComBrandDto"
-                    }
-                },
-                "next_page": {
-                    "type": "integer"
-                },
-                "page": {
-                    "type": "integer"
-                },
-                "size": {
-                    "type": "integer"
-                },
-                "total": {
-                    "type": "integer"
                 }
             }
         },

@@ -166,8 +166,25 @@ definitions:
         type: integer
       max_com:
         type: string
+      name:
+        type: string
       stella_max_com:
         type: string
+    type: object
+  dto.AffCampaignComBrandDtoResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto.AffCampaignComBrandDto'
+        type: array
+      next_page:
+        type: integer
+      page:
+        type: integer
+      size:
+        type: integer
+      total:
+        type: integer
     type: object
   dto.AffCampaignDto:
     properties:
@@ -465,36 +482,6 @@ definitions:
       url:
         type: string
     type: object
-  dto.UserViewAffCampComBrandDto:
-    properties:
-      aff_camp_id:
-        type: integer
-      aff_campaign:
-        $ref: '#/definitions/dto.AffCampaignComBrandDto'
-      created_at:
-        type: string
-      id:
-        type: integer
-      updated_at:
-        type: string
-      user_id:
-        type: integer
-    type: object
-  dto.UserViewAffCampComBrandDtoResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/dto.UserViewAffCampComBrandDto'
-        type: array
-      next_page:
-        type: integer
-      page:
-        type: integer
-      size:
-        type: integer
-      total:
-        type: integer
-    type: object
   types.RedeemRequestPayload:
     properties:
       redeemCode:
@@ -630,7 +617,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.UserViewAffCampComBrandDtoResponse'
+            $ref: '#/definitions/dto.AffCampaignComBrandDtoResponse'
         "400":
           description: Bad Request
           schema:

@@ -13,7 +13,7 @@ type userViewAffCampRepository struct {
 }
 
 func (r userViewAffCampRepository) CreateUserViewAffCamp(ctx context.Context, data *model.UserViewAffCamp) error {
-	query := "INSERT INTO user_view_brand (user_id, aff_camp_id) " +
+	query := "INSERT INTO user_view_aff_camp (user_id, aff_camp_id) " +
 		"VALUES (?, ?) ON DUPLICATE KEY UPDATE updated_at = CURRENT_TIMESTAMP"
 	return r.db.Exec(query, data.UserId, data.AffCampId).Error
 }

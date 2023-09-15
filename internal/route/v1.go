@@ -42,7 +42,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	shippingClient := shipping.NewShippingClient(shippingClientConf)
 
 	// SECTION: Kafka Queue
-	userViewAffCampQueue := msgqueue.NewKafkaProducer(msgqueue.KAFKA_TOPIC_USER_VIEW_BRAND)
+	userViewAffCampQueue := msgqueue.NewKafkaProducer(msgqueue.KAFKA_TOPIC_USER_VIEW_AFF_CAMP)
 
 	// SECTION: Campaign and link
 	campaignRepo := campaign3.NewCampaignRepository(db)

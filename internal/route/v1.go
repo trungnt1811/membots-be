@@ -2,6 +2,7 @@ package route
 
 import (
 	"context"
+
 	bannerConsole "github.com/astraprotocol/affiliate-system/internal/app/console/banner"
 
 	"github.com/astraprotocol/affiliate-system/conf"
@@ -116,5 +117,5 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	userViewAffCampCache := user_view_aff_camp.NewUserViewAffCampCacheRepository(userViewAffCampRepository, redisClient)
 	userViewAffCampUCase := user_view_aff_camp.NewUserViewAffCampUCase(userViewAffCampCache)
 	userViewAffCampHandler := user_view_aff_camp.NewUserViewAffCampHandler(userViewAffCampUCase)
-	appRouter.GET("/recently-visited-section", authHandler.CheckUserHeader(), userViewAffCampHandler.GetListRecentlyVisitedSection)
+	appRouter.GET("brand/recently-visited-section", authHandler.CheckUserHeader(), userViewAffCampHandler.GetListRecentlyVisitedSection)
 }

@@ -33,7 +33,7 @@ func NewUserViewAffCampHandler(
 // @Failure 401 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
 // @Security ApiKeyAuth
-// @Router 	/api/v1/app/recently-visited-section [get]
+// @Router 	/api/v1/app/brand/recently-visited-section [get]
 func (handler *UserViewAffCampHandler) GetListRecentlyVisitedSection(ctx *gin.Context) {
 	// First, take user from JWT
 	user, err := dto.GetUserInfo(ctx)

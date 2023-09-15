@@ -187,8 +187,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "by to query, default is all",
-                        "name": "stella_status",
+                        "description": "by to query, default is all(active, inactive)",
+                        "name": "status",
                         "in": "query"
                     },
                     {

@@ -27,7 +27,7 @@ func NewConsoleBannerHandler(uCase interfaces.ConsoleBannerUCase) *ConsoleBanner
 // @Description Get list aff banner
 // @Tags console
 // @Produce json
-// @Param stella_status query string false "by to query, default is all"
+// @Param status query string false "by to query, default is all(active, inactive)"
 // @Param order query string false "order to query, default is desc"
 // @Param page query string false "page to query, default is 1"
 // @Param size query string false "size to query, default is 10"

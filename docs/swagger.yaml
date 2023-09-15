@@ -599,9 +599,9 @@ paths:
     get:
       description: Get list aff banner
       parameters:
-      - description: by to query, default is all
+      - description: by to query, default is all(active, inactive)
         in: query
-        name: stella_status
+        name: status
         type: string
       - description: order to query, default is desc
         in: query

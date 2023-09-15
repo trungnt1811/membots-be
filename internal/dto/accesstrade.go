@@ -17,7 +17,7 @@ type ATPostBackRequest struct {
 	OrderId            string `json:"order_id"`            // Mã đơn hàng hiển thị trên trang pub
 	CampaignId         string `json:"campaign_id"`         // ID của campaign trên hệ thống
 	ProductId          string `json:"product_id"`          // Mã sản phẩm
-	Quantity           string `json:"quantity"`            // Số lượng sản phẩm
+	Quantity           int    `json:"quantity"`            // Số lượng sản phẩm
 	ProductCategory    string `json:"product_category"`    // Group commission của sản phẩm
 	ProductPrice       string `json:"product_price"`       // Giá của một sản phẩm
 	Reward             string `json:"reward"`              // Hoa hồng nhận được

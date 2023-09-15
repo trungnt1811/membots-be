@@ -87,3 +87,8 @@ type AffCampaignAppDtoResponse struct {
 	Total    int64               `json:"total,omitempty"`
 	Data     []AffCampaignAppDto `json:"data"`
 }
+
+type UserViewAffCampDto struct {
+	UserId    uint32 `json:"user_id"`
+	AffCampId uint64 `json:"aff_camp_id"`
+}

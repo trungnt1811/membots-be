@@ -12,7 +12,7 @@ import (
 
 type userViewBrandProducer struct {
 	Producer *QueueWriter
-	Stream   chan []*dto.UserViewBrandDto
+	Stream   chan []*dto.UserViewAffCampDto
 	stopSig  chan bool
 }
 
@@ -54,7 +54,7 @@ type Producer interface {
 	Stop()
 }
 
-func NewUserViewBrandProducer(producer *QueueWriter, stream chan []*dto.UserViewBrandDto) Producer {
+func NewUserViewBrandProducer(producer *QueueWriter, stream chan []*dto.UserViewAffCampDto) Producer {
 	return &userViewBrandProducer{
 		Producer: producer,
 		Stream:   stream,

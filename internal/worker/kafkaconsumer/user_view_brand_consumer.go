@@ -38,7 +38,7 @@ func (c *UserViewBrandConsumer) StartListen() <-chan error {
 				log.Error().Err(err)
 				continue
 			}
-			var payload dto.UserViewBrandDto
+			var payload dto.UserViewAffCampDto
 			err = json.Unmarshal(m.Value, &payload)
 			if err != nil {
 				log.Error().Err(err)
@@ -49,8 +49,8 @@ func (c *UserViewBrandConsumer) StartListen() <-chan error {
 			}
 			_ = c.UserViewBrandRepository.CreateUserViewBrand(context.Background(),
 				&model.UserViewBrand{
-					UserId:  payload.UserId,
-					BrandId: payload.BrandId,
+					UserId:    payload.UserId,
+					AffCampId: payload.AffCampId,
 				})
 
 			if err = c.KafkaConsumer.Reader.CommitMessages(ctx, m); err != nil {

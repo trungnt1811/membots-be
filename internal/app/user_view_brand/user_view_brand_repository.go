@@ -13,9 +13,9 @@ type userViewBrandRepository struct {
 }
 
 func (r userViewBrandRepository) CreateUserViewBrand(ctx context.Context, data *model.UserViewBrand) error {
-	query := "INSERT INTO user_view_brand (user_id, brand_id) " +
+	query := "INSERT INTO user_view_brand (user_id, aff_camp_id) " +
 		"VALUES (?, ?) ON DUPLICATE KEY UPDATE updated_at = CURRENT_TIMESTAMP"
-	return r.db.Exec(query, data.UserId, data.BrandId).Error
+	return r.db.Exec(query, data.UserId, data.AffCampId).Error
 }
 
 func NewUserViewBrandRepository(db *gorm.DB) interfaces.UserViewBrandRepository {

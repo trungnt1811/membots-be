@@ -12,6 +12,7 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/app/order"
 	"github.com/astraprotocol/affiliate-system/internal/app/redeem"
 	"github.com/astraprotocol/affiliate-system/internal/app/reward"
+	"github.com/astraprotocol/affiliate-system/internal/app/user_view_aff_camp"
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/infra/caching"
 	"github.com/astraprotocol/affiliate-system/internal/infra/msgqueue"
@@ -99,4 +100,9 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 
 	userViewAffCampProducer := msgqueue.NewUserViewAffCampProducer(userViewAffCampQueue, streamChannel)
 	userViewAffCampProducer.Start()
+
+	userViewAffCampRepository := user_view_aff_camp.NewUserViewAffCampRepository(db)
+	userViewAffCampUCase := user_view_aff_camp.NewUserViewAffCampUCase(userViewAffCampRepository)
+	userViewAffCampHandler := user_view_aff_camp.NewUserViewAffCampHandler(userViewAffCampUCase)
+	appRouter.GET("/recently-visited-section", authHandler.CheckUserHeader(), userViewAffCampHandler.GetListRecentlyVisitedSection)
 }

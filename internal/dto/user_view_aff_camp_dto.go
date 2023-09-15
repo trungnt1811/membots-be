@@ -10,3 +10,11 @@ type UserViewAffCampComBrandDto struct {
 	CreatedAt       time.Time              `json:"created_at"`
 	UpdatedAt       time.Time              `json:"updated_at"`
 }
+
+type UserViewAffCampComBrandDtoResponse struct {
+	NextPage int                          `json:"next_page"`
+	Page     int                          `json:"page"`
+	Size     int                          `json:"size"`
+	Total    int64                        `json:"total,omitempty"`
+	Data     []UserViewAffCampComBrandDto `json:"data"`
+}

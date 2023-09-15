@@ -31,7 +31,7 @@ func (m *UserViewAffCampComBrand) TableName() string {
 	return "user_view_aff_camp"
 }
 
-func (m *UserViewAffCampComBrand) UserViewAffCampComBrandDto() dto.UserViewAffCampComBrandDto {
+func (m *UserViewAffCampComBrand) ToUserViewAffCampComBrandDto() dto.UserViewAffCampComBrandDto {
 	return dto.UserViewAffCampComBrandDto{
 		ID:              m.ID,
 		UserId:          m.UserId,

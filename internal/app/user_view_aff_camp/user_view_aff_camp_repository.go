@@ -27,7 +27,9 @@ func (r userViewAffCampRepository) CreateUserViewAffCamp(ctx context.Context, da
 func (r userViewAffCampRepository) GetListUserViewAffCampByUserId(ctx context.Context, userId uint64, page, size int) ([]model.UserViewAffCampComBrand, error) {
 	var listUserViewAffCampComBrand []model.UserViewAffCampComBrand
 	offset := (page - 1) * size
-	err := r.db.Joins("AffCampComBrand").Where("user_id = ?", userId).
+	err := r.db.Joins("AffCampComBrand").
+		Preload("AffCampComBrand.Brand").
+		Where("user_id = ?", userId).
 		Find(&listUserViewAffCampComBrand).Limit(size + 1).Offset(offset).Error
 	return listUserViewAffCampComBrand, err
 }

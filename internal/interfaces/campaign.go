@@ -7,7 +7,7 @@ import (
 )
 
 type CampaignRepository interface {
-	RetrieveCampaigns(q map[string]any) ([]model2.AffCampaign, error)
+	GetCampaignLessById(campaignId uint) (model2.AffCampaignLess, error)
 	RetrieveCampaignsByAccessTradeIds(ids []string) (map[string]*model2.AffCampaign, error)
 	SaveATCampaign(atCampaign *types.ATCampaign) error
 

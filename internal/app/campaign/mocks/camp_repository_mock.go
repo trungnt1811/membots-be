@@ -13,7 +13,7 @@ func NewCampaignRepoMock() *CampaignRepoMock {
 	return &CampaignRepoMock{}
 }
 
-func (repo *CampaignRepoMock) RetrieveCampaigns(q map[string]any) ([]model.AffCampaign, error) {
+func (repo *CampaignRepoMock) GetCampaignById(q map[string]any) ([]model.AffCampaign, error) {
 	return []model.AffCampaign{
 		{
 			ID:            14,

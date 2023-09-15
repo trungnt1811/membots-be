@@ -105,12 +105,13 @@ func (repo *CampaignRepository) SaveATCampaign(atCampaign *types.ATCampaign) err
 	return nil
 }
 
-func (repo *CampaignRepository) RetrieveCampaigns(q map[string]any) ([]model2.AffCampaign, error) {
-	var data []model2.AffCampaign
-	err := repo.Db.Preload("Description").Find(&data, q).Error
-
+func (repo *CampaignRepository) GetCampaignLessById(campaignId uint) (model2.AffCampaignLess, error) {
+	var data model2.AffCampaignLess
+	err := repo.Db.
+		Where("id = ?", campaignId).
+		First(&data).Error
 	if err != nil {
-		return nil, err
+		return data, err
 	}
 	return data, nil
 }

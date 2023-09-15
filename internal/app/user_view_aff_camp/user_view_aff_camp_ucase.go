@@ -17,26 +17,26 @@ func NewUserViewAffCampUCase(repository interfaces.UserViewAffCampRepository) in
 	}
 }
 
-func (s userViewAffCampUCase) GetListUserViewAffCampByUserId(ctx context.Context, userId uint64, page, size int) (dto.UserViewAffCampComBrandDtoResponse, error) {
+func (s userViewAffCampUCase) GetListUserViewAffCampByUserId(ctx context.Context, userId uint64, page, size int) (dto.AffCampaignComBrandDtoResponse, error) {
 	listUserViewAffCamp, err := s.UserViewAffCampRepository.GetListUserViewAffCampByUserId(ctx, userId, page, size)
 	if err != nil {
-		return dto.UserViewAffCampComBrandDtoResponse{}, err
+		return dto.AffCampaignComBrandDtoResponse{}, err
 	}
-	var listUserViewAffCampDto []dto.UserViewAffCampComBrandDto
+	var listAffCampComBrandDto []dto.AffCampaignComBrandDto
 	for i := range listUserViewAffCamp {
 		if i >= size {
 			break
 		}
-		listUserViewAffCampDto = append(listUserViewAffCampDto, listUserViewAffCamp[i].ToUserViewAffCampComBrandDto())
+		listAffCampComBrandDto = append(listAffCampComBrandDto, listUserViewAffCamp[i].ToAffCampaignComBrandDto())
 	}
 	nextPage := page
 	if len(listUserViewAffCamp) > size {
 		nextPage += 1
 	}
-	return dto.UserViewAffCampComBrandDtoResponse{
+	return dto.AffCampaignComBrandDtoResponse{
 		NextPage: nextPage,
 		Page:     page,
 		Size:     size,
-		Data:     listUserViewAffCampDto,
+		Data:     listAffCampComBrandDto,
 	}, nil
 }

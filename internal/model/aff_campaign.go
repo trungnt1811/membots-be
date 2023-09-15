@@ -154,6 +154,7 @@ func (c *AffCampaignApp) ToAffCampaignAppDto() dto.AffCampaignAppDto {
 
 type AffCampaignComBrand struct {
 	ID           uint64 `gorm:"primarykey" json:"id"`
+	Name         string `json:"name"`
 	BrandId      uint64 `json:"brand_id"`
 	Brand        Brand  `json:"brand" gorm:"foreignKey:BrandId"`
 	MaxCom       string `json:"max_com"`

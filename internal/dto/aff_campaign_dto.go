@@ -95,8 +95,17 @@ type UserViewAffCampDto struct {
 
 type AffCampaignComBrandDto struct {
 	ID           uint64   `json:"id"`
+	Name         string   `json:"name"`
 	BrandId      uint64   `json:"brand_id"`
 	Brand        BrandDto `json:"brand"`
 	MaxCom       string   `json:"max_com"`
 	StellaMaxCom string   `json:"stella_max_com"`
+}
+
+type AffCampaignComBrandDtoResponse struct {
+	NextPage int                      `json:"next_page"`
+	Page     int                      `json:"page"`
+	Size     int                      `json:"size"`
+	Total    int64                    `json:"total,omitempty"`
+	Data     []AffCampaignComBrandDto `json:"data"`
 }

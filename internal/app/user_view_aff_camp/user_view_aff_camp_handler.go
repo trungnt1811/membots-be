@@ -29,7 +29,7 @@ func NewUserViewAffCampHandler(
 // @Produce json
 // @Param page query string false "page to query, default is 1"
 // @Param size query string false "size to query, default is 10"
-// @Success 200 		{object}	dto.UserViewAffCampComBrandDtoResponse
+// @Success 200 		{object}	dto.AffCampaignComBrandDtoResponse
 // @Failure 401 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
 // @Security ApiKeyAuth

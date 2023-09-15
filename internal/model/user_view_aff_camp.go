@@ -19,25 +19,14 @@ func (m *UserViewAffCamp) TableName() string {
 }
 
 type UserViewAffCampComBrand struct {
-	ID              uint64              `json:"id" gorm:"primaryKey"`
-	UserId          uint32              `json:"user_id"`
 	AffCampId       uint64              `json:"aff_camp_id"`
 	AffCampComBrand AffCampaignComBrand `json:"aff_campaign" gorm:"foreignKey:AffCampId"`
-	CreatedAt       time.Time           `json:"created_at"`
-	UpdatedAt       time.Time           `json:"updated_at"`
 }
 
 func (m *UserViewAffCampComBrand) TableName() string {
 	return "user_view_aff_camp"
 }
 
-func (m *UserViewAffCampComBrand) ToUserViewAffCampComBrandDto() dto.UserViewAffCampComBrandDto {
-	return dto.UserViewAffCampComBrandDto{
-		ID:              m.ID,
-		UserId:          m.UserId,
-		AffCampId:       m.AffCampId,
-		AffCampComBrand: m.AffCampComBrand.ToAffCampaignComBrandDto(),
-		CreatedAt:       m.CreatedAt,
-		UpdatedAt:       m.UpdatedAt,
-	}
+func (m *UserViewAffCampComBrand) ToAffCampaignComBrandDto() dto.AffCampaignComBrandDto {
+	return m.AffCampComBrand.ToAffCampaignComBrandDto()
 }

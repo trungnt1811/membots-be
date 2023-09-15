@@ -83,7 +83,7 @@ func (handler *ConsoleBannerHandler) UpdateBannerInfo(ctx *gin.Context) {
 		return
 	}
 
-	err = handler.UCase.UpdateBanner(uint(id), payload)
+	err = handler.UCase.UpdateBanner(uint(id), &payload)
 	if err != nil {
 		util.RespondError(ctx, http.StatusInternalServerError, "failed to update aff banner", err)
 		return
@@ -120,4 +120,32 @@ func (handler *ConsoleBannerHandler) GetBannerById(ctx *gin.Context) {
 
 	// Response transaction status
 	ctx.JSON(http.StatusOK, affCampaign)
+}
+
+// AddAffBanner Add a aff-banner
+// @Summary Add a aff-banner
+// @DescriptionAdd a aff-banner
+// @Tags 	console
+// @Accept	json
+// @Produce json
+// @Param 	payload	body 			dto.AffBannerCreateDto true "Send data, required"
+// @Success 200 		{object}	dto.AffBannerDto
+// @Failure 401 		{object}	util.GeneralError
+// @Failure 400 		{object}	util.GeneralError
+// @Security ApiKeyAuth
+// @Router 	/api/v1/console/aff-banner [post]
+func (handler *ConsoleBannerHandler) AddAffBanner(ctx *gin.Context) {
+	// Then verify request payload
+	var payload dto.AffBannerDto
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		util.RespondError(ctx, http.StatusBadRequest, "send payload is required", err)
+		return
+	}
+
+	response, err := handler.UCase.CreateBanner(&payload)
+	if err != nil {
+		util.RespondError(ctx, http.StatusInternalServerError, "add aff-banner error", err)
+		return
+	}
+	ctx.JSON(http.StatusOK, response)
 }

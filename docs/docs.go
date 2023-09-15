@@ -333,6 +333,54 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "console"
+                ],
+                "summary": "Add a aff-banner",
+                "parameters": [
+                    {
+                        "description": "Send data, required",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.AffBannerCreateDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.AffBannerDto"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
             }
         },
         "/api/v1/console/aff-banner/{id}": {
@@ -1044,6 +1092,23 @@ const docTemplate = `{
                 },
                 "success": {
                     "type": "boolean"
+                }
+            }
+        },
+        "dto.AffBannerCreateDto": {
+            "type": "object",
+            "properties": {
+                "accesstrade_id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "thumbnail": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
                 }
             }
         },

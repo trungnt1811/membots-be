@@ -76,12 +76,13 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	consoleRouter.GET("/aff-campaign/:id", consoleCampHandler.GetCampaignById)
 
 	consoleBannerRepository := bannerConsole.NewConsoleBannerRepository(db)
-	consoleBannerUCase := bannerConsole.NewBannerUCase(consoleBannerRepository)
+	consoleBannerUCase := bannerConsole.NewBannerUCase(consoleBannerRepository, consoleCampRepository)
 	consoleBannerHandler := bannerConsole.NewConsoleBannerHandler(consoleBannerUCase)
 
 	consoleRouter.GET("/aff-banner", consoleBannerHandler.GetAllBanner)
 	consoleRouter.PUT("/aff-banner/:id", authHandler.CheckAdminHeader(), consoleBannerHandler.UpdateBannerInfo)
 	consoleRouter.GET("/aff-banner/:id", consoleBannerHandler.GetBannerById)
+	consoleRouter.POST("/aff-banner", consoleBannerHandler.AddAffBanner)
 
 	// SECTION: Reward module
 	rewardRepo := reward.NewRewardRepository(db)

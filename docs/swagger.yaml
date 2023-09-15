@@ -75,6 +75,17 @@ definitions:
       success:
         type: boolean
     type: object
+  dto.AffBannerCreateDto:
+    properties:
+      accesstrade_id:
+        type: string
+      name:
+        type: string
+      thumbnail:
+        type: string
+      url:
+        type: string
+    type: object
   dto.AffBannerDto:
     properties:
       accesstrade_id:
@@ -698,6 +709,36 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Get list aff banner
+      tags:
+      - console
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Send data, required
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AffBannerCreateDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AffBannerDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Add a aff-banner
       tags:
       - console
   /api/v1/console/aff-banner/{id}:

@@ -8,6 +8,7 @@ import (
 type ConsoleCampRepository interface {
 	GetAllCampaign(status []string, page, size int) ([]model.AffCampaign, error)
 	GetCampaignById(id uint) (model.AffCampaign, error)
+	GetCampaignLessByAccessTradeId(accessTradeId string) (model.AffCampaignLess, error)
 	CountCampaign(status []string) (int64, error)
 	UpdateCampaign(id uint, updates map[string]interface{}) error
 }

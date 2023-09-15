@@ -47,7 +47,7 @@ func (a *affBannerRepository) CountBanner(listStatus []string) (int64, error) {
 	return total, nil
 }
 
-func NewAppBannerRepository(db *gorm.DB) interfaces.ConsoleBannerRepository {
+func NewAppBannerRepository(db *gorm.DB) interfaces.AppBannerRepository {
 	return &affBannerRepository{
 		Db: db,
 	}

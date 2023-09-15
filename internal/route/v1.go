@@ -2,7 +2,6 @@ package route
 
 import (
 	"context"
-
 	bannerConsole "github.com/astraprotocol/affiliate-system/internal/app/console/banner"
 
 	"github.com/astraprotocol/affiliate-system/conf"
@@ -80,12 +79,13 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	consoleRouter.GET("/aff-campaign/:id", consoleCampHandler.GetCampaignById)
 
 	consoleBannerRepository := bannerConsole.NewConsoleBannerRepository(db)
-	consoleBannerUCase := bannerConsole.NewBannerUCase(consoleBannerRepository)
+	consoleBannerUCase := bannerConsole.NewBannerUCase(consoleBannerRepository, consoleCampRepository)
 	consoleBannerHandler := bannerConsole.NewConsoleBannerHandler(consoleBannerUCase)
 
 	consoleRouter.GET("/aff-banner", consoleBannerHandler.GetAllBanner)
 	consoleRouter.PUT("/aff-banner/:id", authHandler.CheckAdminHeader(), consoleBannerHandler.UpdateBannerInfo)
 	consoleRouter.GET("/aff-banner/:id", consoleBannerHandler.GetBannerById)
+	consoleRouter.POST("/aff-banner", consoleBannerHandler.AddAffBanner)
 
 	// SECTION: Reward module
 	rewardRepo := reward.NewRewardRepository(db)
@@ -103,6 +103,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	streamChannel := make(chan []*dto.UserViewAffCampDto, 1024)
 
 	appRouter := v1.Group("/app")
+
 	affCampAppRepository := aff_camp_app.NewAffCampAppRepository(db)
 	affCampAppCache := aff_camp_app.NewAffCampAppCacheRepository(affCampAppRepository, redisClient)
 	affCampAppUCase := aff_camp_app.NewAffCampAppUCase(affCampAppCache, streamChannel)
@@ -118,4 +119,16 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	userViewAffCampUCase := user_view_aff_camp.NewUserViewAffCampUCase(userViewAffCampCache)
 	userViewAffCampHandler := user_view_aff_camp.NewUserViewAffCampHandler(userViewAffCampUCase)
 	appRouter.GET("brand/recently-visited-section", authHandler.CheckUserHeader(), userViewAffCampHandler.GetListRecentlyVisitedSection)
+	affCampAppService := aff_camp_app.NewAffCampAppService(affCampAppCache)
+	affCampAppHandler := aff_camp_app.NewAffCampAppHandler(affCampAppService)
+	appRouter.GET("/aff-campaign", affCampAppHandler.GetAllAffCampaign)
+	appRouter.GET("/aff-campaign/:id", affCampAppHandler.GetAffCampaignById)
+
+	affAppBannerRepo := bannerApp.NewAppBannerRepository(db)
+	affAppBannerUCase := bannerApp.NewBannerUCase(affAppBannerRepo)
+	affAppBannerHandler := bannerApp.NewAppBannerHandler(affAppBannerUCase)
+
+	appRouter.GET("/aff-banner", affAppBannerHandler.GetAllBanner)
+	appRouter.GET("/aff-banner/:id", affAppBannerHandler.GetBannerById)
+
 }

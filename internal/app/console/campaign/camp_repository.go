@@ -10,6 +10,14 @@ type affCampaignRepository struct {
 	Db *gorm.DB
 }
 
+func (a *affCampaignRepository) GetCampaignLessByAccessTradeId(accessTradeId string) (model.AffCampaignLess, error) {
+	var affCampaign model.AffCampaignLess
+	if err := a.Db.Where("accesstrade_id = ?", accessTradeId).First(&affCampaign).Error; err != nil {
+		return affCampaign, err
+	}
+	return affCampaign, nil
+}
+
 func (a *affCampaignRepository) GetCampaignById(id uint) (model.AffCampaign, error) {
 	var affCampaign model.AffCampaign
 	if err := a.Db.Table("aff_campaign").

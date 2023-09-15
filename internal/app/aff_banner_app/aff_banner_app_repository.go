@@ -10,11 +10,6 @@ type affBannerRepository struct {
 	Db *gorm.DB
 }
 
-func (a *affBannerRepository) CreateBanner(banner *model.AffBanner) (model.AffBanner, error) {
-	err := a.Db.Create(banner).Error
-	return *banner, err
-}
-
 func (a *affBannerRepository) GetBannerById(id uint) (model.AffBanner, error) {
 	var affBanner model.AffBanner
 	if err := a.Db.Table("aff_banner").
@@ -52,7 +47,7 @@ func (a *affBannerRepository) CountBanner(listStatus []string) (int64, error) {
 	return total, nil
 }
 
-func NewConsoleBannerRepository(db *gorm.DB) interfaces.ConsoleBannerRepository {
+func NewAppBannerRepository(db *gorm.DB) interfaces.AppBannerRepository {
 	return &affBannerRepository{
 		Db: db,
 	}

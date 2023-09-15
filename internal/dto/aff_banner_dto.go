@@ -20,3 +20,10 @@ type AffBannerDtoResponse struct {
 	Total    int64          `json:"total"`
 	Data     []AffBannerDto `json:"data"`
 }
+
+type AffBannerCreateDto struct {
+	Name          string `json:"name"`
+	Thumbnail     string `json:"thumbnail"`
+	Url           string `json:"url"`
+	AccessTradeId string `json:"accesstrade_id"`
+}

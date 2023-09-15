@@ -1,13 +1,31 @@
 package campaign
 
 import (
+	"errors"
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
+	"github.com/astraprotocol/affiliate-system/internal/model"
 	"strings"
 )
 
 type bannerUCase struct {
-	Repo interfaces.ConsoleBannerRepository
+	Repo     interfaces.ConsoleBannerRepository
+	CampRepo interfaces.ConsoleCampRepository
+}
+
+func (c *bannerUCase) CreateBanner(banner *dto.AffBannerDto) (dto.AffBannerDto, error) {
+	_, err := c.CampRepo.GetCampaignLessByAccessTradeId(banner.AccessTradeId)
+	if err != nil {
+		return dto.AffBannerDto{}, errors.New("accesstrade_id not found")
+	}
+	bannerData, err := c.Repo.CreateBanner(&model.AffBanner{
+		Name:          banner.Name,
+		Thumbnail:     banner.Thumbnail,
+		Url:           banner.Url,
+		AccessTradeId: banner.AccessTradeId,
+		Status:        "inactive",
+	})
+	return bannerData.ToDto(), nil
 }
 
 func (c *bannerUCase) GetBannerById(id uint) (dto.AffBannerDto, error) {
@@ -18,7 +36,7 @@ func (c *bannerUCase) GetBannerById(id uint) (dto.AffBannerDto, error) {
 	return affCampaign.ToDto(), nil
 }
 
-func (c *bannerUCase) UpdateBanner(id uint, campaign dto.AffBannerDto) error {
+func (c *bannerUCase) UpdateBanner(id uint, campaign *dto.AffBannerDto) error {
 	updates := make(map[string]interface{})
 	if len(strings.TrimSpace(campaign.Name)) > 0 {
 		updates["name"] = campaign.Name
@@ -64,8 +82,9 @@ func (c *bannerUCase) GetAllBanner(status []string, page, size int) (dto.AffBann
 	}, nil
 }
 
-func NewBannerUCase(repo interfaces.ConsoleBannerRepository) interfaces.ConsoleBannerUCase {
+func NewBannerUCase(repo interfaces.ConsoleBannerRepository, campRepo interfaces.ConsoleCampRepository) interfaces.ConsoleBannerUCase {
 	return &bannerUCase{
-		Repo: repo,
+		Repo:     repo,
+		CampRepo: campRepo,
 	}
 }

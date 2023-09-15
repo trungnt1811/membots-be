@@ -1,12 +1,12 @@
 package dto
 
 const (
-	REQ_STATUS_NEW      = "0"
-	REQ_STATUS_APPROVED = "1"
-	REQ_STATUS_REJECTED = "2"
+	REQ_STATUS_NEW      = 0
+	REQ_STATUS_APPROVED = 1
+	REQ_STATUS_REJECTED = 2
 )
 
-var AtOrderStatusMap map[string]string = map[string]string{
+var AtOrderStatusMap map[uint8]string = map[uint8]string{
 	REQ_STATUS_NEW:      "new",
 	REQ_STATUS_APPROVED: "approved",
 	REQ_STATUS_REJECTED: "rejected",

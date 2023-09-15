@@ -1,7 +1,6 @@
 package test
 
 import (
-	b64 "encoding/base64"
 	"fmt"
 	"testing"
 
@@ -44,7 +43,7 @@ func Test_ParseAndStringifyUTMContent(t *testing.T) {
 
 	userId := uint(1)
 	trackedId := uint64(100)
-	utmStr := b64.URLEncoding.EncodeToString([]byte(fmt.Sprintf("%d-%d", userId, trackedId)))
+	utmStr := fmt.Sprintf("%d-%d", userId, trackedId)
 
 	asserts.Equal(utmStr, util.StringifyUTMContent(userId, trackedId))
 	parsedUserId, parsedTrackedId := util.ParseUTMContent(utmStr)

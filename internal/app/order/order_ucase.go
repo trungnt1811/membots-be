@@ -64,9 +64,9 @@ func (u *OrderUcase) PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*m
 		return nil, fmt.Errorf("query order-list error: %v", err)
 	}
 	var atOrder *types.ATOrder
-	for _, item := range resp.Data {
+	for idx, item := range resp.Data {
 		if item.OrderId == postBackReq.OrderId {
-			atOrder = &item
+			atOrder = &resp.Data[idx]
 		}
 	}
 	if atOrder == nil {

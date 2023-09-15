@@ -164,8 +164,6 @@ definitions:
         type: integer
       id:
         type: integer
-      max_com:
-        type: string
       name:
         type: string
       stella_max_com:

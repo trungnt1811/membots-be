@@ -1143,9 +1143,6 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
-                "max_com": {
-                    "type": "string"
-                },
                 "name": {
                     "type": "string"
                 },

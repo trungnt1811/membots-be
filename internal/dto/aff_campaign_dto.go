@@ -98,7 +98,6 @@ type AffCampaignComBrandDto struct {
 	Name         string   `json:"name"`
 	BrandId      uint64   `json:"brand_id"`
 	Brand        BrandDto `json:"brand"`
-	MaxCom       string   `json:"max_com"`
 	StellaMaxCom string   `json:"stella_max_com"`
 }
 

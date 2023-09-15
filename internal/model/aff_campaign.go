@@ -157,7 +157,6 @@ type AffCampaignComBrand struct {
 	Name         string `json:"name"`
 	BrandId      uint64 `json:"brand_id"`
 	Brand        Brand  `json:"brand" gorm:"foreignKey:BrandId"`
-	MaxCom       string `json:"max_com"`
 	StellaMaxCom string `json:"stella_max_com"`
 }
 
@@ -171,7 +170,6 @@ func (c *AffCampaignComBrand) ToAffCampaignComBrandDto() dto.AffCampaignComBrand
 		Name:         c.Name,
 		BrandId:      c.BrandId,
 		Brand:        c.Brand.ToBrandDto(),
-		MaxCom:       c.MaxCom,
 		StellaMaxCom: c.StellaMaxCom,
 	}
 }

@@ -12,35 +12,35 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type ConsoleCampHandler struct {
-	UCase interfaces.ConsoleCampUCase
+type ConsoleBannerHandler struct {
+	UCase interfaces.ConsoleBannerUCase
 }
 
-func NewConsoleCampHandler(uCase interfaces.ConsoleCampUCase) *ConsoleCampHandler {
-	return &ConsoleCampHandler{
+func NewConsoleBannerHandler(uCase interfaces.ConsoleBannerUCase) *ConsoleBannerHandler {
+	return &ConsoleBannerHandler{
 		UCase: uCase,
 	}
 }
 
-// GetAllCampaign Get list aff campaign
-// @Summary Get list aff campaign
-// @Description Get list aff campaign
+// GetAllBanner Get list aff banner
+// @Summary Get list aff banner
+// @Description Get list aff banner
 // @Tags console
 // @Produce json
-// @Param stella_status query string false "by to query, default is all"
+// @Param status query string false "by to query, default is all(active, inactive)"
 // @Param order query string false "order to query, default is desc"
 // @Param page query string false "page to query, default is 1"
 // @Param size query string false "size to query, default is 10"
-// @Success 200 		{object}	dto.AffCampaignDtoResponse
+// @Success 200 		{object}	dto.AffBannerDtoResponse
 // @Failure 401 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
 // @Security ApiKeyAuth
-// @Router /api/v1/console/aff-campaign [get]
-func (handler *ConsoleCampHandler) GetAllCampaign(ctx *gin.Context) {
-	queryStatus := ctx.DefaultQuery("stella_status", "")
+// @Router /api/v1/console/aff-banner [get]
+func (handler *ConsoleBannerHandler) GetAllBanner(ctx *gin.Context) {
+	queryStatus := ctx.DefaultQuery("status", "")
 	order := ctx.DefaultQuery("order", "desc")
 
-	queryStatusIn := util2.NormalizeStatus(queryStatus)
+	queryStatusIn := util2.NormalizeStatusActiveInActive(queryStatus)
 	page := ctx.GetInt("page")
 	size := ctx.GetInt("size")
 
@@ -48,44 +48,44 @@ func (handler *ConsoleCampHandler) GetAllCampaign(ctx *gin.Context) {
 		util2.RespondError(ctx, http.StatusBadRequest, "query order invalid, order in {asc, desc}", nil)
 		return
 	}
-	listAffCampaign, err := handler.UCase.GetAllCampaign(queryStatusIn, page, size)
+	listAffBanner, err := handler.UCase.GetAllBanner(queryStatusIn, page, size)
 	if err != nil {
-		util2.RespondError(ctx, http.StatusInternalServerError, "get listAffCampaign error", err)
+		util2.RespondError(ctx, http.StatusInternalServerError, "get listBanner error", err)
 		return
 	}
 
 	// Response transaction status
-	ctx.JSON(http.StatusOK, listAffCampaign)
+	ctx.JSON(http.StatusOK, listAffBanner)
 }
 
-// UpdateCampaignInfo update campaign info
-// @Summary update campaign info
-// @Description update campaign info
+// UpdateBannerInfo update aff-banner info
+// @Summary update aff-banner info
+// @Description update aff-banner info
 // @Tags 	console
 // @Accept	json
 // @Produce json
-// @Param 	payload	body 			dto.AffCampaignAppDto true "Campaign info to update, required"
+// @Param 	payload	body 			dto.AffBannerDto true "banner info to update, required"
 // @Param id path int true "id to query"
 // @Success 200 		{object}	dto.ResponseMessage
 // @Failure 401 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
 // @Security ApiKeyAuth
-// @Router 	/api/v1/console/aff-campaign/{id} [PUT]
-func (handler *ConsoleCampHandler) UpdateCampaignInfo(ctx *gin.Context) {
+// @Router 	/api/v1/console/aff-banner/{id} [PUT]
+func (handler *ConsoleBannerHandler) UpdateBannerInfo(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
 		util.RespondError(ctx, http.StatusBadRequest, "id is required", err)
 		return
 	}
-	var payload dto.AffCampaignAppDto
+	var payload dto.AffBannerDto
 	if err := ctx.ShouldBindJSON(&payload); err != nil {
 		util.RespondError(ctx, http.StatusBadRequest, "send payload is required", err)
 		return
 	}
 
-	err = handler.UCase.UpdateCampaign(uint(id), payload)
+	err = handler.UCase.UpdateBanner(uint(id), payload)
 	if err != nil {
-		util.RespondError(ctx, http.StatusInternalServerError, "failed to update user info", err)
+		util.RespondError(ctx, http.StatusInternalServerError, "failed to update aff banner", err)
 		return
 	}
 
@@ -94,27 +94,27 @@ func (handler *ConsoleCampHandler) UpdateCampaignInfo(ctx *gin.Context) {
 	})
 }
 
-// GetCampaignById Get campaign by id
-// @Summary Get campaign by id
-// @Description Get campaign by id
+// GetBannerById Get aff-banner by id
+// @Summary Get aff-banner by id
+// @Description Get aff-banner by id
 // @Tags console
 // @Produce json
 // @Param id path int true "id to query"
-// @Success 200 		{object}	dto.AffCampaignDto
+// @Success 200 		{object}	dto.AffBannerDto
 // @Failure 401 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
 // @Security ApiKeyAuth
-// @Router /api/v1/console/aff-campaign/{id} [get]
-func (handler *ConsoleCampHandler) GetCampaignById(ctx *gin.Context) {
+// @Router /api/v1/console/aff-banner/{id} [get]
+func (handler *ConsoleBannerHandler) GetBannerById(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
 		util.RespondError(ctx, http.StatusBadRequest, "id is required", err)
 		return
 	}
 
-	affCampaign, err := handler.UCase.GetCampaignById(uint(id))
+	affCampaign, err := handler.UCase.GetBannerById(uint(id))
 	if err != nil {
-		util2.RespondError(ctx, http.StatusInternalServerError, "get aff-campaign error", err)
+		util2.RespondError(ctx, http.StatusInternalServerError, "get aff-banner error", err)
 		return
 	}
 

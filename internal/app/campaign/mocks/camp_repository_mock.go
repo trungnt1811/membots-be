@@ -13,7 +13,7 @@ func NewCampaignRepoMock() *CampaignRepoMock {
 	return &CampaignRepoMock{}
 }
 
-func (repo *CampaignRepoMock) RetrieveCampaigns(q map[string]any) ([]model.AffCampaign, error) {
+func (repo *CampaignRepoMock) GetCampaignById(q map[string]any) ([]model.AffCampaign, error) {
 	return []model.AffCampaign{
 		{
 			ID:            14,
@@ -39,7 +39,7 @@ func (repo *CampaignRepoMock) DeactivateCampaigns(data []model.AffCampaign) erro
 	return nil
 }
 
-func (repo *CampaignRepoMock) RetrieveAffLinks(campaignId uint) ([]model.AffLink, error) {
+func (repo *CampaignRepoMock) RetrieveAffLinks(campaignId uint, originalUrl string) ([]model.AffLink, error) {
 	return []model.AffLink{}, nil
 }
 func (repo *CampaignRepoMock) CreateAffLinks(data []model.AffLink) error {

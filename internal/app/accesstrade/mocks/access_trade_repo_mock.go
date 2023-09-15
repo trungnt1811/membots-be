@@ -42,7 +42,7 @@ func (repo *AccessTradeRepoMock) QueryOrders(q types.ATOrderQuery, page int, lim
 func (repo *AccessTradeRepoMock) CreateTrackingLinks(campaignId string, shorten bool, urls []string, utm map[string]string) (*types.ATLinkResp, error) {
 	return &types.ATLinkResp{
 		Data: types.AllLink{
-			ErrorLink: []any{},
+			ErrorLink: []types.ErrorLink{},
 			SuccessLink: []types.ATLink{
 				{
 					AffLink:   "https://go.isclix.com/deep_link/6243337751671016280/4751584435713464237?url=https%3A%2F%2Fshopee.vn%2F\u0026sub5=pub-api\u0026utm_source=stella",

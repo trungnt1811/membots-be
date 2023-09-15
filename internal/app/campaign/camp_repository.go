@@ -105,12 +105,13 @@ func (repo *CampaignRepository) SaveATCampaign(atCampaign *types.ATCampaign) err
 	return nil
 }
 
-func (repo *CampaignRepository) RetrieveCampaigns(q map[string]any) ([]model2.AffCampaign, error) {
-	var data []model2.AffCampaign
-	err := repo.Db.Preload("Description").Find(&data, q).Error
-
+func (repo *CampaignRepository) GetCampaignLessById(campaignId uint) (model2.AffCampaignLess, error) {
+	var data model2.AffCampaignLess
+	err := repo.Db.
+		Where("id = ?", campaignId).
+		First(&data).Error
 	if err != nil {
-		return nil, err
+		return data, err
 	}
 	return data, nil
 }
@@ -142,9 +143,14 @@ func (repo *CampaignRepository) DeactivateCampaigns(data []model2.AffCampaign) e
 	return nil
 }
 
-func (repo *CampaignRepository) RetrieveAffLinks(campaignId uint) ([]model2.AffLink, error) {
+func (repo *CampaignRepository) RetrieveAffLinks(campaignId uint, originalUrl string) ([]model2.AffLink, error) {
 	var links []model2.AffLink
-	err := repo.Db.Find(&links, "campaign_id = ? AND active_status = ?", campaignId, model2.AFF_LINK_STATUS_ACTIVE).Error
+	m := repo.Db.Model(&links)
+	if originalUrl != "" {
+		m.Where("url_origin = ?", originalUrl)
+	}
+	m.Where("campaign_id = ? AND active_status = ?", campaignId, model2.AFF_LINK_STATUS_ACTIVE)
+	err := m.Find(&links).Error
 
 	if err != nil {
 		return nil, err

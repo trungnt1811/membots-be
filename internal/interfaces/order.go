@@ -1,6 +1,7 @@
 package interfaces
 
 import (
+	"context"
 	"time"
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
@@ -22,8 +23,10 @@ type OrderRepository interface {
 	UpdateOrCreateATTransactions([]model.AffTransaction) error
 
 	UpdateTrackedClickOrder(trackedId uint64, order *model.AffOrder) error
+	GetOrderDetails(ctx context.Context, userId uint32, orderId uint) (*dto.OrderDetailsDto, error)
 }
 
 type OrderUcase interface {
 	PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*model.AffOrder, error)
+	GetOrderDetails(ctx context.Context, userId uint32, orderId uint) (*dto.OrderDetailsDto, error)
 }

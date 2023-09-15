@@ -2,13 +2,14 @@ package route
 
 import (
 	"context"
+	bannerConsole "github.com/astraprotocol/affiliate-system/internal/app/console/banner"
 
 	"github.com/astraprotocol/affiliate-system/conf"
 	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade"
 	"github.com/astraprotocol/affiliate-system/internal/app/aff_camp_app"
 	"github.com/astraprotocol/affiliate-system/internal/app/auth"
 	campaign3 "github.com/astraprotocol/affiliate-system/internal/app/campaign"
-	campaign2 "github.com/astraprotocol/affiliate-system/internal/app/console/campaign"
+	campaignConsole "github.com/astraprotocol/affiliate-system/internal/app/console/campaign"
 	"github.com/astraprotocol/affiliate-system/internal/app/order"
 	"github.com/astraprotocol/affiliate-system/internal/app/redeem"
 	"github.com/astraprotocol/affiliate-system/internal/app/reward"
@@ -58,6 +59,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	orderHandler := order.NewOrderHandler(orderUcase)
 	orderRoute := v1.Group("/order")
 	orderRoute.POST("/post-back", orderHandler.PostBackOrderHandle)
+	orderRoute.GET("/:id", orderHandler.GetOrderDetails)
 
 	// SECTION: Redeem module
 	redeemRepo := redeem.NewRedeemRepository(db)
@@ -67,13 +69,22 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	redeemRoute := v1.Group("/redeem")
 	redeemRoute.POST("/request", authHandler.CheckUserHeader(), redeemHandler.PostRequestRedeem)
 
-	consoleCampRepository := campaign2.NewConsoleCampaignRepository(db)
-	consoleCampUCase := campaign2.NewCampaignUCase(consoleCampRepository)
-	consoleCampHandler := campaign2.NewConsoleCampHandler(consoleCampUCase)
 	consoleRouter := v1.Group("console")
+
+	consoleCampRepository := campaignConsole.NewConsoleCampaignRepository(db)
+	consoleCampUCase := campaignConsole.NewCampaignUCase(consoleCampRepository)
+	consoleCampHandler := campaignConsole.NewConsoleCampHandler(consoleCampUCase)
 	consoleRouter.GET("/aff-campaign", consoleCampHandler.GetAllCampaign)
-	consoleRouter.PUT("/aff-campaign/:id", consoleCampHandler.UpdateCampaignInfo)
+	consoleRouter.PUT("/aff-campaign/:id", authHandler.CheckAdminHeader(), consoleCampHandler.UpdateCampaignInfo)
 	consoleRouter.GET("/aff-campaign/:id", consoleCampHandler.GetCampaignById)
+
+	consoleBannerRepository := bannerConsole.NewConsoleBannerRepository(db)
+	consoleBannerUCase := bannerConsole.NewBannerUCase(consoleBannerRepository)
+	consoleBannerHandler := bannerConsole.NewConsoleBannerHandler(consoleBannerUCase)
+
+	consoleRouter.GET("/aff-banner", consoleBannerHandler.GetAllBanner)
+	consoleRouter.PUT("/aff-banner/:id", authHandler.CheckAdminHeader(), consoleBannerHandler.UpdateBannerInfo)
+	consoleRouter.GET("/aff-banner/:id", consoleBannerHandler.GetBannerById)
 
 	// SECTION: Reward module
 	rewardRepo := reward.NewRewardRepository(db)
@@ -81,10 +92,10 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	rewardHandler := reward.NewRewardHandler(rewardUsecase)
 
 	rewardRouter := v1.Group("/rewards")
-	rewardRouter.GET("/by-order-id", rewardHandler.GetRewardByOrderId)
 	rewardRouter.GET("", rewardHandler.GetAllReward)
 	rewardRouter.GET("/summary", rewardHandler.GetRewardSummary)
 	rewardRouter.GET("/claims", rewardHandler.GetClaimHistory)
+	rewardRouter.GET("/claims/:id", rewardHandler.GetClaimDetails)
 	rewardRouter.POST("/claims", rewardHandler.ClaimReward)
 
 	// SECTION: App module

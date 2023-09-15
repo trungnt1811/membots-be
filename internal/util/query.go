@@ -26,3 +26,14 @@ func NormalizeStatus(queryStatus string) []string {
 		return []string{"IN_PROGRESS", "DRAFT", "PAUSED", "ENDED", "DELETED"}
 	}
 }
+
+func NormalizeStatusActiveInActive(queryStatus string) []string {
+	switch queryStatus {
+	case "active":
+		return []string{"active"}
+	case "inactive":
+		return []string{"inactive"}
+	default:
+		return []string{"active", "inactive"}
+	}
+}

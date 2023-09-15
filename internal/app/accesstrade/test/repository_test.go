@@ -1,13 +1,14 @@
 package test
 
 import (
+	"os"
 	"testing"
 	"time"
 
 	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade"
 	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade/types"
-	"github.com/astraprotocol/affiliate-system/internal/interfaces"
-
+	logger "github.com/astraprotocol/affiliate-system/internal/util/log"
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -17,10 +18,11 @@ const (
 
 type RepositoryTestSuite struct {
 	suite.Suite
-	repository interfaces.ATRepository
+	repository *accesstrade.AccessTradeRepository
 }
 
 func NewRepositoryTestSuite() *RepositoryTestSuite {
+	logger.LG = logger.NewZerologLogger(os.Stdout, zerolog.InfoLevel)
 	repository := accesstrade.NewAccessTradeRepository(TEST_APIKEY, 3, 30)
 	return &RepositoryTestSuite{
 		repository: repository,
@@ -69,4 +71,16 @@ func (s *RepositoryTestSuite) TestCreateLink() {
 	})
 	s.NoError(err)
 	s.GreaterOrEqual(len(linkResp.Data.SuccessLink), 1)
+}
+
+func (s *RepositoryTestSuite) TestCreateLinkFailed() {
+	campaignId := "4348614231480407268" // Tikivn
+	url := "http://shopee.vn"           // Shopee
+
+	linkResp, err := s.repository.CreateTrackingLinks(campaignId, true, []string{url}, map[string]string{
+		"utm_campaign": "stella",
+		"utm_source":   "testing",
+	})
+	s.ErrorContains(err, "The link is not part of the campaign")
+	s.Nil(linkResp)
 }

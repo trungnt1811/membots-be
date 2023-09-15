@@ -1,17 +1,23 @@
 package dto
 
 const (
-	REQ_STATUS_NEW      = 0
-	REQ_STATUS_APPROVED = 1
-	REQ_STATUS_REJECTED = 2
+	REQ_STATUS_NEW      = "0"
+	REQ_STATUS_APPROVED = "1"
+	REQ_STATUS_REJECTED = "2"
 )
+
+var AtOrderStatusMap map[string]string = map[string]string{
+	REQ_STATUS_NEW:      "new",
+	REQ_STATUS_APPROVED: "approved",
+	REQ_STATUS_REJECTED: "rejected",
+}
 
 type ATPostBackRequest struct {
 	TransactionId      string `json:"transaction_id"`      // Mã unique trên hệ thống AccessTrade
 	OrderId            string `json:"order_id"`            // Mã đơn hàng hiển thị trên trang pub
 	CampaignId         string `json:"campaign_id"`         // ID của campaign trên hệ thống
 	ProductId          string `json:"product_id"`          // Mã sản phẩm
-	Quantity           string `json:"quantity"`            // Số lượng sản phẩm
+	Quantity           int    `json:"quantity"`            // Số lượng sản phẩm
 	ProductCategory    string `json:"product_category"`    // Group commission của sản phẩm
 	ProductPrice       string `json:"product_price"`       // Giá của một sản phẩm
 	Reward             string `json:"reward"`              // Hoa hồng nhận được

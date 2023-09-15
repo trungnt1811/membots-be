@@ -25,6 +25,8 @@ func PackQueryParamsToUrl(s string, params map[string]string) string {
 	return fmt.Sprint(s, "&", strings.Join(q, "&"))
 }
 
+// The function `ParseUTMContent` takes a encoded string as input, decodes it, splits it into
+// parts, and returns the user ID and tracked ID as unsigned integers.
 func ParseUTMContent(utmContent string) (uint, uint64) {
 	parts := strings.Split(utmContent, "-")
 	if len(parts) == 0 {
@@ -40,6 +42,9 @@ func ParseUTMContent(utmContent string) (uint, uint64) {
 	return uint(userId), trackedId
 }
 
+// The function takes a user ID and a tracked ID, combines them into a string,
+// and returns the encoded string.
 func StringifyUTMContent(userId uint, trackedId uint64) string {
-	return fmt.Sprintf("%d-%d", userId, trackedId)
+	s := fmt.Sprintf("%d-%d", userId, trackedId)
+	return s
 }

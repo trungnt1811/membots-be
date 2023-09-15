@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade/types"
+	"github.com/astraprotocol/affiliate-system/internal/util/log"
 
 	"github.com/go-resty/resty/v2"
 	"github.com/google/go-querystring/query"
@@ -184,7 +185,19 @@ func (r *AccessTradeRepository) CreateTrackingLinks(campaignId string, shorten b
 	var body types.ATLinkResp
 	err = json.Unmarshal(resp.Body(), &body)
 	if err != nil {
-		return nil, err
+		// omit some marshal failed
+		log.LG.Errorf("marshal response failed: %v", err)
+	}
+	if !body.Success {
+		if len(body.Data.ErrorLink) != 0 {
+			// Loop through error link and response
+			for _, link := range body.Data.ErrorLink {
+				if link.Message != "" {
+					return nil, fmt.Errorf("%s: %s", link.Message, link.UrlOrigin)
+				}
+			}
+		}
+		return nil, fmt.Errorf("failed status: %d", body.StatusCode)
 	}
 	return &body, nil
 }

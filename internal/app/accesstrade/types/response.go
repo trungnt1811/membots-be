@@ -69,6 +69,13 @@ type ATCampaignListResp struct {
 	TotalPage float32      `json:"total_page"`
 }
 
+type ErrorLink struct {
+	CampaignId   string `json:"campaign_id"`
+	CampaignName string `json:"campaign_name"`
+	Message      string `json:"message"`
+	UrlOrigin    string `json:"url_origin"`
+}
+
 type ATLink struct {
 	AffLink   string `json:"aff_link"`
 	FirstLink string `json:"first_link"`
@@ -77,14 +84,16 @@ type ATLink struct {
 }
 
 type AllLink struct {
-	ErrorLink   []any    `json:"error_link"`
-	SuccessLink []ATLink `json:"success_link"`
-	SuspendUrl  []any    `json:"suspend_url"`
+	ErrorLink   []ErrorLink `json:"error_link"`
+	SuccessLink []ATLink    `json:"success_link"`
+	SuspendUrl  []any       `json:"suspend_url"`
 }
 
 type ATLinkResp struct {
-	Data    AllLink `json:"data"`
-	Success bool    `json:"success"`
+	Data       AllLink `json:"data"`
+	Success    bool    `json:"success"`
+	Message    string  `json:"message"`
+	StatusCode int     `json:"status_code"`
 }
 
 type ATTransaction struct {

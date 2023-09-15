@@ -54,6 +54,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	orderHandler := order.NewOrderHandler(orderUcase)
 	orderRoute := v1.Group("/order")
 	orderRoute.POST("/post-back", orderHandler.PostBackOrderHandle)
+	orderRoute.GET("", orderHandler.GetOrderHistory)
 	orderRoute.GET("/:id", orderHandler.GetOrderDetails)
 
 	// SECTION: Redeem module

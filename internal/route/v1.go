@@ -2,6 +2,7 @@ package route
 
 import (
 	"context"
+	bannerApp "github.com/astraprotocol/affiliate-system/internal/app/aff_banner_app"
 	bannerConsole "github.com/astraprotocol/affiliate-system/internal/app/console/banner"
 
 	"github.com/astraprotocol/affiliate-system/conf"
@@ -96,10 +97,19 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 
 	// SECTION: App module
 	appRouter := v1.Group("/app")
+
 	affCampAppRepository := aff_camp_app.NewAffCampAppRepository(db)
 	affCampAppCache := aff_camp_app.NewAffCampAppCacheRepository(affCampAppRepository, redisClient)
 	affCampAppService := aff_camp_app.NewAffCampAppService(affCampAppCache)
 	affCampAppHandler := aff_camp_app.NewAffCampAppHandler(affCampAppService)
 	appRouter.GET("/aff-campaign", affCampAppHandler.GetAllAffCampaign)
 	appRouter.GET("/aff-campaign/:id", affCampAppHandler.GetAffCampaignById)
+
+	affAppBannerRepo := bannerApp.NewAppBannerRepository(db)
+	affAppBannerUCase := bannerApp.NewBannerUCase(affAppBannerRepo)
+	affAppBannerHandler := bannerApp.NewAppBannerHandler(affAppBannerUCase)
+
+	appRouter.GET("/aff-banner", affAppBannerHandler.GetAllBanner)
+	appRouter.GET("/aff-banner/:id", affAppBannerHandler.GetBannerById)
+
 }

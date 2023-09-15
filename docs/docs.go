@@ -27,6 +27,11 @@ const docTemplate = `{
     "paths": {
         "/api/v1/app/aff-campaign": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get list of all aff campaign",
                 "consumes": [
                     "application/json"
@@ -76,6 +81,11 @@ const docTemplate = `{
         },
         "/api/v1/app/aff-campaign/{id}": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get aff campaign by id",
                 "consumes": [
                     "application/json"
@@ -101,6 +111,60 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/dto.AffCampaignAppDto"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/app/recently-visited-section": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get list recently visited by user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "app"
+                ],
+                "summary": "Get list recently visited by user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "page to query, default is 1",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "size to query, default is 10",
+                        "name": "size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.AffCampaignComBrandDtoResponse"
                         }
                     },
                     "400": {
@@ -893,7 +957,7 @@ const docTemplate = `{
                 },
                 "quantity": {
                     "description": "Số lượng sản phẩm",
-                    "type": "string"
+                    "type": "integer"
                 },
                 "referrer": {
                     "description": "click_referrer",
@@ -1051,6 +1115,49 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/dto.AffCampaignAppDto"
+                    }
+                },
+                "next_page": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.AffCampaignComBrandDto": {
+            "type": "object",
+            "properties": {
+                "brand": {
+                    "$ref": "#/definitions/dto.BrandDto"
+                },
+                "brand_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "stella_max_com": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.AffCampaignComBrandDtoResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.AffCampaignComBrandDto"
                     }
                 },
                 "next_page": {

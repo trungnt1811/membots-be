@@ -7,26 +7,36 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 )
 
-type affCampAppService struct {
+type affCampAppUCase struct {
 	AffCampAppRepository interfaces.AffCampAppRepository
+	Stream               chan []*dto.UserViewAffCampDto
 }
 
-func NewAffCampAppService(repository interfaces.AffCampAppRepository) interfaces.AffCampAppService {
-	return &affCampAppService{
+func NewAffCampAppUCase(repository interfaces.AffCampAppRepository, stream chan []*dto.UserViewAffCampDto) interfaces.AffCampAppUCase {
+	return &affCampAppUCase{
 		AffCampAppRepository: repository,
+		Stream:               stream,
 	}
 }
 
-func (s affCampAppService) GetAffCampaignById(ctx context.Context, id uint64) (dto.AffCampaignAppDto, error) {
+func (s affCampAppUCase) GetAffCampaignById(ctx context.Context, id uint64, userId uint32) (dto.AffCampaignAppDto, error) {
 	affCampaign, err := s.AffCampAppRepository.GetAffCampaignById(ctx, id)
 	if err != nil {
 		return dto.AffCampaignAppDto{}, err
 	}
-	affCampaignAppDto := affCampaign.ToAffCampaignAppDto()
-	return affCampaignAppDto, nil
+	if userId > 0 {
+		payload := dto.UserViewAffCampDto{
+			UserId:    userId,
+			AffCampId: id,
+		}
+		uv := make([]*dto.UserViewAffCampDto, 0)
+		uv = append(uv, &payload)
+		s.Stream <- uv
+	}
+	return affCampaign.ToAffCampaignAppDto(), nil
 }
 
-func (s affCampAppService) GetAllAffCampaign(ctx context.Context, page, size int) (dto.AffCampaignAppDtoResponse, error) {
+func (s affCampAppUCase) GetAllAffCampaign(ctx context.Context, page, size int) (dto.AffCampaignAppDtoResponse, error) {
 	listAffCampaign, err := s.AffCampAppRepository.GetAllAffCampaign(ctx, page, size)
 	if err != nil {
 		return dto.AffCampaignAppDtoResponse{}, err

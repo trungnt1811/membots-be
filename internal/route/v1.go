@@ -13,7 +13,10 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/app/order"
 	"github.com/astraprotocol/affiliate-system/internal/app/redeem"
 	"github.com/astraprotocol/affiliate-system/internal/app/reward"
+	"github.com/astraprotocol/affiliate-system/internal/app/user_view_aff_camp"
+	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/infra/caching"
+	"github.com/astraprotocol/affiliate-system/internal/infra/msgqueue"
 	"github.com/astraprotocol/affiliate-system/internal/infra/shipping"
 	"github.com/astraprotocol/affiliate-system/internal/util"
 	"github.com/gin-gonic/gin"
@@ -41,6 +44,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	shippingClient := shipping.NewShippingClient(shippingClientConf)
 
 	// SECTION: Kafka Queue
+	userViewAffCampQueue := msgqueue.NewKafkaProducer(msgqueue.KAFKA_TOPIC_USER_VIEW_AFF_CAMP)
 
 	// SECTION: Campaign and link
 	campaignRepo := campaign3.NewCampaignRepository(db)
@@ -95,11 +99,22 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	rewardRouter.POST("/claims", rewardHandler.ClaimReward)
 
 	// SECTION: App module
+	streamChannel := make(chan []*dto.UserViewAffCampDto, 1024)
+
 	appRouter := v1.Group("/app")
 	affCampAppRepository := aff_camp_app.NewAffCampAppRepository(db)
 	affCampAppCache := aff_camp_app.NewAffCampAppCacheRepository(affCampAppRepository, redisClient)
-	affCampAppService := aff_camp_app.NewAffCampAppService(affCampAppCache)
-	affCampAppHandler := aff_camp_app.NewAffCampAppHandler(affCampAppService)
-	appRouter.GET("/aff-campaign", affCampAppHandler.GetAllAffCampaign)
-	appRouter.GET("/aff-campaign/:id", affCampAppHandler.GetAffCampaignById)
+	affCampAppUCase := aff_camp_app.NewAffCampAppUCase(affCampAppCache, streamChannel)
+	affCampAppHandler := aff_camp_app.NewAffCampAppHandler(affCampAppUCase)
+	appRouter.GET("/aff-campaign", authHandler.CheckUserHeader(), affCampAppHandler.GetAllAffCampaign)
+	appRouter.GET("/aff-campaign/:id", authHandler.CheckUserHeader(), affCampAppHandler.GetAffCampaignById)
+
+	userViewAffCampProducer := msgqueue.NewUserViewAffCampProducer(userViewAffCampQueue, streamChannel)
+	userViewAffCampProducer.Start()
+
+	userViewAffCampRepository := user_view_aff_camp.NewUserViewAffCampRepository(db)
+	userViewAffCampCache := user_view_aff_camp.NewUserViewAffCampCacheRepository(userViewAffCampRepository, redisClient)
+	userViewAffCampUCase := user_view_aff_camp.NewUserViewAffCampUCase(userViewAffCampCache)
+	userViewAffCampHandler := user_view_aff_camp.NewUserViewAffCampHandler(userViewAffCampUCase)
+	appRouter.GET("/recently-visited-section", authHandler.CheckUserHeader(), userViewAffCampHandler.GetListRecentlyVisitedSection)
 }

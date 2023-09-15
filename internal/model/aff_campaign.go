@@ -111,8 +111,8 @@ func (c *AffCampaign) ToDto() dto.AffCampaignDto {
 }
 
 type AffCampaignApp struct {
-	ID                uint           `gorm:"primarykey" json:"id"`
-	BrandId           uint           `json:"brand_id"`
+	ID                uint64         `gorm:"primarykey" json:"id"`
+	BrandId           uint64         `json:"brand_id"`
 	Brand             Brand          `json:"brand" gorm:"foreignKey:BrandId"`
 	AccessTradeId     string         `json:"accesstrade_id" gorm:"column:accesstrade_id"`
 	CreatedAt         time.Time      `json:"created_at"`
@@ -122,7 +122,7 @@ type AffCampaignApp struct {
 	StartTime         *time.Time     `json:"start_time"`
 	EndTime           *time.Time     `json:"end_time"`
 	StellaDescription datatypes.JSON `json:"stella_description"`
-	CategoryId        uint           `json:"category_id"`
+	CategoryId        uint64         `json:"category_id"`
 	StellaStatus      string         `json:"stella_status"`
 	Thumbnail         string         `json:"thumbnail"`
 	StellaMaxCom      string         `json:"stella_max_com"`
@@ -149,5 +149,27 @@ func (c *AffCampaignApp) ToAffCampaignAppDto() dto.AffCampaignAppDto {
 		StellaDescription: c.StellaDescription,
 		StellaStatus:      c.StellaStatus,
 		StellaMaxCom:      c.StellaMaxCom,
+	}
+}
+
+type AffCampaignComBrand struct {
+	ID           uint64 `gorm:"primarykey" json:"id"`
+	Name         string `json:"name"`
+	BrandId      uint64 `json:"brand_id"`
+	Brand        Brand  `json:"brand" gorm:"foreignKey:BrandId"`
+	StellaMaxCom string `json:"stella_max_com"`
+}
+
+func (c *AffCampaignComBrand) TableName() string {
+	return "aff_campaign"
+}
+
+func (c *AffCampaignComBrand) ToAffCampaignComBrandDto() dto.AffCampaignComBrandDto {
+	return dto.AffCampaignComBrandDto{
+		ID:           c.ID,
+		Name:         c.Name,
+		BrandId:      c.BrandId,
+		Brand:        c.Brand.ToBrandDto(),
+		StellaMaxCom: c.StellaMaxCom,
 	}
 }

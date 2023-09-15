@@ -948,7 +948,7 @@
                 },
                 "quantity": {
                     "description": "Số lượng sản phẩm",
-                    "type": "string"
+                    "type": "integer"
                 },
                 "referrer": {
                     "description": "click_referrer",

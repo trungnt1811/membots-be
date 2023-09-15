@@ -845,40 +845,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.RewardClaimResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/util.GeneralError"
-                        }
-                    },
-                    "424": {
-                        "description": "Failed Dependency",
-                        "schema": {
-                            "$ref": "#/definitions/util.GeneralError"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Claim reward of all orders",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "reward"
-                ],
-                "summary": "Claim reward of all orders",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dto.RewardSummary"
+                            "$ref": "#/definitions/dto.RewardClaimDetailsDto"
                         }
                     },
                     "400": {
@@ -990,7 +957,7 @@ const docTemplate = `{
                 },
                 "quantity": {
                     "description": "Số lượng sản phẩm",
-                    "type": "string"
+                    "type": "integer"
                 },
                 "referrer": {
                     "description": "click_referrer",
@@ -1386,6 +1353,88 @@ const docTemplate = `{
                 },
                 "short_link": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.OrderDetailsDto": {
+            "type": "object",
+            "properties": {
+                "accesstrade_order_id": {
+                    "type": "string"
+                },
+                "at_product_link": {
+                    "type": "string"
+                },
+                "billing": {
+                    "type": "number"
+                },
+                "category_name": {
+                    "type": "string"
+                },
+                "confirmed_time": {
+                    "type": "string"
+                },
+                "merchant": {
+                    "type": "string"
+                },
+                "order_status": {
+                    "type": "string"
+                },
+                "pub_commission": {
+                    "type": "number"
+                },
+                "reward": {
+                    "$ref": "#/definitions/dto.RewardDto"
+                },
+                "sales_time": {
+                    "type": "string"
+                },
+                "timeline": {
+                    "description": "status changing history",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.ResponseMessage": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.RewardClaimDetailsDto": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "fee": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "shipping_request_id": {
+                    "type": "string"
+                },
+                "tx_hash": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
                 }
             }
         },

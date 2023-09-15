@@ -30,9 +30,9 @@ func (r userViewAffCampRepository) GetListUserViewAffCampByUserId(ctx context.Co
 	err := r.db.Joins("AffCampComBrand").
 		Joins("AffCampComBrand.Brand").
 		Where("user_id = ?", userId).
-		Find(&listUserViewAffCampComBrand).
 		Limit(size + 1).
 		Offset(offset).
-		Order("updated_at DESC").Error
+		Order("user_view_aff_camp.updated_at DESC").
+		Find(&listUserViewAffCampComBrand).Error
 	return listUserViewAffCampComBrand, err
 }

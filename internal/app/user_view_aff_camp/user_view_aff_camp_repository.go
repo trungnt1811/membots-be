@@ -1,4 +1,4 @@
-package user_view_brand
+package user_view_aff_camp
 
 import (
 	"context"
@@ -8,18 +8,18 @@ import (
 	"gorm.io/gorm"
 )
 
-type userViewBrandRepository struct {
+type userViewAffCampRepository struct {
 	db *gorm.DB
 }
 
-func (r userViewBrandRepository) CreateUserViewBrand(ctx context.Context, data *model.UserViewBrand) error {
+func (r userViewAffCampRepository) CreateUserViewAffCamp(ctx context.Context, data *model.UserViewAffCamp) error {
 	query := "INSERT INTO user_view_brand (user_id, aff_camp_id) " +
 		"VALUES (?, ?) ON DUPLICATE KEY UPDATE updated_at = CURRENT_TIMESTAMP"
 	return r.db.Exec(query, data.UserId, data.AffCampId).Error
 }
 
-func NewUserViewBrandRepository(db *gorm.DB) interfaces.UserViewBrandRepository {
-	return &userViewBrandRepository{
+func NewUserViewAffCampRepository(db *gorm.DB) interfaces.UserViewAffCampRepository {
+	return &userViewAffCampRepository{
 		db: db,
 	}
 }

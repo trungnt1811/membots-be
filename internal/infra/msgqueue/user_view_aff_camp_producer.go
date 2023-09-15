@@ -10,13 +10,13 @@ import (
 	"github.com/segmentio/kafka-go"
 )
 
-type userViewBrandProducer struct {
+type userViewAffCampProducer struct {
 	Producer *QueueWriter
 	Stream   chan []*dto.UserViewAffCampDto
 	stopSig  chan bool
 }
 
-func (p userViewBrandProducer) Start() {
+func (p userViewAffCampProducer) Start() {
 	go func() {
 		ticker := time.NewTicker(100 * time.Millisecond)
 		for {
@@ -30,7 +30,7 @@ func (p userViewBrandProducer) Start() {
 		}
 	}()
 }
-func (p userViewBrandProducer) handler() {
+func (p userViewAffCampProducer) handler() {
 	for {
 		events := <-p.Stream
 		for _, event := range events {
@@ -45,7 +45,7 @@ func (p userViewBrandProducer) handler() {
 	}
 }
 
-func (p userViewBrandProducer) Stop() {
+func (p userViewAffCampProducer) Stop() {
 	p.stopSig <- true
 }
 
@@ -54,8 +54,8 @@ type Producer interface {
 	Stop()
 }
 
-func NewUserViewBrandProducer(producer *QueueWriter, stream chan []*dto.UserViewAffCampDto) Producer {
-	return &userViewBrandProducer{
+func NewUserViewAffCampProducer(producer *QueueWriter, stream chan []*dto.UserViewAffCampDto) Producer {
+	return &userViewAffCampProducer{
 		Producer: producer,
 		Stream:   stream,
 		stopSig:  make(chan bool, 1),

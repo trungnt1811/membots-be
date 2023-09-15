@@ -42,7 +42,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	shippingClient := shipping.NewShippingClient(shippingClientConf)
 
 	// SECTION: Kafka Queue
-	userViewBrandQueue := msgqueue.NewKafkaProducer(msgqueue.KAFKA_TOPIC_USER_VIEW_BRAND)
+	userViewAffCampQueue := msgqueue.NewKafkaProducer(msgqueue.KAFKA_TOPIC_USER_VIEW_BRAND)
 
 	// SECTION: Campaign and link
 	campaignRepo := campaign3.NewCampaignRepository(db)
@@ -97,6 +97,6 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	appRouter.GET("/aff-campaign", authHandler.CheckUserHeader(), affCampAppHandler.GetAllAffCampaign)
 	appRouter.GET("/aff-campaign/:id", authHandler.CheckUserHeader(), affCampAppHandler.GetAffCampaignById)
 
-	userViewBrandProducer := msgqueue.NewUserViewBrandProducer(userViewBrandQueue, streamChannel)
-	userViewBrandProducer.Start()
+	userViewAffCampProducer := msgqueue.NewUserViewAffCampProducer(userViewAffCampQueue, streamChannel)
+	userViewAffCampProducer.Start()
 }

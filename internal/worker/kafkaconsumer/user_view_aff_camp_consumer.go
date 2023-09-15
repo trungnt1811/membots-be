@@ -11,22 +11,22 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-type UserViewBrandConsumer struct {
-	KafkaConsumer           *msgqueue.QueueReader
-	UserViewBrandRepository interfaces.UserViewBrandRepository
+type UserViewAffCampConsumer struct {
+	KafkaConsumer             *msgqueue.QueueReader
+	UserViewAffCampRepository interfaces.UserViewAffCampRepository
 }
 
-func NewUserViewBrandConsumer(
-	repository interfaces.UserViewBrandRepository,
-	kafkaConsumer *msgqueue.QueueReader) *UserViewBrandConsumer {
-	return &UserViewBrandConsumer{
-		UserViewBrandRepository: repository,
-		KafkaConsumer:           kafkaConsumer,
+func NewUserViewAffCampConsumer(
+	repository interfaces.UserViewAffCampRepository,
+	kafkaConsumer *msgqueue.QueueReader) *UserViewAffCampConsumer {
+	return &UserViewAffCampConsumer{
+		UserViewAffCampRepository: repository,
+		KafkaConsumer:             kafkaConsumer,
 	}
 }
 
-func (c *UserViewBrandConsumer) StartListen() <-chan error {
-	log.Info().Msg("start insert user view brand consumer")
+func (c *UserViewAffCampConsumer) StartListen() <-chan error {
+	log.Info().Msg("start insert user view aff camp consumer")
 	errChn := make(chan error)
 	// Start the listener
 
@@ -47,8 +47,8 @@ func (c *UserViewBrandConsumer) StartListen() <-chan error {
 				}
 				continue
 			}
-			_ = c.UserViewBrandRepository.CreateUserViewBrand(context.Background(),
-				&model.UserViewBrand{
+			_ = c.UserViewAffCampRepository.CreateUserViewAffCamp(context.Background(),
+				&model.UserViewAffCamp{
 					UserId:    payload.UserId,
 					AffCampId: payload.AffCampId,
 				})
@@ -58,7 +58,7 @@ func (c *UserViewBrandConsumer) StartListen() <-chan error {
 				continue
 			}
 			if err != nil {
-				log.Error().Any("UserViewBrandConsumer commit messages error", err)
+				log.Error().Any("UserViewAffCampConsumer commit messages error", err)
 				errChn <- err
 			}
 		}

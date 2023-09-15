@@ -102,7 +102,8 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	userViewAffCampProducer.Start()
 
 	userViewAffCampRepository := user_view_aff_camp.NewUserViewAffCampRepository(db)
-	userViewAffCampUCase := user_view_aff_camp.NewUserViewAffCampUCase(userViewAffCampRepository)
+	userViewAffCampCache := user_view_aff_camp.NewUserViewAffCampCacheRepository(userViewAffCampRepository, redisClient)
+	userViewAffCampUCase := user_view_aff_camp.NewUserViewAffCampUCase(userViewAffCampCache)
 	userViewAffCampHandler := user_view_aff_camp.NewUserViewAffCampHandler(userViewAffCampUCase)
 	appRouter.GET("/recently-visited-section", authHandler.CheckUserHeader(), userViewAffCampHandler.GetListRecentlyVisitedSection)
 }

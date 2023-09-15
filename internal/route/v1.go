@@ -2,6 +2,7 @@ package route
 
 import (
 	"context"
+	bannerApp "github.com/astraprotocol/affiliate-system/internal/app/aff_banner_app"
 	bannerConsole "github.com/astraprotocol/affiliate-system/internal/app/console/banner"
 
 	"github.com/astraprotocol/affiliate-system/conf"
@@ -119,10 +120,6 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	userViewAffCampUCase := user_view_aff_camp.NewUserViewAffCampUCase(userViewAffCampCache)
 	userViewAffCampHandler := user_view_aff_camp.NewUserViewAffCampHandler(userViewAffCampUCase)
 	appRouter.GET("brand/recently-visited-section", authHandler.CheckUserHeader(), userViewAffCampHandler.GetListRecentlyVisitedSection)
-	affCampAppService := aff_camp_app.NewAffCampAppService(affCampAppCache)
-	affCampAppHandler := aff_camp_app.NewAffCampAppHandler(affCampAppService)
-	appRouter.GET("/aff-campaign", affCampAppHandler.GetAllAffCampaign)
-	appRouter.GET("/aff-campaign/:id", affCampAppHandler.GetAffCampaignById)
 
 	affAppBannerRepo := bannerApp.NewAppBannerRepository(db)
 	affAppBannerUCase := bannerApp.NewBannerUCase(affAppBannerRepo)

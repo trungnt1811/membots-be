@@ -1085,7 +1085,7 @@ const docTemplate = `{
                 },
                 "is_confirmed": {
                     "description": "Đơn hàng khóa data và được thanh toán: 0: chưa đối soát, 1: đã đối soát",
-                    "type": "string"
+                    "type": "integer"
                 },
                 "order_id": {
                     "description": "Mã đơn hàng hiển thị trên trang pub",
@@ -1101,7 +1101,7 @@ const docTemplate = `{
                 },
                 "product_price": {
                     "description": "Giá của một sản phẩm",
-                    "type": "string"
+                    "type": "number"
                 },
                 "publisher_login_name": {
                     "type": "string"
@@ -1116,7 +1116,7 @@ const docTemplate = `{
                 },
                 "reward": {
                     "description": "Hoa hồng nhận được",
-                    "type": "string"
+                    "type": "number"
                 },
                 "sales_time": {
                     "description": "Thời gian phát sinh của đơn hàng",
@@ -1124,7 +1124,7 @@ const docTemplate = `{
                 },
                 "status": {
                     "description": "Status của đơn hàng gồm 3 giá trị: 0: new, 1: approved, 2: rejected",
-                    "type": "string"
+                    "type": "integer"
                 },
                 "transaction_id": {
                     "description": "Mã unique trên hệ thống AccessTrade",

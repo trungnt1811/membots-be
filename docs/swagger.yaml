@@ -122,6 +122,19 @@ definitions:
       total:
         type: integer
     type: object
+  dto.AffCampaignComBrandDto:
+    properties:
+      brand:
+        $ref: '#/definitions/dto.BrandDto'
+      brand_id:
+        type: integer
+      id:
+        type: integer
+      max_com:
+        type: string
+      stella_max_com:
+        type: string
+    type: object
   dto.AffCampaignDto:
     properties:
       accesstrade_id:
@@ -346,6 +359,36 @@ definitions:
       url:
         type: string
     type: object
+  dto.UserViewAffCampComBrandDto:
+    properties:
+      aff_camp_id:
+        type: integer
+      aff_campaign:
+        $ref: '#/definitions/dto.AffCampaignComBrandDto'
+      created_at:
+        type: string
+      id:
+        type: integer
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  dto.UserViewAffCampComBrandDtoResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto.UserViewAffCampComBrandDto'
+        type: array
+      next_page:
+        type: integer
+      page:
+        type: integer
+      size:
+        type: integer
+      total:
+        type: integer
+    type: object
   types.RedeemRequestPayload:
     properties:
       redeemCode:
@@ -459,6 +502,40 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Get aff campaign by id
+      tags:
+      - app
+  /api/v1/app/recently-visited-section:
+    get:
+      consumes:
+      - application/json
+      description: Get list recently visited by user
+      parameters:
+      - description: page to query, default is 1
+        in: query
+        name: page
+        type: string
+      - description: size to query, default is 10
+        in: query
+        name: size
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UserViewAffCampComBrandDtoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get list recently visited by user
       tags:
       - app
   /api/v1/campaign/link:

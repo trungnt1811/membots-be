@@ -128,6 +128,60 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/app/recently-visited-section": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get list recently visited by user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "app"
+                ],
+                "summary": "Get list recently visited by user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "page to query, default is 1",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "size to query, default is 10",
+                        "name": "size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserViewAffCampComBrandDtoResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/campaign/link": {
             "post": {
                 "security": [
@@ -798,6 +852,26 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.AffCampaignComBrandDto": {
+            "type": "object",
+            "properties": {
+                "brand": {
+                    "$ref": "#/definitions/dto.BrandDto"
+                },
+                "brand_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "max_com": {
+                    "type": "string"
+                },
+                "stella_max_com": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.AffCampaignDto": {
             "type": "object",
             "properties": {
@@ -1137,6 +1211,52 @@ const docTemplate = `{
                 },
                 "url": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.UserViewAffCampComBrandDto": {
+            "type": "object",
+            "properties": {
+                "aff_camp_id": {
+                    "type": "integer"
+                },
+                "aff_campaign": {
+                    "$ref": "#/definitions/dto.AffCampaignComBrandDto"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.UserViewAffCampComBrandDtoResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.UserViewAffCampComBrandDto"
+                    }
+                },
+                "next_page": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
                 }
             }
         },

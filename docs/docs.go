@@ -169,6 +169,171 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/console/aff-banner": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get list aff banner",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "console"
+                ],
+                "summary": "Get list aff banner",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "by to query, default is all",
+                        "name": "stella_status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "order to query, default is desc",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "page to query, default is 1",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "size to query, default is 10",
+                        "name": "size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.AffBannerDtoResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/console/aff-banner/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get aff-banner by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "console"
+                ],
+                "summary": "Get aff-banner by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id to query",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.AffBannerDto"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "update aff-banner info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "console"
+                ],
+                "summary": "update aff-banner info",
+                "parameters": [
+                    {
+                        "description": "banner info to update, required",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.AffBannerDto"
+                        }
+                    },
+                    {
+                        "type": "integer",
+                        "description": "id to query",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseMessage"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/console/aff-campaign": {
             "get": {
                 "security": [
@@ -336,6 +501,11 @@ const docTemplate = `{
         },
         "/api/v1/order/post-back": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "A callback to receive order from AccessTrade",
                 "consumes": [
                     "application/json"
@@ -367,6 +537,46 @@ const docTemplate = `{
                     },
                     "417": {
                         "description": "Expectation Failed",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "424": {
+                        "description": "Failed Dependency",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/order/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get affiliate order details - include status timeline and reward info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "reward"
+                ],
+                "summary": "Get affiliate order details",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.OrderDetailsDto"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/util.GeneralError"
                         }
@@ -433,6 +643,11 @@ const docTemplate = `{
         },
         "/api/v1/rewards": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get all rewards",
                 "consumes": [
                     "application/json"
@@ -466,51 +681,13 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/rewards/by-order-id": {
-            "get": {
-                "description": "Get reward by affiliate order",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "reward"
-                ],
-                "summary": "PostRequestRedeem Get reward by affiliate order",
-                "parameters": [
-                    {
-                        "type": "number",
-                        "description": "affiliate order id to query",
-                        "name": "affOrderId",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dto.RewardDto"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/util.GeneralError"
-                        }
-                    },
-                    "424": {
-                        "description": "Failed Dependency",
-                        "schema": {
-                            "$ref": "#/definitions/util.GeneralError"
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/rewards/claims": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get reward history records",
                 "consumes": [
                     "application/json"
@@ -544,6 +721,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Claim reward of all orders",
                 "consumes": [
                     "application/json"
@@ -577,8 +759,53 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/rewards/claims/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get reward claim details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "reward"
+                ],
+                "summary": "Get reward claim details",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.RewardClaimDetailsDto"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "424": {
+                        "description": "Failed Dependency",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/rewards/summary": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get reward summary of an account",
                 "consumes": [
                     "application/json"
@@ -714,6 +941,58 @@ const docTemplate = `{
                 },
                 "success": {
                     "type": "boolean"
+                }
+            }
+        },
+        "dto.AffBannerDto": {
+            "type": "object",
+            "properties": {
+                "accesstrade_id": {
+                    "type": "string"
+                },
+                "aff_campaign": {
+                    "$ref": "#/definitions/dto.AffCampaignLessDto"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "thumbnail": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.AffBannerDtoResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.AffBannerDto"
+                    }
+                },
+                "next_page": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
                 }
             }
         },
@@ -870,6 +1149,23 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.AffCampaignLessDto": {
+            "type": "object",
+            "properties": {
+                "accesstrade_id": {
+                    "type": "string"
+                },
+                "campaign_id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.BrandDto": {
             "type": "object",
             "properties": {
@@ -976,11 +1272,85 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.OrderDetailsDto": {
+            "type": "object",
+            "properties": {
+                "accesstrade_order_id": {
+                    "type": "string"
+                },
+                "at_product_link": {
+                    "type": "string"
+                },
+                "billing": {
+                    "type": "number"
+                },
+                "category_name": {
+                    "type": "string"
+                },
+                "confirmed_time": {
+                    "type": "string"
+                },
+                "merchant": {
+                    "type": "string"
+                },
+                "order_status": {
+                    "type": "string"
+                },
+                "pub_commission": {
+                    "type": "number"
+                },
+                "reward": {
+                    "$ref": "#/definitions/dto.RewardDto"
+                },
+                "sales_time": {
+                    "type": "string"
+                },
+                "timeline": {
+                    "description": "status changing history",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "dto.ResponseMessage": {
             "type": "object",
             "properties": {
                 "message": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.RewardClaimDetailsDto": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "fee": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "shipping_request_id": {
+                    "type": "string"
+                },
+                "tx_hash": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -992,6 +1362,9 @@ const docTemplate = `{
                 },
                 "created_at": {
                     "type": "string"
+                },
+                "fee": {
+                    "type": "number"
                 },
                 "id": {
                     "type": "integer"
@@ -1037,6 +1410,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "amount": {
+                    "type": "number"
+                },
+                "commission_fee": {
+                    "description": "commission fee (in percentage)",
                     "type": "number"
                 },
                 "created_at": {
@@ -1095,6 +1472,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "reward_in_day": {
+                    "type": "number"
+                },
+                "total_claimed_amount": {
                     "type": "number"
                 }
             }

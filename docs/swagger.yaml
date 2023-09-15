@@ -75,6 +75,40 @@ definitions:
       success:
         type: boolean
     type: object
+  dto.AffBannerDto:
+    properties:
+      accesstrade_id:
+        type: string
+      aff_campaign:
+        $ref: '#/definitions/dto.AffCampaignLessDto'
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      status:
+        type: string
+      thumbnail:
+        type: string
+      url:
+        type: string
+    type: object
+  dto.AffBannerDtoResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto.AffBannerDto'
+        type: array
+      next_page:
+        type: integer
+      page:
+        type: integer
+      size:
+        type: integer
+      total:
+        type: integer
+    type: object
   dto.AffCampaignAppDto:
     properties:
       accesstrade_id:
@@ -176,6 +210,17 @@ definitions:
       total:
         type: integer
     type: object
+  dto.AffCampaignLessDto:
+    properties:
+      accesstrade_id:
+        type: string
+      campaign_id:
+        type: integer
+      name:
+        type: string
+      url:
+        type: string
+    type: object
   dto.BrandDto:
     properties:
       cover_photo:
@@ -245,10 +290,59 @@ definitions:
       short_link:
         type: string
     type: object
+  dto.OrderDetailsDto:
+    properties:
+      accesstrade_order_id:
+        type: string
+      at_product_link:
+        type: string
+      billing:
+        type: number
+      category_name:
+        type: string
+      confirmed_time:
+        type: string
+      merchant:
+        type: string
+      order_status:
+        type: string
+      pub_commission:
+        type: number
+      reward:
+        $ref: '#/definitions/dto.RewardDto'
+      sales_time:
+        type: string
+      timeline:
+        additionalProperties:
+          type: string
+        description: status changing history
+        type: object
+      user_id:
+        type: integer
+    type: object
   dto.ResponseMessage:
     properties:
       message:
         type: string
+    type: object
+  dto.RewardClaimDetailsDto:
+    properties:
+      amount:
+        type: number
+      created_at:
+        type: string
+      fee:
+        type: number
+      id:
+        type: integer
+      shipping_request_id:
+        type: string
+      tx_hash:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
     type: object
   dto.RewardClaimDto:
     properties:
@@ -256,6 +350,8 @@ definitions:
         type: number
       created_at:
         type: string
+      fee:
+        type: number
       id:
         type: integer
       shipping_request_id:
@@ -285,6 +381,9 @@ definitions:
       accesstrade_order_id:
         type: string
       amount:
+        type: number
+      commission_fee:
+        description: commission fee (in percentage)
         type: number
       created_at:
         type: string
@@ -323,6 +422,8 @@ definitions:
       pending_reward_order:
         type: integer
       reward_in_day:
+        type: number
+      total_claimed_amount:
         type: number
     type: object
   dto.StellaInfoDto:
@@ -494,6 +595,111 @@ paths:
       summary: PostGenerateAffLink
       tags:
       - redeem
+  /api/v1/console/aff-banner:
+    get:
+      description: Get list aff banner
+      parameters:
+      - description: by to query, default is all
+        in: query
+        name: stella_status
+        type: string
+      - description: order to query, default is desc
+        in: query
+        name: order
+        type: string
+      - description: page to query, default is 1
+        in: query
+        name: page
+        type: string
+      - description: size to query, default is 10
+        in: query
+        name: size
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AffBannerDtoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get list aff banner
+      tags:
+      - console
+  /api/v1/console/aff-banner/{id}:
+    get:
+      description: Get aff-banner by id
+      parameters:
+      - description: id to query
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AffBannerDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get aff-banner by id
+      tags:
+      - console
+    put:
+      consumes:
+      - application/json
+      description: update aff-banner info
+      parameters:
+      - description: banner info to update, required
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AffBannerDto'
+      - description: id to query
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ResponseMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: update aff-banner info
+      tags:
+      - console
   /api/v1/console/aff-campaign:
     get:
       description: Get list aff campaign
@@ -599,6 +805,32 @@ paths:
       summary: update campaign info
       tags:
       - console
+  /api/v1/order/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get affiliate order details - include status timeline and reward
+        info
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.OrderDetailsDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get affiliate order details
+      tags:
+      - reward
   /api/v1/order/post-back:
     post:
       consumes:
@@ -626,6 +858,8 @@ paths:
           description: Failed Dependency
           schema:
             $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
       summary: PostBackOrderHandle
       tags:
       - redeem
@@ -681,35 +915,9 @@ paths:
           description: Failed Dependency
           schema:
             $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
       summary: Get all rewards
-      tags:
-      - reward
-  /api/v1/rewards/by-order-id:
-    get:
-      consumes:
-      - application/json
-      description: Get reward by affiliate order
-      parameters:
-      - description: affiliate order id to query
-        in: query
-        name: affOrderId
-        type: number
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.RewardDto'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/util.GeneralError'
-        "424":
-          description: Failed Dependency
-          schema:
-            $ref: '#/definitions/util.GeneralError'
-      summary: PostRequestRedeem Get reward by affiliate order
       tags:
       - reward
   /api/v1/rewards/claims:
@@ -732,6 +940,8 @@ paths:
           description: Failed Dependency
           schema:
             $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
       summary: Get reward history records
       tags:
       - reward
@@ -754,7 +964,34 @@ paths:
           description: Failed Dependency
           schema:
             $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
       summary: Claim reward of all orders
+      tags:
+      - reward
+  /api/v1/rewards/claims/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get reward claim details
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RewardClaimDetailsDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get reward claim details
       tags:
       - reward
   /api/v1/rewards/summary:
@@ -777,6 +1014,8 @@ paths:
           description: Failed Dependency
           schema:
             $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
       summary: Get reward summary of an account
       tags:
       - reward

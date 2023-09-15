@@ -128,7 +128,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/app/recently-visited-section": {
+        "/api/v1/app/brand/recently-visited-section": {
             "get": {
                 "security": [
                     {

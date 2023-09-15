@@ -53,7 +53,7 @@ func (u *CampaignUsecase) GenerateAffLink(userId uint64, payload *dto.CreateLink
 		}
 		resp, err := u.ATRepo.CreateTrackingLinks(campaign.AccessTradeId, payload.ShortenLink, urls, map[string]string{})
 		if err != nil {
-			return nil, fmt.Errorf("fail to create aff link: %v", err)
+			return nil, fmt.Errorf("fail to generate: %v", err)
 		}
 
 		for _, atLink := range resp.Data.SuccessLink {

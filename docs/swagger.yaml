@@ -260,6 +260,26 @@ definitions:
       url:
         type: string
     type: object
+  dto.AffSearchDto:
+    properties:
+      aff_campaigns:
+        items:
+          $ref: '#/definitions/dto.AffCampaignAppDto'
+        type: array
+      total_campaign:
+        type: integer
+    type: object
+  dto.AffSearchResponseDto:
+    properties:
+      data:
+        $ref: '#/definitions/dto.AffSearchDto'
+      next_page:
+        type: integer
+      page:
+        type: integer
+      size:
+        type: integer
+    type: object
   dto.BrandDto:
     properties:
       cover_photo:
@@ -671,6 +691,39 @@ paths:
       summary: Get aff campaign by id
       tags:
       - app
+  /api/v1/app/aff-search:
+    get:
+      consumes:
+      - application/json
+      description: search aff campaign
+      parameters:
+      - description: q to search
+        in: query
+        name: q
+        required: true
+        type: string
+      - description: page to query, default is 1
+        in: query
+        name: page
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AffSearchResponseDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      summary: search aff campaign
+      tags:
+      - search
   /api/v1/app/brand/recently-visited-section:
     get:
       consumes:

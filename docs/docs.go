@@ -231,6 +231,56 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/app/aff-search": {
+            "get": {
+                "description": "search aff campaign",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "search"
+                ],
+                "summary": "search aff campaign",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "q to search",
+                        "name": "q",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "page to query, default is 1",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.AffSearchResponseDto"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/app/brand/recently-visited-section": {
             "get": {
                 "security": [
@@ -1438,6 +1488,37 @@ const docTemplate = `{
                 },
                 "url": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.AffSearchDto": {
+            "type": "object",
+            "properties": {
+                "aff_campaigns": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.AffCampaignAppDto"
+                    }
+                },
+                "total_campaign": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.AffSearchResponseDto": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/dto.AffSearchDto"
+                },
+                "next_page": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "integer"
                 }
             }
         },

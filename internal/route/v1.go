@@ -3,6 +3,7 @@ package route
 import (
 	"context"
 	bannerApp "github.com/astraprotocol/affiliate-system/internal/app/aff_banner_app"
+	"github.com/astraprotocol/affiliate-system/internal/app/aff_search"
 	bannerConsole "github.com/astraprotocol/affiliate-system/internal/app/console/banner"
 
 	"github.com/astraprotocol/affiliate-system/conf"
@@ -128,4 +129,8 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	appRouter.GET("/aff-banner", affAppBannerHandler.GetAllBanner)
 	appRouter.GET("/aff-banner/:id", affAppBannerHandler.GetBannerById)
 
+	affSearchRepo := aff_search.NewAffSearchRepository(db)
+	affSearchUCase := aff_search.NewAffSearchUCase(affSearchRepo)
+	affSearchHandler := aff_search.NewAffSearchHandler(affSearchUCase)
+	appRouter.GET("/aff-search", affSearchHandler.AffSearch)
 }

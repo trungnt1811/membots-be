@@ -90,3 +90,7 @@ func (repo *MockOrderRepository) GetOrderHistory(ctx context.Context, userId uin
 func (repo *MockOrderRepository) CountOrder(ctx context.Context, userId uint32) (int64, error) {
 	return 0, nil
 }
+
+func (repo *MockOrderRepository) FindOrdersByQuery(ctx context.Context, dbQuery map[string]any, page int, perPage int) ([]model.AffOrder, int64, error) {
+	return repo.Orders, int64(len(repo.Orders)), nil
+}

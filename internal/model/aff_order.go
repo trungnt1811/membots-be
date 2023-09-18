@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade/types"
+	"github.com/astraprotocol/affiliate-system/internal/dto"
 )
 
 type AffOrder struct {
@@ -90,43 +91,41 @@ func NewOrderFromATOrder(userId uint, atOrder *types.ATOrder) *AffOrder {
 	}
 }
 
-// func (order *AffOrder) UpdateFromATOrder(req *dto.ATPostBackRequest) {
-// 	order.ProductCategory = req.ProductCategory
-// 	order.ProductCount = fmt.Sprint(req.Quantity)
-// 	switch req.Status {
-// 	case dto.REQ_STATUS_NEW:
-// 		order.OrderStatus = "pending"
-// 		order.OrderPending = 1
-// 		order.OrderReject = 0
-// 		order.OrderApproved = 0
-// 		break
-// 	case dto.REQ_STATUS_APPROVED:
-// 		order.OrderStatus = "approved"
-// 		order.OrderPending = 0
-// 		order.OrderReject = 0
-// 		order.OrderApproved = 1
-// 		break
-// 	case dto.REQ_STATUS_REJECTED:
-// 		order.OrderStatus = "rejected"
-// 		order.OrderPending = 0
-// 		order.OrderReject = 1
-// 		order.OrderApproved = 0
-// 		break
-// 	default:
-// 		break
-// 	}
-// 	if parsed, err := util.ParsePostBackTime(req.SalesTime); err == nil {
-// 		order.SalesTime = parsed
-// 	}
-// 	if parsed, err := util.ParsePostBackTime(req.ClickTime); err == nil {
-// 		order.ClickTime = parsed
-// 	}
-// 	order.Browser = req.Browser
-// 	order.UTMSource = req.UTMSource
-// 	order.UTMCampaign = req.UTMCampaign
-// 	order.UTMContent = req.UTMContent
-// 	order.UTMMedium = req.UTMMedium
-// 	order.IsConfirmed = req.IsConfirmed
-// 	order.CustomerType = req.CustomerType
-// 	order.UpdatedAt = time.Now()
-// }
+func (o *AffOrder) ToDto() dto.AffOrder {
+	return dto.AffOrder{
+		ID:                 o.ID,
+		AffLink:            o.AffLink,
+		CreatedAt:          o.CreatedAt,
+		UpdatedAt:          o.UpdatedAt,
+		UserId:             o.UserId,
+		OrderStatus:        o.OrderStatus,
+		ATProductLink:      o.ATProductLink,
+		Billing:            o.Billing,
+		Browser:            o.Browser,
+		CategoryName:       o.CategoryName,
+		ClientPlatform:     o.ClientPlatform,
+		ClickTime:          o.ClickTime,
+		ConfirmedTime:      o.ConfirmedTime,
+		ConversionPlatform: o.ConversionPlatform,
+		CustomerType:       o.CustomerType,
+		IsConfirmed:        o.IsConfirmed,
+		LandingPage:        o.LandingPage,
+		Merchant:           o.Merchant,
+		AccessTradeOrderId: o.AccessTradeOrderId,
+		OrderPending:       o.OrderPending,
+		OrderReject:        o.OrderReject,
+		OrderApproved:      o.OrderApproved,
+		ProductCategory:    o.ProductCategory,
+		ProductsCount:      o.ProductsCount,
+		PubCommission:      o.PubCommission,
+		SalesTime:          o.SalesTime,
+		UpdateTime:         o.UpdateTime,
+		Website:            o.Website,
+		WebsiteURL:         o.WebsiteURL,
+		UTMTerm:            o.UTMTerm,
+		UTMSource:          o.UTMSource,
+		UTMCampaign:        o.UTMCampaign,
+		UTMMedium:          o.UTMMedium,
+		UTMContent:         o.UTMContent,
+	}
+}

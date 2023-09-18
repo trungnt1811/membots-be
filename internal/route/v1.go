@@ -66,6 +66,9 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	orderRoute.GET("", orderHandler.GetOrderHistory)
 	orderRoute.GET("/:id", orderHandler.GetOrderDetails)
 
+	ordersRoute := v1.Group("/orders")
+	ordersRoute.GET("", orderHandler.GetOrderList)
+
 	// SECTION: Redeem module
 	redeemRepo := redeem.NewRedeemRepository(db)
 	redeemUsecase := redeem.NewRedeemUsecase(redeemRepo)

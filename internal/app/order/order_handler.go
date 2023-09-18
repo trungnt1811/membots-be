@@ -128,3 +128,32 @@ func (handler *OrderHandler) GetOrderHistory(ctx *gin.Context) {
 	// Response transaction status
 	ctx.JSON(http.StatusOK, res)
 }
+
+// GetOrderList Get affiliate order list
+// @Summary Get affiliate order list
+// @Description Get affiliate order list by time range and other filter
+// @Tags 	reward
+// @Accept	json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param 	payload	query 		dto.OrderListQuery false "Order list query"
+// @Success 200 		{object}	dto.OrderListResponse
+// @Failure 424 		{object}	util.GeneralError
+// @Failure 400 		{object}	util.GeneralError
+// @Router 	/api/v1/orders [get]
+func (handler *OrderHandler) GetOrderList(ctx *gin.Context) {
+	var q dto.OrderListQuery
+	err := ctx.BindQuery(&q)
+	if err != nil {
+		util.RespondError(ctx, http.StatusBadGateway, "parse query error", err)
+		return
+	}
+
+	resp, err := handler.usecase.GetOrderList(&q)
+	if err != nil {
+		util.RespondError(ctx, http.StatusBadGateway, "get list error", err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}

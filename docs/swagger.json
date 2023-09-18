@@ -1044,6 +1044,78 @@
                 }
             }
         },
+        "/api/v1/orders": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get affiliate order list by time range and other filter",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "reward"
+                ],
+                "summary": "Get affiliate order list",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "order_status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "per_page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "since",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "until",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "user_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.OrderListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "424": {
+                        "description": "Failed Dependency",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/redeem/request": {
             "post": {
                 "security": [
@@ -1686,6 +1758,113 @@
                 }
             }
         },
+        "dto.AffOrder": {
+            "type": "object",
+            "properties": {
+                "accesstrade_order_id": {
+                    "type": "string"
+                },
+                "aff_link": {
+                    "type": "string"
+                },
+                "at_product_link": {
+                    "type": "string"
+                },
+                "billing": {
+                    "type": "number"
+                },
+                "browser": {
+                    "type": "string"
+                },
+                "category_name": {
+                    "type": "string"
+                },
+                "click_time": {
+                    "type": "string"
+                },
+                "client_platform": {
+                    "type": "string"
+                },
+                "confirmed_time": {
+                    "type": "string"
+                },
+                "conversion_platform": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "customer_type": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_confirmed": {
+                    "type": "integer"
+                },
+                "landing_page": {
+                    "type": "string"
+                },
+                "merchant": {
+                    "type": "string"
+                },
+                "order_approved": {
+                    "type": "integer"
+                },
+                "order_pending": {
+                    "type": "integer"
+                },
+                "order_reject": {
+                    "type": "integer"
+                },
+                "order_status": {
+                    "type": "string"
+                },
+                "product_category": {
+                    "type": "string"
+                },
+                "products_count": {
+                    "type": "integer"
+                },
+                "pub_commission": {
+                    "type": "number"
+                },
+                "sales_time": {
+                    "type": "string"
+                },
+                "update_time": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                },
+                "utm_campaign": {
+                    "type": "string"
+                },
+                "utm_content": {
+                    "type": "string"
+                },
+                "utm_medium": {
+                    "type": "string"
+                },
+                "utm_source": {
+                    "type": "string"
+                },
+                "utm_term": {
+                    "type": "string"
+                },
+                "website": {
+                    "type": "string"
+                },
+                "website_url": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.AffSearchDto": {
             "type": "object",
             "properties": {
@@ -1870,6 +2049,29 @@
                     "type": "integer"
                 },
                 "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.OrderListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.AffOrder"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "per_page": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                },
+                "total_pages": {
                     "type": "integer"
                 }
             }

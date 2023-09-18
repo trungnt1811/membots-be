@@ -1096,6 +1096,10 @@ paths:
     get:
       description: Get list aff campaign
       parameters:
+      - description: q to search
+        in: query
+        name: q
+        type: string
       - description: by to query, default is all
         in: query
         name: stella_status
@@ -1195,45 +1199,6 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: update campaign info
-      tags:
-      - console
-  /api/v1/console/aff-search:
-    get:
-      consumes:
-      - application/json
-      description: search aff campaign for console
-      parameters:
-      - description: q to search
-        in: query
-        name: q
-        required: true
-        type: string
-      - description: stella_status to search
-        in: query
-        name: stella_status
-        type: string
-      - description: page to query, default is 1
-        in: query
-        name: page
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.AffSearchResponseDto'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/util.GeneralError'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/util.GeneralError'
-      security:
-      - ApiKeyAuth: []
-      summary: search aff campaign for console
       tags:
       - console
   /api/v1/console/orders:

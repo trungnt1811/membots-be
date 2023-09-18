@@ -27,6 +27,7 @@ func NewConsoleCampHandler(uCase interfaces.ConsoleCampUCase) *ConsoleCampHandle
 // @Description Get list aff campaign
 // @Tags console
 // @Produce json
+// @Param q query string false "q to search"
 // @Param stella_status query string false "by to query, default is all"
 // @Param order query string false "order to query, default is desc"
 // @Param page query string false "page to query, default is 1"
@@ -38,6 +39,7 @@ func NewConsoleCampHandler(uCase interfaces.ConsoleCampUCase) *ConsoleCampHandle
 // @Router /api/v1/console/aff-campaign [get]
 func (handler *ConsoleCampHandler) GetAllCampaign(ctx *gin.Context) {
 	queryStatus := ctx.DefaultQuery("stella_status", "")
+	q := ctx.DefaultQuery("q", "")
 	order := ctx.DefaultQuery("order", "desc")
 
 	queryStatusIn := util2.NormalizeStatus(queryStatus)
@@ -48,7 +50,7 @@ func (handler *ConsoleCampHandler) GetAllCampaign(ctx *gin.Context) {
 		util2.RespondError(ctx, http.StatusBadRequest, "query order invalid, order in {asc, desc}", nil)
 		return
 	}
-	listAffCampaign, err := handler.UCase.GetAllCampaign(queryStatusIn, page, size)
+	listAffCampaign, err := handler.UCase.GetAllCampaign(queryStatusIn, q, page, size)
 	if err != nil {
 		util2.RespondError(ctx, http.StatusInternalServerError, "get listAffCampaign error", err)
 		return

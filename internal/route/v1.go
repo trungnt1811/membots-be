@@ -150,5 +150,4 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	affSearchUCase := aff_search.NewAffSearchUCase(affSearchRepo)
 	affSearchHandler := aff_search.NewAffSearchHandler(affSearchUCase)
 	appRouter.GET("/aff-search", affSearchHandler.AffSearch)
-	consoleRouter.GET("/aff-search", authHandler.CheckAdminHeader(), affSearchHandler.SearchConsole)
 }

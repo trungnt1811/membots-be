@@ -34,25 +34,48 @@ func (a *affCampaignRepository) UpdateCampaign(id uint, updates map[string]inter
 	return a.Db.Table("aff_campaign").Where("id = ?", id).Updates(updates).Error
 }
 
-func (a *affCampaignRepository) GetAllCampaign(listStatus []string, page, size int) ([]model.AffCampaignLessApp, error) {
+func (a *affCampaignRepository) GetAllCampaign(listStatus []string, q string, page, size int) ([]model.AffCampaignLessApp, error) {
 	var listAffCampaign []model.AffCampaignLessApp
 	offset := (page - 1) * size
-	if err := a.Db.Table("aff_campaign").
-		Joins("Brand").
-		Where("aff_campaign.stella_status IN ?", listStatus).
-		Limit(size + 1).
-		Offset(offset).
-		Find(&listAffCampaign).
-		Error; err != nil {
-		return listAffCampaign, err
+	if q == "" {
+		if err := a.Db.Table("aff_campaign").
+			Joins("Brand").
+			Where("aff_campaign.stella_status IN ?", listStatus).
+			Limit(size + 1).
+			Offset(offset).
+			Find(&listAffCampaign).
+			Error; err != nil {
+			return listAffCampaign, err
+		}
+	} else {
+		if err := a.Db.Table("aff_campaign").
+			Joins("Brand").
+			Where("aff_campaign.stella_status IN ? and "+
+				"MATCH (aff_campaign.name) AGAINST(? IN NATURAL LANGUAGE MODE)", listStatus, q).
+			Limit(size + 1).
+			Offset(offset).
+			Find(&listAffCampaign).
+			Error; err != nil {
+			return listAffCampaign, err
+		}
 	}
 	return listAffCampaign, nil
 }
 
-func (a *affCampaignRepository) CountCampaign(listStatus []string) (int64, error) {
+func (a *affCampaignRepository) CountCampaign(listStatus []string, q string) (int64, error) {
 	var total int64
-	if err := a.Db.Table("aff_campaign").Where("stella_status IN ?", listStatus).Count(&total).Error; err != nil {
-		return total, err
+	if q == "" {
+		if err := a.Db.Table("aff_campaign").
+			Where("stella_status IN ?", listStatus).
+			Count(&total).Error; err != nil {
+			return total, err
+		}
+	} else {
+		if err := a.Db.Table("aff_campaign").
+			Where("stella_status IN ? and MATCH (name) AGAINST(? IN NATURAL LANGUAGE MODE)", listStatus, q).
+			Count(&total).Error; err != nil {
+			return total, err
+		}
 	}
 	return total, nil
 }

@@ -9,22 +9,19 @@ import (
 
 type RewardRepository interface {
 	CreateReward(ctx context.Context, reward *model.Reward) error
-	GetAllReward(ctx context.Context, userId uint32, page, size int) ([]model.Reward, error)
-	CountReward(ctx context.Context, userId uint32) (int64, error)
-	SaveRewardClaim(ctx context.Context, rewardClaim *model.RewardClaim, rewards []model.Reward, orderRewardHistories []model.OrderRewardHistory) error
+	SaveRewardWithdraw(ctx context.Context, rewardClaim *model.RewardWithdraw, rewards []model.Reward, orderRewardHistories []model.OrderRewardHistory) error
 
-	GetClaimHistory(ctx context.Context, userId uint32, page, size int) ([]model.RewardClaim, error)
-	CountClaimHistory(ctx context.Context, userId uint32) (int64, error)
-	GetTotalClaimedAmount(ctx context.Context, userId uint32) (float64, error)
-	GetClaimDetails(ctx context.Context, userId uint32, claimId uint) (dto.RewardClaimDetailsDto, error)
+	GetWithdrawHistory(ctx context.Context, userId uint32, page, size int) ([]model.RewardWithdraw, error)
+	CountWithdrawal(ctx context.Context, userId uint32) (int64, error)
+	GetTotalWithdrewAmount(ctx context.Context, userId uint32) (float64, error)
+	GetWithdrawDetails(ctx context.Context, userId uint32, withdrawId uint) (dto.RewardWithdrawDetailsDto, error)
 	GetInProgressRewards(ctx context.Context, userId uint32) ([]model.Reward, error)
 	GetRewardsInDay(ctx context.Context) ([]model.Reward, error)
 }
 
 type RewardUCase interface {
-	GetAllReward(ctx context.Context, userId uint32, page, size int) (dto.RewardResponse, error)
 	GetRewardSummary(ctx context.Context, userId uint32) (dto.RewardSummary, error)
-	ClaimReward(ctx context.Context, userId uint32, userWallet string) (dto.ClaimRewardResponse, error)
-	GetClaimHistory(ctx context.Context, userId uint32, page, size int) (dto.RewardClaimResponse, error)
-	GetClaimDetails(ctx context.Context, userId uint32, claimId uint) (dto.RewardClaimDetailsDto, error)
+	WithdrawReward(ctx context.Context, userId uint32, userWallet string) (dto.WithdrawRewardResponse, error)
+	GetWithdrawHistory(ctx context.Context, userId uint32, page, size int) (dto.RewardWithdrawResponse, error)
+	GetWithdrawDetails(ctx context.Context, userId uint32, withdrawId uint) (dto.RewardWithdrawDetailsDto, error)
 }

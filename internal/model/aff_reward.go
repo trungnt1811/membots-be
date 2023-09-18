@@ -46,12 +46,12 @@ func (r *Reward) ToRewardDto() dto.RewardDto {
 func (r *Reward) GetClaimableReward() (rewardAmount float64, ended bool) {
 	daysPassed := int(time.Since(r.CreatedAt) / OneDay)   // number of days passed since order created
 	totalDays := int(r.EndedAt.Sub(r.CreatedAt) / OneDay) // total lock days
-	claimablePercent := float64(daysPassed) / float64(totalDays)
-	if claimablePercent > 1 {
-		claimablePercent = 1
+	withdrawablePercent := float64(daysPassed) / float64(totalDays)
+	if withdrawablePercent > 1 {
+		withdrawablePercent = 1
 		ended = true
 	}
 
-	rewardAmount = FirstPartRewardPercent*r.Amount + (1-FirstPartRewardPercent)*r.Amount*claimablePercent - r.RewardedAmount
+	rewardAmount = FirstPartRewardPercent*r.Amount + (1-FirstPartRewardPercent)*r.Amount*withdrawablePercent - r.RewardedAmount
 	return
 }

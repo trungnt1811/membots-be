@@ -2,6 +2,7 @@ package route
 
 import (
 	"context"
+
 	bannerApp "github.com/astraprotocol/affiliate-system/internal/app/aff_banner_app"
 	"github.com/astraprotocol/affiliate-system/internal/app/aff_search"
 	bannerConsole "github.com/astraprotocol/affiliate-system/internal/app/console/banner"
@@ -96,11 +97,10 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	rewardHandler := reward.NewRewardHandler(rewardUsecase)
 
 	rewardRouter := v1.Group("/rewards")
-	rewardRouter.GET("", rewardHandler.GetAllReward)
 	rewardRouter.GET("/summary", rewardHandler.GetRewardSummary)
-	rewardRouter.GET("/claims", rewardHandler.GetClaimHistory)
-	rewardRouter.GET("/claims/:id", rewardHandler.GetClaimDetails)
-	rewardRouter.POST("/claims", rewardHandler.ClaimReward)
+	rewardRouter.GET("/withdraw", rewardHandler.GetWithdrawHistory)
+	rewardRouter.GET("/withdraw/:id", rewardHandler.GetWithdrawDetails)
+	rewardRouter.POST("/withdraw", rewardHandler.WithdrawReward)
 
 	// SECTION: App module
 	streamChannel := make(chan []*dto.UserViewAffCampDto, 1024)

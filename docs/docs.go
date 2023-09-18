@@ -968,7 +968,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.RewardClaimResponse"
+                            "$ref": "#/definitions/dto.RewardWithdrawResponse"
                         }
                     },
                     "400": {
@@ -1046,7 +1046,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.RewardClaimDetailsDto"
+                            "$ref": "#/definitions/dto.RewardWithdrawDetailsDto"
                         }
                     },
                     "400": {
@@ -1681,7 +1681,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.RewardClaimDetailsDto": {
+        "dto.RewardWithdrawDetailsDto": {
             "type": "object",
             "properties": {
                 "amount": {
@@ -1710,7 +1710,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.RewardClaimDto": {
+        "dto.RewardWithdrawDto": {
             "type": "object",
             "properties": {
                 "amount": {
@@ -1736,13 +1736,13 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.RewardClaimResponse": {
+        "dto.RewardWithdrawResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/dto.RewardClaimDto"
+                        "$ref": "#/definitions/dto.RewardWithdrawDto"
                     }
                 },
                 "next_page": {

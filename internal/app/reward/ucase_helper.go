@@ -8,20 +8,20 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/model"
 )
 
-func (u *RewardUsecase) calculateClaimableReward(rewards []model.Reward, userId uint32) (*model.RewardClaim, []model.Reward, []model.OrderRewardHistory) {
+func (u *RewardUsecase) calculateWithdrawableReward(rewards []model.Reward, userId uint32) (*model.RewardWithdraw, []model.Reward, []model.OrderRewardHistory) {
 	shippingRequestId := fmt.Sprintf("affiliate-%v:%v", userId, time.Now().UnixMilli())
-	rewardClaim := model.RewardClaim{
+	withdraw := model.RewardWithdraw{
 		UserId:            uint(userId),
 		ShippingRequestID: shippingRequestId,
 		Amount:            0,
 		Fee:               AffRewardTxFee,
 	}
-	rewardToClaim := []model.Reward{}
+	rewardsToWithdraw := []model.Reward{}
 	orderRewardHistories := []model.OrderRewardHistory{}
 
 	for idx := range rewards {
 		orderReward, ended := rewards[idx].GetClaimableReward()
-		if orderReward < MinClaimReward {
+		if orderReward < MinWithdrawReward {
 			continue
 		}
 
@@ -31,16 +31,16 @@ func (u *RewardUsecase) calculateClaimableReward(rewards []model.Reward, userId 
 			Amount:   roundReward,
 		})
 
-		// Update total claim amount
-		rewardClaim.Amount += roundReward
+		// Update total withdraw amount
+		withdraw.Amount += roundReward
 
 		// Update reward
 		rewards[idx].RewardedAmount += roundReward
 		if ended {
 			rewards[idx].EndedAt = time.Now()
 		}
-		rewardToClaim = append(rewardToClaim, rewards[idx])
+		rewardsToWithdraw = append(rewardsToWithdraw, rewards[idx])
 	}
 
-	return &rewardClaim, rewardToClaim, orderRewardHistories
+	return &withdraw, rewardsToWithdraw, orderRewardHistories
 }

@@ -4,9 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/astraprotocol/affiliate-system/internal/app/aff_brand"
-
 	bannerApp "github.com/astraprotocol/affiliate-system/internal/app/aff_banner_app"
+	"github.com/astraprotocol/affiliate-system/internal/app/aff_brand"
 	categoryApp "github.com/astraprotocol/affiliate-system/internal/app/aff_category_app"
 	"github.com/astraprotocol/affiliate-system/internal/app/aff_search"
 	bannerConsole "github.com/astraprotocol/affiliate-system/internal/app/console/banner"
@@ -160,7 +159,6 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	affSearchUCase := aff_search.NewAffSearchUCase(affSearchRepo)
 	affSearchHandler := aff_search.NewAffSearchHandler(affSearchUCase)
 	appRouter.GET("/aff-search", affSearchHandler.AffSearch)
-	consoleRouter.GET("/aff-search", authHandler.CheckAdminHeader(), affSearchHandler.SearchConsole)
 
 	// SECTION: Cron jobs
 	cron := gocron.NewScheduler(time.UTC)

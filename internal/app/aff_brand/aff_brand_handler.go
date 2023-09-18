@@ -2,7 +2,6 @@ package aff_brand
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/util"
@@ -27,27 +26,20 @@ func NewAffBrandHandler(
 // @Tags 	app
 // @Accept	json
 // @Produce json
-// @Param topFavorite query string false "topFavorite to query, default is 10 (1 <= topFavorite <= 20)"
+// @Param page query string false "page to query, default is 1"
+// @Param size query string false "size to query, default is 10"
 // @Success 200 		{object}	[]dto.AffCampaignLessDto
 // @Failure 401 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
 // @Security ApiKeyAuth
 // @Router 	/api/v1/app/brand/top-favorited [get]
 func (handler *AffBrandHandler) GetTopFavouriteAffBrand(ctx *gin.Context) {
-	topFavoriteParam := ctx.DefaultQuery("topFavorite", "10")
-	topFavorite, err := strconv.Atoi(topFavoriteParam)
-	if err != nil {
-		util.RespondError(ctx, http.StatusBadRequest, "topFavorite must be integer")
-		return
-	}
-	if topFavorite < 1 || topFavorite > 10 {
-		util.RespondError(ctx, http.StatusBadRequest, "topFavorite must be 1 to 20")
-		return
-	}
+	page := ctx.GetInt("page")
+	size := ctx.GetInt("size")
 
-	response, err := handler.AffBrandUCase.GetTopFavouriteAffBrand(ctx, topFavorite)
+	response, err := handler.AffBrandUCase.GetTopFavouriteAffBrand(ctx, page, size)
 	if err != nil {
-		util.RespondError(ctx, http.StatusInternalServerError, "Get top favrorited aff brands error: ", err)
+		util.RespondError(ctx, http.StatusInternalServerError, "Get top favorited aff brands error: ", err)
 		return
 	}
 	ctx.JSON(http.StatusOK, response)

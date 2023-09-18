@@ -14,5 +14,5 @@ type AffBrandRepository interface {
 
 type AffBrandUCase interface {
 	UpdateCacheListCountFavouriteAffBrand(ctx context.Context) error
-	GetTopFavouriteAffBrand(ctx context.Context, topFavourite int) ([]dto.AffCampaignLessDto, error)
+	GetTopFavouriteAffBrand(ctx context.Context, page, size int) (dto.AffCampaignAppDtoResponse, error)
 }

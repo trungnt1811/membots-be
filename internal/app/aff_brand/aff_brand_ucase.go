@@ -26,28 +26,41 @@ func (s affBrandUCase) UpdateCacheListCountFavouriteAffBrand(ctx context.Context
 	return s.AffBrandRepository.UpdateCacheListCountFavouriteAffBrand(ctx)
 }
 
-func (s affBrandUCase) GetTopFavouriteAffBrand(ctx context.Context, topFavourite int) ([]dto.AffCampaignLessDto, error) {
+func (s affBrandUCase) GetTopFavouriteAffBrand(ctx context.Context, page, size int) (dto.AffCampaignAppDtoResponse, error) {
 	listCountFavAffBrand, err := s.AffBrandRepository.GetListCountFavouriteAffBrand(ctx)
 	if err != nil {
-		return []dto.AffCampaignLessDto{}, err
+		return dto.AffCampaignAppDtoResponse{}, err
+	}
+
+	total := len(listCountFavAffBrand)
+
+	nextPage := page
+	if total > page*size {
+		nextPage += 1
 	}
 
 	// Get top favorited brands
 	var brandIds []uint64
 	for index, favCountAffBrand := range listCountFavAffBrand {
-		if index >= topFavourite {
+		if index >= page*size || index < (page-1)*size {
 			break
 		}
 		brandIds = append(brandIds, favCountAffBrand.BrandId)
 	}
 	listFavAffBrand, err := s.AffCampAppRepository.GetListAffCampaignByBrandIds(ctx, brandIds)
 	if err != nil {
-		return []dto.AffCampaignLessDto{}, err
+		return dto.AffCampaignAppDtoResponse{}, err
 	}
 
 	var listAffCampaignComBrandDto []dto.AffCampaignLessDto
 	for i := range listFavAffBrand {
 		listAffCampaignComBrandDto = append(listAffCampaignComBrandDto, listFavAffBrand[i].ToAffCampaignLessDto())
 	}
-	return listAffCampaignComBrandDto, nil
+	return dto.AffCampaignAppDtoResponse{
+		NextPage: nextPage,
+		Page:     page,
+		Size:     size,
+		Total:    int64(total),
+		Data:     listAffCampaignComBrandDto,
+	}, nil
 }

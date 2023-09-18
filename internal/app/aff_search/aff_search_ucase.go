@@ -15,13 +15,13 @@ func (a *affSearchUCase) Search(ctx context.Context, q string, page, size int) (
 	if err != nil {
 		return dto.AffSearchResponseDto{}, err
 	}
-	var affCampaigns []dto.AffCampaignAppDto
+	var affCampaigns []dto.AffCampaignLessDto
 
 	for i := range results.AffCampaign {
 		if i >= size {
 			break
 		}
-		affCampaigns = append(affCampaigns, results.AffCampaign[i].ToAffCampaignAppDto())
+		affCampaigns = append(affCampaigns, results.AffCampaign[i].ToDto())
 	}
 	nextPage := page
 	if len(results.AffCampaign) > size {

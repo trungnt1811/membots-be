@@ -28,7 +28,7 @@ func (a *affBannerRepository) GetAllBanner(listStatus []string, page, size int) 
 	var listAffBanner []model.AffBanner
 	offset := (page - 1) * size
 	if err := a.Db.Table("aff_banner").
-		Joins("AffCampaigns").
+		Joins("AffCampaign").
 		Where("aff_banner.status IN ?", listStatus).
 		Limit(size + 1).
 		Offset(offset).

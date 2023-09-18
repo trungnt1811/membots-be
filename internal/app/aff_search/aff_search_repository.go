@@ -15,7 +15,7 @@ type affBannerRepository struct {
 func (a *affBannerRepository) Search(ctx context.Context, q string, page, size int) (model.AffSearch, error) {
 	var searchResult model.AffSearch
 	var totalAffCampaign int64
-	var listAffCampaign []model.AffCampaignApp
+	var listAffCampaign []model.AffCampaignLessApp
 	offset := (page - 1) * size
 
 	err := a.Db.Table("aff_campaign").

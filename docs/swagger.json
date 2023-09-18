@@ -326,6 +326,57 @@
                 }
             }
         },
+        "/api/v1/app/brand/top-favorited": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get top favorited aff brands",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "brand"
+                ],
+                "summary": "Get top favorited aff brands",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "topFavorite to query, default is 7 (1 \u003c= topFavorite \u003c= 10)",
+                        "name": "topFavorite",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.AffCampaignComBrandDto"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/campaign/link": {
             "post": {
                 "security": [

@@ -164,9 +164,9 @@ func (c *AffCampaignComBrand) TableName() string {
 	return "aff_campaign"
 }
 
-func (c *AffCampaignComBrand) ToAffCampaignComBrandDto() dto.AffCampaignComBrandDto {
-	return dto.AffCampaignComBrandDto{
-		ID:           c.ID,
+func (c *AffCampaignComBrand) ToAffCampaignLessDto() dto.AffCampaignLessDto {
+	return dto.AffCampaignLessDto{
+		ID:           uint(c.ID),
 		Name:         c.Name,
 		BrandId:      c.BrandId,
 		Brand:        c.Brand.ToBrandDto(),

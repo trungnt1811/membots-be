@@ -34,13 +34,11 @@ func (a *affCampaignRepository) UpdateCampaign(id uint, updates map[string]inter
 	return a.Db.Table("aff_campaign").Where("id = ?", id).Updates(updates).Error
 }
 
-func (a *affCampaignRepository) GetAllCampaign(listStatus []string, page, size int) ([]model.AffCampaign, error) {
-	var listAffCampaign []model.AffCampaign
+func (a *affCampaignRepository) GetAllCampaign(listStatus []string, page, size int) ([]model.AffCampaignLessApp, error) {
+	var listAffCampaign []model.AffCampaignLessApp
 	offset := (page - 1) * size
 	if err := a.Db.Table("aff_campaign").
-		Joins("Description").
 		Joins("Brand").
-		Joins("StellaCategory").
 		Where("aff_campaign.stella_status IN ?", listStatus).
 		Limit(size + 1).
 		Offset(offset).

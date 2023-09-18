@@ -1,8 +1,8 @@
 package dto
 
 type AffSearchDto struct {
-	AffCampaigns  []AffCampaignAppDto `json:"aff_campaigns"`
-	TotalCampaign int64               `json:"total_campaign"`
+	AffCampaigns  []AffCampaignLessDto `json:"aff_campaigns"`
+	TotalCampaign int64                `json:"total_campaign"`
 }
 
 type AffSearchResponseDto struct {

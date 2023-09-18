@@ -4,9 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math"
 	"time"
 
 	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade/types"
+	orderTypes "github.com/astraprotocol/affiliate-system/internal/app/order/types"
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/infra/msgqueue"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
@@ -168,4 +170,66 @@ func (u *OrderUcase) SyncTransactionsByOrder(atOrderId string) (int, error) {
 
 func (u *OrderUcase) GetOrderDetails(ctx context.Context, userId uint32, orderId uint) (*dto.OrderDetailsDto, error) {
 	return u.Repo.GetOrderDetails(ctx, userId, orderId)
+}
+
+func (u *OrderUcase) GetOrderHistory(ctx context.Context, userId uint32, page, size int) (dto.OrderHistoryResponse, error) {
+	orderHistory, err := u.Repo.GetOrderHistory(ctx, userId, page, size)
+	if err != nil {
+		return dto.OrderHistoryResponse{}, err
+	}
+
+	nextPage := page
+	if len(orderHistory) > size {
+		nextPage = page + 1
+	}
+
+	totalOrder, err := u.Repo.CountOrder(ctx, userId)
+	if err != nil {
+		return dto.OrderHistoryResponse{}, err
+	}
+
+	return dto.OrderHistoryResponse{
+		NextPage: nextPage,
+		Page:     page,
+		Size:     size,
+		Data:     orderHistory,
+		Total:    totalOrder,
+	}, nil
+}
+
+func (u *OrderUcase) GetOrderList(q *dto.OrderListQuery) (*dto.OrderListResponse, error) {
+	dbQuery := map[string]any{}
+	if q.OrderStatus != "" {
+		dbQuery["order_status"] = q.OrderStatus
+	}
+	if q.UserId != 0 {
+		dbQuery["user_id"] = q.UserId
+	}
+
+	timeRange := orderTypes.TimeRange{}
+	if !q.Since.IsZero() {
+		timeRange.Since = &q.Since
+	}
+	if !q.Until.IsZero() {
+		timeRange.Until = &q.Until
+	}
+	list, total, err := u.Repo.FindOrdersByQuery(timeRange, dbQuery, q.Page, q.PerPage)
+	if err != nil {
+		return nil, fmt.Errorf("find list failed: %v", err)
+	}
+	totalPages := 1.0
+	if q.PerPage != 0 {
+		totalPages = math.Ceil(float64(total) / float64(q.PerPage))
+	}
+	resp := dto.OrderListResponse{
+		Total:      int(total),
+		Page:       q.Page,
+		PerPage:    q.PerPage,
+		TotalPages: int(totalPages),
+		Data:       make([]dto.AffOrder, len(list)),
+	}
+	for idx, item := range list {
+		resp.Data[idx] = item.ToDto()
+	}
+	return &resp, err
 }

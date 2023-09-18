@@ -83,3 +83,14 @@ func (repo *MockOrderRepository) UpdateTrackedClickOrder(trackedId uint64, order
 func (repo *MockOrderRepository) GetOrderDetails(ctx context.Context, userId uint32, orderId uint) (*dto.OrderDetailsDto, error) {
 	return nil, nil
 }
+
+func (repo *MockOrderRepository) GetOrderHistory(ctx context.Context, userId uint32, page, size int) ([]dto.OrderDetailsDto, error) {
+	return []dto.OrderDetailsDto{}, nil
+}
+func (repo *MockOrderRepository) CountOrder(ctx context.Context, userId uint32) (int64, error) {
+	return 0, nil
+}
+
+func (repo *MockOrderRepository) FindOrdersByQuery(ctx context.Context, dbQuery map[string]any, page int, perPage int) ([]model.AffOrder, int64, error) {
+	return repo.Orders, int64(len(repo.Orders)), nil
+}

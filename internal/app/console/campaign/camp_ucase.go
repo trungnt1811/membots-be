@@ -59,16 +59,16 @@ func (c *campaignUCase) UpdateCampaign(id uint, campaign dto.AffCampaignAppDto) 
 	return c.Repo.UpdateCampaign(id, updates)
 }
 
-func (c *campaignUCase) GetAllCampaign(status []string, page, size int) (dto.AffCampaignDtoResponse, error) {
+func (c *campaignUCase) GetAllCampaign(status []string, page, size int) (dto.AffCampaignAppDtoResponse, error) {
 	listAffCampaign, err := c.Repo.GetAllCampaign(status, page, size)
 	if err != nil {
-		return dto.AffCampaignDtoResponse{}, err
+		return dto.AffCampaignAppDtoResponse{}, err
 	}
 	totalCampaign, err := c.Repo.CountCampaign(status)
 	if err != nil {
-		return dto.AffCampaignDtoResponse{}, err
+		return dto.AffCampaignAppDtoResponse{}, err
 	}
-	var listAffCampaignDto []dto.AffCampaignDto
+	var listAffCampaignDto []dto.AffCampaignLessDto
 	for i, campaign := range listAffCampaign {
 		if i >= size {
 			continue
@@ -79,7 +79,7 @@ func (c *campaignUCase) GetAllCampaign(status []string, page, size int) (dto.Aff
 	if len(listAffCampaign) > size {
 		nextPage += 1
 	}
-	return dto.AffCampaignDtoResponse{
+	return dto.AffCampaignAppDtoResponse{
 		NextPage: nextPage,
 		Page:     page,
 		Size:     size,

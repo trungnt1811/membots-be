@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	MinClaimReward         = 0.01    // asa
+	MinWithdrawReward      = 0.01    // asa
 	RewardLockTime         = 60 * 24 // hours
 	AffCommissionFee       = 0       // percentage preserve for stella from affiliate reward
 	AffRewardTxFee         = 0.1     // fix amount of tx fee
@@ -36,16 +36,16 @@ func NewRewardUsecase(repo interfaces.RewardRepository,
 	}
 }
 
-func (u *RewardUsecase) ClaimReward(ctx context.Context, userId uint32, userWallet string) (dto.ClaimRewardResponse, error) {
+func (u *RewardUsecase) WithdrawReward(ctx context.Context, userId uint32, userWallet string) (dto.WithdrawRewardResponse, error) {
 	rewards, err := u.repo.GetInProgressRewards(ctx, userId)
 	if err != nil {
-		return dto.ClaimRewardResponse{}, err
+		return dto.WithdrawRewardResponse{}, err
 	}
 
 	// Calculating Reward
-	rewardClaim, rewardToClaim, orderRewardHistories := u.calculateClaimableReward(rewards, userId)
-	if rewardClaim.Amount-AffRewardTxFee < MinClaimReward {
-		return dto.ClaimRewardResponse{
+	rewardClaim, rewardToClaim, orderRewardHistories := u.calculateWithdrawableReward(rewards, userId)
+	if rewardClaim.Amount-AffRewardTxFee < MinWithdrawReward {
+		return dto.WithdrawRewardResponse{
 			Execute: false,
 			Amount:  rewardClaim.Amount,
 		}, nil
@@ -65,23 +65,23 @@ func (u *RewardUsecase) ClaimReward(ctx context.Context, userId uint32, userWall
 	}
 	_, err = u.rwService.SendReward(&sendReq)
 	if err != nil {
-		return dto.ClaimRewardResponse{}, err
+		return dto.WithdrawRewardResponse{}, err
 	}
 
 	// Update Db
-	err = u.repo.SaveRewardClaim(ctx, rewardClaim, rewardToClaim, orderRewardHistories)
+	err = u.repo.SaveRewardWithdraw(ctx, rewardClaim, rewardToClaim, orderRewardHistories)
 	if err != nil {
-		return dto.ClaimRewardResponse{}, err
+		return dto.WithdrawRewardResponse{}, err
 	}
 
-	return dto.ClaimRewardResponse{
+	return dto.WithdrawRewardResponse{
 		Execute: true,
 		Amount:  rewardClaim.Amount,
 	}, nil
 }
 
 func (u *RewardUsecase) GetRewardSummary(ctx context.Context, userId uint32) (dto.RewardSummary, error) {
-	totalClaimedAmount, err := u.repo.GetTotalClaimedAmount(ctx, userId)
+	totalWithdrewAmount, err := u.repo.GetTotalWithdrewAmount(ctx, userId)
 	if err != nil {
 		return dto.RewardSummary{}, err
 	}
@@ -105,21 +105,21 @@ func (u *RewardUsecase) GetRewardSummary(ctx context.Context, userId uint32) (dt
 		totalOrderRewardInDay += item.Amount * model.FirstPartRewardPercent
 	}
 
-	rewardClaim, _, _ := u.calculateClaimableReward(inProgressRewards, userId)
+	withdrawable, _, _ := u.calculateWithdrawableReward(inProgressRewards, userId)
 
 	return dto.RewardSummary{
-		TotalClaimedAmount:  totalClaimedAmount,
-		ClaimableReward:     rewardClaim.Amount,
+		TotalWithdrewAmount: totalWithdrewAmount,
+		WithdrawableReward:  withdrawable.Amount,
 		RewardInDay:         totalOrderRewardInDay,
 		PendingRewardOrder:  len(inProgressRewards),
-		PendingRewardAmount: totalOrderReward - rewardClaim.Amount,
+		PendingRewardAmount: totalOrderReward - withdrawable.Amount,
 	}, nil
 }
 
-func (u *RewardUsecase) GetAllReward(ctx context.Context, userId uint32, page, size int) (dto.RewardResponse, error) {
-	rewards, err := u.repo.GetAllReward(ctx, userId, page, size)
+func (u *RewardUsecase) GetWithdrawHistory(ctx context.Context, userId uint32, page, size int) (dto.RewardWithdrawResponse, error) {
+	rewards, err := u.repo.GetWithdrawHistory(ctx, userId, page, size)
 	if err != nil {
-		return dto.RewardResponse{}, err
+		return dto.RewardWithdrawResponse{}, err
 	}
 
 	nextPage := page
@@ -127,47 +127,17 @@ func (u *RewardUsecase) GetAllReward(ctx context.Context, userId uint32, page, s
 		nextPage = page + 1
 	}
 
-	rewardDtos := make([]dto.RewardDto, len(rewards))
+	rewardDtos := make([]dto.RewardWithdrawDto, len(rewards))
 	for idx, item := range rewards {
-		rewardDtos[idx] = item.ToRewardDto()
+		rewardDtos[idx] = item.ToRewardWithdrawDto()
 	}
 
-	totalReward, err := u.repo.CountReward(ctx, userId)
+	totalRewardHistory, err := u.repo.CountWithdrawal(ctx, userId)
 	if err != nil {
-		return dto.RewardResponse{}, err
+		return dto.RewardWithdrawResponse{}, err
 	}
 
-	return dto.RewardResponse{
-		NextPage: nextPage,
-		Page:     page,
-		Size:     size,
-		Data:     rewardDtos,
-		Total:    totalReward,
-	}, nil
-}
-
-func (u *RewardUsecase) GetClaimHistory(ctx context.Context, userId uint32, page, size int) (dto.RewardClaimResponse, error) {
-	rewards, err := u.repo.GetClaimHistory(ctx, userId, page, size)
-	if err != nil {
-		return dto.RewardClaimResponse{}, err
-	}
-
-	nextPage := page
-	if len(rewards) > size {
-		nextPage = page + 1
-	}
-
-	rewardDtos := make([]dto.RewardClaimDto, len(rewards))
-	for idx, item := range rewards {
-		rewardDtos[idx] = item.ToRewardClaimDto()
-	}
-
-	totalRewardHistory, err := u.repo.CountClaimHistory(ctx, userId)
-	if err != nil {
-		return dto.RewardClaimResponse{}, err
-	}
-
-	return dto.RewardClaimResponse{
+	return dto.RewardWithdrawResponse{
 		NextPage: nextPage,
 		Page:     page,
 		Size:     size,
@@ -176,6 +146,6 @@ func (u *RewardUsecase) GetClaimHistory(ctx context.Context, userId uint32, page
 	}, nil
 }
 
-func (u *RewardUsecase) GetClaimDetails(ctx context.Context, userId uint32, claimId uint) (dto.RewardClaimDetailsDto, error) {
-	return u.repo.GetClaimDetails(ctx, userId, claimId)
+func (u *RewardUsecase) GetWithdrawDetails(ctx context.Context, userId uint32, withdrawId uint) (dto.RewardWithdrawDetailsDto, error) {
+	return u.repo.GetWithdrawDetails(ctx, userId, withdrawId)
 }

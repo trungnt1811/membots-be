@@ -231,6 +231,103 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/app/aff-categories": {
+            "get": {
+                "description": "Get all category have aff-campaign",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "category"
+                ],
+                "summary": "Get all category have aff-campaign",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.AffCategoryResponseDto"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/app/aff-categories/{categoryId}": {
+            "get": {
+                "description": "Get all aff-campaign in category",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "category"
+                ],
+                "summary": "Get all aff-campaign in category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "by to query, default is ctime/top",
+                        "name": "by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "order to query, default is desc",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "categoryId to query",
+                        "name": "categoryId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "page to query, default is 1",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.AffCampaignAppDtoResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/app/aff-search": {
             "get": {
                 "description": "search aff campaign",
@@ -815,6 +912,107 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/console/aff-search": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "search aff campaign for console",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "console"
+                ],
+                "summary": "search aff campaign for console",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "q to search",
+                        "name": "q",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "stella_status to search",
+                        "name": "stella_status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "page to query, default is 1",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.AffSearchResponseDto"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/order": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get order history - include reward info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "reward"
+                ],
+                "summary": "Get order history",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.OrderHistoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "424": {
+                        "description": "Failed Dependency",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/order/post-back": {
             "post": {
                 "security": [
@@ -906,6 +1104,78 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/orders": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get affiliate order list by time range and other filter",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "reward"
+                ],
+                "summary": "Get affiliate order list",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "order_status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "per_page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "since",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "until",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "user_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.OrderListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "424": {
+                        "description": "Failed Dependency",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/redeem/request": {
             "post": {
                 "security": [
@@ -957,14 +1227,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/rewards": {
+        "/api/v1/rewards/summary": {
             "get": {
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Get all rewards",
+                "description": "Get reward summary of an account",
                 "consumes": [
                     "application/json"
                 ],
@@ -974,12 +1244,12 @@ const docTemplate = `{
                 "tags": [
                     "reward"
                 ],
-                "summary": "Get all rewards",
+                "summary": "Get reward summary of an account",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.RewardResponse"
+                            "$ref": "#/definitions/dto.RewardSummary"
                         }
                     },
                     "400": {
@@ -997,7 +1267,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/rewards/claims": {
+        "/api/v1/rewards/withdraw": {
             "get": {
                 "security": [
                     {
@@ -1019,7 +1289,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.RewardClaimResponse"
+                            "$ref": "#/definitions/dto.RewardWithdrawResponse"
                         }
                     },
                     "400": {
@@ -1075,14 +1345,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/rewards/claims/{id}": {
+        "/api/v1/rewards/withdraw/{id}": {
             "get": {
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Get reward claim details",
+                "description": "Get reward withdraw details",
                 "consumes": [
                     "application/json"
                 ],
@@ -1092,52 +1362,12 @@ const docTemplate = `{
                 "tags": [
                     "reward"
                 ],
-                "summary": "Get reward claim details",
+                "summary": "Get reward withdraw details",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.RewardClaimDetailsDto"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/util.GeneralError"
-                        }
-                    },
-                    "424": {
-                        "description": "Failed Dependency",
-                        "schema": {
-                            "$ref": "#/definitions/util.GeneralError"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/rewards/summary": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Get reward summary of an account",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "reward"
-                ],
-                "summary": "Get reward summary of an account",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dto.RewardSummary"
+                            "$ref": "#/definitions/dto.RewardWithdrawDetailsDto"
                         }
                     },
                     "400": {
@@ -1383,7 +1613,7 @@ const docTemplate = `{
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/dto.AffCampaignAppDto"
+                        "$ref": "#/definitions/dto.AffCampaignLessDto"
                     }
                 },
                 "next_page": {
@@ -1531,13 +1761,166 @@ const docTemplate = `{
                 "accesstrade_id": {
                     "type": "string"
                 },
+                "brand": {
+                    "$ref": "#/definitions/dto.BrandDto"
+                },
+                "brand_id": {
+                    "type": "integer"
+                },
                 "campaign_id": {
                     "type": "integer"
                 },
                 "name": {
                     "type": "string"
                 },
+                "stella_status": {
+                    "type": "string"
+                },
                 "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.AffCategoryDto": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "logo": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "total_aff_campaign": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.AffCategoryResponseDto": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.AffCategoryDto"
+                    }
+                },
+                "next_page": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.AffOrder": {
+            "type": "object",
+            "properties": {
+                "accesstrade_order_id": {
+                    "type": "string"
+                },
+                "aff_link": {
+                    "type": "string"
+                },
+                "at_product_link": {
+                    "type": "string"
+                },
+                "billing": {
+                    "type": "number"
+                },
+                "browser": {
+                    "type": "string"
+                },
+                "category_name": {
+                    "type": "string"
+                },
+                "click_time": {
+                    "type": "string"
+                },
+                "client_platform": {
+                    "type": "string"
+                },
+                "confirmed_time": {
+                    "type": "string"
+                },
+                "conversion_platform": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "customer_type": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_confirmed": {
+                    "type": "integer"
+                },
+                "landing_page": {
+                    "type": "string"
+                },
+                "merchant": {
+                    "type": "string"
+                },
+                "order_approved": {
+                    "type": "integer"
+                },
+                "order_pending": {
+                    "type": "integer"
+                },
+                "order_reject": {
+                    "type": "integer"
+                },
+                "order_status": {
+                    "type": "string"
+                },
+                "product_category": {
+                    "type": "string"
+                },
+                "products_count": {
+                    "type": "integer"
+                },
+                "pub_commission": {
+                    "type": "number"
+                },
+                "sales_time": {
+                    "type": "string"
+                },
+                "update_time": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                },
+                "utm_campaign": {
+                    "type": "string"
+                },
+                "utm_content": {
+                    "type": "string"
+                },
+                "utm_medium": {
+                    "type": "string"
+                },
+                "utm_source": {
+                    "type": "string"
+                },
+                "utm_term": {
+                    "type": "string"
+                },
+                "website": {
+                    "type": "string"
+                },
+                "website_url": {
                     "type": "string"
                 }
             }
@@ -1548,7 +1931,7 @@ const docTemplate = `{
                 "aff_campaigns": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/dto.AffCampaignAppDto"
+                        "$ref": "#/definitions/dto.AffCampaignLessDto"
                     }
                 },
                 "total_campaign": {
@@ -1625,23 +2008,6 @@ const docTemplate = `{
                 },
                 "updated_at": {
                     "type": "string"
-                }
-            }
-        },
-        "dto.CategoryDto": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "logo": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "total_coupon": {
-                    "type": "integer"
                 }
             }
         },
@@ -1724,76 +2090,13 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.ResponseMessage": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                }
-            }
-        },
-        "dto.RewardClaimDetailsDto": {
-            "type": "object",
-            "properties": {
-                "amount": {
-                    "type": "number"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "fee": {
-                    "type": "number"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "shipping_request_id": {
-                    "type": "string"
-                },
-                "tx_hash": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "dto.RewardClaimDto": {
-            "type": "object",
-            "properties": {
-                "amount": {
-                    "type": "number"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "fee": {
-                    "type": "number"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "shipping_request_id": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "dto.RewardClaimResponse": {
+        "dto.OrderHistoryResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/dto.RewardClaimDto"
+                        "$ref": "#/definitions/dto.OrderDetailsDto"
                     }
                 },
                 "next_page": {
@@ -1807,6 +2110,37 @@ const docTemplate = `{
                 },
                 "total": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.OrderListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.AffOrder"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "per_page": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                },
+                "total_pages": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.ResponseMessage": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
                 }
             }
         },
@@ -1843,13 +2177,88 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.RewardResponse": {
+        "dto.RewardSummary": {
+            "type": "object",
+            "properties": {
+                "pending_reward_amount": {
+                    "type": "number"
+                },
+                "pending_reward_order": {
+                    "type": "integer"
+                },
+                "reward_in_day": {
+                    "type": "number"
+                },
+                "total_withdrew_amount": {
+                    "type": "number"
+                },
+                "withdrawable_reward": {
+                    "type": "number"
+                }
+            }
+        },
+        "dto.RewardWithdrawDetailsDto": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "fee": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "shipping_request_id": {
+                    "type": "string"
+                },
+                "tx_hash": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.RewardWithdrawDto": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "fee": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "shipping_request_id": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.RewardWithdrawResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/dto.RewardDto"
+                        "$ref": "#/definitions/dto.RewardWithdrawDto"
                     }
                 },
                 "next_page": {
@@ -1866,26 +2275,6 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.RewardSummary": {
-            "type": "object",
-            "properties": {
-                "claimable_reward": {
-                    "type": "number"
-                },
-                "pending_reward_amount": {
-                    "type": "number"
-                },
-                "pending_reward_order": {
-                    "type": "integer"
-                },
-                "reward_in_day": {
-                    "type": "number"
-                },
-                "total_claimed_amount": {
-                    "type": "number"
-                }
-            }
-        },
         "dto.StellaInfoDto": {
             "type": "object",
             "properties": {
@@ -1896,7 +2285,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "category": {
-                    "$ref": "#/definitions/dto.CategoryDto"
+                    "$ref": "#/definitions/dto.AffCategoryDto"
                 },
                 "category_id": {
                     "type": "integer"

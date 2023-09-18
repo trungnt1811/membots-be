@@ -156,7 +156,7 @@ definitions:
     properties:
       data:
         items:
-          $ref: '#/definitions/dto.AffCampaignAppDto'
+          $ref: '#/definitions/dto.AffCampaignLessDto'
         type: array
       next_page:
         type: integer
@@ -253,18 +253,119 @@ definitions:
     properties:
       accesstrade_id:
         type: string
+      brand:
+        $ref: '#/definitions/dto.BrandDto'
+      brand_id:
+        type: integer
       campaign_id:
         type: integer
       name:
         type: string
+      stella_status:
+        type: string
       url:
+        type: string
+    type: object
+  dto.AffCategoryDto:
+    properties:
+      id:
+        type: integer
+      logo:
+        type: string
+      name:
+        type: string
+      total_aff_campaign:
+        type: integer
+    type: object
+  dto.AffCategoryResponseDto:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto.AffCategoryDto'
+        type: array
+      next_page:
+        type: integer
+      page:
+        type: integer
+      size:
+        type: integer
+    type: object
+  dto.AffOrder:
+    properties:
+      accesstrade_order_id:
+        type: string
+      aff_link:
+        type: string
+      at_product_link:
+        type: string
+      billing:
+        type: number
+      browser:
+        type: string
+      category_name:
+        type: string
+      click_time:
+        type: string
+      client_platform:
+        type: string
+      confirmed_time:
+        type: string
+      conversion_platform:
+        type: string
+      created_at:
+        type: string
+      customer_type:
+        type: string
+      id:
+        type: integer
+      is_confirmed:
+        type: integer
+      landing_page:
+        type: string
+      merchant:
+        type: string
+      order_approved:
+        type: integer
+      order_pending:
+        type: integer
+      order_reject:
+        type: integer
+      order_status:
+        type: string
+      product_category:
+        type: string
+      products_count:
+        type: integer
+      pub_commission:
+        type: number
+      sales_time:
+        type: string
+      update_time:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+      utm_campaign:
+        type: string
+      utm_content:
+        type: string
+      utm_medium:
+        type: string
+      utm_source:
+        type: string
+      utm_term:
+        type: string
+      website:
+        type: string
+      website_url:
         type: string
     type: object
   dto.AffSearchDto:
     properties:
       aff_campaigns:
         items:
-          $ref: '#/definitions/dto.AffCampaignAppDto'
+          $ref: '#/definitions/dto.AffCampaignLessDto'
         type: array
       total_campaign:
         type: integer
@@ -315,17 +416,6 @@ definitions:
         type: string
       updated_at:
         type: string
-    type: object
-  dto.CategoryDto:
-    properties:
-      id:
-        type: integer
-      logo:
-        type: string
-      name:
-        type: string
-      total_coupon:
-        type: integer
     type: object
   dto.CreateLinkPayload:
     properties:
@@ -379,52 +469,11 @@ definitions:
       user_id:
         type: integer
     type: object
-  dto.ResponseMessage:
-    properties:
-      message:
-        type: string
-    type: object
-  dto.RewardClaimDetailsDto:
-    properties:
-      amount:
-        type: number
-      created_at:
-        type: string
-      fee:
-        type: number
-      id:
-        type: integer
-      shipping_request_id:
-        type: string
-      tx_hash:
-        type: string
-      updated_at:
-        type: string
-      user_id:
-        type: integer
-    type: object
-  dto.RewardClaimDto:
-    properties:
-      amount:
-        type: number
-      created_at:
-        type: string
-      fee:
-        type: number
-      id:
-        type: integer
-      shipping_request_id:
-        type: string
-      updated_at:
-        type: string
-      user_id:
-        type: integer
-    type: object
-  dto.RewardClaimResponse:
+  dto.OrderHistoryResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/dto.RewardClaimDto'
+          $ref: '#/definitions/dto.OrderDetailsDto'
         type: array
       next_page:
         type: integer
@@ -434,6 +483,26 @@ definitions:
         type: integer
       total:
         type: integer
+    type: object
+  dto.OrderListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto.AffOrder'
+        type: array
+      page:
+        type: integer
+      per_page:
+        type: integer
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  dto.ResponseMessage:
+    properties:
+      message:
+        type: string
     type: object
   dto.RewardDto:
     properties:
@@ -457,11 +526,60 @@ definitions:
       user_id:
         type: integer
     type: object
-  dto.RewardResponse:
+  dto.RewardSummary:
+    properties:
+      pending_reward_amount:
+        type: number
+      pending_reward_order:
+        type: integer
+      reward_in_day:
+        type: number
+      total_withdrew_amount:
+        type: number
+      withdrawable_reward:
+        type: number
+    type: object
+  dto.RewardWithdrawDetailsDto:
+    properties:
+      amount:
+        type: number
+      created_at:
+        type: string
+      fee:
+        type: number
+      id:
+        type: integer
+      shipping_request_id:
+        type: string
+      tx_hash:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  dto.RewardWithdrawDto:
+    properties:
+      amount:
+        type: number
+      created_at:
+        type: string
+      fee:
+        type: number
+      id:
+        type: integer
+      shipping_request_id:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  dto.RewardWithdrawResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/dto.RewardDto'
+          $ref: '#/definitions/dto.RewardWithdrawDto'
         type: array
       next_page:
         type: integer
@@ -472,19 +590,6 @@ definitions:
       total:
         type: integer
     type: object
-  dto.RewardSummary:
-    properties:
-      claimable_reward:
-        type: number
-      pending_reward_amount:
-        type: number
-      pending_reward_order:
-        type: integer
-      reward_in_day:
-        type: number
-      total_claimed_amount:
-        type: number
-    type: object
   dto.StellaInfoDto:
     properties:
       brand:
@@ -492,7 +597,7 @@ definitions:
       brand_id:
         type: integer
       category:
-        $ref: '#/definitions/dto.CategoryDto'
+        $ref: '#/definitions/dto.AffCategoryDto'
       category_id:
         type: integer
       end_time:
@@ -691,6 +796,70 @@ paths:
       summary: Get aff campaign by id
       tags:
       - app
+  /api/v1/app/aff-categories:
+    get:
+      consumes:
+      - application/json
+      description: Get all category have aff-campaign
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AffCategoryResponseDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      summary: Get all category have aff-campaign
+      tags:
+      - category
+  /api/v1/app/aff-categories/{categoryId}:
+    get:
+      consumes:
+      - application/json
+      description: Get all aff-campaign in category
+      parameters:
+      - description: by to query, default is ctime/top
+        in: query
+        name: by
+        type: string
+      - description: order to query, default is desc
+        in: query
+        name: order
+        type: string
+      - description: categoryId to query
+        in: path
+        name: categoryId
+        required: true
+        type: integer
+      - description: page to query, default is 1
+        in: query
+        name: page
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AffCampaignAppDtoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      summary: Get all aff-campaign in category
+      tags:
+      - category
   /api/v1/app/aff-search:
     get:
       consumes:
@@ -1062,6 +1231,70 @@ paths:
       summary: update campaign info
       tags:
       - console
+  /api/v1/console/aff-search:
+    get:
+      consumes:
+      - application/json
+      description: search aff campaign for console
+      parameters:
+      - description: q to search
+        in: query
+        name: q
+        required: true
+        type: string
+      - description: stella_status to search
+        in: query
+        name: stella_status
+        type: string
+      - description: page to query, default is 1
+        in: query
+        name: page
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AffSearchResponseDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: search aff campaign for console
+      tags:
+      - console
+  /api/v1/order:
+    get:
+      consumes:
+      - application/json
+      description: Get order history - include reward info
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.OrderHistoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get order history
+      tags:
+      - reward
   /api/v1/order/{id}:
     get:
       consumes:
@@ -1120,6 +1353,50 @@ paths:
       summary: PostBackOrderHandle
       tags:
       - redeem
+  /api/v1/orders:
+    get:
+      consumes:
+      - application/json
+      description: Get affiliate order list by time range and other filter
+      parameters:
+      - in: query
+        name: order_status
+        type: string
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: per_page
+        type: integer
+      - in: query
+        name: since
+        type: string
+      - in: query
+        name: until
+        type: string
+      - in: query
+        name: user_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.OrderListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get affiliate order list
+      tags:
+      - reward
   /api/v1/redeem/request:
     post:
       consumes:
@@ -1152,18 +1429,18 @@ paths:
       summary: PostRequestRedeem
       tags:
       - redeem
-  /api/v1/rewards:
+  /api/v1/rewards/summary:
     get:
       consumes:
       - application/json
-      description: Get all rewards
+      description: Get reward summary of an account
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.RewardResponse'
+            $ref: '#/definitions/dto.RewardSummary'
         "400":
           description: Bad Request
           schema:
@@ -1174,10 +1451,10 @@ paths:
             $ref: '#/definitions/util.GeneralError'
       security:
       - ApiKeyAuth: []
-      summary: Get all rewards
+      summary: Get reward summary of an account
       tags:
       - reward
-  /api/v1/rewards/claims:
+  /api/v1/rewards/withdraw:
     get:
       consumes:
       - application/json
@@ -1188,7 +1465,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.RewardClaimResponse'
+            $ref: '#/definitions/dto.RewardWithdrawResponse'
         "400":
           description: Bad Request
           schema:
@@ -1226,18 +1503,18 @@ paths:
       summary: Claim reward of all orders
       tags:
       - reward
-  /api/v1/rewards/claims/{id}:
+  /api/v1/rewards/withdraw/{id}:
     get:
       consumes:
       - application/json
-      description: Get reward claim details
+      description: Get reward withdraw details
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.RewardClaimDetailsDto'
+            $ref: '#/definitions/dto.RewardWithdrawDetailsDto'
         "400":
           description: Bad Request
           schema:
@@ -1248,32 +1525,7 @@ paths:
             $ref: '#/definitions/util.GeneralError'
       security:
       - ApiKeyAuth: []
-      summary: Get reward claim details
-      tags:
-      - reward
-  /api/v1/rewards/summary:
-    get:
-      consumes:
-      - application/json
-      description: Get reward summary of an account
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.RewardSummary'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/util.GeneralError'
-        "424":
-          description: Failed Dependency
-          schema:
-            $ref: '#/definitions/util.GeneralError'
-      security:
-      - ApiKeyAuth: []
-      summary: Get reward summary of an account
+      summary: Get reward withdraw details
       tags:
       - reward
 securityDefinitions:

@@ -28,9 +28,9 @@ func NewAffCampAppCacheRepository(repo interfaces.AffCampAppRepository,
 	}
 }
 
-func (c affCampAppCache) GetAllAffCampaign(ctx context.Context, page, size int) ([]model.AffCampaignApp, error) {
+func (c affCampAppCache) GetAllAffCampaign(ctx context.Context, page, size int) ([]model.AffCampaignLessApp, error) {
 	key := &caching.Keyer{Raw: keyPrefixAffCampApp + fmt.Sprint("GetAllAffCampaign_", page, "_", size)}
-	var listAffCampaign []model.AffCampaignApp
+	var listAffCampaign []model.AffCampaignLessApp
 	err := c.Cache.RetrieveItem(key, &listAffCampaign)
 	if err != nil {
 		// cache miss

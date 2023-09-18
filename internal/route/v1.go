@@ -4,8 +4,10 @@ import (
 	"context"
 	"time"
 
-	bannerApp "github.com/astraprotocol/affiliate-system/internal/app/aff_banner_app"
 	"github.com/astraprotocol/affiliate-system/internal/app/aff_brand"
+
+	bannerApp "github.com/astraprotocol/affiliate-system/internal/app/aff_banner_app"
+	categoryApp "github.com/astraprotocol/affiliate-system/internal/app/aff_category_app"
 	"github.com/astraprotocol/affiliate-system/internal/app/aff_search"
 	bannerConsole "github.com/astraprotocol/affiliate-system/internal/app/console/banner"
 	"github.com/go-co-op/gocron"
@@ -65,7 +67,11 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	orderHandler := order.NewOrderHandler(orderUcase)
 	orderRoute := v1.Group("/order")
 	orderRoute.POST("/post-back", orderHandler.PostBackOrderHandle)
+	orderRoute.GET("", orderHandler.GetOrderHistory)
 	orderRoute.GET("/:id", orderHandler.GetOrderDetails)
+
+	ordersRoute := v1.Group("/orders")
+	ordersRoute.GET("", orderHandler.GetOrderList)
 
 	// SECTION: Redeem module
 	redeemRepo := redeem.NewRedeemRepository(db)
@@ -99,11 +105,10 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	rewardHandler := reward.NewRewardHandler(rewardUsecase)
 
 	rewardRouter := v1.Group("/rewards")
-	rewardRouter.GET("", rewardHandler.GetAllReward)
 	rewardRouter.GET("/summary", rewardHandler.GetRewardSummary)
-	rewardRouter.GET("/claims", rewardHandler.GetClaimHistory)
-	rewardRouter.GET("/claims/:id", rewardHandler.GetClaimDetails)
-	rewardRouter.POST("/claims", rewardHandler.ClaimReward)
+	rewardRouter.GET("/withdraw", rewardHandler.GetWithdrawHistory)
+	rewardRouter.GET("/withdraw/:id", rewardHandler.GetWithdrawDetails)
+	rewardRouter.POST("/withdraw", rewardHandler.WithdrawReward)
 
 	// SECTION: App module
 	streamChannel := make(chan []*dto.UserViewAffCampDto, 1024)
@@ -139,10 +144,17 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	appRouter.GET("/aff-banner", affAppBannerHandler.GetAllBanner)
 	appRouter.GET("/aff-banner/:id", affAppBannerHandler.GetBannerById)
 
+	affCategoryRepo := categoryApp.NewAppCategoryRepository(db)
+	affCategoryUCase := categoryApp.NewAffCategoryUCase(affCategoryRepo)
+	affCategoryHandler := categoryApp.NewAffCategoryHandler(affCategoryUCase)
+	appRouter.GET("/aff-categories", affCategoryHandler.GetAllCategory)
+	appRouter.GET("/aff-categories/:categoryId", affCategoryHandler.GetAllAffCampaignInCategory)
+
 	affSearchRepo := aff_search.NewAffSearchRepository(db)
 	affSearchUCase := aff_search.NewAffSearchUCase(affSearchRepo)
 	affSearchHandler := aff_search.NewAffSearchHandler(affSearchUCase)
 	appRouter.GET("/aff-search", affSearchHandler.AffSearch)
+	consoleRouter.GET("/aff-search", authHandler.CheckAdminHeader(), affSearchHandler.SearchConsole)
 
 	// SECTION: Cron jobs
 	cron := gocron.NewScheduler(time.UTC)

@@ -51,39 +51,6 @@ func (handler *RewardHandler) GetRewardSummary(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-// GetAllReward Get all rewards
-// @Summary Get all rewards
-// @Description Get all rewards
-// @Tags 	reward
-// @Accept	json
-// @Produce json
-// @Security ApiKeyAuth
-// @Success 200 		{object}	dto.RewardResponse
-// @Failure 424 		{object}	util.GeneralError
-// @Failure 400 		{object}	util.GeneralError
-// @Router 	/api/v1/rewards [get]
-func (handler *RewardHandler) GetAllReward(ctx *gin.Context) {
-	// First, take user from JWT
-	user, err := dto.GetUserInfo(ctx)
-	if err != nil {
-		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
-		return
-	}
-
-	page := ctx.GetInt("page")
-	size := ctx.GetInt("size")
-
-	// get reward
-	res, err := handler.usecase.GetAllReward(ctx, user.ID, page, size)
-	if err != nil {
-		util.RespondError(ctx, http.StatusFailedDependency, "failed to get rewards", err)
-		return
-	}
-
-	// Response transaction status
-	ctx.JSON(http.StatusOK, res)
-}
-
 // GetRewardHistory Get reward history records
 // @Summary Get reward history records
 // @Description Get reward history records
@@ -91,11 +58,11 @@ func (handler *RewardHandler) GetAllReward(ctx *gin.Context) {
 // @Accept	json
 // @Produce json
 // @Security ApiKeyAuth
-// @Success 200 		{object}	dto.RewardClaimResponse
+// @Success 200 		{object}	dto.RewardWithdrawResponse
 // @Failure 424 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
-// @Router 	/api/v1/rewards/claims [get]
-func (handler *RewardHandler) GetClaimHistory(ctx *gin.Context) {
+// @Router 	/api/v1/rewards/withdraw [get]
+func (handler *RewardHandler) GetWithdrawHistory(ctx *gin.Context) {
 	// First, take user from JWT
 	user, err := dto.GetUserInfo(ctx)
 	if err != nil {
@@ -107,7 +74,7 @@ func (handler *RewardHandler) GetClaimHistory(ctx *gin.Context) {
 	size := ctx.GetInt("size")
 
 	// get reward
-	res, err := handler.usecase.GetClaimHistory(ctx, user.ID, page, size)
+	res, err := handler.usecase.GetWithdrawHistory(ctx, user.ID, page, size)
 	if err != nil {
 		util.RespondError(ctx, http.StatusFailedDependency, "failed to get reward history", err)
 		return
@@ -117,18 +84,18 @@ func (handler *RewardHandler) GetClaimHistory(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-// GetRewardHistory Get reward claim details
-// @Summary Get reward claim details
-// @Description Get reward claim details
+// GetRewardHistory Get reward withdraw details
+// @Summary Get reward withdraw details
+// @Description Get reward withdraw details
 // @Tags 	reward
 // @Accept	json
 // @Produce json
 // @Security ApiKeyAuth
-// @Success 200 		{object}	dto.RewardClaimDetailsDto
+// @Success 200 		{object}	dto.RewardWithdrawDetailsDto
 // @Failure 424 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
-// @Router 	/api/v1/rewards/claims/{id} [get]
-func (handler *RewardHandler) GetClaimDetails(ctx *gin.Context) {
+// @Router 	/api/v1/rewards/withdraw/{id} [get]
+func (handler *RewardHandler) GetWithdrawDetails(ctx *gin.Context) {
 	// First, take user from JWT
 	user, err := dto.GetUserInfo(ctx)
 	if err != nil {
@@ -136,14 +103,14 @@ func (handler *RewardHandler) GetClaimDetails(ctx *gin.Context) {
 		return
 	}
 
-	claimId, err := strconv.Atoi(ctx.Param("id"))
+	withdrawId, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
 		util.RespondError(ctx, http.StatusBadRequest, "id is required", err)
 		return
 	}
 
 	// get reward
-	res, err := handler.usecase.GetClaimDetails(ctx, user.ID, uint(claimId))
+	res, err := handler.usecase.GetWithdrawDetails(ctx, user.ID, uint(withdrawId))
 	if err != nil {
 		util.RespondError(ctx, http.StatusFailedDependency, "failed to get reward withdraw details", err)
 		return
@@ -163,8 +130,8 @@ func (handler *RewardHandler) GetClaimDetails(ctx *gin.Context) {
 // @Success 200 		{object}	dto.RewardSummary
 // @Failure 424 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
-// @Router 	/api/v1/rewards/claims [post]
-func (handler *RewardHandler) ClaimReward(ctx *gin.Context) {
+// @Router 	/api/v1/rewards/withdraw [post]
+func (handler *RewardHandler) WithdrawReward(ctx *gin.Context) {
 	// First, take user from JWT
 	user, err := dto.GetUserInfo(ctx)
 	if err != nil {
@@ -173,9 +140,9 @@ func (handler *RewardHandler) ClaimReward(ctx *gin.Context) {
 	}
 
 	// get reward
-	res, err := handler.usecase.ClaimReward(ctx, user.ID, user.WalletAddress)
+	res, err := handler.usecase.WithdrawReward(ctx, user.ID, user.WalletAddress)
 	if err != nil {
-		util.RespondError(ctx, http.StatusFailedDependency, "failed to claim reward", err)
+		util.RespondError(ctx, http.StatusFailedDependency, "failed to withdraw reward", err)
 		return
 	}
 

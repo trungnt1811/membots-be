@@ -42,20 +42,7 @@ func (r *RewardRepository) GetRewardsInDay(ctx context.Context) ([]model.Reward,
 	return rewards, err
 }
 
-func (r *RewardRepository) GetAllReward(ctx context.Context, userId uint32, page, size int) ([]model.Reward, error) {
-	var rewards []model.Reward
-	offset := (page - 1) * size
-	err := r.db.Model(&model.Reward{}).Where("user_id = ?", userId).Order("id DESC").Limit(size + 1).Offset(offset).Scan(&rewards).Error
-	return rewards, err
-}
-
-func (r *RewardRepository) CountReward(ctx context.Context, userId uint32) (int64, error) {
-	var count int64
-	err := r.db.Model(&model.Reward{}).Where("user_id = ?", userId).Order("id DESC").Count(&count).Error
-	return count, err
-}
-
-func (r *RewardRepository) SaveRewardClaim(ctx context.Context, rewardClaim *model.RewardClaim, rewards []model.Reward, orderRewardHistories []model.OrderRewardHistory) error {
+func (r *RewardRepository) SaveRewardWithdraw(ctx context.Context, rewardClaim *model.RewardWithdraw, rewards []model.Reward, orderRewardHistories []model.OrderRewardHistory) error {
 	return r.db.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Create(rewardClaim).Error; err != nil {
 			return err
@@ -73,20 +60,20 @@ func (r *RewardRepository) SaveRewardClaim(ctx context.Context, rewardClaim *mod
 	})
 }
 
-func (r *RewardRepository) GetClaimHistory(ctx context.Context, userId uint32, page, size int) ([]model.RewardClaim, error) {
-	var claimHistory []model.RewardClaim
+func (r *RewardRepository) GetWithdrawHistory(ctx context.Context, userId uint32, page, size int) ([]model.RewardWithdraw, error) {
+	var withdrawHistory []model.RewardWithdraw
 	offset := (page - 1) * size
-	err := r.db.Model(&model.RewardClaim{}).Where("user_id = ?", userId).Limit(size + 1).Offset(offset).Scan(&claimHistory).Error
-	return claimHistory, err
+	err := r.db.Model(&model.RewardWithdraw{}).Where("user_id = ?", userId).Limit(size + 1).Offset(offset).Scan(&withdrawHistory).Error
+	return withdrawHistory, err
 }
 
-func (r *RewardRepository) CountClaimHistory(ctx context.Context, userId uint32) (int64, error) {
+func (r *RewardRepository) CountWithdrawal(ctx context.Context, userId uint32) (int64, error) {
 	var count int64
-	err := r.db.Model(&model.RewardClaim{}).Where("user_id = ?", userId).Count(&count).Error
+	err := r.db.Model(&model.RewardWithdraw{}).Where("user_id = ?", userId).Count(&count).Error
 	return count, err
 }
 
-type RewardClaimDetailsDto struct {
+type RewardWithdrawDetailsDto struct {
 	ID                uint      `gorm:"primarykey" json:"id"`
 	UserId            uint      `json:"user_id"`
 	ShippingRequestID string    `json:"shipping_request_id"`
@@ -96,19 +83,19 @@ type RewardClaimDetailsDto struct {
 	UpdatedAt         time.Time `json:"updated_at"`
 }
 
-func (r *RewardRepository) GetClaimDetails(ctx context.Context, userId uint32, claimId uint) (dto.RewardClaimDetailsDto, error) {
-	var claimDetails dto.RewardClaimDetailsDto
+func (r *RewardRepository) GetWithdrawDetails(ctx context.Context, userId uint32, withdrawId uint) (dto.RewardWithdrawDetailsDto, error) {
+	var withdrawDetails dto.RewardWithdrawDetailsDto
 	query := "SELECT c.id, c.user_id, c.shipping_request_id, c.amount, c.fee, d.tx_hash, c.created_at, c.updated_at " +
-		"FROM aff_reward_claim AS c " +
+		"FROM aff_reward_withdraw AS c " +
 		"LEFT JOIN reward AS r ON c.shipping_request_id = r.request_id " +
 		"LEFT JOIN deliveries AS d ON r.delivery_id = d.id " +
 		"WHERE c.user_id = ? AND c.id = ?"
-	err := r.db.Raw(query, userId, claimId).First(&claimDetails).Error
-	return claimDetails, err
+	err := r.db.Raw(query, userId, withdrawId).First(&withdrawDetails).Error
+	return withdrawDetails, err
 }
 
-func (r *RewardRepository) GetTotalClaimedAmount(ctx context.Context, userId uint32) (float64, error) {
+func (r *RewardRepository) GetTotalWithdrewAmount(ctx context.Context, userId uint32) (float64, error) {
 	var amount float64
-	err := r.db.Model(&model.RewardClaim{}).Select("COUNT(amount)").Where("user_id = ?", userId).Scan(&amount).Error
+	err := r.db.Model(&model.RewardWithdraw{}).Select("COUNT(amount)").Where("user_id = ?", userId).Scan(&amount).Error
 	return amount, err
 }

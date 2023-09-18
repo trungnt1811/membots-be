@@ -40,18 +40,18 @@ type AffCampaignDto struct {
 }
 
 type StellaInfoDto struct {
-	StartTime         *time.Time  `json:"start_time"`
-	EndTime           *time.Time  `json:"end_time"`
-	StellaDescription interface{} `json:"stella_description"`
-	CategoryId        uint        `json:"category_id"`
-	StellaStatus      string      `json:"stella_status"`
-	Thumbnail         string      `json:"thumbnail"`
-	StellaMaxCom      string      `json:"stella_max_com"`
-	Url               string      `json:"url"`
-	Name              string      `json:"name"`
-	BrandId           uint        `json:"brand_id"`
-	Brand             BrandDto    `json:"brand"`
-	Category          CategoryDto `json:"category"`
+	StartTime         *time.Time     `json:"start_time"`
+	EndTime           *time.Time     `json:"end_time"`
+	StellaDescription interface{}    `json:"stella_description"`
+	CategoryId        uint           `json:"category_id"`
+	StellaStatus      string         `json:"stella_status"`
+	Thumbnail         string         `json:"thumbnail"`
+	StellaMaxCom      string         `json:"stella_max_com"`
+	Url               string         `json:"url"`
+	Name              string         `json:"name"`
+	BrandId           uint           `json:"brand_id"`
+	Brand             BrandDto       `json:"brand"`
+	Category          AffCategoryDto `json:"category"`
 }
 
 type AffCampaignAppDto struct {
@@ -81,11 +81,11 @@ type AffCampaignDtoResponse struct {
 }
 
 type AffCampaignAppDtoResponse struct {
-	NextPage int                 `json:"next_page"`
-	Page     int                 `json:"page"`
-	Size     int                 `json:"size"`
-	Total    int64               `json:"total,omitempty"`
-	Data     []AffCampaignAppDto `json:"data"`
+	NextPage int                  `json:"next_page"`
+	Page     int                  `json:"page"`
+	Size     int                  `json:"size"`
+	Total    int64                `json:"total,omitempty"`
+	Data     []AffCampaignLessDto `json:"data"`
 }
 
 type UserViewAffCampDto struct {

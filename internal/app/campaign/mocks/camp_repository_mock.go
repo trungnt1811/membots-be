@@ -22,6 +22,11 @@ func (repo *CampaignRepoMock) GetCampaignById(q map[string]any) ([]model.AffCamp
 		},
 	}, nil
 }
+
+func (repo *CampaignRepoMock) GetCampaignLessById(campaignId uint) (model.AffCampaignLess, error) {
+	return model.AffCampaignLess{}, nil
+}
+
 func (repo *CampaignRepoMock) RetrieveCampaignsByAccessTradeIds(ids []string) (map[string]*model.AffCampaign, error) {
 	return nil, nil
 }

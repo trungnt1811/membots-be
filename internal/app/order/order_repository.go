@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/astraprotocol/affiliate-system/internal/app/order/types"
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/model"
 
@@ -156,4 +157,95 @@ func (repo *OrderRepository) GetOrderDetails(ctx context.Context, userId uint32,
 	}
 
 	return &o, err
+}
+
+func (repo *OrderRepository) GetOrderHistory(ctx context.Context, userId uint32, page, size int) ([]dto.OrderDetailsDto, error) {
+	orderHistory := []dto.OrderDetailsDto{}
+	limit := size + 1
+	offset := (page - 1) * size
+	query := "SELECT o.user_id, o.order_status, o.at_product_link, o.billing, o.category_name, o.confirmed_time, o.merchant, " +
+		"o.accesstrade_order_id, o.pub_commission, o.sales_time, " +
+		"r.id, r.user_id, r.accesstrade_order_id, r.amount, r.rewarded_amount, " +
+		"r.commission_fee, r.ended_at, r.created_at, r.updated_at " +
+		"FROM aff_order AS o " +
+		"LEFT JOIN aff_reward AS r ON r.accesstrade_order_id = o.accesstrade_order_id " +
+		"WHERE o.user_id = ? " +
+		"ORDER BY o.id DESC " +
+		"LIMIT ? OFFSET ?"
+
+	rows, err := repo.db.Raw(query, userId, limit, offset).Rows()
+	if err != nil {
+		return []dto.OrderDetailsDto{}, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var o dto.OrderDetailsDto
+		err = rows.Scan(&o.UserId, &o.OrderStatus, &o.ATProductLink, &o.Billing, &o.CategoryName, &o.ConfirmedTime, &o.Merchant,
+			&o.AccessTradeOrderId, &o.PubCommission, &o.SalesTime,
+			&o.Reward.ID, &o.Reward.UserId, &o.Reward.AtOrderID, &o.Reward.Amount, &o.Reward.RewardedAmount,
+			&o.Reward.CommissionFee, &o.Reward.EndedAt, &o.Reward.CreatedAt, &o.Reward.UpdatedAt)
+		if err != nil {
+			return []dto.OrderDetailsDto{}, err
+		}
+
+		orderHistory = append(orderHistory, o)
+	}
+
+	return orderHistory, err
+}
+
+func (repo *OrderRepository) CountOrder(ctx context.Context, userId uint32) (int64, error) {
+	var count int64
+	query := "SELECT o.id " +
+		"FROM aff_order AS o " +
+		"LEFT JOIN aff_reward AS r ON r.accesstrade_order_id = o.accesstrade_order_id " +
+		"WHERE o.user_id = ? "
+	err := repo.db.Raw(query, userId).Count(&count).Error
+	return count, err
+}
+
+func (repo *OrderRepository) FindOrdersByQuery(timeRange types.TimeRange, dbQuery map[string]any, page int, perPage int) ([]model.AffOrder, int64, error) {
+	var orders []model.AffOrder
+	tx := repo.db.Model(&orders)
+	totalTx := repo.db.Model(&orders)
+	if perPage != 0 {
+		tx.Limit(perPage)
+
+		if page != 0 {
+			tx.Offset((page - 1) * perPage)
+		}
+	}
+
+	if timeRange.Since != nil {
+		tx.Where(
+			"created_at >= ?", timeRange.Since,
+		)
+		totalTx.Where(
+			"created_at >= ?", timeRange.Since,
+		)
+	}
+	if timeRange.Until != nil {
+		tx.Where(
+			"created_at <= ?", timeRange.Until,
+		)
+		totalTx.Where(
+			"created_at >= ?", timeRange.Since,
+		)
+	}
+
+	tx.Where(dbQuery)
+	totalTx.Where(dbQuery)
+
+	err := tx.Find(&orders).Error
+	if err != nil {
+		return nil, 0, err
+	}
+
+	var total int64
+	err = totalTx.Count(&total).Error
+	if err != nil {
+		return nil, 0, err
+	}
+	return orders, total, err
 }

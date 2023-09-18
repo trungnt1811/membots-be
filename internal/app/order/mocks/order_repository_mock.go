@@ -5,7 +5,6 @@ import (
 	"errors"
 	"time"
 
-	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/model"
 )
 
@@ -80,12 +79,12 @@ func (repo *MockOrderRepository) UpdateTrackedClickOrder(trackedId uint64, order
 	return nil
 }
 
-func (repo *MockOrderRepository) GetOrderDetails(ctx context.Context, userId uint32, orderId uint) (*dto.OrderDetailsDto, error) {
+func (repo *MockOrderRepository) GetOrderDetails(ctx context.Context, userId uint32, orderId uint) (*model.OrderDetails, error) {
 	return nil, nil
 }
 
-func (repo *MockOrderRepository) GetOrderHistory(ctx context.Context, userId uint32, page, size int) ([]dto.OrderDetailsDto, error) {
-	return []dto.OrderDetailsDto{}, nil
+func (repo *MockOrderRepository) GetOrderHistory(ctx context.Context, userId uint32, page, size int) ([]model.OrderDetails, error) {
+	return []model.OrderDetails{}, nil
 }
 func (repo *MockOrderRepository) CountOrder(ctx context.Context, userId uint32) (int64, error) {
 	return 0, nil

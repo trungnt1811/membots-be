@@ -117,8 +117,8 @@ func (repo *OrderRepository) UpdateTrackedClickOrder(trackedId uint64, order *mo
 	return err
 }
 
-func (repo *OrderRepository) GetOrderDetails(ctx context.Context, userId uint32, orderId uint) (*dto.OrderDetailsDto, error) {
-	var o dto.OrderDetailsDto
+func (repo *OrderRepository) GetOrderDetails(ctx context.Context, userId uint32, orderId uint) (*model.OrderDetails, error) {
+	var o model.OrderDetails
 	query := "o.user_id, o.order_status, o.at_product_link, o.billing, o.category_name, o.confirmed_time, o.merchant, " +
 		"o.accesstrade_order_id, o.pub_commission, o.sales_time, " +
 		"log.created_at, log.data, " +
@@ -131,7 +131,7 @@ func (repo *OrderRepository) GetOrderDetails(ctx context.Context, userId uint32,
 
 	rows, err := repo.db.Raw(query, userId, orderId).Rows()
 	if err != nil {
-		return &dto.OrderDetailsDto{}, err
+		return &model.OrderDetails{}, err
 	}
 	defer rows.Close()
 
@@ -143,13 +143,13 @@ func (repo *OrderRepository) GetOrderDetails(ctx context.Context, userId uint32,
 			&o.Reward.ID, &o.Reward.UserId, &o.Reward.AtOrderID, &o.Reward.Amount, &o.Reward.RewardedAmount,
 			&o.Reward.CommissionFee, &o.Reward.EndedAt, &o.Reward.CreatedAt, &o.Reward.UpdatedAt)
 		if err != nil {
-			return &dto.OrderDetailsDto{}, err
+			return &model.OrderDetails{}, err
 		}
 
 		var postbackData dto.ATPostBackRequest
 		err = json.Unmarshal([]byte(postbackDataJson.String), &postbackData)
 		if err != nil {
-			return &dto.OrderDetailsDto{}, err
+			return &model.OrderDetails{}, err
 		}
 
 		o.Timeline[dto.AtOrderStatusMap[postbackData.Status]] = postbackCreatedAt
@@ -158,8 +158,8 @@ func (repo *OrderRepository) GetOrderDetails(ctx context.Context, userId uint32,
 	return &o, err
 }
 
-func (repo *OrderRepository) GetOrderHistory(ctx context.Context, userId uint32, page, size int) ([]dto.OrderDetailsDto, error) {
-	orderHistory := []dto.OrderDetailsDto{}
+func (repo *OrderRepository) GetOrderHistory(ctx context.Context, userId uint32, page, size int) ([]model.OrderDetails, error) {
+	orderHistory := []model.OrderDetails{}
 	limit := size + 1
 	offset := (page - 1) * size
 	query := "SELECT o.user_id, o.order_status, o.at_product_link, o.billing, o.category_name, o.confirmed_time, o.merchant, " +
@@ -174,18 +174,18 @@ func (repo *OrderRepository) GetOrderHistory(ctx context.Context, userId uint32,
 
 	rows, err := repo.db.Raw(query, userId, limit, offset).Rows()
 	if err != nil {
-		return []dto.OrderDetailsDto{}, err
+		return []model.OrderDetails{}, err
 	}
 	defer rows.Close()
 
 	for rows.Next() {
-		var o dto.OrderDetailsDto
+		var o model.OrderDetails
 		err = rows.Scan(&o.UserId, &o.OrderStatus, &o.ATProductLink, &o.Billing, &o.CategoryName, &o.ConfirmedTime, &o.Merchant,
 			&o.AccessTradeOrderId, &o.PubCommission, &o.SalesTime,
 			&o.Reward.ID, &o.Reward.UserId, &o.Reward.AtOrderID, &o.Reward.Amount, &o.Reward.RewardedAmount,
 			&o.Reward.CommissionFee, &o.Reward.EndedAt, &o.Reward.CreatedAt, &o.Reward.UpdatedAt)
 		if err != nil {
-			return []dto.OrderDetailsDto{}, err
+			return []model.OrderDetails{}, err
 		}
 
 		orderHistory = append(orderHistory, o)

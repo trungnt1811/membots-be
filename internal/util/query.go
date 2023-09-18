@@ -37,3 +37,13 @@ func NormalizeStatusActiveInActive(queryStatus string) []string {
 		return []string{"active", "inactive"}
 	}
 }
+
+func BuildOrderBy(queryBy, order string) string {
+	switch queryBy {
+	case "ctime":
+		return "aff_campaign.created_at " + order
+	case "top":
+		return "aff_campaign.id " + order
+	}
+	return ""
+}

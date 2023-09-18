@@ -6,7 +6,7 @@ import (
 )
 
 type ConsoleCampRepository interface {
-	GetAllCampaign(status []string, page, size int) ([]model.AffCampaign, error)
+	GetAllCampaign(status []string, page, size int) ([]model.AffCampaignLessApp, error)
 	GetCampaignById(id uint) (model.AffCampaign, error)
 	GetCampaignLessByAccessTradeId(accessTradeId string) (model.AffCampaignLess, error)
 	CountCampaign(status []string) (int64, error)
@@ -14,7 +14,7 @@ type ConsoleCampRepository interface {
 }
 
 type ConsoleCampUCase interface {
-	GetAllCampaign(status []string, page, size int) (dto.AffCampaignDtoResponse, error)
+	GetAllCampaign(status []string, page, size int) (dto.AffCampaignAppDtoResponse, error)
 	UpdateCampaign(id uint, campaign dto.AffCampaignAppDto) error
 	GetCampaignById(id uint) (dto.AffCampaignDto, error)
 }

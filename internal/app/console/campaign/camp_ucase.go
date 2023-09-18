@@ -59,12 +59,12 @@ func (c *campaignUCase) UpdateCampaign(id uint, campaign dto.AffCampaignAppDto) 
 	return c.Repo.UpdateCampaign(id, updates)
 }
 
-func (c *campaignUCase) GetAllCampaign(status []string, page, size int) (dto.AffCampaignAppDtoResponse, error) {
-	listAffCampaign, err := c.Repo.GetAllCampaign(status, page, size)
+func (c *campaignUCase) GetAllCampaign(status []string, q string, page, size int) (dto.AffCampaignAppDtoResponse, error) {
+	listAffCampaign, err := c.Repo.GetAllCampaign(status, q, page, size)
 	if err != nil {
 		return dto.AffCampaignAppDtoResponse{}, err
 	}
-	totalCampaign, err := c.Repo.CountCampaign(status)
+	totalCampaign, err := c.Repo.CountCampaign(status, q)
 	if err != nil {
 		return dto.AffCampaignAppDtoResponse{}, err
 	}

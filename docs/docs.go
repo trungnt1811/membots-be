@@ -1988,9 +1988,6 @@ const docTemplate = `{
                 },
                 "original_url": {
                     "type": "string"
-                },
-                "short_link": {
-                    "type": "string"
                 }
             }
         },

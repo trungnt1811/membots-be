@@ -1480,6 +1480,12 @@ const docTemplate = `{
                 "accesstrade_id": {
                     "type": "string"
                 },
+                "brand": {
+                    "$ref": "#/definitions/dto.BrandDto"
+                },
+                "brand_id": {
+                    "type": "integer"
+                },
                 "campaign_id": {
                     "type": "integer"
                 },
@@ -1497,7 +1503,7 @@ const docTemplate = `{
                 "aff_campaigns": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/dto.AffCampaignAppDto"
+                        "$ref": "#/definitions/dto.AffCampaignLessDto"
                     }
                 },
                 "total_campaign": {

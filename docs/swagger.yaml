@@ -253,6 +253,10 @@ definitions:
     properties:
       accesstrade_id:
         type: string
+      brand:
+        $ref: '#/definitions/dto.BrandDto'
+      brand_id:
+        type: integer
       campaign_id:
         type: integer
       name:
@@ -264,7 +268,7 @@ definitions:
     properties:
       aff_campaigns:
         items:
-          $ref: '#/definitions/dto.AffCampaignAppDto'
+          $ref: '#/definitions/dto.AffCampaignLessDto'
         type: array
       total_campaign:
         type: integer

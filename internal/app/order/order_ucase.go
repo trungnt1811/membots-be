@@ -169,3 +169,28 @@ func (u *OrderUcase) SyncTransactionsByOrder(atOrderId string) (int, error) {
 func (u *OrderUcase) GetOrderDetails(ctx context.Context, userId uint32, orderId uint) (*dto.OrderDetailsDto, error) {
 	return u.Repo.GetOrderDetails(ctx, userId, orderId)
 }
+
+func (u *OrderUcase) GetOrderHistory(ctx context.Context, userId uint32, page, size int) (dto.OrderHistoryResponse, error) {
+	orderHistory, err := u.Repo.GetOrderHistory(ctx, userId, page, size)
+	if err != nil {
+		return dto.OrderHistoryResponse{}, err
+	}
+
+	nextPage := page
+	if len(orderHistory) > size {
+		nextPage = page + 1
+	}
+
+	totalOrder, err := u.Repo.CountOrder(ctx, userId)
+	if err != nil {
+		return dto.OrderHistoryResponse{}, err
+	}
+
+	return dto.OrderHistoryResponse{
+		NextPage: nextPage,
+		Page:     page,
+		Size:     size,
+		Data:     orderHistory,
+		Total:    totalOrder,
+	}, nil
+}

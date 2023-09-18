@@ -95,3 +95,36 @@ func (handler *OrderHandler) GetOrderDetails(ctx *gin.Context) {
 	// Response transaction status
 	ctx.JSON(http.StatusOK, res)
 }
+
+// GetRewardHistory Get order history
+// @Summary Get order history
+// @Description Get order history - include reward info
+// @Tags 	reward
+// @Accept	json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 		{object}	dto.OrderHistoryResponse
+// @Failure 424 		{object}	util.GeneralError
+// @Failure 400 		{object}	util.GeneralError
+// @Router 	/api/v1/order [get]
+func (handler *OrderHandler) GetOrderHistory(ctx *gin.Context) {
+	// First, take user from JWT
+	user, err := dto.GetUserInfo(ctx)
+	if err != nil {
+		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
+		return
+	}
+
+	page := ctx.GetInt("page")
+	size := ctx.GetInt("size")
+
+	// get reward
+	res, err := handler.usecase.GetOrderHistory(ctx, user.ID, page, size)
+	if err != nil {
+		util.RespondError(ctx, http.StatusFailedDependency, "failed to get order history", err)
+		return
+	}
+
+	// Response transaction status
+	ctx.JSON(http.StatusOK, res)
+}

@@ -16,3 +16,11 @@ type OrderDetailsDto struct {
 	Timeline           map[string]time.Time `json:"timeline"` // status changing history
 	Reward             *RewardDto           `json:"reward"`
 }
+
+type OrderHistoryResponse struct {
+	NextPage int               `json:"next_page"`
+	Page     int               `json:"page"`
+	Size     int               `json:"size"`
+	Data     []OrderDetailsDto `json:"data"`
+	Total    int64             `json:"total"`
+}

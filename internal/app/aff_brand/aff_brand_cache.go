@@ -26,13 +26,13 @@ func NewAffBrandCacheRepository(repo interfaces.AffBrandRepository,
 	}
 }
 
-func (c affBrandCache) GetListFavouriteAffBrand(ctx context.Context) ([]model.TotalFavoriteBrand, error) {
-	key := &caching.Keyer{Raw: keyPrefixAffBrand + "GetListFavouriteAffBrand"}
+func (c affBrandCache) GetListCountFavouriteAffBrand(ctx context.Context) ([]model.TotalFavoriteBrand, error) {
+	key := &caching.Keyer{Raw: keyPrefixAffBrand + "GetListCountFavouriteAffBrand"}
 	var listFavouriteAffBrand []model.TotalFavoriteBrand
 	err := c.Cache.RetrieveItem(key, &listFavouriteAffBrand)
 	if err != nil {
 		// cache miss
-		listFavouriteAffBrand, err = c.AffBrandRepository.GetListFavouriteAffBrand(ctx)
+		listFavouriteAffBrand, err = c.AffBrandRepository.GetListCountFavouriteAffBrand(ctx)
 		if err != nil {
 			return listFavouriteAffBrand, err
 		}
@@ -43,9 +43,9 @@ func (c affBrandCache) GetListFavouriteAffBrand(ctx context.Context) ([]model.To
 	return listFavouriteAffBrand, nil
 }
 
-func (c affBrandCache) UpdateCacheListFavouriteAffBrand(ctx context.Context) error {
-	key := &caching.Keyer{Raw: keyPrefixAffBrand + "GetListFavouriteAffBrand"}
-	listFavouriteAffBrand, err := c.AffBrandRepository.GetListFavouriteAffBrand(ctx)
+func (c affBrandCache) UpdateCacheListCountFavouriteAffBrand(ctx context.Context) error {
+	key := &caching.Keyer{Raw: keyPrefixAffBrand + "GetListCountFavouriteAffBrand"}
+	listFavouriteAffBrand, err := c.AffBrandRepository.GetListCountFavouriteAffBrand(ctx)
 	if err != nil {
 		return err
 	}

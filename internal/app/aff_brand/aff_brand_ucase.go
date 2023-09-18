@@ -16,6 +16,6 @@ func NewAffBrandUCase(repository interfaces.AffBrandRepository) interfaces.AffBr
 	}
 }
 
-func (s affBrandUCase) UpdateCacheListFavouriteAffBrand(ctx context.Context) error {
-	return s.AffBrandRepository.UpdateCacheListFavouriteAffBrand(ctx)
+func (s affBrandUCase) UpdateCacheListCountFavouriteAffBrand(ctx context.Context) error {
+	return s.AffBrandRepository.UpdateCacheListCountFavouriteAffBrand(ctx)
 }

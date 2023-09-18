@@ -12,7 +12,7 @@ type affBrandRepository struct {
 	db *gorm.DB
 }
 
-func (r affBrandRepository) GetListFavouriteAffBrand(ctx context.Context) ([]model.TotalFavoriteBrand, error) {
+func (r affBrandRepository) GetListCountFavouriteAffBrand(ctx context.Context) ([]model.TotalFavoriteBrand, error) {
 	query := "SELECT ufb.brand_id, COUNT(*) AS total_fav FROM user_favorite_brand AS ufb " +
 		"LEFT JOIN aff_campaign AS ac ON ufb.brand_id = ac.brand_id " +
 		"WHERE ufb.status = 'ADDED' AND ac.brand_id != 0 " +
@@ -22,7 +22,7 @@ func (r affBrandRepository) GetListFavouriteAffBrand(ctx context.Context) ([]mod
 	return listFavouriteAffBrand, err
 }
 
-func (r affBrandRepository) UpdateCacheListFavouriteAffBrand(ctx context.Context) error {
+func (r affBrandRepository) UpdateCacheListCountFavouriteAffBrand(ctx context.Context) error {
 	// must be implemented at cache layer
 	return nil
 }

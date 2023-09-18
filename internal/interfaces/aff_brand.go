@@ -7,10 +7,10 @@ import (
 )
 
 type AffBrandRepository interface {
-	GetListFavouriteAffBrand(ctx context.Context) ([]model.TotalFavoriteBrand, error)
-	UpdateCacheListFavouriteAffBrand(ctx context.Context) error
+	GetListCountFavouriteAffBrand(ctx context.Context) ([]model.TotalFavoriteBrand, error)
+	UpdateCacheListCountFavouriteAffBrand(ctx context.Context) error
 }
 
 type AffBrandUCase interface {
-	UpdateCacheListFavouriteAffBrand(ctx context.Context) error
+	UpdateCacheListCountFavouriteAffBrand(ctx context.Context) error
 }

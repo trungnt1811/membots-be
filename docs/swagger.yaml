@@ -156,7 +156,7 @@ definitions:
     properties:
       data:
         items:
-          $ref: '#/definitions/dto.AffCampaignAppDto'
+          $ref: '#/definitions/dto.AffCampaignLessDto'
         type: array
       next_page:
         type: integer
@@ -264,6 +264,30 @@ definitions:
       url:
         type: string
     type: object
+  dto.AffCategoryDto:
+    properties:
+      id:
+        type: integer
+      logo:
+        type: string
+      name:
+        type: string
+      total_aff_campaign:
+        type: integer
+    type: object
+  dto.AffCategoryResponseDto:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto.AffCategoryDto'
+        type: array
+      next_page:
+        type: integer
+      page:
+        type: integer
+      size:
+        type: integer
+    type: object
   dto.AffSearchDto:
     properties:
       aff_campaigns:
@@ -319,17 +343,6 @@ definitions:
         type: string
       updated_at:
         type: string
-    type: object
-  dto.CategoryDto:
-    properties:
-      id:
-        type: integer
-      logo:
-        type: string
-      name:
-        type: string
-      total_coupon:
-        type: integer
     type: object
   dto.CreateLinkPayload:
     properties:
@@ -496,7 +509,7 @@ definitions:
       brand_id:
         type: integer
       category:
-        $ref: '#/definitions/dto.CategoryDto'
+        $ref: '#/definitions/dto.AffCategoryDto'
       category_id:
         type: integer
       end_time:
@@ -695,6 +708,70 @@ paths:
       summary: Get aff campaign by id
       tags:
       - app
+  /api/v1/app/aff-categories:
+    get:
+      consumes:
+      - application/json
+      description: Get all category have aff-campaign
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AffCategoryResponseDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      summary: Get all category have aff-campaign
+      tags:
+      - category
+  /api/v1/app/aff-categories/{categoryId}:
+    get:
+      consumes:
+      - application/json
+      description: Get all aff-campaign in category
+      parameters:
+      - description: by to query, default is ctime/top
+        in: query
+        name: by
+        type: string
+      - description: order to query, default is desc
+        in: query
+        name: order
+        type: string
+      - description: categoryId to query
+        in: path
+        name: categoryId
+        required: true
+        type: integer
+      - description: page to query, default is 1
+        in: query
+        name: page
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AffCampaignAppDtoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      summary: Get all aff-campaign in category
+      tags:
+      - category
   /api/v1/app/aff-search:
     get:
       consumes:

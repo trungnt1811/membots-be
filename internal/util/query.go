@@ -41,11 +41,9 @@ func NormalizeStatusActiveInActive(queryStatus string) []string {
 func BuildOrderBy(queryBy, order string) string {
 	switch queryBy {
 	case "ctime":
-		return "coupon.created_at " + order
-	case "sales":
-		return "coupon.id " + order
+		return "aff_campaign.created_at " + order
 	case "top":
-		return "coupon.id " + order
+		return "aff_campaign.id " + order
 	}
 	return ""
 }

@@ -4,29 +4,30 @@ import (
 	"context"
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
+	"github.com/astraprotocol/affiliate-system/internal/util"
 )
 
 type categoryUCase struct {
 	Repo interfaces.AffCategoryRepository
 }
 
-func (c categoryUCase) GetAllCategory(ctx context.Context, page, size int) (dto.AffCategoryResponseDto, error) {
-	listCategory, err := c.CategoryRepository.GetAllCategory(ctx, page, size)
+func (c *categoryUCase) GetAllCategory(ctx context.Context, page, size int) (dto.AffCategoryResponseDto, error) {
+	listCategory, err := c.Repo.GetAllCategory(ctx, page, size)
 	if err != nil {
-		return dtos.CategoryResponseDto{}, err
+		return dto.AffCategoryResponseDto{}, err
 	}
-	var categoryDtos []dtos.CategoryDto
+	var categoryDtos []dto.AffCategoryDto
 	for i := range listCategory {
 		if i >= size {
 			continue
 		}
-		categoryDtos = append(categoryDtos, listCategory[i].ToCategoryDto())
+		categoryDtos = append(categoryDtos, listCategory[i].ToDto())
 	}
 	nextPage := page
 	if len(listCategory) > size {
 		nextPage = page + 1
 	}
-	return dtos.CategoryResponseDto{
+	return dto.AffCategoryResponseDto{
 		NextPage: nextPage,
 		Page:     page,
 		Size:     size,
@@ -34,30 +35,30 @@ func (c categoryUCase) GetAllCategory(ctx context.Context, page, size int) (dto.
 	}, nil
 }
 
-func (c categoryUCase) GetAllAffCampaignInCategory(ctx context.Context, categoryId uint32, queryBy, order string, page, size int) (dto.AffCategoryResponseDto, error) {
-	orderBy := util.BuildOrderByC(queryBy, order)
-	listCouponInCategory, err := c.CategoryRepository.GetAllCouponInCategory(ctx, categoryId, orderBy, page, size)
+func (c *categoryUCase) GetAllAffCampaignInCategory(ctx context.Context, categoryId uint32, queryBy, order string, page, size int) (dto.AffCampaignAppDtoResponse, error) {
+	orderBy := util.BuildOrderBy(queryBy, order)
+	listCouponInCategory, err := c.Repo.GetAllAffCampaignInCategory(ctx, categoryId, orderBy, page, size)
 	if err != nil {
-		return dtos.CouponDtoResponse{}, err
+		return dto.AffCampaignAppDtoResponse{}, err
 	}
 	nextPage := page
 	if len(listCouponInCategory) > size {
 		nextPage = page + 1
 	}
-	var listCoupon []dtos.CouponDto
+	var listCampaign []dto.AffCampaignLessDto
 
 	for i := range listCouponInCategory {
 		if i >= size {
 			break
 		}
-		listCoupon = append(listCoupon, listCouponInCategory[i].ToCouponDto())
+		listCampaign = append(listCampaign, listCouponInCategory[i].ToDto())
 	}
 
-	return dto.AffCategoryResponseDto{
+	return dto.AffCampaignAppDtoResponse{
 		NextPage: nextPage,
 		Page:     page,
 		Size:     size,
-		Data:     listCoupon,
+		Data:     listCampaign,
 	}, nil
 }
 

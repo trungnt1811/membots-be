@@ -8,7 +8,7 @@ import (
 )
 
 type AffCampAppRepository interface {
-	GetAllAffCampaign(ctx context.Context, page, size int) ([]model.AffCampaignApp, error)
+	GetAllAffCampaign(ctx context.Context, page, size int) ([]model.AffCampaignLessApp, error)
 	GetAffCampaignById(ctx context.Context, id uint64) (model.AffCampaignApp, error)
 }
 

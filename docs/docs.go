@@ -231,6 +231,103 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/app/aff-categories": {
+            "get": {
+                "description": "Get all category have aff-campaign",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "category"
+                ],
+                "summary": "Get all category have aff-campaign",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.AffCategoryResponseDto"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/app/aff-categories/{categoryId}": {
+            "get": {
+                "description": "Get all aff-campaign in category",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "category"
+                ],
+                "summary": "Get all aff-campaign in category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "by to query, default is ctime/top",
+                        "name": "by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "order to query, default is desc",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "categoryId to query",
+                        "name": "categoryId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "page to query, default is 1",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.AffCampaignAppDtoResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/app/aff-search": {
             "get": {
                 "description": "search aff campaign",
@@ -757,6 +854,46 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/order": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get order history - include reward info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "reward"
+                ],
+                "summary": "Get order history",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.OrderHistoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "424": {
+                        "description": "Failed Dependency",
                         "schema": {
                             "$ref": "#/definitions/util.GeneralError"
                         }
@@ -1332,7 +1469,7 @@ const docTemplate = `{
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/dto.AffCampaignAppDto"
+                        "$ref": "#/definitions/dto.AffCampaignLessDto"
                     }
                 },
                 "next_page": {
@@ -1497,6 +1634,43 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.AffCategoryDto": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "logo": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "total_aff_campaign": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.AffCategoryResponseDto": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.AffCategoryDto"
+                    }
+                },
+                "next_page": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "integer"
+                }
+            }
+        },
         "dto.AffSearchDto": {
             "type": "object",
             "properties": {
@@ -1583,23 +1757,6 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.CategoryDto": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "logo": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "total_coupon": {
-                    "type": "integer"
-                }
-            }
-        },
         "dto.CreateLinkPayload": {
             "type": "object",
             "properties": {
@@ -1675,6 +1832,29 @@ const docTemplate = `{
                     }
                 },
                 "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.OrderHistoryResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.OrderDetailsDto"
+                    }
+                },
+                "next_page": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "total": {
                     "type": "integer"
                 }
             }
@@ -1851,7 +2031,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "category": {
-                    "$ref": "#/definitions/dto.CategoryDto"
+                    "$ref": "#/definitions/dto.AffCategoryDto"
                 },
                 "category_id": {
                     "type": "integer"

@@ -12,6 +12,14 @@ type AffCategory struct {
 	Logo string `json:"logo"`
 }
 
+func (c *AffCategory) ToDto() dto.AffCategoryDto {
+	return dto.AffCategoryDto{
+		ID:   c.ID,
+		Logo: c.Logo,
+		Name: c.Name,
+	}
+}
+
 type AffCategoryAndTotalCampaign struct {
 	ID               uint64 `json:"id" gorm:"primaryKey"`
 	Name             string `json:"name"`

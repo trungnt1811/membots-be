@@ -8,7 +8,7 @@ import (
 
 type AffCategoryUCase interface {
 	GetAllCategory(ctx context.Context, page, size int) (dto.AffCategoryResponseDto, error)
-	GetAllAffCampaignInCategory(ctx context.Context, categoryId uint32, queryBy, order string, page, size int) (dto.AffCategoryResponseDto, error)
+	GetAllAffCampaignInCategory(ctx context.Context, categoryId uint32, queryBy, order string, page, size int) (dto.AffCampaignAppDtoResponse, error)
 }
 
 type AffCategoryRepository interface {

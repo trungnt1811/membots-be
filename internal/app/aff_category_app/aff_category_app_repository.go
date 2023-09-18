@@ -16,7 +16,7 @@ func (a *affCategoryRepository) GetAllCategory(ctx context.Context, page, size i
 	offset := (page - 1) * size
 	query := "select c.logo, c.id, c.name, count(c.id) as total_aff_campaign from aff_campaign as ac " +
 		"left join category as c ON ac.category_id = c.id " +
-		"where ac.status = ? GROUP BY c.id ORDER BY c.rank asc LIMIT ? OFFSET ?"
+		"where ac.stella_status = ? GROUP BY c.id ORDER BY c.rank asc LIMIT ? OFFSET ?"
 	err := a.Db.Raw(query, "IN_PROGRESS", size+1, offset).Scan(&listCategory).Error
 	return listCategory, err
 }
@@ -25,10 +25,11 @@ func (a *affCategoryRepository) GetAllAffCampaignInCategory(ctx context.Context,
 	offset := (page - 1) * size
 	var listCouponInCategory []model.AffCampaignLessApp
 	err := a.Db.Table("aff_campaign").
-		Where("category_id = ? AND status = ?", categoryId, "IN_PROGRESS").
-		Limit(size).
+		Joins("Brand").
+		Where("aff_campaign.category_id = ? AND aff_campaign.stella_status = ?", categoryId, "IN_PROGRESS").
+		Limit(size + 1).
 		Offset(offset).
-		Order(orderBy).Error
+		Order("id desc").Find(&listCouponInCategory).Error
 	return listCouponInCategory, err
 }
 

@@ -46,14 +46,14 @@ func (handler *AffCategoryHandler) GetAllCategory(ctx *gin.Context) {
 // @Tags 	category
 // @Accept	json
 // @Produce json
-// @Param by query string false "by to query, default is ctime/price/top/sales"
+// @Param by query string false "by to query, default is ctime/top"
 // @Param order query string false "order to query, default is desc"
-// @Success 200 		{object}	dtos.CouponDtoResponse
-// @Failure 401 		{object}	dtos.GeneralError
-// @Failure 400 		{object}	dtos.GeneralError
+// @Success 200 		{object}	dto.AffCampaignAppDtoResponse
+// @Failure 401 		{object}	util.GeneralError
+// @Failure 400 		{object}	util.GeneralError
 // @Param categoryId path int true "categoryId to query"
 // @Param page query string false "page to query, default is 1"
-// @Router 	/api/v1/categories/{categoryId} [get]
+// @Router 	/api/v1/app/aff-categories/{categoryId} [get]
 func (handler *AffCategoryHandler) GetAllAffCampaignInCategory(ctx *gin.Context) {
 	categoryId, err := strconv.Atoi(ctx.Param("categoryId"))
 	if err != nil {

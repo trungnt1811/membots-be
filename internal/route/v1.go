@@ -2,9 +2,13 @@ package route
 
 import (
 	"context"
+	"time"
+
 	bannerApp "github.com/astraprotocol/affiliate-system/internal/app/aff_banner_app"
+	"github.com/astraprotocol/affiliate-system/internal/app/aff_brand"
 	"github.com/astraprotocol/affiliate-system/internal/app/aff_search"
 	bannerConsole "github.com/astraprotocol/affiliate-system/internal/app/console/banner"
+	"github.com/go-co-op/gocron"
 
 	"github.com/astraprotocol/affiliate-system/conf"
 	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade"
@@ -122,6 +126,10 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	userViewAffCampHandler := user_view_aff_camp.NewUserViewAffCampHandler(userViewAffCampUCase)
 	appRouter.GET("brand/recently-visited-section", authHandler.CheckUserHeader(), userViewAffCampHandler.GetListRecentlyVisitedSection)
 
+	affBrandRepository := aff_brand.NewAffBrandRepository(db)
+	affBrandCache := aff_brand.NewAffBrandCacheRepository(affBrandRepository, redisClient)
+	affBrandUCase := aff_brand.NewAffBrandUCase(affBrandCache)
+
 	affAppBannerRepo := bannerApp.NewAppBannerRepository(db)
 	affAppBannerUCase := bannerApp.NewBannerUCase(affAppBannerRepo)
 	affAppBannerHandler := bannerApp.NewAppBannerHandler(affAppBannerUCase)
@@ -133,4 +141,11 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	affSearchUCase := aff_search.NewAffSearchUCase(affSearchRepo)
 	affSearchHandler := aff_search.NewAffSearchHandler(affSearchUCase)
 	appRouter.GET("/aff-search", affSearchHandler.AffSearch)
+
+	// SECTION: Cron jobs
+	cron := gocron.NewScheduler(time.UTC)
+	_, _ = cron.Every(5).Minute().Do(func() {
+		affBrandUCase.UpdateCacheListFavouriteAffBrand(context.Background())
+	})
+	cron.StartAsync()
 }

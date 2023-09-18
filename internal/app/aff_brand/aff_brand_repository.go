@@ -22,6 +22,11 @@ func (r affBrandRepository) GetListFavouriteAffBrand(ctx context.Context) ([]mod
 	return listFavouriteAffBrand, err
 }
 
+func (r affBrandRepository) UpdateCacheListFavouriteAffBrand(ctx context.Context) error {
+	// must be implemented at cache layer
+	return nil
+}
+
 func NewAffBrandRepository(db *gorm.DB) interfaces.AffBrandRepository {
 	return &affBrandRepository{
 		db: db,

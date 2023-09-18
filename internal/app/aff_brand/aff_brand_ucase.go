@@ -42,7 +42,10 @@ func (s affBrandUCase) GetTopFavouriteAffBrand(ctx context.Context, page, size i
 	// Get top favorited brands
 	var brandIds []uint64
 	for index, favCountAffBrand := range listCountFavAffBrand {
-		if index >= page*size || index < (page-1)*size {
+		if index < (page-1)*size {
+			continue
+		}
+		if index >= page*size {
 			break
 		}
 		brandIds = append(brandIds, favCountAffBrand.BrandId)

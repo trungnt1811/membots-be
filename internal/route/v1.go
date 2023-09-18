@@ -162,8 +162,10 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 
 	// SECTION: Cron jobs
 	cron := gocron.NewScheduler(time.UTC)
-	_, _ = cron.Every(5).Minute().Do(func() {
+	_, err := cron.Every(5).Minute().Do(func() {
 		affBrandUCase.UpdateCacheListCountFavouriteAffBrand(context.Background())
 	})
-	cron.StartAsync()
+	if err == nil {
+		cron.StartAsync()
+	}
 }

@@ -213,7 +213,7 @@ func (repo *OrderRepository) FindOrdersByQuery(timeRange types.TimeRange, dbQuer
 		tx.Limit(perPage)
 
 		if page != 0 {
-			tx.Offset(page * perPage)
+			tx.Offset((page - 1) * perPage)
 		}
 	}
 

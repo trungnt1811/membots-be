@@ -18,8 +18,8 @@ func NewAffCampAppRepository(db *gorm.DB) interfaces.AffCampAppRepository {
 	}
 }
 
-func (r affCampAppRepository) GetAllAffCampaign(ctx context.Context, page, size int) ([]model.AffCampaignApp, error) {
-	var listAffCampaign []model.AffCampaignApp
+func (r affCampAppRepository) GetAllAffCampaign(ctx context.Context, page, size int) ([]model.AffCampaignLessApp, error) {
+	var listAffCampaign []model.AffCampaignLessApp
 	offset := (page - 1) * size
 	err := r.db.Joins("Brand").Where("stella_status = ?", model.StellaStatusInProgress).
 		Find(&listAffCampaign).Limit(size + 1).Offset(offset).Error

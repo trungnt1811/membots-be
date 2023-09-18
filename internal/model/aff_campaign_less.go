@@ -45,5 +45,6 @@ func (c *AffCampaignLessApp) ToDto() dto.AffCampaignLessDto {
 		Url:           c.Url,
 		BrandId:       c.BrandId,
 		Brand:         c.Brand.ToBrandDto(),
+		StellaStatus:  c.StellaStatus,
 	}
 }

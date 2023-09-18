@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/astraprotocol/affiliate-system/internal/app/order/types"
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/model"
 
@@ -203,49 +202,4 @@ func (repo *OrderRepository) CountOrder(ctx context.Context, userId uint32) (int
 		"WHERE o.user_id = ? "
 	err := repo.db.Raw(query, userId).Count(&count).Error
 	return count, err
-}
-
-func (repo *OrderRepository) FindOrdersByQuery(timeRange types.TimeRange, dbQuery map[string]any, page int, perPage int) ([]model.AffOrder, int64, error) {
-	var orders []model.AffOrder
-	tx := repo.db.Model(&orders)
-	totalTx := repo.db.Model(&orders)
-	if perPage != 0 {
-		tx.Limit(perPage)
-
-		if page != 0 {
-			tx.Offset((page - 1) * perPage)
-		}
-	}
-
-	if timeRange.Since != nil {
-		tx.Where(
-			"created_at >= ?", timeRange.Since,
-		)
-		totalTx.Where(
-			"created_at >= ?", timeRange.Since,
-		)
-	}
-	if timeRange.Until != nil {
-		tx.Where(
-			"created_at <= ?", timeRange.Until,
-		)
-		totalTx.Where(
-			"created_at >= ?", timeRange.Since,
-		)
-	}
-
-	tx.Where(dbQuery)
-	totalTx.Where(dbQuery)
-
-	err := tx.Find(&orders).Error
-	if err != nil {
-		return nil, 0, err
-	}
-
-	var total int64
-	err = totalTx.Count(&total).Error
-	if err != nil {
-		return nil, 0, err
-	}
-	return orders, total, err
 }

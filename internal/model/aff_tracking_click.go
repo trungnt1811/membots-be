@@ -10,7 +10,6 @@ type AffTrackedClick struct {
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
 	AffLink    string    `json:"aff_link"`
-	ShortLink  string    `json:"short_link"`
 	UrlOrigin  string    `json:"url_origin"`
 	OrderId    string    `json:"order_id"`
 }

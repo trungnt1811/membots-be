@@ -410,8 +410,6 @@ definitions:
         type: integer
       original_url:
         type: string
-      short_link:
-        type: string
     type: object
   dto.OrderDetailsDto:
     properties:
@@ -1244,6 +1242,50 @@ paths:
       summary: search aff campaign for console
       tags:
       - console
+  /api/v1/console/orders:
+    get:
+      consumes:
+      - application/json
+      description: Get affiliate order list by time range and other filter
+      parameters:
+      - in: query
+        name: order_status
+        type: string
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: per_page
+        type: integer
+      - in: query
+        name: since
+        type: string
+      - in: query
+        name: until
+        type: string
+      - in: query
+        name: user_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.OrderListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get affiliate order list
+      tags:
+      - console
   /api/v1/order:
     get:
       consumes:
@@ -1327,50 +1369,6 @@ paths:
       summary: PostBackOrderHandle
       tags:
       - redeem
-  /api/v1/orders:
-    get:
-      consumes:
-      - application/json
-      description: Get affiliate order list by time range and other filter
-      parameters:
-      - in: query
-        name: order_status
-        type: string
-      - in: query
-        name: page
-        type: integer
-      - in: query
-        name: per_page
-        type: integer
-      - in: query
-        name: since
-        type: string
-      - in: query
-        name: until
-        type: string
-      - in: query
-        name: user_id
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.OrderListResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/util.GeneralError'
-        "424":
-          description: Failed Dependency
-          schema:
-            $ref: '#/definitions/util.GeneralError'
-      security:
-      - ApiKeyAuth: []
-      summary: Get affiliate order list
-      tags:
-      - reward
   /api/v1/redeem/request:
     post:
       consumes:

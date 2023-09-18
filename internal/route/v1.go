@@ -7,6 +7,7 @@ import (
 	categoryApp "github.com/astraprotocol/affiliate-system/internal/app/aff_category_app"
 	"github.com/astraprotocol/affiliate-system/internal/app/aff_search"
 	bannerConsole "github.com/astraprotocol/affiliate-system/internal/app/console/banner"
+	consoleOrder "github.com/astraprotocol/affiliate-system/internal/app/console/order"
 
 	"github.com/astraprotocol/affiliate-system/conf"
 	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade"
@@ -66,9 +67,6 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	orderRoute.GET("", orderHandler.GetOrderHistory)
 	orderRoute.GET("/:id", orderHandler.GetOrderDetails)
 
-	ordersRoute := v1.Group("/orders")
-	ordersRoute.GET("", orderHandler.GetOrderList)
-
 	// SECTION: Redeem module
 	redeemRepo := redeem.NewRedeemRepository(db)
 	redeemUsecase := redeem.NewRedeemUsecase(redeemRepo)
@@ -94,6 +92,14 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	consoleRouter.PUT("/aff-banner/:id", authHandler.CheckAdminHeader(), consoleBannerHandler.UpdateBannerInfo)
 	consoleRouter.GET("/aff-banner/:id", consoleBannerHandler.GetBannerById)
 	consoleRouter.POST("/aff-banner", consoleBannerHandler.AddAffBanner)
+
+	consoleOrderRepo := consoleOrder.NewConsoleOrderRepository(db)
+	consoleOrderUcase := consoleOrder.NewOrderUcase(consoleOrderRepo)
+	consoleOrderHandler := consoleOrder.NewConsoleOrderHandler(consoleOrderUcase)
+
+	// SECTION: Console Order
+	consoleOrderRouter := consoleRouter.Group("orders", authHandler.CheckAdminHeader())
+	consoleOrderRouter.GET("", consoleOrderHandler.GetOrderList)
 
 	// SECTION: Reward module
 	rewardRepo := reward.NewRewardRepository(db)

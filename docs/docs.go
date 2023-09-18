@@ -434,11 +434,6 @@ const docTemplate = `{
         },
         "/api/v1/app/brand/top-favorited": {
             "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "Get top favorited aff brands",
                 "consumes": [
                     "application/json"

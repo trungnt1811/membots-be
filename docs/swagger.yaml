@@ -930,8 +930,6 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/util.GeneralError'
-      security:
-      - ApiKeyAuth: []
       summary: Get top favorited aff brands
       tags:
       - app

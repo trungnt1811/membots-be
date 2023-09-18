@@ -31,7 +31,6 @@ func NewAffBrandHandler(
 // @Success 200 		{object}	[]dto.AffCampaignLessDto
 // @Failure 401 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
-// @Security ApiKeyAuth
 // @Router 	/api/v1/app/brand/top-favorited [get]
 func (handler *AffBrandHandler) GetTopFavouriteAffBrand(ctx *gin.Context) {
 	page := ctx.GetInt("page")

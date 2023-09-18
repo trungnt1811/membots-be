@@ -41,7 +41,7 @@ func (handler *AffBrandHandler) GetTopFavouriteAffBrand(ctx *gin.Context) {
 		return
 	}
 	if topFavorite < 1 || topFavorite > 10 {
-		util.RespondError(ctx, http.StatusBadRequest, "topFavorite must be 1 to 10")
+		util.RespondError(ctx, http.StatusBadRequest, "topFavorite must be 1 to 20")
 		return
 	}
 

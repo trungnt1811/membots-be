@@ -24,9 +24,9 @@ func Test_GetClaimableReward(t *testing.T) {
 
 	daysPassed := int(now.Sub(createdAt) / OneDay)
 	totalDays := int(endedAt.Sub(createdAt) / OneDay) // total lock days
-	claimablePercent := float64(daysPassed) / float64(totalDays)
+	withdrawablePercent := float64(daysPassed) / float64(totalDays)
 
 	fmt.Println("daysPassed", daysPassed)
 	fmt.Println("totalDays", totalDays)
-	fmt.Println("claimablePercent", claimablePercent)
+	fmt.Println("withdrawablePercent", withdrawablePercent)
 }

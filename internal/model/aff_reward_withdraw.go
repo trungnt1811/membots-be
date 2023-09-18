@@ -6,22 +6,22 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 )
 
-func (m *RewardClaim) TableName() string {
-	return "aff_reward_claim"
+func (m *RewardWithdraw) TableName() string {
+	return "aff_reward_withdraw"
 }
 
-type RewardClaim struct {
+type RewardWithdraw struct {
 	ID                uint      `gorm:"primarykey" json:"id"`
 	UserId            uint      `json:"user_id"`
 	ShippingRequestID string    `json:"shipping_request_id"`
 	Amount            float64   `json:"amount"` // amount before tx fee subtraction
-	Fee               float64   `json:"fee"`    // tx fee
+	Fee               float64   `json:"fee"`    // withdraw fee, prevent dos
 	CreatedAt         time.Time `json:"created_at"`
 	UpdatedAt         time.Time `json:"updated_at"`
 }
 
-func (r *RewardClaim) ToRewardClaimDto() dto.RewardClaimDto {
-	return dto.RewardClaimDto{
+func (r *RewardWithdraw) ToRewardWithdrawDto() dto.RewardWithdrawDto {
+	return dto.RewardWithdrawDto{
 		ID:                r.ID,
 		UserId:            r.UserId,
 		ShippingRequestID: r.ShippingRequestID,

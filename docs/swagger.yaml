@@ -383,52 +383,11 @@ definitions:
       user_id:
         type: integer
     type: object
-  dto.ResponseMessage:
-    properties:
-      message:
-        type: string
-    type: object
-  dto.RewardClaimDetailsDto:
-    properties:
-      amount:
-        type: number
-      created_at:
-        type: string
-      fee:
-        type: number
-      id:
-        type: integer
-      shipping_request_id:
-        type: string
-      tx_hash:
-        type: string
-      updated_at:
-        type: string
-      user_id:
-        type: integer
-    type: object
-  dto.RewardClaimDto:
-    properties:
-      amount:
-        type: number
-      created_at:
-        type: string
-      fee:
-        type: number
-      id:
-        type: integer
-      shipping_request_id:
-        type: string
-      updated_at:
-        type: string
-      user_id:
-        type: integer
-    type: object
-  dto.RewardClaimResponse:
+  dto.OrderHistoryResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/dto.RewardClaimDto'
+          $ref: '#/definitions/dto.OrderDetailsDto'
         type: array
       next_page:
         type: integer
@@ -438,6 +397,11 @@ definitions:
         type: integer
       total:
         type: integer
+    type: object
+  dto.ResponseMessage:
+    properties:
+      message:
+        type: string
     type: object
   dto.RewardDto:
     properties:
@@ -461,11 +425,60 @@ definitions:
       user_id:
         type: integer
     type: object
-  dto.RewardResponse:
+  dto.RewardSummary:
+    properties:
+      pending_reward_amount:
+        type: number
+      pending_reward_order:
+        type: integer
+      reward_in_day:
+        type: number
+      total_withdrew_amount:
+        type: number
+      withdrawable_reward:
+        type: number
+    type: object
+  dto.RewardWithdrawDetailsDto:
+    properties:
+      amount:
+        type: number
+      created_at:
+        type: string
+      fee:
+        type: number
+      id:
+        type: integer
+      shipping_request_id:
+        type: string
+      tx_hash:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  dto.RewardWithdrawDto:
+    properties:
+      amount:
+        type: number
+      created_at:
+        type: string
+      fee:
+        type: number
+      id:
+        type: integer
+      shipping_request_id:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  dto.RewardWithdrawResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/dto.RewardDto'
+          $ref: '#/definitions/dto.RewardWithdrawDto'
         type: array
       next_page:
         type: integer
@@ -475,19 +488,6 @@ definitions:
         type: integer
       total:
         type: integer
-    type: object
-  dto.RewardSummary:
-    properties:
-      claimable_reward:
-        type: number
-      pending_reward_amount:
-        type: number
-      pending_reward_order:
-        type: integer
-      reward_in_day:
-        type: number
-      total_claimed_amount:
-        type: number
     type: object
   dto.StellaInfoDto:
     properties:
@@ -1034,6 +1034,31 @@ paths:
       summary: update campaign info
       tags:
       - console
+  /api/v1/order:
+    get:
+      consumes:
+      - application/json
+      description: Get order history - include reward info
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.OrderHistoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get order history
+      tags:
+      - reward
   /api/v1/order/{id}:
     get:
       consumes:
@@ -1124,18 +1149,18 @@ paths:
       summary: PostRequestRedeem
       tags:
       - redeem
-  /api/v1/rewards:
+  /api/v1/rewards/summary:
     get:
       consumes:
       - application/json
-      description: Get all rewards
+      description: Get reward summary of an account
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.RewardResponse'
+            $ref: '#/definitions/dto.RewardSummary'
         "400":
           description: Bad Request
           schema:
@@ -1146,10 +1171,10 @@ paths:
             $ref: '#/definitions/util.GeneralError'
       security:
       - ApiKeyAuth: []
-      summary: Get all rewards
+      summary: Get reward summary of an account
       tags:
       - reward
-  /api/v1/rewards/claims:
+  /api/v1/rewards/withdraw:
     get:
       consumes:
       - application/json
@@ -1160,7 +1185,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.RewardClaimResponse'
+            $ref: '#/definitions/dto.RewardWithdrawResponse'
         "400":
           description: Bad Request
           schema:
@@ -1198,18 +1223,18 @@ paths:
       summary: Claim reward of all orders
       tags:
       - reward
-  /api/v1/rewards/claims/{id}:
+  /api/v1/rewards/withdraw/{id}:
     get:
       consumes:
       - application/json
-      description: Get reward claim details
+      description: Get reward withdraw details
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.RewardClaimDetailsDto'
+            $ref: '#/definitions/dto.RewardWithdrawDetailsDto'
         "400":
           description: Bad Request
           schema:
@@ -1220,32 +1245,7 @@ paths:
             $ref: '#/definitions/util.GeneralError'
       security:
       - ApiKeyAuth: []
-      summary: Get reward claim details
-      tags:
-      - reward
-  /api/v1/rewards/summary:
-    get:
-      consumes:
-      - application/json
-      description: Get reward summary of an account
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.RewardSummary'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/util.GeneralError'
-        "424":
-          description: Failed Dependency
-          schema:
-            $ref: '#/definitions/util.GeneralError'
-      security:
-      - ApiKeyAuth: []
-      summary: Get reward summary of an account
+      summary: Get reward withdraw details
       tags:
       - reward
 securityDefinitions:

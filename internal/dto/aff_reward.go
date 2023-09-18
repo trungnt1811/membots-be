@@ -6,8 +6,8 @@ import (
 
 // REWARD
 type RewardSummary struct {
-	TotalClaimedAmount  float64 `json:"total_claimed_amount"`
-	ClaimableReward     float64 `json:"claimable_reward"`
+	TotalWithdrewAmount float64 `json:"total_withdrew_amount"`
+	WithdrawableReward  float64 `json:"withdrawable_reward"`
 	RewardInDay         float64 `json:"reward_in_day"`
 	PendingRewardOrder  int     `json:"pending_reward_order"`
 	PendingRewardAmount float64 `json:"pending_reward_amount"`
@@ -25,7 +25,7 @@ type RewardDto struct {
 	UpdatedAt      time.Time `json:"updated_at"`
 }
 
-type ClaimRewardResponse struct {
+type WithdrawRewardResponse struct {
 	Execute bool    `json:"execute"`
 	Amount  float64 `json:"amount"`
 }
@@ -40,7 +40,7 @@ type RewardResponse struct {
 
 // REWARD HISTORY
 
-type RewardClaimDetailsDto struct {
+type RewardWithdrawDetailsDto struct {
 	ID                uint      `json:"id"`
 	UserId            uint      `json:"user_id"`
 	ShippingRequestID string    `json:"shipping_request_id"`
@@ -51,7 +51,7 @@ type RewardClaimDetailsDto struct {
 	UpdatedAt         time.Time `json:"updated_at"`
 }
 
-type RewardClaimDto struct {
+type RewardWithdrawDto struct {
 	ID                uint      `json:"id"`
 	UserId            uint      `json:"user_id"`
 	ShippingRequestID string    `json:"shipping_request_id"`
@@ -61,10 +61,10 @@ type RewardClaimDto struct {
 	UpdatedAt         time.Time `json:"updated_at"`
 }
 
-type RewardClaimResponse struct {
-	NextPage int              `json:"next_page"`
-	Page     int              `json:"page"`
-	Size     int              `json:"size"`
-	Data     []RewardClaimDto `json:"data"`
-	Total    int64            `json:"total"`
+type RewardWithdrawResponse struct {
+	NextPage int                 `json:"next_page"`
+	Page     int                 `json:"page"`
+	Size     int                 `json:"size"`
+	Data     []RewardWithdrawDto `json:"data"`
+	Total    int64               `json:"total"`
 }

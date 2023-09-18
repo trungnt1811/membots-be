@@ -755,6 +755,46 @@
                 }
             }
         },
+        "/api/v1/order": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get order history - include reward info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "reward"
+                ],
+                "summary": "Get order history",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.OrderHistoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "424": {
+                        "description": "Failed Dependency",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/order/post-back": {
             "post": {
                 "security": [
@@ -897,14 +937,14 @@
                 }
             }
         },
-        "/api/v1/rewards": {
+        "/api/v1/rewards/summary": {
             "get": {
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Get all rewards",
+                "description": "Get reward summary of an account",
                 "consumes": [
                     "application/json"
                 ],
@@ -914,12 +954,12 @@
                 "tags": [
                     "reward"
                 ],
-                "summary": "Get all rewards",
+                "summary": "Get reward summary of an account",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.RewardResponse"
+                            "$ref": "#/definitions/dto.RewardSummary"
                         }
                     },
                     "400": {
@@ -937,7 +977,7 @@
                 }
             }
         },
-        "/api/v1/rewards/claims": {
+        "/api/v1/rewards/withdraw": {
             "get": {
                 "security": [
                     {
@@ -959,7 +999,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.RewardClaimResponse"
+                            "$ref": "#/definitions/dto.RewardWithdrawResponse"
                         }
                     },
                     "400": {
@@ -1015,14 +1055,14 @@
                 }
             }
         },
-        "/api/v1/rewards/claims/{id}": {
+        "/api/v1/rewards/withdraw/{id}": {
             "get": {
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Get reward claim details",
+                "description": "Get reward withdraw details",
                 "consumes": [
                     "application/json"
                 ],
@@ -1032,52 +1072,12 @@
                 "tags": [
                     "reward"
                 ],
-                "summary": "Get reward claim details",
+                "summary": "Get reward withdraw details",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.RewardClaimDetailsDto"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/util.GeneralError"
-                        }
-                    },
-                    "424": {
-                        "description": "Failed Dependency",
-                        "schema": {
-                            "$ref": "#/definitions/util.GeneralError"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/rewards/summary": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Get reward summary of an account",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "reward"
-                ],
-                "summary": "Get reward summary of an account",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dto.RewardSummary"
+                            "$ref": "#/definitions/dto.RewardWithdrawDetailsDto"
                         }
                     },
                     "400": {
@@ -1670,76 +1670,13 @@
                 }
             }
         },
-        "dto.ResponseMessage": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                }
-            }
-        },
-        "dto.RewardClaimDetailsDto": {
-            "type": "object",
-            "properties": {
-                "amount": {
-                    "type": "number"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "fee": {
-                    "type": "number"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "shipping_request_id": {
-                    "type": "string"
-                },
-                "tx_hash": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "dto.RewardClaimDto": {
-            "type": "object",
-            "properties": {
-                "amount": {
-                    "type": "number"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "fee": {
-                    "type": "number"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "shipping_request_id": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "dto.RewardClaimResponse": {
+        "dto.OrderHistoryResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/dto.RewardClaimDto"
+                        "$ref": "#/definitions/dto.OrderDetailsDto"
                     }
                 },
                 "next_page": {
@@ -1753,6 +1690,14 @@
                 },
                 "total": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.ResponseMessage": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
                 }
             }
         },
@@ -1789,13 +1734,88 @@
                 }
             }
         },
-        "dto.RewardResponse": {
+        "dto.RewardSummary": {
+            "type": "object",
+            "properties": {
+                "pending_reward_amount": {
+                    "type": "number"
+                },
+                "pending_reward_order": {
+                    "type": "integer"
+                },
+                "reward_in_day": {
+                    "type": "number"
+                },
+                "total_withdrew_amount": {
+                    "type": "number"
+                },
+                "withdrawable_reward": {
+                    "type": "number"
+                }
+            }
+        },
+        "dto.RewardWithdrawDetailsDto": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "fee": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "shipping_request_id": {
+                    "type": "string"
+                },
+                "tx_hash": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.RewardWithdrawDto": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "fee": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "shipping_request_id": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.RewardWithdrawResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/dto.RewardDto"
+                        "$ref": "#/definitions/dto.RewardWithdrawDto"
                     }
                 },
                 "next_page": {
@@ -1809,26 +1829,6 @@
                 },
                 "total": {
                     "type": "integer"
-                }
-            }
-        },
-        "dto.RewardSummary": {
-            "type": "object",
-            "properties": {
-                "claimable_reward": {
-                    "type": "number"
-                },
-                "pending_reward_amount": {
-                    "type": "number"
-                },
-                "pending_reward_order": {
-                    "type": "integer"
-                },
-                "reward_in_day": {
-                    "type": "number"
-                },
-                "total_claimed_amount": {
-                    "type": "number"
                 }
             }
         },

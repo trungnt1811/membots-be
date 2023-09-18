@@ -13,10 +13,14 @@ type affBrandRepository struct {
 }
 
 func (r affBrandRepository) GetListCountFavouriteAffBrand(ctx context.Context) ([]model.TotalFavoriteBrand, error) {
-	query := "SELECT ufb.brand_id, COUNT(*) AS total_fav FROM user_favorite_brand AS ufb " +
-		"LEFT JOIN aff_campaign AS ac ON ufb.brand_id = ac.brand_id " +
-		"WHERE ufb.status = 'ADDED' AND ac.brand_id != 0 " +
-		"GROUP BY ufb.brand_id ORDER BY total_fav DESC"
+	query := "SELECT DISTINCT ac.brand_id, cf.total_fav " +
+		"FROM aff_campaign AS ac " +
+		"LEFT JOIN ( " +
+		"SELECT ufb.brand_id, COUNT(ufb.brand_id) AS total_fav FROM user_favorite_brand AS ufb " +
+		"WHERE ufb.status = 'ADDED' " +
+		"GROUP BY ufb.brand_id) AS cf " +
+		"ON cf.brand_id = ac.brand_id " +
+		"ORDER BY cf.total_fav DESC"
 	var listFavouriteAffBrand []model.TotalFavoriteBrand
 	err := r.db.Raw(query).Scan(&listFavouriteAffBrand).Error
 	return listFavouriteAffBrand, err

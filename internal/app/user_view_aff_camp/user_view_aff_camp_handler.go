@@ -22,8 +22,8 @@ func NewUserViewAffCampHandler(
 }
 
 // GetListRecentlyVisitedSection Get list recently visited section by user
-// @Summary Get list recently visited by user
-// @Description Get list recently visited by user
+// @Summary Get list recently visited section by user
+// @Description Get list recently visited section by user
 // @Tags 	app
 // @Accept	json
 // @Produce json

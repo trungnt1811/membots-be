@@ -279,7 +279,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Get list recently visited by user",
+                "description": "Get list recently visited section by user",
                 "consumes": [
                     "application/json"
                 ],
@@ -289,7 +289,7 @@
                 "tags": [
                     "app"
                 ],
-                "summary": "Get list recently visited by user",
+                "summary": "Get list recently visited section by user",
                 "parameters": [
                     {
                         "type": "string",
@@ -341,7 +341,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "brand"
+                    "app"
                 ],
                 "summary": "Get top favorited aff brands",
                 "parameters": [

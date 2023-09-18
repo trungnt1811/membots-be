@@ -2,6 +2,7 @@ package aff_brand
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/util"
@@ -23,7 +24,7 @@ func NewAffBrandHandler(
 // GetTopFavouriteAffBrand Get top favorited aff brands
 // @Summary Get top favorited aff brands
 // @Description Get top favorited aff brands
-// @Tags 	brand
+// @Tags 	app
 // @Accept	json
 // @Produce json
 // @Param topFavorite query string false "topFavorite to query, default is 7 (1 <= topFavorite <= 10)"
@@ -33,7 +34,12 @@ func NewAffBrandHandler(
 // @Security ApiKeyAuth
 // @Router 	/api/v1/app/brand/top-favorited [get]
 func (handler *AffBrandHandler) GetTopFavouriteAffBrand(ctx *gin.Context) {
-	topFavorite := ctx.GetInt("topFavorite")
+	topFavoriteParam := ctx.DefaultQuery("topFavorite", "7")
+	topFavorite, err := strconv.Atoi(topFavoriteParam)
+	if err != nil {
+		util.RespondError(ctx, http.StatusBadRequest, "topFavorite must be integer")
+		return
+	}
 	if topFavorite < 1 || topFavorite > 10 {
 		util.RespondError(ctx, http.StatusBadRequest, "topFavorite must be 1 to 10")
 		return

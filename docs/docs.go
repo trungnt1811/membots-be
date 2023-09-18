@@ -288,7 +288,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Get list recently visited by user",
+                "description": "Get list recently visited section by user",
                 "consumes": [
                     "application/json"
                 ],
@@ -298,7 +298,7 @@ const docTemplate = `{
                 "tags": [
                     "app"
                 ],
-                "summary": "Get list recently visited by user",
+                "summary": "Get list recently visited section by user",
                 "parameters": [
                     {
                         "type": "string",
@@ -350,7 +350,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "brand"
+                    "app"
                 ],
                 "summary": "Get top favorited aff brands",
                 "parameters": [

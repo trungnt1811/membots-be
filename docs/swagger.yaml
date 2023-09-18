@@ -728,7 +728,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get list recently visited by user
+      description: Get list recently visited section by user
       parameters:
       - description: page to query, default is 1
         in: query
@@ -755,7 +755,7 @@ paths:
             $ref: '#/definitions/util.GeneralError'
       security:
       - ApiKeyAuth: []
-      summary: Get list recently visited by user
+      summary: Get list recently visited section by user
       tags:
       - app
   /api/v1/app/brand/top-favorited:
@@ -789,7 +789,7 @@ paths:
       - ApiKeyAuth: []
       summary: Get top favorited aff brands
       tags:
-      - brand
+      - app
   /api/v1/campaign/link:
     post:
       consumes:

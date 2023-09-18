@@ -82,7 +82,6 @@ func (u *CampaignUsecase) GenerateAffLink(userId uint64, payload *dto.CreateLink
 		CampaignId: campaignLess.ID,
 		LinkId:     link.ID,
 		AffLink:    link.AffLink,
-		ShortLink:  link.ShortLink,
 		UrlOrigin:  payload.OriginalUrl,
 		CreatedAt:  time.Now(),
 	}
@@ -95,12 +94,10 @@ func (u *CampaignUsecase) GenerateAffLink(userId uint64, payload *dto.CreateLink
 		"utm_content": util.StringifyUTMContent(uint(userId), tracked.ID),
 	}
 	clickLink := util.PackQueryParamsToUrl(link.AffLink, additionalParams)
-	shortenLink := util.PackQueryParamsToUrl(link.ShortLink, additionalParams)
 
 	linkResp := dto.CreateLinkResponse{
 		CampaignId:  link.CampaignId,
 		AffLink:     clickLink,
-		ShortLink:   shortenLink,
 		OriginalUrl: link.UrlOrigin,
 		BrandNew:    isJustCreated,
 	}

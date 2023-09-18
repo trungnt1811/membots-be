@@ -436,8 +436,6 @@ definitions:
         type: integer
       original_url:
         type: string
-      short_link:
-        type: string
     type: object
   dto.OrderDetailsDto:
     properties:

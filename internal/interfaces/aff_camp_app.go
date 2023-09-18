@@ -10,6 +10,7 @@ import (
 type AffCampAppRepository interface {
 	GetAllAffCampaign(ctx context.Context, page, size int) ([]model.AffCampaignApp, error)
 	GetAffCampaignById(ctx context.Context, id uint64) (model.AffCampaignApp, error)
+	GetListAffCampaignByBrandId(ctx context.Context, brandId []uint64) ([]model.AffCampaignComBrand, error)
 }
 
 type AffCampAppUCase interface {

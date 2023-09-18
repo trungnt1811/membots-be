@@ -2,6 +2,7 @@ package aff_camp_app
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -59,4 +60,22 @@ func (c affCampAppCache) GetAffCampaignById(ctx context.Context, id uint64) (mod
 		}
 	}
 	return affCampaign, nil
+}
+
+func (c affCampAppCache) GetListAffCampaignByBrandId(ctx context.Context, brandId []uint64) ([]model.AffCampaignComBrand, error) {
+	s, _ := json.Marshal(brandId)
+	key := &caching.Keyer{Raw: keyPrefixAffCampApp + fmt.Sprint("GetAffCampaignById_", string(s))}
+	var listAffCampaign []model.AffCampaignComBrand
+	err := c.Cache.RetrieveItem(key, &listAffCampaign)
+	if err != nil {
+		// cache miss
+		listAffCampaign, err = c.AffCampAppRepository.GetListAffCampaignByBrandId(ctx, brandId)
+		if err != nil {
+			return listAffCampaign, err
+		}
+		if err = c.Cache.SaveItem(key, listAffCampaign, cacheTimeAffCampApp); err != nil {
+			return listAffCampaign, err
+		}
+	}
+	return listAffCampaign, nil
 }

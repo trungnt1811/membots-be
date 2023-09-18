@@ -32,3 +32,10 @@ func (r affCampAppRepository) GetAffCampaignById(ctx context.Context, id uint64)
 		First(&affCampaign).Error
 	return affCampaign, err
 }
+
+func (r affCampAppRepository) GetListAffCampaignByBrandId(ctx context.Context, brandId []uint64) ([]model.AffCampaignComBrand, error) {
+	var listAffCampaign []model.AffCampaignComBrand
+	err := r.db.Joins("Brand").Where("aff_campaign.brand_id IN ? AND stella_status = ?", brandId, model.StellaStatusInProgress).
+		Find(&listAffCampaign).Error
+	return listAffCampaign, err
+}

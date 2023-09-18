@@ -128,7 +128,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 
 	affBrandRepository := aff_brand.NewAffBrandRepository(db)
 	affBrandCache := aff_brand.NewAffBrandCacheRepository(affBrandRepository, redisClient)
-	affBrandUCase := aff_brand.NewAffBrandUCase(affBrandCache)
+	affBrandUCase := aff_brand.NewAffBrandUCase(affBrandCache, affCampAppCache)
 
 	affAppBannerRepo := bannerApp.NewAppBannerRepository(db)
 	affAppBannerUCase := bannerApp.NewBannerUCase(affAppBannerRepo)

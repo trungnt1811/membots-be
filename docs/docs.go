@@ -453,8 +453,14 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "topFavorite to query, default is 10 (1 \u003c= topFavorite \u003c= 20)",
-                        "name": "topFavorite",
+                        "description": "page to query, default is 1",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "size to query, default is 10",
+                        "name": "size",
                         "in": "query"
                     }
                 ],

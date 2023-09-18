@@ -50,6 +50,15 @@ func (s affBrandUCase) GetTopFavouriteAffBrand(ctx context.Context, page, size i
 		}
 		brandIds = append(brandIds, favCountAffBrand.BrandId)
 	}
+	if len(brandIds) == 0 {
+		return dto.AffCampaignAppDtoResponse{
+			NextPage: nextPage,
+			Page:     page,
+			Size:     size,
+			Total:    int64(total),
+			Data:     nil,
+		}, nil
+	}
 	listFavAffBrand, err := s.AffCampAppRepository.GetListAffCampaignByBrandIds(ctx, brandIds)
 	if err != nil {
 		return dto.AffCampaignAppDtoResponse{}, err

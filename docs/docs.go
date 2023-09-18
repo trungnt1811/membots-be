@@ -414,7 +414,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.AffCampaignComBrandDtoResponse"
+                            "$ref": "#/definitions/dto.AffCampaignAppDtoResponse"
                         }
                     },
                     "400": {
@@ -464,7 +464,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/dto.AffCampaignComBrandDto"
+                                "$ref": "#/definitions/dto.AffCampaignLessDto"
                             }
                         }
                     },
@@ -1630,49 +1630,6 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.AffCampaignComBrandDto": {
-            "type": "object",
-            "properties": {
-                "brand": {
-                    "$ref": "#/definitions/dto.BrandDto"
-                },
-                "brand_id": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "stella_max_com": {
-                    "type": "string"
-                }
-            }
-        },
-        "dto.AffCampaignComBrandDtoResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/dto.AffCampaignComBrandDto"
-                    }
-                },
-                "next_page": {
-                    "type": "integer"
-                },
-                "page": {
-                    "type": "integer"
-                },
-                "size": {
-                    "type": "integer"
-                },
-                "total": {
-                    "type": "integer"
-                }
-            }
-        },
         "dto.AffCampaignDto": {
             "type": "object",
             "properties": {
@@ -1771,6 +1728,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "stella_max_com": {
                     "type": "string"
                 },
                 "stella_status": {
@@ -1970,6 +1930,9 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "total_fav": {
+                    "type": "integer"
                 }
             }
         },

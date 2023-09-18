@@ -28,7 +28,7 @@ func NewAffBrandHandler(
 // @Accept	json
 // @Produce json
 // @Param topFavorite query string false "topFavorite to query, default is 7 (1 <= topFavorite <= 10)"
-// @Success 200 		{object}	[]dto.AffCampaignComBrandDto
+// @Success 200 		{object}	[]dto.AffCampaignLessDto
 // @Failure 401 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
 // @Security ApiKeyAuth

@@ -40,7 +40,7 @@ func (s affBrandUCase) GetTopFavouriteAffBrand(ctx context.Context, topFavourite
 		}
 		brandIds = append(brandIds, favCountAffBrand.BrandId)
 	}
-	listFavAffBrand, err := s.AffCampAppRepository.GetListAffCampaignByBrandId(ctx, brandIds)
+	listFavAffBrand, err := s.AffCampAppRepository.GetListAffCampaignByBrandIds(ctx, brandIds)
 	if err != nil {
 		return []dto.AffCampaignLessDto{}, err
 	}

@@ -62,14 +62,14 @@ func (c affCampAppCache) GetAffCampaignById(ctx context.Context, id uint64) (mod
 	return affCampaign, nil
 }
 
-func (c affCampAppCache) GetListAffCampaignByBrandId(ctx context.Context, brandId []uint64) ([]model.AffCampaignComBrand, error) {
-	s, _ := json.Marshal(brandId)
+func (c affCampAppCache) GetListAffCampaignByBrandIds(ctx context.Context, brandIds []uint64) ([]model.AffCampaignComBrand, error) {
+	s, _ := json.Marshal(brandIds)
 	key := &caching.Keyer{Raw: keyPrefixAffCampApp + fmt.Sprint("GetAffCampaignById_", string(s))}
 	var listAffCampaign []model.AffCampaignComBrand
 	err := c.Cache.RetrieveItem(key, &listAffCampaign)
 	if err != nil {
 		// cache miss
-		listAffCampaign, err = c.AffCampAppRepository.GetListAffCampaignByBrandId(ctx, brandId)
+		listAffCampaign, err = c.AffCampAppRepository.GetListAffCampaignByBrandIds(ctx, brandIds)
 		if err != nil {
 			return listAffCampaign, err
 		}

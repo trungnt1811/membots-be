@@ -27,14 +27,14 @@ func NewAffBrandHandler(
 // @Tags 	app
 // @Accept	json
 // @Produce json
-// @Param topFavorite query string false "topFavorite to query, default is 7 (1 <= topFavorite <= 10)"
+// @Param topFavorite query string false "topFavorite to query, default is 10 (1 <= topFavorite <= 20)"
 // @Success 200 		{object}	[]dto.AffCampaignLessDto
 // @Failure 401 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
 // @Security ApiKeyAuth
 // @Router 	/api/v1/app/brand/top-favorited [get]
 func (handler *AffBrandHandler) GetTopFavouriteAffBrand(ctx *gin.Context) {
-	topFavoriteParam := ctx.DefaultQuery("topFavorite", "7")
+	topFavoriteParam := ctx.DefaultQuery("topFavorite", "10")
 	topFavorite, err := strconv.Atoi(topFavoriteParam)
 	if err != nil {
 		util.RespondError(ctx, http.StatusBadRequest, "topFavorite must be integer")

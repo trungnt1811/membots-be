@@ -905,7 +905,7 @@ paths:
       - application/json
       description: Get top favorited aff brands
       parameters:
-      - description: topFavorite to query, default is 7 (1 <= topFavorite <= 10)
+      - description: topFavorite to query, default is 10 (1 <= topFavorite <= 20)
         in: query
         name: topFavorite
         type: string

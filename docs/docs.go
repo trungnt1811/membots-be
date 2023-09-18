@@ -1930,9 +1930,6 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
-                },
-                "total_fav": {
-                    "type": "integer"
                 }
             }
         },

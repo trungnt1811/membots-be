@@ -365,8 +365,6 @@ definitions:
         type: string
       name:
         type: string
-      total_fav:
-        type: integer
     type: object
   dto.CampaignDescriptionDto:
     properties:

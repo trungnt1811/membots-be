@@ -464,6 +464,13 @@ definitions:
       updated_at:
         type: string
     type: object
+  dto.Cashback:
+    properties:
+      distributed:
+        type: number
+      remain:
+        type: number
+    type: object
   dto.CreateLinkPayload:
     properties:
       campaign_id:
@@ -634,6 +641,17 @@ definitions:
         type: integer
       total:
         type: integer
+    type: object
+  dto.StatisticSummaryResponse:
+    properties:
+      num_of_customers:
+        type: integer
+      num_of_orders:
+        type: integer
+      total_asa_cashback:
+        $ref: '#/definitions/dto.Cashback'
+      total_revenue:
+        type: number
     type: object
   dto.StellaInfoDto:
     properties:
@@ -1359,6 +1377,31 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Get affiliate order by order id
+      tags:
+      - console
+  /api/v1/console/summary:
+    get:
+      consumes:
+      - application/json
+      description: Get summary statistic data
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.StatisticSummaryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get summary statistic data
       tags:
       - console
   /api/v1/order:

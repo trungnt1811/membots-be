@@ -10,6 +10,7 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/app/aff_search"
 	bannerConsole "github.com/astraprotocol/affiliate-system/internal/app/console/banner"
 	consoleOrder "github.com/astraprotocol/affiliate-system/internal/app/console/order"
+	"github.com/astraprotocol/affiliate-system/internal/app/console/statistic"
 	"github.com/go-co-op/gocron"
 
 	"github.com/astraprotocol/affiliate-system/conf"
@@ -104,6 +105,12 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	consoleOrderRouter := consoleRouter.Group("orders", authHandler.CheckAdminHeader())
 	consoleOrderRouter.GET("", consoleOrderHandler.GetOrderList)
 	consoleOrderRouter.GET("/:orderId", consoleOrderHandler.GetOrderByOrderId)
+
+	// SECTION: Console Summary
+	statisticRepo := statistic.NewStatisticRepository(db)
+	statisticUcase := statistic.NewStatisticUcase(statisticRepo)
+	statisticHandler := statistic.NewStatisticHandler(statisticUcase)
+	consoleRouter.GET("/summary", authHandler.CheckAdminHeader(), statisticHandler.GetSummary)
 
 	// SECTION: Reward module
 	rewardRepo := reward.NewRewardRepository(db)

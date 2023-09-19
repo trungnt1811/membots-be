@@ -121,7 +121,7 @@ type AffCampaignApp struct {
 	Url               string         `json:"url"`
 	StartTime         *time.Time     `json:"start_time"`
 	EndTime           *time.Time     `json:"end_time"`
-	StellaDescription datatypes.JSON `json:"stella_description"`
+	StellaDescription datatypes.JSON `json:"stella_description" gorm:"serializer:json"`
 	CategoryId        uint64         `json:"category_id"`
 	StellaStatus      string         `json:"stella_status"`
 	Thumbnail         string         `json:"thumbnail"`
@@ -172,4 +172,13 @@ func (c *AffCampaignComBrand) ToAffCampaignLessDto() dto.AffCampaignLessDto {
 		Brand:        c.Brand.ToBrandDto(),
 		StellaMaxCom: c.StellaMaxCom,
 	}
+}
+
+type StellaDescriptionJson struct {
+	ActionPoint           string `json:"action_point"`
+	CommissionPolicy      string `json:"commission_policy"`
+	Introduction          string `json:"introduction"`
+	OtherNotice           string `json:"other_notice"`
+	RejectedReason        string `json:"rejected_reason"`
+	TrafficBuildingPolicy string `json:"traffic_building_policy"`
 }

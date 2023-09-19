@@ -1,8 +1,10 @@
 package campaign
 
 import (
+	"encoding/json"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/model"
+	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
 
@@ -31,7 +33,54 @@ func (a *affCampaignRepository) GetCampaignById(id uint) (model.AffCampaign, err
 }
 
 func (a *affCampaignRepository) UpdateCampaign(id uint, updates map[string]interface{}) error {
-	return a.Db.Table("aff_campaign").Where("id = ?", id).Updates(updates).Error
+	stellaDescription, ok := updates["stella_description"]
+	// If the not key exists
+	if !ok {
+		return a.Db.Table("aff_campaign").Where("id = ?", id).Updates(updates).Error
+	}
+	var affCampaign model.AffCampaignApp
+	if err := a.Db.Table("aff_campaign").
+		Where("id = ?", id).First(&affCampaign).Error; err != nil {
+		return err
+	}
+	var stellaDescriptionJsonInDB model.StellaDescriptionJson
+	err := json.Unmarshal(affCampaign.StellaDescription, &stellaDescriptionJsonInDB)
+	if err != nil {
+		return err
+	}
+	return a.Db.Transaction(func(tx *gorm.DB) error {
+		stellaDescriptionJsonInput, _ := stellaDescription.(map[string]interface{})
+		actionPoint, ok := stellaDescriptionJsonInput["action_point"]
+		if ok {
+			stellaDescriptionJsonInDB.ActionPoint = actionPoint.(string)
+		}
+		introduction, ok := stellaDescriptionJsonInput["introduction"]
+		if ok {
+			stellaDescriptionJsonInDB.Introduction = introduction.(string)
+		}
+		commissionPolicy, ok := stellaDescriptionJsonInput["commission_policy"]
+		if ok {
+			stellaDescriptionJsonInDB.CommissionPolicy = commissionPolicy.(string)
+		}
+		otherNotice, ok := stellaDescriptionJsonInput["other_notice"]
+		if ok {
+			stellaDescriptionJsonInDB.OtherNotice = otherNotice.(string)
+		}
+		trafficBP, ok := stellaDescriptionJsonInput["traffic_building_policy"]
+		if ok {
+			stellaDescriptionJsonInDB.TrafficBuildingPolicy = trafficBP.(string)
+		}
+		rr, ok := stellaDescriptionJsonInput["rejected_reason"]
+		if ok {
+			stellaDescriptionJsonInDB.RejectedReason = rr.(string)
+		}
+		b, err1 := json.Marshal(stellaDescriptionJsonInDB)
+		if err1 != nil {
+			return err1
+		}
+		updates["stella_description"] = datatypes.JSON(b)
+		return tx.Table("aff_campaign").Where("id = ?", id).Updates(updates).Error
+	})
 }
 
 func (a *affCampaignRepository) GetAllCampaign(listStatus []string, q string, page, size int) ([]model.AffCampaignLessApp, error) {

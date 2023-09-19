@@ -1,6 +1,7 @@
 package campaign
 
 import (
+	"github.com/rs/zerolog/log"
 	"net/http"
 	"strconv"
 
@@ -87,6 +88,7 @@ func (handler *ConsoleCampHandler) UpdateCampaignInfo(ctx *gin.Context) {
 
 	err = handler.UCase.UpdateCampaign(uint(id), payload)
 	if err != nil {
+		log.Logger.Err(err)
 		util.RespondError(ctx, http.StatusInternalServerError, "failed to update user info", err)
 		return
 	}

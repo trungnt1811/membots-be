@@ -27,6 +27,6 @@ func (m *UserViewAffCampComBrand) TableName() string {
 	return "user_view_aff_camp"
 }
 
-func (m *UserViewAffCampComBrand) ToAffCampaignComBrandDto() dto.AffCampaignComBrandDto {
-	return m.AffCampComBrand.ToAffCampaignComBrandDto()
+func (m *UserViewAffCampComBrand) ToAffCampaignLessDto() dto.AffCampaignLessDto {
+	return m.AffCampComBrand.ToAffCampaignLessDto()
 }

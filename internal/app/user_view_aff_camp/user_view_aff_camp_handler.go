@@ -22,14 +22,14 @@ func NewUserViewAffCampHandler(
 }
 
 // GetListRecentlyVisitedSection Get list recently visited section by user
-// @Summary Get list recently visited by user
-// @Description Get list recently visited by user
+// @Summary Get list recently visited section by user
+// @Description Get list recently visited section by user
 // @Tags 	app
 // @Accept	json
 // @Produce json
 // @Param page query string false "page to query, default is 1"
 // @Param size query string false "size to query, default is 10"
-// @Success 200 		{object}	dto.AffCampaignComBrandDtoResponse
+// @Success 200 		{object}	dto.AffCampaignAppDtoResponse
 // @Failure 401 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
 // @Security ApiKeyAuth

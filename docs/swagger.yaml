@@ -167,34 +167,6 @@ definitions:
       total:
         type: integer
     type: object
-  dto.AffCampaignComBrandDto:
-    properties:
-      brand:
-        $ref: '#/definitions/dto.BrandDto'
-      brand_id:
-        type: integer
-      id:
-        type: integer
-      name:
-        type: string
-      stella_max_com:
-        type: string
-    type: object
-  dto.AffCampaignComBrandDtoResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/dto.AffCampaignComBrandDto'
-        type: array
-      next_page:
-        type: integer
-      page:
-        type: integer
-      size:
-        type: integer
-      total:
-        type: integer
-    type: object
   dto.AffCampaignDto:
     properties:
       accesstrade_id:
@@ -260,6 +232,8 @@ definitions:
       campaign_id:
         type: integer
       name:
+        type: string
+      stella_max_com:
         type: string
       stella_status:
         type: string
@@ -895,7 +869,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get list recently visited by user
+      description: Get list recently visited section by user
       parameters:
       - description: page to query, default is 1
         in: query
@@ -911,7 +885,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.AffCampaignComBrandDtoResponse'
+            $ref: '#/definitions/dto.AffCampaignAppDtoResponse'
         "400":
           description: Bad Request
           schema:
@@ -922,7 +896,41 @@ paths:
             $ref: '#/definitions/util.GeneralError'
       security:
       - ApiKeyAuth: []
-      summary: Get list recently visited by user
+      summary: Get list recently visited section by user
+      tags:
+      - app
+  /api/v1/app/brand/top-favorited:
+    get:
+      consumes:
+      - application/json
+      description: Get top favorited aff brands
+      parameters:
+      - description: page to query, default is 1
+        in: query
+        name: page
+        type: string
+      - description: size to query, default is 10
+        in: query
+        name: size
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.AffCampaignLessDto'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      summary: Get top favorited aff brands
       tags:
       - app
   /api/v1/campaign/link:

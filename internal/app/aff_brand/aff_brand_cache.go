@@ -2,6 +2,7 @@ package aff_brand
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/astraprotocol/affiliate-system/internal/infra/caching"
@@ -10,7 +11,8 @@ import (
 )
 
 const keyPrefixAffBrand = "aff_brand_"
-const cacheTimeAffBrand = 30 * time.Minute
+const cacheTimeLongAffBrand = 30 * time.Minute
+const cacheTimeAffBrand = 3 * time.Second
 
 type affBrandCache struct {
 	AffBrandRepository interfaces.AffBrandRepository
@@ -36,7 +38,7 @@ func (c affBrandCache) GetListCountFavouriteAffBrand(ctx context.Context) ([]mod
 		if err != nil {
 			return listFavouriteAffBrand, err
 		}
-		if err = c.Cache.SaveItem(key, listFavouriteAffBrand, cacheTimeAffBrand); err != nil {
+		if err = c.Cache.SaveItem(key, listFavouriteAffBrand, cacheTimeLongAffBrand); err != nil {
 			return listFavouriteAffBrand, err
 		}
 	}
@@ -49,8 +51,25 @@ func (c affBrandCache) UpdateCacheListCountFavouriteAffBrand(ctx context.Context
 	if err != nil {
 		return err
 	}
-	if err = c.Cache.SaveItem(key, listFavouriteAffBrand, cacheTimeAffBrand); err != nil {
+	if err = c.Cache.SaveItem(key, listFavouriteAffBrand, cacheTimeLongAffBrand); err != nil {
 		return err
 	}
 	return nil
+}
+
+func (c affBrandCache) GetListFavAffBrandByUserId(ctx context.Context, userId uint64, page, size int) ([]model.AffCampComFavBrand, error) {
+	key := &caching.Keyer{Raw: keyPrefixAffBrand + fmt.Sprint("GetListFavAffBrandByUserId_", userId, "_", page, "_", size)}
+	var listAffCampComFavBrand []model.AffCampComFavBrand
+	err := c.Cache.RetrieveItem(key, &listAffCampComFavBrand)
+	if err != nil {
+		// cache miss
+		listAffCampComFavBrand, err = c.AffBrandRepository.GetListFavAffBrandByUserId(ctx, userId, page, size)
+		if err != nil {
+			return listAffCampComFavBrand, err
+		}
+		if err = c.Cache.SaveItem(key, listAffCampComFavBrand, cacheTimeAffBrand); err != nil {
+			return listAffCampComFavBrand, err
+		}
+	}
+	return listAffCampComFavBrand, nil
 }

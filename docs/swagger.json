@@ -1839,6 +1839,12 @@
                 "sales_time": {
                     "type": "string"
                 },
+                "transactions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.AffTransaction"
+                    }
+                },
                 "update_time": {
                     "type": "string"
                 },
@@ -1899,6 +1905,109 @@
                 },
                 "size": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.AffTransaction": {
+            "type": "object",
+            "properties": {
+                "accesstrade_conversion_id": {
+                    "type": "integer"
+                },
+                "accesstrade_id": {
+                    "type": "string"
+                },
+                "accesstrade_order_id": {
+                    "description": "NOTE: AccessTrade Order ID",
+                    "type": "string"
+                },
+                "category_name": {
+                    "type": "string"
+                },
+                "click_time": {
+                    "type": "string"
+                },
+                "click_url": {
+                    "type": "string"
+                },
+                "commission": {
+                    "type": "number"
+                },
+                "confirmed_time": {
+                    "type": "string"
+                },
+                "conversion_platform": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "customer_type": {
+                    "type": "string"
+                },
+                "extra": {},
+                "id": {
+                    "type": "integer"
+                },
+                "is_confirmed": {
+                    "type": "integer"
+                },
+                "merchant": {
+                    "type": "string"
+                },
+                "product_category": {
+                    "type": "string"
+                },
+                "product_id": {
+                    "type": "string"
+                },
+                "product_image": {
+                    "type": "string"
+                },
+                "product_name": {
+                    "type": "string"
+                },
+                "product_price": {
+                    "type": "number"
+                },
+                "product_quantity": {
+                    "type": "integer"
+                },
+                "reason_rejected": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "transaction_time": {
+                    "type": "string"
+                },
+                "transaction_value": {
+                    "type": "number"
+                },
+                "update_time": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                },
+                "utm_campaign": {
+                    "type": "string"
+                },
+                "utm_content": {
+                    "type": "string"
+                },
+                "utm_medium": {
+                    "type": "string"
+                },
+                "utm_source": {
+                    "type": "string"
+                },
+                "utm_term": {
+                    "type": "string"
                 }
             }
         },

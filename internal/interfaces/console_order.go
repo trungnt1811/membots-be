@@ -7,7 +7,7 @@ import (
 
 type ConsoleOrderRepository interface {
 	FindOrdersByQuery(timeRange dto.TimeRange, dbQuery map[string]any, page int, perPage int) ([]model.AffOrder, int64, error)
-	FindOrderByOrderId(orderId string) (*model.AffOrder, error)
+	FindOrderByOrderId(orderId string) (*model.AffOrder, []model.AffTransaction, error)
 }
 
 type ConsoleOrderUcase interface {

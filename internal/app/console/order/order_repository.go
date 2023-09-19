@@ -61,11 +61,16 @@ func (repo *ConsoleOrderRepository) FindOrdersByQuery(timeRange dto.TimeRange, d
 	return orders, total, err
 }
 
-func (repo *ConsoleOrderRepository) FindOrderByOrderId(orderId string) (*model.AffOrder, error) {
+func (repo *ConsoleOrderRepository) FindOrderByOrderId(orderId string) (*model.AffOrder, []model.AffTransaction, error) {
 	var order model.AffOrder
+	var txs []model.AffTransaction
 	err := repo.db.First(&order, "accesstrade_order_id = ?", orderId).Error
 	if err != nil {
-		return nil, err
+		return nil, txs, err
 	}
-	return &order, nil
+	err = repo.db.Model(&txs).Order("updated_at DESC").Find(&txs, "accesstrade_order_id = ?", orderId).Error
+	if err != nil {
+		return nil, txs, err
+	}
+	return &order, txs, nil
 }

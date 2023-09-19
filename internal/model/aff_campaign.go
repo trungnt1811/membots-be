@@ -26,23 +26,23 @@ type CampaignDescription struct {
 	TrafficBuildingPolicy string    `json:"traffic_building_policy"`
 }
 
-func (c *CampaignDescription) ToDto() *dto.CampaignDescriptionDto {
+func (m *CampaignDescription) ToDto() *dto.CampaignDescriptionDto {
 	return &dto.CampaignDescriptionDto{
-		ID:                    c.ID,
-		CampaignId:            c.CampaignId,
-		CreatedAt:             c.CreatedAt,
-		UpdatedAt:             c.UpdatedAt,
-		ActionPoint:           strip.StripTags(c.ActionPoint),
-		CommissionPolicy:      strip.StripTags(c.CommissionPolicy),
-		CookiePolicy:          strip.StripTags(c.CookiePolicy),
-		Introduction:          strip.StripTags(c.Introduction),
-		OtherNotice:           strip.StripTags(c.OtherNotice),
-		RejectedReason:        strip.StripTags(c.RejectedReason),
-		TrafficBuildingPolicy: strip.StripTags(c.TrafficBuildingPolicy),
+		ID:                    m.ID,
+		CampaignId:            m.CampaignId,
+		CreatedAt:             m.CreatedAt,
+		UpdatedAt:             m.UpdatedAt,
+		ActionPoint:           strip.StripTags(m.ActionPoint),
+		CommissionPolicy:      strip.StripTags(m.CommissionPolicy),
+		CookiePolicy:          strip.StripTags(m.CookiePolicy),
+		Introduction:          strip.StripTags(m.Introduction),
+		OtherNotice:           strip.StripTags(m.OtherNotice),
+		RejectedReason:        strip.StripTags(m.RejectedReason),
+		TrafficBuildingPolicy: strip.StripTags(m.TrafficBuildingPolicy),
 	}
 }
 
-func (c *CampaignDescription) TableName() string {
+func (m *CampaignDescription) TableName() string {
 	return "aff_campaign_description"
 }
 
@@ -78,35 +78,35 @@ type AffCampaign struct {
 	StellaMaxCom      string              `json:"stella_max_com"`
 }
 
-func (c *AffCampaign) TableName() string {
+func (m *AffCampaign) TableName() string {
 	return "aff_campaign"
 }
 
-func (c *AffCampaign) ToDto() dto.AffCampaignDto {
+func (m *AffCampaign) ToDto() dto.AffCampaignDto {
 	campDto := dto.AffCampaignDto{
-		ID:            c.ID,
-		AccessTradeId: c.AccessTradeId,
-		CreatedAt:     c.CreatedAt,
-		UpdatedAt:     c.UpdatedAt,
-		MaxCom:        c.MaxCom,
-		Merchant:      c.Merchant,
-		Status:        c.Status,
+		ID:            m.ID,
+		AccessTradeId: m.AccessTradeId,
+		CreatedAt:     m.CreatedAt,
+		UpdatedAt:     m.UpdatedAt,
+		MaxCom:        m.MaxCom,
+		Merchant:      m.Merchant,
+		Status:        m.Status,
 		StellaInfo: dto.StellaInfoDto{
-			Url:               c.Url,
-			CategoryId:        c.CategoryId,
-			StartTime:         c.StartTime,
-			EndTime:           c.EndTime,
-			StellaDescription: c.StellaDescription,
-			StellaStatus:      c.StellaStatus,
-			StellaMaxCom:      c.StellaMaxCom,
-			Thumbnail:         c.Thumbnail,
-			Name:              c.Name,
-			BrandId:           c.BrandId,
-			Brand:             c.Brand.ToBrandDto(),
-			Category:          c.StellaCategory.ToDto(),
+			Url:               m.Url,
+			CategoryId:        m.CategoryId,
+			StartTime:         m.StartTime,
+			EndTime:           m.EndTime,
+			StellaDescription: m.StellaDescription,
+			StellaStatus:      m.StellaStatus,
+			StellaMaxCom:      m.StellaMaxCom,
+			Thumbnail:         m.Thumbnail,
+			Name:              m.Name,
+			BrandId:           m.BrandId,
+			Brand:             m.Brand.ToBrandDto(),
+			Category:          m.StellaCategory.ToDto(),
 		},
 	}
-	campDto.Description = c.Description.ToDto()
+	campDto.Description = m.Description.ToDto()
 	return campDto
 }
 
@@ -128,27 +128,27 @@ type AffCampaignApp struct {
 	StellaMaxCom      string         `json:"stella_max_com"`
 }
 
-func (c *AffCampaignApp) TableName() string {
+func (m *AffCampaignApp) TableName() string {
 	return "aff_campaign"
 }
 
-func (c *AffCampaignApp) ToAffCampaignAppDto() dto.AffCampaignAppDto {
+func (m *AffCampaignApp) ToAffCampaignAppDto() dto.AffCampaignAppDto {
 	return dto.AffCampaignAppDto{
-		ID:                c.ID,
-		BrandId:           c.BrandId,
-		Brand:             c.Brand.ToBrandDto(),
-		AccessTradeId:     c.AccessTradeId,
-		CreatedAt:         c.CreatedAt,
-		UpdatedAt:         c.UpdatedAt,
-		Thumbnail:         c.Thumbnail,
-		Name:              c.Name,
-		Url:               c.Url,
-		CategoryId:        c.CategoryId,
-		StartTime:         c.StartTime,
-		EndTime:           c.EndTime,
-		StellaDescription: c.StellaDescription,
-		StellaStatus:      c.StellaStatus,
-		StellaMaxCom:      c.StellaMaxCom,
+		ID:                m.ID,
+		BrandId:           m.BrandId,
+		Brand:             m.Brand.ToBrandDto(),
+		AccessTradeId:     m.AccessTradeId,
+		CreatedAt:         m.CreatedAt,
+		UpdatedAt:         m.UpdatedAt,
+		Thumbnail:         m.Thumbnail,
+		Name:              m.Name,
+		Url:               m.Url,
+		CategoryId:        m.CategoryId,
+		StartTime:         m.StartTime,
+		EndTime:           m.EndTime,
+		StellaDescription: m.StellaDescription,
+		StellaStatus:      m.StellaStatus,
+		StellaMaxCom:      m.StellaMaxCom,
 	}
 }
 
@@ -160,16 +160,38 @@ type AffCampaignComBrand struct {
 	StellaMaxCom string `json:"stella_max_com"`
 }
 
-func (c *AffCampaignComBrand) TableName() string {
+func (m *AffCampaignComBrand) TableName() string {
 	return "aff_campaign"
 }
 
-func (c *AffCampaignComBrand) ToAffCampaignLessDto() dto.AffCampaignLessDto {
+func (m *AffCampaignComBrand) ToAffCampaignLessDto() dto.AffCampaignLessDto {
 	return dto.AffCampaignLessDto{
-		ID:           uint(c.ID),
-		Name:         c.Name,
-		BrandId:      c.BrandId,
-		Brand:        c.Brand.ToBrandDto(),
-		StellaMaxCom: c.StellaMaxCom,
+		ID:           uint(m.ID),
+		Name:         m.Name,
+		BrandId:      m.BrandId,
+		Brand:        m.Brand.ToBrandDto(),
+		StellaMaxCom: m.StellaMaxCom,
+	}
+}
+
+type AffCampComFavBrand struct {
+	ID            uint64            `gorm:"primarykey" json:"id"`
+	Name          string            `json:"name"`
+	BrandId       uint64            `json:"brand_id"`
+	FavoriteBrand UserFavoriteBrand `json:"favorite_brand"`
+	StellaMaxCom  string            `json:"stella_max_com"`
+}
+
+func (m *AffCampComFavBrand) TableName() string {
+	return "aff_campaign"
+}
+
+func (m *AffCampComFavBrand) ToAffCampaignLessDto() dto.AffCampaignLessDto {
+	return dto.AffCampaignLessDto{
+		ID:           uint(m.ID),
+		Name:         m.Name,
+		BrandId:      m.BrandId,
+		Brand:        m.FavoriteBrand.Brand.ToBrandDto(),
+		StellaMaxCom: m.StellaMaxCom,
 	}
 }

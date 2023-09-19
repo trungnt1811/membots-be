@@ -378,14 +378,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/app/brand/recently-visited-section": {
+        "/api/v1/app/brand": {
             "get": {
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Get list recently visited section by user",
+                "description": "Get list aff brand by user",
                 "consumes": [
                     "application/json"
                 ],
@@ -395,7 +395,7 @@ const docTemplate = `{
                 "tags": [
                     "app"
                 ],
-                "summary": "Get list recently visited section by user",
+                "summary": "Get list aff brand by user",
                 "parameters": [
                     {
                         "type": "string",
@@ -407,6 +407,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "size to query, default is 10",
                         "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "filter to query, default is recently-visited (recently-visited/favorite)",
+                        "name": "filter",
                         "in": "query"
                     }
                 ],

@@ -4,6 +4,10 @@ import (
 	"time"
 )
 
+const (
+	UserFavoriteBrandStatusAdded = "ADDED"
+)
+
 type UserFavoriteBrand struct {
 	ID        uint64    `json:"id" gorm:"primaryKey"`
 	UserId    uint32    `json:"user_id"`

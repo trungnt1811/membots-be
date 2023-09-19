@@ -32,6 +32,23 @@ func (r affBrandRepository) UpdateCacheListCountFavouriteAffBrand(ctx context.Co
 	return nil
 }
 
+func (r affBrandRepository) GetListFavAffBrandByUserId(ctx context.Context, userId uint64, page, size int) ([]model.AffCampComFavBrand, error) {
+	var listAffCampComFavBrand []model.AffCampComFavBrand
+	offset := (page - 1) * size
+	err := r.db.Joins("JOIN FavoriteBrand ON FavoriteBrand.BrandId = aff_campaign.brand_id").
+		Joins("FavoriteBrand.Brand").
+		Where("user_id = ? AND FavoriteBrand.Status = ? AND aff_campaign.stella_status = ?",
+			userId,
+			model.UserFavoriteBrandStatusAdded,
+			model.StellaStatusInProgress,
+		).
+		Limit(size + 1).
+		Offset(offset).
+		Order("FavoriteBrand.UpdatedAt DESC").
+		Find(&listAffCampComFavBrand).Error
+	return listAffCampComFavBrand, err
+}
+
 func NewAffBrandRepository(db *gorm.DB) interfaces.AffBrandRepository {
 	return &affBrandRepository{
 		db: db,

@@ -1040,6 +1040,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/console/summary": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get summary statistic data",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "console"
+                ],
+                "summary": "Get summary statistic data",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.StatisticSummaryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "424": {
+                        "description": "Failed Dependency",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/order": {
             "get": {
                 "security": [
@@ -2075,6 +2115,17 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.Cashback": {
+            "type": "object",
+            "properties": {
+                "distributed": {
+                    "type": "number"
+                },
+                "remain": {
+                    "type": "number"
+                }
+            }
+        },
         "dto.CreateLinkPayload": {
             "type": "object",
             "properties": {
@@ -2333,6 +2384,23 @@ const docTemplate = `{
                 },
                 "total": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.StatisticSummaryResponse": {
+            "type": "object",
+            "properties": {
+                "num_of_customers": {
+                    "type": "integer"
+                },
+                "num_of_orders": {
+                    "type": "integer"
+                },
+                "total_asa_cashback": {
+                    "$ref": "#/definitions/dto.Cashback"
+                },
+                "total_revenue": {
+                    "type": "number"
                 }
             }
         },

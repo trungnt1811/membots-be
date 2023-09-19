@@ -178,7 +178,7 @@ type AffCampComFavBrand struct {
 	ID            uint64            `gorm:"primarykey" json:"id"`
 	Name          string            `json:"name"`
 	BrandId       uint64            `json:"brand_id"`
-	FavoriteBrand UserFavoriteBrand `json:"favorite_brand"`
+	FavoriteBrand UserFavoriteBrand `gorm:"foreignKey:BrandId;references:BrandId" json:"favrorite_brand"`
 	StellaMaxCom  string            `json:"stella_max_com"`
 }
 

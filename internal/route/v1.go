@@ -133,14 +133,13 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	userViewAffCampRepository := user_view_aff_camp.NewUserViewAffCampRepository(db)
 	userViewAffCampCache := user_view_aff_camp.NewUserViewAffCampCacheRepository(userViewAffCampRepository, redisClient)
 	userViewAffCampUCase := user_view_aff_camp.NewUserViewAffCampUCase(userViewAffCampCache)
-	userViewAffCampHandler := user_view_aff_camp.NewUserViewAffCampHandler(userViewAffCampUCase)
-	appRouter.GET("brand/recently-visited-section", authHandler.CheckUserHeader(), userViewAffCampHandler.GetListRecentlyVisitedSection)
 
 	affBrandRepository := aff_brand.NewAffBrandRepository(db)
 	affBrandCache := aff_brand.NewAffBrandCacheRepository(affBrandRepository, redisClient)
 	affBrandUCase := aff_brand.NewAffBrandUCase(affBrandCache, affCampAppCache)
-	affBrandHandler := aff_brand.NewAffBrandHandler(affBrandUCase)
+	affBrandHandler := aff_brand.NewAffBrandHandler(userViewAffCampUCase, affBrandUCase)
 	appRouter.GET("brand/top-favorited", affBrandHandler.GetTopFavouriteAffBrand)
+	appRouter.GET("brand/recently-visited-section", authHandler.CheckUserHeader(), affBrandHandler.GetListRecentlyVisitedSection)
 
 	affAppBannerRepo := bannerApp.NewAppBannerRepository(db)
 	affAppBannerUCase := bannerApp.NewBannerUCase(affAppBannerRepo)

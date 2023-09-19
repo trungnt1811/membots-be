@@ -74,6 +74,10 @@ func (a *affCampaignRepository) UpdateCampaign(id uint, updates map[string]inter
 		if ok {
 			stellaDescriptionJsonInDB.RejectedReason = rr.(string)
 		}
+		cookiePolicy, ok := stellaDescriptionJsonInput["cookie_policy"]
+		if ok {
+			stellaDescriptionJsonInDB.CookiePolicy = cookiePolicy.(string)
+		}
 		b, err1 := json.Marshal(stellaDescriptionJsonInDB)
 		if err1 != nil {
 			return err1

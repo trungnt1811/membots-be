@@ -181,4 +181,5 @@ type StellaDescriptionJson struct {
 	OtherNotice           string `json:"other_notice"`
 	RejectedReason        string `json:"rejected_reason"`
 	TrafficBuildingPolicy string `json:"traffic_building_policy"`
+	CookiePolicy          string `json:"cookie_policy"`
 }

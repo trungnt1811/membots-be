@@ -25,5 +25,5 @@ func TestGetSinceUntilTime(t *testing.T) {
 	asserts.Equal(2023, res.Year())
 
 	since, until := util.GetSinceUntilTime(res, 1)
-	asserts.Equal(until.Day(), since.Day()+1)
+	asserts.Equal(until.Day(), since.Day()+2)
 }

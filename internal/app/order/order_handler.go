@@ -41,6 +41,7 @@ func (handler *OrderHandler) PostBackOrderHandle(c *gin.Context) {
 		log.LG.Errorf("parse access trade post back error: %v", err)
 		c.JSON(http.StatusExpectationFailed, gin.H{
 			"message": "parse access trade post back error",
+			"error":   err.Error(),
 		})
 		return
 	}
@@ -51,6 +52,7 @@ func (handler *OrderHandler) PostBackOrderHandle(c *gin.Context) {
 		log.LG.Errorf("save post back order error: %v", err)
 		c.JSON(http.StatusFailedDependency, gin.H{
 			"message": "save post back order error",
+			"error":   err.Error(),
 		})
 		return
 	}

@@ -52,6 +52,7 @@ CREATE TABLE aff_transaction (
 CREATE INDEX aff_transaction_created ON aff_transaction (created_at);
 CREATE INDEX aff_transaction_updated ON aff_transaction (updated_at);
 CREATE INDEX aff_transaction_accesstrade_order_id ON aff_transaction (accesstrade_order_id);
+CREATE INDEX aff_transaction_conversion_id ON aff_transaction (accesstrade_conversion_id);
 
 CREATE TABLE aff_order (
   id INT NOT NULL AUTO_INCREMENT,

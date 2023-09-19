@@ -94,12 +94,13 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	consoleRouter.POST("/aff-banner", consoleBannerHandler.AddAffBanner)
 
 	consoleOrderRepo := consoleOrder.NewConsoleOrderRepository(db)
-	consoleOrderUcase := consoleOrder.NewOrderUcase(consoleOrderRepo)
+	consoleOrderUcase := consoleOrder.NewConsoleOrderUcase(consoleOrderRepo)
 	consoleOrderHandler := consoleOrder.NewConsoleOrderHandler(consoleOrderUcase)
 
 	// SECTION: Console Order
 	consoleOrderRouter := consoleRouter.Group("orders", authHandler.CheckAdminHeader())
 	consoleOrderRouter.GET("", consoleOrderHandler.GetOrderList)
+	consoleOrderRouter.GET("/:orderId", consoleOrderHandler.GetOrderByOrderId)
 
 	// SECTION: Reward module
 	rewardRepo := reward.NewRewardRepository(db)

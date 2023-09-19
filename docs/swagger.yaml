@@ -1280,6 +1280,37 @@ paths:
       summary: Get affiliate order list
       tags:
       - console
+  /api/v1/console/orders/:orderId:
+    get:
+      consumes:
+      - application/json
+      description: Get affiliate order by order id
+      parameters:
+      - description: Order id param
+        in: path
+        name: orderId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AffOrder'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get affiliate order by order id
+      tags:
+      - console
   /api/v1/order:
     get:
       consumes:

@@ -8,17 +8,17 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 )
 
-type OrderUcase struct {
+type ConsoleOrderUcase struct {
 	Repo interfaces.ConsoleOrderRepository
 }
 
-func NewOrderUcase(repo interfaces.ConsoleOrderRepository) *OrderUcase {
-	return &OrderUcase{
+func NewConsoleOrderUcase(repo interfaces.ConsoleOrderRepository) *ConsoleOrderUcase {
+	return &ConsoleOrderUcase{
 		Repo: repo,
 	}
 }
 
-func (u *OrderUcase) GetOrderList(q *dto.OrderListQuery) (*dto.OrderListResponse, error) {
+func (u *ConsoleOrderUcase) GetOrderList(q *dto.OrderListQuery) (*dto.OrderListResponse, error) {
 	dbQuery := map[string]any{}
 	if q.OrderStatus != "" {
 		dbQuery["order_status"] = q.OrderStatus
@@ -53,4 +53,15 @@ func (u *OrderUcase) GetOrderList(q *dto.OrderListQuery) (*dto.OrderListResponse
 		resp.Data[idx] = item.ToDto()
 	}
 	return &resp, err
+}
+
+func (u *ConsoleOrderUcase) GetOrderByOrderId(orderId string) (*dto.AffOrder, error) {
+	m, err := u.Repo.FindOrderByOrderId(orderId)
+	if err != nil {
+		return nil, fmt.Errorf("find order failed: %v", err)
+	}
+
+	affOrder := m.ToDto()
+
+	return &affOrder, nil
 }

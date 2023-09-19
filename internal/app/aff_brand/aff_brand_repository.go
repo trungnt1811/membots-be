@@ -2,6 +2,7 @@ package aff_brand
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/model"
@@ -29,7 +30,24 @@ func (r affBrandRepository) GetListCountFavouriteAffBrand(ctx context.Context) (
 
 func (r affBrandRepository) UpdateCacheListCountFavouriteAffBrand(ctx context.Context) error {
 	// must be implemented at cache layer
-	return nil
+	return fmt.Errorf("must be implemented at cache layer")
+}
+
+func (r affBrandRepository) GetListFavAffBrandByUserId(ctx context.Context, userId uint64, page, size int) ([]model.AffCampComFavBrand, error) {
+	var listAffCampComFavBrand []model.AffCampComFavBrand
+	offset := (page - 1) * size
+	err := r.db.Joins("FavoriteBrand").
+		Joins("FavoriteBrand.Brand").
+		Where("FavoriteBrand.user_id = ? AND FavoriteBrand.status = ? AND aff_campaign.stella_status = ?",
+			userId,
+			model.UserFavoriteBrandStatusAdded,
+			model.StellaStatusInProgress,
+		).
+		Limit(size + 1).
+		Offset(offset).
+		Order("FavoriteBrand.updated_at DESC").
+		Find(&listAffCampComFavBrand).Error
+	return listAffCampComFavBrand, err
 }
 
 func NewAffBrandRepository(db *gorm.DB) interfaces.AffBrandRepository {

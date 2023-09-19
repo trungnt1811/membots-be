@@ -865,11 +865,11 @@ paths:
       summary: search aff campaign
       tags:
       - search
-  /api/v1/app/brand/recently-visited-section:
+  /api/v1/app/brand:
     get:
       consumes:
       - application/json
-      description: Get list recently visited section by user
+      description: Get list aff brand by user
       parameters:
       - description: page to query, default is 1
         in: query
@@ -878,6 +878,10 @@ paths:
       - description: size to query, default is 10
         in: query
         name: size
+        type: string
+      - description: filter to query, default is recently-visited (recently-visited/favorite)
+        in: query
+        name: filter
         type: string
       produces:
       - application/json
@@ -896,7 +900,7 @@ paths:
             $ref: '#/definitions/util.GeneralError'
       security:
       - ApiKeyAuth: []
-      summary: Get list recently visited section by user
+      summary: Get list aff brand by user
       tags:
       - app
   /api/v1/app/brand/top-favorited:

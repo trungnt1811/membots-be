@@ -76,3 +76,24 @@ func (s affBrandUCase) GetTopFavouriteAffBrand(ctx context.Context, page, size i
 		Data:     listAffCampaignComBrandDto,
 	}, nil
 }
+
+func (s affBrandUCase) GetListFavAffBrandByUserId(ctx context.Context, userId uint64, page, size int) (dto.AffCampaignAppDtoResponse, error) {
+	listFavAffBrand, err := s.AffBrandRepository.GetListFavAffBrandByUserId(ctx, userId, page, size)
+	if err != nil {
+		return dto.AffCampaignAppDtoResponse{}, err
+	}
+	var listAffCampaignDto []dto.AffCampaignLessDto
+	for i := range listFavAffBrand {
+		listAffCampaignDto = append(listAffCampaignDto, listFavAffBrand[i].ToAffCampaignLessDto())
+	}
+	nextPage := page
+	if len(listFavAffBrand) > size {
+		nextPage += 1
+	}
+	return dto.AffCampaignAppDtoResponse{
+		NextPage: nextPage,
+		Page:     page,
+		Size:     size,
+		Data:     listAffCampaignDto,
+	}, nil
+}

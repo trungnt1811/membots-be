@@ -139,7 +139,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	affBrandUCase := aff_brand.NewAffBrandUCase(affBrandCache, affCampAppCache)
 	affBrandHandler := aff_brand.NewAffBrandHandler(userViewAffCampUCase, affBrandUCase)
 	appRouter.GET("brand/top-favorited", affBrandHandler.GetTopFavouriteAffBrand)
-	appRouter.GET("brand/recently-visited-section", authHandler.CheckUserHeader(), affBrandHandler.GetListRecentlyVisitedSection)
+	appRouter.GET("brand", authHandler.CheckUserHeader(), affBrandHandler.GetListAffBrandByUser)
 
 	affAppBannerRepo := bannerApp.NewAppBannerRepository(db)
 	affAppBannerUCase := bannerApp.NewBannerUCase(affAppBannerRepo)

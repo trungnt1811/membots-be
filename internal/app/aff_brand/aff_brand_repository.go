@@ -2,6 +2,7 @@ package aff_brand
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/model"
@@ -29,7 +30,7 @@ func (r affBrandRepository) GetListCountFavouriteAffBrand(ctx context.Context) (
 
 func (r affBrandRepository) UpdateCacheListCountFavouriteAffBrand(ctx context.Context) error {
 	// must be implemented at cache layer
-	return nil
+	return fmt.Errorf("must be implemented at cache layer")
 }
 
 func (r affBrandRepository) GetListFavAffBrandByUserId(ctx context.Context, userId uint64, page, size int) ([]model.AffCampComFavBrand, error) {

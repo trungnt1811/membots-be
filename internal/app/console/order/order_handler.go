@@ -35,13 +35,41 @@ func (handler *ConsoleOrderHandler) GetOrderList(ctx *gin.Context) {
 	var q dto.OrderListQuery
 	err := ctx.BindQuery(&q)
 	if err != nil {
-		util.RespondError(ctx, http.StatusBadGateway, "parse query error", err)
+		util.RespondError(ctx, http.StatusBadRequest, "parse query error", err)
 		return
 	}
 
 	resp, err := handler.usecase.GetOrderList(&q)
 	if err != nil {
-		util.RespondError(ctx, http.StatusBadGateway, "get list error", err)
+		util.RespondError(ctx, http.StatusFailedDependency, "get list error", err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
+// GetOrderByOrderId Get affiliate order by order id
+// @Summary Get affiliate order by order id
+// @Description Get affiliate order by order id
+// @Tags 	console
+// @Accept	json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param 	orderId	path 	string true "Order id param"
+// @Success 200 		{object}	dto.AffOrder
+// @Failure 424 		{object}	util.GeneralError
+// @Failure 400 		{object}	util.GeneralError
+// @Router 	/api/v1/console/orders/:orderId [get]
+func (handler *ConsoleOrderHandler) GetOrderByOrderId(ctx *gin.Context) {
+	orderId, ok := ctx.Params.Get("orderId")
+	if !ok {
+		util.RespondError(ctx, http.StatusBadRequest, "order_id param is required")
+		return
+	}
+
+	resp, err := handler.usecase.GetOrderByOrderId(orderId)
+	if err != nil {
+		util.RespondError(ctx, http.StatusFailedDependency, "get order error", err)
 		return
 	}
 

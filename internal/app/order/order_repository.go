@@ -65,7 +65,7 @@ func (repo *OrderRepository) UpdateOrCreateATTransactions(newTxs []model.AffTran
 		for _, newTx := range newTxs {
 			// Find by id
 			var oldTx model.AffTransaction
-			err := tx.First(&oldTx, "accesstrade_id = ?", newTx.AccessTradeId).Error
+			err := tx.First(&oldTx, "accesstrade_conversion_id = ?", newTx.AccessTradeConversionId).Error
 			if err != nil {
 				if err.Error() == "record not found" {
 					// If tx is not found, create one

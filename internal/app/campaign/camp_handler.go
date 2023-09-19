@@ -2,6 +2,7 @@ package campaign
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/util"
@@ -34,20 +35,22 @@ func NewCampaignHandler(usecase interfaces.CampaignUCase) *CampaignHandler {
 // @Router 	/api/v1/campaign/link [post]
 func (handler *CampaignHandler) PostGenerateAffLink(ctx *gin.Context) {
 	// First, take user from JWT
-	user, err := dto.GetUserInfo(ctx)
-	if err != nil {
-		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
-		return
-	}
+	// user, err := dto.GetUserInfo(ctx)
+	// if err != nil {
+	// 	util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
+	// 	return
+	// }
 	// Then verify payload data
 	var payload dto.CreateLinkPayload
-	err = ctx.BindJSON(&payload)
+	err := ctx.BindJSON(&payload)
 	if err != nil {
 		util.RespondError(ctx, http.StatusBadRequest, "payload required", err)
 		return
 	}
 
-	link, err := handler.usecase.GenerateAffLink(uint64(user.ID), &payload)
+	uIdq, _ := ctx.GetQuery("user_id")
+	uId, _ := strconv.ParseUint(uIdq, 10, 64)
+	link, err := handler.usecase.GenerateAffLink(uId, &payload)
 	if err != nil {
 		util.RespondError(ctx, http.StatusFailedDependency, "create link fail", err)
 		return

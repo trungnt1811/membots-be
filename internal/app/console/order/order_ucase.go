@@ -56,12 +56,16 @@ func (u *ConsoleOrderUcase) GetOrderList(q *dto.OrderListQuery) (*dto.OrderListR
 }
 
 func (u *ConsoleOrderUcase) GetOrderByOrderId(orderId string) (*dto.AffOrder, error) {
-	m, err := u.Repo.FindOrderByOrderId(orderId)
+	order, txs, err := u.Repo.FindOrderByOrderId(orderId)
 	if err != nil {
 		return nil, fmt.Errorf("find order failed: %v", err)
 	}
 
-	affOrder := m.ToDto()
+	affOrder := order.ToDto()
+	affOrder.Transactions = make([]dto.AffTransaction, len(txs))
+	for i, tx := range txs {
+		affOrder.Transactions[i] = tx.ToDto()
+	}
 
 	return &affOrder, nil
 }

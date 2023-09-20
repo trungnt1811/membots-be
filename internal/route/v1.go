@@ -11,6 +11,7 @@ import (
 	bannerConsole "github.com/astraprotocol/affiliate-system/internal/app/console/banner"
 	consoleOrder "github.com/astraprotocol/affiliate-system/internal/app/console/order"
 	"github.com/astraprotocol/affiliate-system/internal/app/console/statistic"
+	"github.com/astraprotocol/affiliate-system/internal/app/user_favorite_brand"
 	"github.com/go-co-op/gocron"
 
 	"github.com/astraprotocol/affiliate-system/conf"
@@ -142,9 +143,12 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, chan
 	userViewAffCampCache := user_view_aff_camp.NewUserViewAffCampCacheRepository(userViewAffCampRepository, redisClient)
 	userViewAffCampUCase := user_view_aff_camp.NewUserViewAffCampUCase(userViewAffCampCache)
 
+	userFavoriteBrandRepository := user_favorite_brand.NewUserFavoriteBrandRepository(db)
+	userFavoriteBrandCache := user_favorite_brand.NewUserFavoriteBrandCacheRepository(userFavoriteBrandRepository, redisClient)
+
 	affBrandRepository := aff_brand.NewAffBrandRepository(db)
 	affBrandCache := aff_brand.NewAffBrandCacheRepository(affBrandRepository, redisClient)
-	affBrandUCase := aff_brand.NewAffBrandUCase(affBrandCache, affCampAppCache)
+	affBrandUCase := aff_brand.NewAffBrandUCase(affBrandCache, affCampAppCache, userFavoriteBrandCache)
 	affBrandHandler := aff_brand.NewAffBrandHandler(userViewAffCampUCase, affBrandUCase)
 	appRouter.GET("brand/top-favorited", authHandler.CheckUserHeader(), affBrandHandler.GetTopFavouriteAffBrand)
 	appRouter.GET("brand", authHandler.CheckUserHeader(), affBrandHandler.GetListAffBrandByUser)

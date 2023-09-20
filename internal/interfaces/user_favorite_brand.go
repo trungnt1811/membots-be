@@ -7,5 +7,5 @@ import (
 )
 
 type UserFavoriteBrandRepository interface {
-	GetListFavBrandByUserIdAndBrandIds(ctx context.Context, userId int64, brandIds []uint64) ([]model.UserFavoriteBrand, error)
+	GetListFavBrandByUserIdAndBrandIds(ctx context.Context, userId uint64, brandIds []uint64) ([]model.UserFavoriteBrand, error)
 }

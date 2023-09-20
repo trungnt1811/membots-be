@@ -10,14 +10,14 @@ func (e *AffBanner) TableName() string {
 }
 
 type AffBanner struct {
-	ID            uint32          `json:"id" gorm:"primaryKey"`
-	Name          string          `json:"name"`
-	Thumbnail     string          `json:"thumbnail"`
-	Url           string          `json:"url"`
-	AccessTradeId string          `json:"accesstrade_id" gorm:"column:accesstrade_id"`
-	AffCampaign   AffCampaignLess `json:"aff_campaign" gorm:"foreignKey:AccessTradeId;references:AccessTradeId"`
-	CreatedAt     *time.Time      `json:"created_at"`
-	Status        string          `json:"status"`
+	ID            uint32             `json:"id" gorm:"primaryKey"`
+	Name          string             `json:"name"`
+	Thumbnail     string             `json:"thumbnail"`
+	Url           string             `json:"url"`
+	AccessTradeId string             `json:"accesstrade_id" gorm:"column:accesstrade_id"`
+	AffCampaign   AffCampaignLessApp `json:"aff_campaign" gorm:"foreignKey:AccessTradeId;references:AccessTradeId"`
+	CreatedAt     *time.Time         `json:"created_at"`
+	Status        string             `json:"status"`
 }
 
 func (c *AffBanner) ToDto() dto.AffBannerDto {

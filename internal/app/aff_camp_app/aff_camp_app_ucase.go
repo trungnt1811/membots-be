@@ -5,6 +5,7 @@ import (
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
+	"github.com/astraprotocol/affiliate-system/internal/model"
 )
 
 type affCampAppUCase struct {
@@ -47,8 +48,12 @@ func (s affCampAppUCase) GetAffCampaignById(ctx context.Context, id uint64, user
 	if err != nil {
 		return dto.AffCampaignAppDto{}, err
 	}
+	// Get top 10 fav brand
 	favTopBrandCheck := make(map[uint64]bool)
-	for _, countFavAffBrand := range listCountFavAffBrand {
+	for index, countFavAffBrand := range listCountFavAffBrand {
+		if index >= model.FavoritedBrandsInTop {
+			break
+		}
 		favTopBrandCheck[countFavAffBrand.BrandId] = true
 	}
 

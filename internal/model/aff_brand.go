@@ -2,15 +2,19 @@ package model
 
 import "github.com/astraprotocol/affiliate-system/internal/dto"
 
-func (e *Brand) TableName() string {
-	return "brand"
-}
+const (
+	FavoritedBrandsInTop = 10
+)
 
 type Brand struct {
 	ID         uint32  `json:"id" gorm:"primaryKey"`
 	Name       string  `json:"name"`
 	Logo       string  `json:"logo"`
 	CoverPhoto *string `json:"cover_photo"`
+}
+
+func (e *Brand) TableName() string {
+	return "brand"
 }
 
 func (c *Brand) ToBrandDto() dto.BrandDto {

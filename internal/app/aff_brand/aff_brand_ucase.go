@@ -8,17 +8,20 @@ import (
 )
 
 type affBrandUCase struct {
-	AffBrandRepository   interfaces.AffBrandRepository
-	AffCampAppRepository interfaces.AffCampAppRepository
+	AffBrandRepository          interfaces.AffBrandRepository
+	AffCampAppRepository        interfaces.AffCampAppRepository
+	UserFavoriteBrandRepository interfaces.UserFavoriteBrandRepository
 }
 
 func NewAffBrandUCase(
 	affBrandRepository interfaces.AffBrandRepository,
 	affCampAppRepository interfaces.AffCampAppRepository,
+	userFavoriteBrandRepository interfaces.UserFavoriteBrandRepository,
 ) interfaces.AffBrandUCase {
 	return &affBrandUCase{
-		AffBrandRepository:   affBrandRepository,
-		AffCampAppRepository: affCampAppRepository,
+		AffBrandRepository:          affBrandRepository,
+		AffCampAppRepository:        affCampAppRepository,
+		UserFavoriteBrandRepository: userFavoriteBrandRepository,
 	}
 }
 
@@ -26,7 +29,7 @@ func (s affBrandUCase) UpdateCacheListCountFavouriteAffBrand(ctx context.Context
 	return s.AffBrandRepository.UpdateCacheListCountFavouriteAffBrand(ctx)
 }
 
-func (s affBrandUCase) GetTopFavouriteAffBrand(ctx context.Context, page, size int) (dto.AffCampaignAppDtoResponse, error) {
+func (s affBrandUCase) GetTopFavouriteAffBrand(ctx context.Context, userId uint64, page, size int) (dto.AffCampaignAppDtoResponse, error) {
 	listCountFavAffBrand, err := s.AffBrandRepository.GetListCountFavouriteAffBrand(ctx)
 	if err != nil {
 		return dto.AffCampaignAppDtoResponse{}, err
@@ -64,9 +67,19 @@ func (s affBrandUCase) GetTopFavouriteAffBrand(ctx context.Context, page, size i
 		return dto.AffCampaignAppDtoResponse{}, err
 	}
 
+	listUserFavBrand, err := s.UserFavoriteBrandRepository.GetListFavBrandByUserIdAndBrandIds(ctx, userId, brandIds)
+	if err != nil {
+		return dto.AffCampaignAppDtoResponse{}, err
+	}
+	favBrandCheck := make(map[uint64]bool)
+	for _, userFavBrand := range listUserFavBrand {
+		favBrandCheck[uint64(userFavBrand.BrandId)] = true
+	}
+
 	var listAffCampaignComBrandDto []dto.AffCampaignLessDto
 	for i := range listFavAffBrand {
 		listAffCampaignComBrandDto = append(listAffCampaignComBrandDto, listFavAffBrand[i].ToAffCampaignLessDto())
+		listAffCampaignComBrandDto[i].Brand.IsFavorited = favBrandCheck[listAffCampaignComBrandDto[i].BrandId]
 	}
 	return dto.AffCampaignAppDtoResponse{
 		NextPage: nextPage,

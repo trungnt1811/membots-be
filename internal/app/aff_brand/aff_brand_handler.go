@@ -36,12 +36,20 @@ func NewAffBrandHandler(
 // @Success 200 		{object}	[]dto.AffCampaignLessDto
 // @Failure 401 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
+// @Security ApiKeyAuth
 // @Router 	/api/v1/app/brand/top-favorited [get]
 func (handler *AffBrandHandler) GetTopFavouriteAffBrand(ctx *gin.Context) {
+	// First, take user from JWT
+	user, err := dto.GetUserInfo(ctx)
+	if err != nil {
+		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
+		return
+	}
+
 	page := ctx.GetInt("page")
 	size := ctx.GetInt("size")
 
-	response, err := handler.AffBrandUCase.GetTopFavouriteAffBrand(ctx, page, size)
+	response, err := handler.AffBrandUCase.GetTopFavouriteAffBrand(ctx, uint64(user.ID), page, size)
 	if err != nil {
 		util.RespondError(ctx, http.StatusInternalServerError, "Get top favorited aff brands error: ", err)
 		return

@@ -30,6 +30,7 @@ func NewUserViewAffCampCacheRepository(repo interfaces.UserViewAffCampRepository
 func (c userViewAffCampCache) CreateUserViewAffCamp(ctx context.Context, data *model.UserViewAffCamp) error {
 	return c.UserViewAffCampRepository.CreateUserViewAffCamp(ctx, data)
 }
+
 func (c userViewAffCampCache) GetListUserViewAffCampByUserId(ctx context.Context, userId uint64, page, size int) ([]model.UserViewAffCampComBrand, error) {
 	key := &caching.Keyer{Raw: keyPrefixUserViewAffCamp + fmt.Sprint("GetListUserViewAffCampByUserId_", userId, "_", page, "_", size)}
 	var listUserViewAffCamp []model.UserViewAffCampComBrand

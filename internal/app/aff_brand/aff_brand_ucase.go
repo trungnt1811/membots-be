@@ -26,7 +26,7 @@ func (s affBrandUCase) UpdateCacheListCountFavouriteAffBrand(ctx context.Context
 	return s.AffBrandRepository.UpdateCacheListCountFavouriteAffBrand(ctx)
 }
 
-func (s affBrandUCase) GetTopFavouriteAffBrand(ctx context.Context, page, size int) (dto.AffCampaignAppDtoResponse, error) {
+func (s affBrandUCase) GetTopFavouriteAffBrand(ctx context.Context, userId uint64, page, size int) (dto.AffCampaignAppDtoResponse, error) {
 	listCountFavAffBrand, err := s.AffBrandRepository.GetListCountFavouriteAffBrand(ctx)
 	if err != nil {
 		return dto.AffCampaignAppDtoResponse{}, err

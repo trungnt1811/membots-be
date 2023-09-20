@@ -25,38 +25,6 @@ func NewAffBrandHandler(
 	}
 }
 
-// GetTopFavouriteAffBrand Get top favorited aff brands
-// @Summary Get top favorited aff brands
-// @Description Get top favorited aff brands
-// @Tags 	app
-// @Accept	json
-// @Produce json
-// @Param page query string false "page to query, default is 1"
-// @Param size query string false "size to query, default is 10"
-// @Success 200 		{object}	[]dto.AffCampaignLessDto
-// @Failure 401 		{object}	util.GeneralError
-// @Failure 400 		{object}	util.GeneralError
-// @Security ApiKeyAuth
-// @Router 	/api/v1/app/brand/top-favorited [get]
-func (handler *AffBrandHandler) GetTopFavouriteAffBrand(ctx *gin.Context) {
-	// First, take user from JWT
-	user, err := dto.GetUserInfo(ctx)
-	if err != nil {
-		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
-		return
-	}
-
-	page := ctx.GetInt("page")
-	size := ctx.GetInt("size")
-
-	response, err := handler.AffBrandUCase.GetTopFavouriteAffBrand(ctx, uint64(user.ID), page, size)
-	if err != nil {
-		util.RespondError(ctx, http.StatusInternalServerError, "Get top favorited aff brands error: ", err)
-		return
-	}
-	ctx.JSON(http.StatusOK, response)
-}
-
 // GetListAffBrandByUser Get list aff brand by user
 // @Summary Get list aff brand by user
 // @Description Get list aff brand by user
@@ -65,7 +33,7 @@ func (handler *AffBrandHandler) GetTopFavouriteAffBrand(ctx *gin.Context) {
 // @Produce json
 // @Param page query string false "page to query, default is 1"
 // @Param size query string false "size to query, default is 10"
-// @Param filter query string false "filter to query, default is recently-visited (recently-visited/favorite)"
+// @Param filter query string false "filter to query, default is recently-visited (recently-visited/top-favorited/favorite)"
 // @Success 200 		{object}	dto.AffCampaignAppDtoResponse
 // @Failure 401 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
@@ -96,6 +64,14 @@ func (handler *AffBrandHandler) GetListAffBrandByUser(ctx *gin.Context) {
 		response, err := handler.AffBrandUCase.GetListFavAffBrandByUserId(ctx, uint64(user.ID), page, size)
 		if err != nil {
 			util.RespondError(ctx, http.StatusInternalServerError, "Get list fav brand by user error: ", err)
+			return
+		}
+		ctx.JSON(http.StatusOK, response)
+		return
+	case "top-favorited":
+		response, err := handler.AffBrandUCase.GetTopFavouriteAffBrand(ctx, uint64(user.ID), page, size)
+		if err != nil {
+			util.RespondError(ctx, http.StatusInternalServerError, "Get top favorited aff brands error: ", err)
 			return
 		}
 		ctx.JSON(http.StatusOK, response)

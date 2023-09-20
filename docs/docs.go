@@ -2026,6 +2026,9 @@ const docTemplate = `{
                 "is_favorited": {
                     "type": "boolean"
                 },
+                "is_top_favorited": {
+                    "type": "boolean"
+                },
                 "logo": {
                     "type": "string"
                 },

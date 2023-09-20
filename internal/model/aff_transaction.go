@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade/types"
+	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/util/log"
 	"gorm.io/datatypes"
 )
@@ -47,6 +48,49 @@ type AffTransaction struct {
 
 func (m *AffTransaction) TableName() string {
 	return "aff_transaction"
+}
+
+func (m *AffTransaction) ToDto() dto.AffTransaction {
+	var extra map[string]any
+	err := json.Unmarshal([]byte(m.Extra.String()), &extra)
+	if err != nil {
+		log.LG.Errorf("scan _extra error: %v", err)
+	}
+	return dto.AffTransaction{
+		ID:                      m.ID,
+		UserId:                  m.UserId,
+		CreatedAt:               m.CreatedAt,
+		UpdatedAt:               m.UpdatedAt,
+		AccessTradeId:           m.AccessTradeId,
+		AccessTradeOrderId:      m.AccessTradeOrderId,
+		AccessTradeConversionId: m.AccessTradeConversionId,
+		Merchant:                m.Merchant,
+		Status:                  m.Status,
+		ClickTime:               m.ClickTime,
+		TransactionTime:         m.TransactionTime,
+		TransactionValue:        m.TransactionValue,
+		UpdateTime:              m.UpdateTime,
+		ConfirmedTime:           m.ConfirmedTime,
+		IsConfirmed:             m.IsConfirmed,
+		Commission:              m.Commission,
+		ProductId:               m.ProductId,
+		ProductName:             m.ProductName,
+		ProductPrice:            m.ProductPrice,
+		ProductQuantity:         m.ProductQuantity,
+		ProductImage:            m.ProductImage,
+		ProductCategory:         m.ProductCategory,
+		Extra:                   extra,
+		CategoryName:            m.CategoryName,
+		ConversionPlatform:      m.ConversionPlatform,
+		ClickURL:                m.ClickURL,
+		UTMTerm:                 m.UTMTerm,
+		UTMSource:               m.UTMSource,
+		UTMCampaign:             m.UTMCampaign,
+		UTMMedium:               m.UTMMedium,
+		UTMContent:              m.UTMContent,
+		ReasonRejected:          m.ReasonRejected,
+		CustomerType:            m.CustomerType,
+	}
 }
 
 func NewAffTransactionFromAT(order *AffOrder, atTx *types.ATTransaction) *AffTransaction {

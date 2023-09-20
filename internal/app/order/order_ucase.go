@@ -133,13 +133,14 @@ func (u *OrderUcase) PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*m
 
 // The `SyncTransactionsByOrder` function is responsible for synchronizing transactions for a given
 // order.
+// TODO: Sync txs every day instead of order time
 func (u *OrderUcase) SyncTransactionsByOrder(atOrderId string) (int, error) {
 	// First find created order
 	order, err := u.Repo.FindOrderByAccessTradeId(atOrderId)
 	if err != nil {
 		return 0, fmt.Errorf("find order id \"%s\" failed: %v", atOrderId, err)
 	}
-	since, until := util.GetSinceUntilTime(order.SalesTime, 1)
+	since, until := util.GetSinceUntilTime(order.SalesTime, 2)
 	txs, err := u.ATRepo.QueryTransactions(types.ATTransactionQuery{
 		Since:         since,
 		Until:         until,

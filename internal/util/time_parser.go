@@ -13,9 +13,9 @@ func ParsePostBackTime(s string) (time.Time, error) {
 	return t, err
 }
 
-func GetSinceUntilTime(t time.Time, nDate int) (time.Time, time.Time) {
-	since := time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location())
+func GetSinceUntilTime(middle time.Time, nDate int) (time.Time, time.Time) {
 	nHours := time.Duration(nDate * 24)
-	until := since.Add(time.Duration(nHours * time.Hour))
+	since := middle.Add(time.Duration(-nHours * time.Hour))
+	until := middle.Add(time.Duration(nHours * time.Hour))
 	return since, until
 }

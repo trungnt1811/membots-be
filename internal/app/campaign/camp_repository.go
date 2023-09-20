@@ -64,6 +64,7 @@ func (repo *CampaignRepository) SaveATCampaign(atCampaign *types.ATCampaign) err
 			"introduction": "",
 			"other_notice": "",
 			"rejected_reason": "",
+			"cookie_policy": "",
 			"traffic_building_policy": ""}`),
 	}
 	if !atCampaign.StartTime.IsZero() {

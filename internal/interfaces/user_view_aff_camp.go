@@ -13,5 +13,5 @@ type UserViewAffCampRepository interface {
 }
 
 type UserViewAffCampUCase interface {
-	GetListUserViewAffCampByUserId(ctx context.Context, userId uint64, page, size int) (dto.AffCampaignComBrandDtoResponse, error)
+	GetListUserViewAffCampByUserId(ctx context.Context, userId uint64, page, size int) (dto.AffCampaignAppDtoResponse, error)
 }

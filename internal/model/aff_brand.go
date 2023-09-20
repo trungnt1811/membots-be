@@ -32,3 +32,8 @@ type AffMerchantBrand struct {
 func (c *AffMerchantBrand) TableName() string {
 	return "aff_merchant_brand"
 }
+
+type TotalFavoriteBrand struct {
+	BrandId       uint64 `json:"brand_id"`
+	TotalFavorite uint64 `json:"total_fav"`
+}

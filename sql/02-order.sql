@@ -13,8 +13,8 @@ CREATE INDEX aff_merchant_brand_idx ON aff_merchant_brand (merchant);
 CREATE TABLE aff_transaction (
   id INT NOT NULL AUTO_INCREMENT,
   user_id INT NOT NULL,
-  created_at DATETIME,
-  updated_at DATETIME,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   -- ACCESS TRADE DATA
   accesstrade_id NVARCHAR(256),
   accesstrade_order_id NVARCHAR(256),
@@ -52,12 +52,13 @@ CREATE TABLE aff_transaction (
 CREATE INDEX aff_transaction_created ON aff_transaction (created_at);
 CREATE INDEX aff_transaction_updated ON aff_transaction (updated_at);
 CREATE INDEX aff_transaction_accesstrade_order_id ON aff_transaction (accesstrade_order_id);
+CREATE INDEX aff_transaction_conversion_id ON aff_transaction (accesstrade_conversion_id);
 
 CREATE TABLE aff_order (
   id INT NOT NULL AUTO_INCREMENT,
   aff_link NVARCHAR(1024),
-  created_at DATETIME,
-  updated_at DATETIME,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   user_id INT NOT NULL,
   order_status ENUM ('initial','pending','approved', 'rejected', 'rewarding', 'success'),
   -- ACCESS TRADE DATA
@@ -101,8 +102,8 @@ CREATE INDEX aff_order_accesstrade_order_id ON aff_order (accesstrade_order_id);
 CREATE TABLE aff_postback_log (
   id INT NOT NULL AUTO_INCREMENT,
   order_id NVARCHAR(256),
-  created_at DATETIME,
-  updated_at DATETIME,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   data JSON,
   PRIMARY KEY (id)
 ) ENGINE = InnoDB;
@@ -116,10 +117,9 @@ CREATE TABLE aff_tracked_click (
   campaign_id INT,
   user_id INT,
   link_id INT,
-  created_at DATETIME,
-  updated_at DATETIME,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   aff_link NVARCHAR(1024),
-  short_link NVARCHAR(1024),
   url_origin NVARCHAR(1024),
   order_id NVARCHAR(256),
   PRIMARY KEY (id),

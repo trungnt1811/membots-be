@@ -35,14 +35,14 @@ func NewCampaignHandler(usecase interfaces.CampaignUCase) *CampaignHandler {
 // @Router 	/api/v1/campaign/link [post]
 func (handler *CampaignHandler) PostGenerateAffLink(ctx *gin.Context) {
 	// First, take user from JWT
-	_, err := dto.GetUserInfo(ctx)
-	if err != nil {
-		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
-		return
-	}
+	// user, err := dto.GetUserInfo(ctx)
+	// if err != nil {
+	// 	util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
+	// 	return
+	// }
 	// Then verify payload data
 	var payload dto.CreateLinkPayload
-	err = ctx.BindJSON(&payload)
+	err := ctx.BindJSON(&payload)
 	if err != nil {
 		util.RespondError(ctx, http.StatusBadRequest, "payload required", err)
 		return

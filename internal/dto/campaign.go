@@ -19,7 +19,6 @@ func (p *CreateLinkPayload) IsValid() error {
 type CreateLinkResponse struct {
 	CampaignId  uint   `json:"campaign_id"`
 	AffLink     string `json:"aff_link"`
-	ShortLink   string `json:"short_link"`
 	OriginalUrl string `json:"original_url"`
 	BrandNew    bool   `json:"brand_new"`
 }

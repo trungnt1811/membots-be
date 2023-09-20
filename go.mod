@@ -3,22 +3,19 @@ module github.com/astraprotocol/affiliate-system
 go 1.19
 
 require (
-	github.com/AstraProtocol/reward-libs v0.0.7
+	github.com/AstraProtocol/reward-libs v0.0.8
 	github.com/bwmarrin/discordgo v0.27.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/ethereum/go-ethereum v1.10.26
 	github.com/ettle/strcase v0.1.1
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-co-op/gocron v1.32.1
-	github.com/go-redis/redis/v8 v8.11.5
-	github.com/golang-jwt/jwt/v4 v4.3.0
 	github.com/grokify/html-strip-tags-go v0.0.1
 	github.com/imroc/req/v3 v3.35.0
 	github.com/mcuadros/go-gin-prometheus v0.1.0
 	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.29.0
 	github.com/segmentio/kafka-go v0.4.39
-	github.com/shopspring/decimal v1.3.1
 	github.com/spf13/viper v1.15.0
 	github.com/stretchr/testify v1.8.4
 	github.com/swaggo/files v1.0.0
@@ -115,7 +112,6 @@ require (
 	github.com/prometheus/common v0.42.0 // indirect
 	github.com/prometheus/procfs v0.9.0 // indirect
 	github.com/redis/go-redis/v9 v9.1.0
-	github.com/samber/lo v1.38.1
 	github.com/sirupsen/logrus v1.9.0 // indirect
 	github.com/spf13/afero v1.9.3 // indirect
 	github.com/spf13/cast v1.5.0 // indirect

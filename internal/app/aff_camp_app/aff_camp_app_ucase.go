@@ -41,12 +41,12 @@ func (s affCampAppUCase) GetAllAffCampaign(ctx context.Context, page, size int) 
 	if err != nil {
 		return dto.AffCampaignAppDtoResponse{}, err
 	}
-	var listAffCampaignAppDto []dto.AffCampaignAppDto
+	var listAffCampaignAppDto []dto.AffCampaignLessDto
 	for i := range listAffCampaign {
 		if i >= size {
 			break
 		}
-		listAffCampaignAppDto = append(listAffCampaignAppDto, listAffCampaign[i].ToAffCampaignAppDto())
+		listAffCampaignAppDto = append(listAffCampaignAppDto, listAffCampaign[i].ToDto())
 	}
 	nextPage := page
 	if len(listAffCampaign) > size {

@@ -2,10 +2,17 @@ package route
 
 import (
 	"context"
+	"time"
 
 	bannerApp "github.com/astraprotocol/affiliate-system/internal/app/aff_banner_app"
+	"github.com/astraprotocol/affiliate-system/internal/app/aff_brand"
+	categoryApp "github.com/astraprotocol/affiliate-system/internal/app/aff_category_app"
 	"github.com/astraprotocol/affiliate-system/internal/app/aff_search"
 	bannerConsole "github.com/astraprotocol/affiliate-system/internal/app/console/banner"
+	consoleOrder "github.com/astraprotocol/affiliate-system/internal/app/console/order"
+	"github.com/astraprotocol/affiliate-system/internal/app/console/statistic"
+	"github.com/astraprotocol/affiliate-system/internal/app/user_favorite_brand"
+	"github.com/go-co-op/gocron"
 
 	"github.com/astraprotocol/affiliate-system/conf"
 	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade"
@@ -90,6 +97,21 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	consoleRouter.GET("/aff-banner/:id", consoleBannerHandler.GetBannerById)
 	consoleRouter.POST("/aff-banner", consoleBannerHandler.AddAffBanner)
 
+	consoleOrderRepo := consoleOrder.NewConsoleOrderRepository(db)
+	consoleOrderUcase := consoleOrder.NewConsoleOrderUcase(consoleOrderRepo)
+	consoleOrderHandler := consoleOrder.NewConsoleOrderHandler(consoleOrderUcase)
+
+	// SECTION: Console Order
+	consoleOrderRouter := consoleRouter.Group("orders", authHandler.CheckAdminHeader())
+	consoleOrderRouter.GET("", consoleOrderHandler.GetOrderList)
+	consoleOrderRouter.GET("/:orderId", consoleOrderHandler.GetOrderByOrderId)
+
+	// SECTION: Console Summary
+	statisticRepo := statistic.NewStatisticRepository(db)
+	statisticUcase := statistic.NewStatisticUcase(statisticRepo)
+	statisticHandler := statistic.NewStatisticHandler(statisticUcase)
+	consoleRouter.GET("/summary", authHandler.CheckAdminHeader(), statisticHandler.GetSummary)
+
 	// SECTION: Reward module
 	rewardRepo := reward.NewRewardRepository(db)
 	rewardUsecase := reward.NewRewardUsecase(rewardRepo, orderRepo, shippingClient)
@@ -119,8 +141,15 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	userViewAffCampRepository := user_view_aff_camp.NewUserViewAffCampRepository(db)
 	userViewAffCampCache := user_view_aff_camp.NewUserViewAffCampCacheRepository(userViewAffCampRepository, redisClient)
 	userViewAffCampUCase := user_view_aff_camp.NewUserViewAffCampUCase(userViewAffCampCache)
-	userViewAffCampHandler := user_view_aff_camp.NewUserViewAffCampHandler(userViewAffCampUCase)
-	appRouter.GET("brand/recently-visited-section", authHandler.CheckUserHeader(), userViewAffCampHandler.GetListRecentlyVisitedSection)
+
+	userFavoriteBrandRepository := user_favorite_brand.NewUserFavoriteBrandRepository(db)
+	userFavoriteBrandCache := user_favorite_brand.NewUserFavoriteBrandCacheRepository(userFavoriteBrandRepository, redisClient)
+
+	affBrandRepository := aff_brand.NewAffBrandRepository(db)
+	affBrandCache := aff_brand.NewAffBrandCacheRepository(affBrandRepository, redisClient)
+	affBrandUCase := aff_brand.NewAffBrandUCase(affBrandCache, affCampAppCache, userFavoriteBrandCache)
+	affBrandHandler := aff_brand.NewAffBrandHandler(userViewAffCampUCase, affBrandUCase)
+	appRouter.GET("brand", authHandler.CheckUserHeader(), affBrandHandler.GetListAffBrandByUser)
 
 	affAppBannerRepo := bannerApp.NewAppBannerRepository(db)
 	affAppBannerUCase := bannerApp.NewBannerUCase(affAppBannerRepo)
@@ -129,8 +158,23 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	appRouter.GET("/aff-banner", affAppBannerHandler.GetAllBanner)
 	appRouter.GET("/aff-banner/:id", affAppBannerHandler.GetBannerById)
 
+	affCategoryRepo := categoryApp.NewAppCategoryRepository(db)
+	affCategoryUCase := categoryApp.NewAffCategoryUCase(affCategoryRepo)
+	affCategoryHandler := categoryApp.NewAffCategoryHandler(affCategoryUCase)
+	appRouter.GET("/aff-categories", affCategoryHandler.GetAllCategory)
+	appRouter.GET("/aff-categories/:categoryId", affCategoryHandler.GetAllAffCampaignInCategory)
+
 	affSearchRepo := aff_search.NewAffSearchRepository(db)
 	affSearchUCase := aff_search.NewAffSearchUCase(affSearchRepo)
 	affSearchHandler := aff_search.NewAffSearchHandler(affSearchUCase)
 	appRouter.GET("/aff-search", affSearchHandler.AffSearch)
+
+	// SECTION: Cron jobs
+	cron := gocron.NewScheduler(time.UTC)
+	_, err := cron.Every(5).Minute().Do(func() {
+		affBrandUCase.UpdateCacheListCountFavouriteAffBrand(context.Background())
+	})
+	if err == nil {
+		cron.StartAsync()
+	}
 }

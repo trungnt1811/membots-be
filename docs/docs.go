@@ -411,7 +411,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "filter to query, default is recently-visited (recently-visited/favorite)",
+                        "description": "filter to query, default is recently-visited (recently-visited/top-favorited/favorite)",
                         "name": "filter",
                         "in": "query"
                     }
@@ -421,58 +421,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/dto.AffCampaignAppDtoResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/util.GeneralError"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/util.GeneralError"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/app/brand/top-favorited": {
-            "get": {
-                "description": "Get top favorited aff brands",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "app"
-                ],
-                "summary": "Get top favorited aff brands",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "page to query, default is 1",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "size to query, default is 10",
-                        "name": "size",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/dto.AffCampaignLessDto"
-                            }
                         }
                     },
                     "400": {
@@ -2074,6 +2022,9 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                },
+                "is_favorited": {
+                    "type": "boolean"
                 },
                 "logo": {
                     "type": "string"

@@ -139,13 +139,14 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 
 	affCampAppRepository := aff_camp_app.NewAffCampAppRepository(db)
 	affCampAppCache := aff_camp_app.NewAffCampAppCacheRepository(affCampAppRepository, redisClient)
-	affCampAppUCase := aff_camp_app.NewAffCampAppUCase(affCampAppCache, streamChannel)
+	affBrandRepository := aff_brand.NewAffBrandRepository(db)
+	affBrandCache := aff_brand.NewAffBrandCacheRepository(affBrandRepository, redisClient)
+
+	affCampAppUCase := aff_camp_app.NewAffCampAppUCase(affCampAppCache, affBrandCache, userFavoriteBrandCache, streamChannel)
 	affCampAppHandler := aff_camp_app.NewAffCampAppHandler(affCampAppUCase)
 	appRouter.GET("/aff-campaign", authHandler.CheckUserHeader(), affCampAppHandler.GetAllAffCampaign)
 	appRouter.GET("/aff-campaign/:id", authHandler.CheckUserHeader(), affCampAppHandler.GetAffCampaignById)
 
-	affBrandRepository := aff_brand.NewAffBrandRepository(db)
-	affBrandCache := aff_brand.NewAffBrandCacheRepository(affBrandRepository, redisClient)
 	affBrandUCase := aff_brand.NewAffBrandUCase(affBrandCache, affCampAppCache, userFavoriteBrandCache)
 	affBrandHandler := aff_brand.NewAffBrandHandler(userViewAffCampUCase, affBrandUCase)
 	appRouter.GET("brand", authHandler.CheckUserHeader(), affBrandHandler.GetListAffBrandByUser)

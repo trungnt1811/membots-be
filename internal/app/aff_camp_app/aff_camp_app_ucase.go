@@ -52,10 +52,12 @@ func (s affCampAppUCase) GetAffCampaignById(ctx context.Context, id uint64, user
 		favTopBrandCheck[countFavAffBrand.BrandId] = true
 	}
 
+	brandIds := make([]uint64, 0)
+	brandIds = append(brandIds, affCampaign.BrandId)
 	listUserFavBrand, err := s.UserFavoriteBrandRepository.GetListFavBrandByUserIdAndBrandIds(
 		ctx,
 		uint64(userId),
-		make([]uint64, affCampaign.BrandId),
+		brandIds,
 	)
 	if err != nil {
 		return dto.AffCampaignAppDto{}, err

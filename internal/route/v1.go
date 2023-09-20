@@ -124,17 +124,9 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	rewardRouter.POST("/withdraw", rewardHandler.WithdrawReward)
 
 	// SECTION: App module
-	streamChannel := make(chan []*dto.UserViewAffCampDto, 1024)
-
 	appRouter := v1.Group("/app")
 
-	affCampAppRepository := aff_camp_app.NewAffCampAppRepository(db)
-	affCampAppCache := aff_camp_app.NewAffCampAppCacheRepository(affCampAppRepository, redisClient)
-	affCampAppUCase := aff_camp_app.NewAffCampAppUCase(affCampAppCache, streamChannel)
-	affCampAppHandler := aff_camp_app.NewAffCampAppHandler(affCampAppUCase)
-	appRouter.GET("/aff-campaign", authHandler.CheckUserHeader(), affCampAppHandler.GetAllAffCampaign)
-	appRouter.GET("/aff-campaign/:id", authHandler.CheckUserHeader(), affCampAppHandler.GetAffCampaignById)
-
+	streamChannel := make(chan []*dto.UserViewAffCampDto, 1024)
 	userViewAffCampProducer := msgqueue.NewUserViewAffCampProducer(userViewAffCampQueue, streamChannel)
 	userViewAffCampProducer.Start()
 
@@ -144,6 +136,13 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 
 	userFavoriteBrandRepository := user_favorite_brand.NewUserFavoriteBrandRepository(db)
 	userFavoriteBrandCache := user_favorite_brand.NewUserFavoriteBrandCacheRepository(userFavoriteBrandRepository, redisClient)
+
+	affCampAppRepository := aff_camp_app.NewAffCampAppRepository(db)
+	affCampAppCache := aff_camp_app.NewAffCampAppCacheRepository(affCampAppRepository, redisClient)
+	affCampAppUCase := aff_camp_app.NewAffCampAppUCase(affCampAppCache, streamChannel)
+	affCampAppHandler := aff_camp_app.NewAffCampAppHandler(affCampAppUCase)
+	appRouter.GET("/aff-campaign", authHandler.CheckUserHeader(), affCampAppHandler.GetAllAffCampaign)
+	appRouter.GET("/aff-campaign/:id", authHandler.CheckUserHeader(), affCampAppHandler.GetAffCampaignById)
 
 	affBrandRepository := aff_brand.NewAffBrandRepository(db)
 	affBrandCache := aff_brand.NewAffBrandCacheRepository(affBrandRepository, redisClient)

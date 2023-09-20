@@ -5,7 +5,7 @@ import (
 )
 
 func (m *OrderRewardHistory) TableName() string {
-	return "aff_reward_history"
+	return "aff_reward_order_history"
 }
 
 type OrderRewardHistory struct {

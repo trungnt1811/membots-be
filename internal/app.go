@@ -8,7 +8,6 @@ import (
 
 	"github.com/astraprotocol/affiliate-system/internal/middleware"
 	routeV1 "github.com/astraprotocol/affiliate-system/internal/route"
-	"github.com/astraprotocol/affiliate-system/internal/util"
 	"github.com/astraprotocol/affiliate-system/internal/util/log"
 	"github.com/astraprotocol/affiliate-system/internal/webhook"
 	"github.com/astraprotocol/affiliate-system/internal/worker/cron"
@@ -57,16 +56,13 @@ func RunApp(config *conf.Configuration) {
 
 	db := conf.DBConnWithLoglevel(logger.Info)
 
-	// SECTION : channels
-	channel := util.NewChannel()
-
 	// SECTION: Register middlewares
 	// r.Use(middleware.StructuredLogger())
 	r.Use(middleware.RequestLogger(log.LG.Instance))
 	r.Use(gin.Recovery())
 
 	// SECTION: Register routes
-	routeV1.RegisterRoutes(r, config, db, channel)
+	routeV1.RegisterRoutes(r, config, db)
 
 	// SECTION: Register general handlers
 	r.GET("/healthcheck", func(c *gin.Context) {

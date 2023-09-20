@@ -12,23 +12,27 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/infra/msgqueue"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/model"
+	"github.com/astraprotocol/affiliate-system/internal/util"
 	"github.com/segmentio/kafka-go"
 )
 
 type RewardMaker struct {
 	rewardRepo interfaces.RewardRepository
 	orderRepo  interfaces.OrderRepository
+	priceRepo  interfaces.TokenPriceRepo
 	approveQ   *msgqueue.QueueReader
 	appNotiQ   *msgqueue.QueueWriter
 }
 
 func NewRewardMaker(rewardRepo interfaces.RewardRepository,
 	orderRepo interfaces.OrderRepository,
+	priceRepo interfaces.TokenPriceRepo,
 	approveQ *msgqueue.QueueReader,
 	appNotiQ *msgqueue.QueueWriter) *RewardMaker {
 	return &RewardMaker{
 		rewardRepo: rewardRepo,
 		orderRepo:  orderRepo,
+		priceRepo:  priceRepo,
 		approveQ:   approveQ,
 		appNotiQ:   appNotiQ,
 	}
@@ -50,11 +54,17 @@ func (u *RewardMaker) ListenOrderApproved() {
 			continue
 		}
 
+		rewardAmount, err := u.calculateRewardAmt(float64(order.PubCommission), reward.AffCommissionFee)
+		if err != nil {
+			log.Println("Failed to calculate reward amount", err)
+			continue
+		}
+
 		now := time.Now()
 		newReward := model.Reward{
 			UserId:         order.UserId,
 			AtOrderID:      newAtOrderId,
-			Amount:         float64(order.PubCommission) * reward.AffCommissionFee / 100,
+			Amount:         rewardAmount,
 			RewardedAmount: 0,
 			CommissionFee:  reward.AffCommissionFee,
 			EndedAt:        now.Add(reward.RewardLockTime * time.Hour),
@@ -116,4 +126,13 @@ func (u *RewardMaker) notiOrderApproved(userId uint, atOrderId string, merchant 
 	log.Printf("Pushed Order Approved Msg to queue %v\n", notiMsg)
 
 	return nil
+}
+
+func (u *RewardMaker) calculateRewardAmt(affCommission float64, commissionFee float64) (float64, error) {
+	astraPrice, err := u.priceRepo.GetAstraPrice(context.Background())
+	if err != nil {
+		return 0, err
+	}
+	tokenCommission := affCommission / float64(astraPrice) * (100 - commissionFee) / 100
+	return util.RoundFloat(tokenCommission, 2), nil
 }

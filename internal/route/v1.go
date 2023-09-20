@@ -21,12 +21,11 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/infra/caching"
 	"github.com/astraprotocol/affiliate-system/internal/infra/msgqueue"
 	"github.com/astraprotocol/affiliate-system/internal/infra/shipping"
-	"github.com/astraprotocol/affiliate-system/internal/util"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
-func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB, channel *util.Channel) {
+func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	v1 := r.Group("/api/v1")
 
 	// SECTION: Create redis client

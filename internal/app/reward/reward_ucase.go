@@ -13,9 +13,10 @@ import (
 const (
 	MinWithdrawReward      = 0.01    // asa
 	RewardLockTime         = 60 * 24 // hours
-	AffCommissionFee       = 0       // percentage preserve for stella from affiliate reward
+	AffCommissionFee       = 10      // 10%, percentage preserve for stella from affiliate reward
 	AffRewardTxFee         = 0.1     // fix amount of tx fee
 	StellaSellerId         = 119
+	AstraPrice             = 200
 	StellaAffRewardProgram = "0x4744fd21dbA951890c0247b6585930E74AC6A3d5"
 )
 

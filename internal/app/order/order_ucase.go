@@ -168,7 +168,12 @@ func (u *OrderUcase) SyncTransactionsByOrder(atOrderId string) (int, error) {
 }
 
 func (u *OrderUcase) GetOrderDetails(ctx context.Context, userId uint32, orderId uint) (*dto.OrderDetailsDto, error) {
-	return u.Repo.GetOrderDetails(ctx, userId, orderId)
+	order, err := u.Repo.GetOrderDetails(ctx, userId, orderId)
+	if err != nil {
+		return nil, err
+	}
+	orderDto := order.ToOrderDetailsDto()
+	return &orderDto, nil
 }
 
 func (u *OrderUcase) GetOrderHistory(ctx context.Context, userId uint32, page, size int) (dto.OrderHistoryResponse, error) {
@@ -182,6 +187,11 @@ func (u *OrderUcase) GetOrderHistory(ctx context.Context, userId uint32, page, s
 		nextPage = page + 1
 	}
 
+	orderDtos := make([]dto.OrderDetailsDto, len(orderHistory))
+	for idx, item := range orderHistory {
+		orderDtos[idx] = item.ToOrderDetailsDto()
+	}
+
 	totalOrder, err := u.Repo.CountOrder(ctx, userId)
 	if err != nil {
 		return dto.OrderHistoryResponse{}, err
@@ -191,7 +201,7 @@ func (u *OrderUcase) GetOrderHistory(ctx context.Context, userId uint32, page, s
 		NextPage: nextPage,
 		Page:     page,
 		Size:     size,
-		Data:     orderHistory,
+		Data:     orderDtos,
 		Total:    totalOrder,
 	}, nil
 }

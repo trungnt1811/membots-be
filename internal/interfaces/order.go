@@ -23,8 +23,8 @@ type OrderRepository interface {
 	UpdateOrCreateATTransactions([]model.AffTransaction) error
 
 	UpdateTrackedClickOrder(trackedId uint64, order *model.AffOrder) error
-	GetOrderDetails(ctx context.Context, userId uint32, orderId uint) (*dto.OrderDetailsDto, error)
-	GetOrderHistory(ctx context.Context, userId uint32, page, size int) ([]dto.OrderDetailsDto, error)
+	GetOrderDetails(ctx context.Context, userId uint32, orderId uint) (*model.OrderDetails, error)
+	GetOrderHistory(ctx context.Context, userId uint32, page, size int) ([]model.OrderDetails, error)
 	CountOrder(ctx context.Context, userId uint32) (int64, error)
 }
 

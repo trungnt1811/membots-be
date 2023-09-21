@@ -1,6 +1,7 @@
 package model
 
 import (
+	"math"
 	"time"
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
@@ -43,7 +44,7 @@ func (r *Reward) ToRewardDto() dto.RewardDto {
 	}
 }
 
-func (r *Reward) GetClaimableReward() (rewardAmount float64, ended bool) {
+func (r *Reward) WithdrawableReward() (rewardAmount float64, ended bool) {
 	daysPassed := int(time.Since(r.CreatedAt) / OneDay)   // number of days passed since order created
 	totalDays := int(r.EndedAt.Sub(r.CreatedAt) / OneDay) // total lock days
 	withdrawablePercent := float64(daysPassed) / float64(totalDays)
@@ -53,5 +54,6 @@ func (r *Reward) GetClaimableReward() (rewardAmount float64, ended bool) {
 	}
 
 	rewardAmount = FirstPartRewardPercent*r.Amount + (1-FirstPartRewardPercent)*r.Amount*withdrawablePercent - r.RewardedAmount
+	rewardAmount = math.Round(rewardAmount*100) / 100
 	return
 }

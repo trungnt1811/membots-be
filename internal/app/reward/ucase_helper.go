@@ -2,13 +2,12 @@ package reward
 
 import (
 	"fmt"
-	"math"
 	"time"
 
 	"github.com/astraprotocol/affiliate-system/internal/model"
 )
 
-func (u *RewardUsecase) calculateWithdrawableReward(rewards []model.Reward, userId uint32) (*model.RewardWithdraw, []model.Reward, []model.OrderRewardHistory) {
+func (u *RewardUsecase) CalculateWithdrawableReward(rewards []model.Reward, userId uint32) (*model.RewardWithdraw, []model.Reward, []model.OrderRewardHistory) {
 	shippingRequestId := fmt.Sprintf("affiliate-%v:%v", userId, time.Now().UnixMilli())
 	withdraw := model.RewardWithdraw{
 		UserId:            uint(userId),
@@ -20,22 +19,21 @@ func (u *RewardUsecase) calculateWithdrawableReward(rewards []model.Reward, user
 	orderRewardHistories := []model.OrderRewardHistory{}
 
 	for idx := range rewards {
-		orderReward, ended := rewards[idx].GetClaimableReward()
+		orderReward, ended := rewards[idx].WithdrawableReward()
 		if orderReward < MinWithdrawReward {
 			continue
 		}
 
-		roundReward := math.Round(orderReward*100) / 100
 		orderRewardHistories = append(orderRewardHistories, model.OrderRewardHistory{
 			RewardID: rewards[idx].ID,
-			Amount:   roundReward,
+			Amount:   orderReward,
 		})
 
 		// Update total withdraw amount
-		withdraw.Amount += roundReward
+		withdraw.Amount += orderReward
 
 		// Update reward
-		rewards[idx].RewardedAmount += roundReward
+		rewards[idx].RewardedAmount += orderReward
 		if ended {
 			rewards[idx].EndedAt = time.Now()
 		}

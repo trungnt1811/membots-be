@@ -3,11 +3,13 @@ package test
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/astraprotocol/affiliate-system/conf"
 	"github.com/astraprotocol/affiliate-system/internal/app/order"
 	"github.com/astraprotocol/affiliate-system/internal/app/reward"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
+	"github.com/astraprotocol/affiliate-system/internal/model"
 	"github.com/astraprotocol/affiliate-system/internal/worker/kafkaconsumer"
 	"github.com/stretchr/testify/assert"
 )
@@ -20,14 +22,14 @@ func (m MockAstraPriceRepo) GetAstraPrice(ctx context.Context) (int64, error) {
 	return m.AstraPrice, nil
 }
 
-type addTest struct {
+type orderRewardTest struct {
 	AffCommission    float64
 	StellaCommission float64
 	PriceRepo        interfaces.TokenPriceRepo
 	RewardAmount     float64
 }
 
-var calculateOrderRewardTestSet = []addTest{
+var calculateOrderRewardTestSet = []orderRewardTest{
 	{10000, 0, MockAstraPriceRepo{200}, 50},
 	{2505, 0, MockAstraPriceRepo{200}, 12.53},
 	{10000, 10, MockAstraPriceRepo{200}, 45},
@@ -46,5 +48,46 @@ func Test_CalculateOrderReward(t *testing.T) {
 		rewardAmt, err := rewardMaker.CalculateRewardAmt(test.AffCommission, test.StellaCommission)
 		assert.Nil(t, err)
 		assert.Equal(t, test.RewardAmount, rewardAmt)
+	}
+}
+
+// ==========================================================================
+// SECTION: test withdraw amount calculating
+// ===========================================================================
+
+type withdrawRewardTest struct {
+	Reward       model.Reward
+	ResultAmount float64
+}
+
+func initTestReward(amount, rewardedAmount float64, timeSinceCreated time.Duration, lockTime time.Duration) model.Reward {
+	createdAt := time.Now().Add(-1 * timeSinceCreated)
+	return model.Reward{
+		Amount:         amount,
+		RewardedAmount: rewardedAmount,
+		CreatedAt:      createdAt,
+		EndedAt:        createdAt.Add(lockTime),
+	}
+}
+
+var withdrawRewardTestSet = []withdrawRewardTest{
+	{
+		initTestReward(100, 0, 0*model.OneDay, 60*model.OneDay),
+		50,
+	},
+	{
+		initTestReward(100, 0, 30*model.OneDay+2*time.Minute, 60*model.OneDay),
+		75,
+	},
+	{
+		initTestReward(100, 0, 100*model.OneDay+2*time.Minute, 60*model.OneDay),
+		100,
+	},
+}
+
+func Test_CalculateWithdrawableReward(t *testing.T) {
+	for _, test := range withdrawRewardTestSet {
+		withdrawAmount, _ := test.Reward.WithdrawableReward()
+		assert.Equal(t, test.ResultAmount, withdrawAmount)
 	}
 }

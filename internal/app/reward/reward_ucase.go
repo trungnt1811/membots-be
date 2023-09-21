@@ -44,7 +44,7 @@ func (u *RewardUsecase) WithdrawReward(ctx context.Context, userId uint32, userW
 	}
 
 	// Calculating Reward
-	rewardClaim, rewardToClaim, orderRewardHistories := u.calculateWithdrawableReward(rewards, userId)
+	rewardClaim, rewardToClaim, orderRewardHistories := u.CalculateWithdrawableReward(rewards, userId)
 	if rewardClaim.Amount-AffRewardTxFee < MinWithdrawReward {
 		return dto.WithdrawRewardResponse{
 			Execute: false,
@@ -106,7 +106,7 @@ func (u *RewardUsecase) GetRewardSummary(ctx context.Context, userId uint32) (dt
 		totalOrderRewardInDay += item.Amount * model.FirstPartRewardPercent
 	}
 
-	withdrawable, _, _ := u.calculateWithdrawableReward(inProgressRewards, userId)
+	withdrawable, _, _ := u.CalculateWithdrawableReward(inProgressRewards, userId)
 
 	return dto.RewardSummary{
 		TotalWithdrewAmount: totalWithdrewAmount,

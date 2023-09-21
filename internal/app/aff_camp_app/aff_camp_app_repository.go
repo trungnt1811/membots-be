@@ -21,10 +21,24 @@ func NewAffCampAppRepository(db *gorm.DB) interfaces.AffCampAppRepository {
 	}
 }
 
-func (r affCampAppRepository) GetAllAffCampaign(ctx context.Context, page, size int) ([]model.AffCampaignLessApp, error) {
+func (r affCampAppRepository) GetAllAffCampaign(ctx context.Context, orderBy string, page, size int) ([]model.AffCampaignLessApp, error) {
 	var listAffCampaign []model.AffCampaignLessApp
+	orderQuery := ""
+	switch orderBy {
+	case interfaces.ListAffCampaignOrderByMostCommission:
+		orderQuery = "CASE " +
+			"WHEN stella_max_com LIKE 'Upto%' THEN 2 " +
+			"WHEN stella_max_com LIKE '%VND' THEN 3 " +
+			"WHEN stella_max_com = '' THEN 4 " +
+			"WHEN stella_max_com IS NULL THEN 5 " +
+			"ELSE 1 " +
+			"END ASC, CAST(REGEXP_SUBSTR(stella_max_com, '[+-]?([0-9]*[.])?[0-9]+') + 0 AS DECIMAL(12,2)) DESC"
+	default:
+		orderQuery = "aff_campaign.id ASC"
+	}
 	offset := (page - 1) * size
 	err := r.db.Joins("Brand").Where("stella_status = ?", model.StellaStatusInProgress).
+		Order(orderQuery).
 		Find(&listAffCampaign).Limit(size + 1).Offset(offset).Error
 	return listAffCampaign, err
 }

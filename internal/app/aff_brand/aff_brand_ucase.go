@@ -110,3 +110,59 @@ func (s affBrandUCase) GetListFavAffBrandByUserId(ctx context.Context, userId ui
 		Data:     listAffCampaignDto,
 	}, nil
 }
+
+func (s affBrandUCase) GetMostCommissionAffCampaign(ctx context.Context, userId uint64, page, size int) (dto.AffCampaignAppDtoResponse, error) {
+	listAffCampaign, err := s.AffCampAppRepository.GetAllAffCampaign(ctx, interfaces.ListAffCampaignOrderByMostCommission, page, size)
+	if err != nil {
+		return dto.AffCampaignAppDtoResponse{}, err
+	}
+
+	// Top favorited brands check
+	listCountFavAffBrand, err := s.AffBrandRepository.GetListCountFavouriteAffBrand(ctx)
+	if err != nil {
+		return dto.AffCampaignAppDtoResponse{}, err
+	}
+	favTopBrandCheck := make(map[uint64]bool)
+	for _, countFavAffBrand := range listCountFavAffBrand {
+		favTopBrandCheck[countFavAffBrand.BrandId] = true
+	}
+
+	// Use fav's brands check
+	brandIds := make([]uint64, 0)
+	for _, affCampaign := range listAffCampaign {
+		brandIds = append(brandIds, affCampaign.BrandId)
+	}
+	listUserFavBrand, err := s.UserFavoriteBrandRepository.GetListFavBrandByUserIdAndBrandIds(
+		ctx,
+		userId,
+		brandIds,
+	)
+	if err != nil {
+		return dto.AffCampaignAppDtoResponse{}, err
+	}
+	favBrandCheck := make(map[uint64]bool)
+	for _, userFavBrand := range listUserFavBrand {
+		favBrandCheck[userFavBrand.BrandId] = true
+	}
+
+	// Parsing payload
+	var listAffCampaignAppDto []dto.AffCampaignLessDto
+	for i := range listAffCampaign {
+		if i >= size {
+			break
+		}
+		listAffCampaignAppDto = append(listAffCampaignAppDto, listAffCampaign[i].ToDto())
+		listAffCampaignAppDto[i].Brand.IsFavorited = favBrandCheck[listAffCampaignAppDto[i].BrandId]
+		listAffCampaignAppDto[i].Brand.IsTopFavorited = favTopBrandCheck[listAffCampaignAppDto[i].BrandId]
+	}
+	nextPage := page
+	if len(listAffCampaign) > size {
+		nextPage += 1
+	}
+	return dto.AffCampaignAppDtoResponse{
+		NextPage: nextPage,
+		Page:     page,
+		Size:     size,
+		Data:     listAffCampaignAppDto,
+	}, nil
+}

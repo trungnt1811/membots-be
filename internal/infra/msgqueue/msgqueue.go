@@ -50,24 +50,6 @@ type QueueWriter struct {
 	*kafka.Writer
 }
 
-type MessageQueue struct {
-	Reader *kafka.Reader
-	Writer *kafka.Writer
-	QueueBasic
-}
-
-func NewMsgQueue(topic, groupId string) *MessageQueue {
-	mq := &MessageQueue{}
-	config := conf.GetConfiguration()
-
-	mq.User = config.Kafka.User
-	mq.Brokers = []string{config.Kafka.KafkaURL}
-	mq.Writer = newKafkaWriter(config, topic, mq.Brokers)
-	mq.Reader = newKafkaReader(config, topic, groupId, mq.Brokers)
-
-	return mq
-}
-
 func NewKafkaProducer(topic string) *QueueWriter {
 	mq := &QueueWriter{}
 	config := conf.GetConfiguration()
@@ -128,6 +110,10 @@ func GetDialer(c *conf.Configuration) (*kafka.Dialer, error) {
 		caCert, err := os.ReadFile(c.Kafka.CaCertPath)
 		if err != nil {
 			caCert, err = os.ReadFile(CaCertLocalPath)
+			// For tests
+			if err != nil {
+				caCert, err = os.ReadFile("." + CaCertLocalPath)
+			}
 		}
 		if err != nil {
 			return nil, fmt.Errorf("error reading ca cert file: %v", err)
@@ -193,6 +179,10 @@ func GetTransport(c *conf.Configuration) (*kafka.Transport, error) {
 		caCert, err := os.ReadFile(c.Kafka.CaCertPath)
 		if err != nil {
 			caCert, err = os.ReadFile(CaCertLocalPath)
+			// For tests
+			if err != nil {
+				caCert, err = os.ReadFile("." + CaCertLocalPath)
+			}
 		}
 		if err != nil {
 			return nil, fmt.Errorf("error reading ca cert file: %v", err)
@@ -245,5 +235,5 @@ func GetTransport(c *conf.Configuration) (*kafka.Transport, error) {
 }
 
 func logf(msg string, a ...interface{}) {
-	log.LG.Fatalf(msg, a...)
+	log.LG.Errorf(msg, a...)
 }

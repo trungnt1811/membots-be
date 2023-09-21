@@ -10,7 +10,8 @@ CREATE TABLE aff_reward (
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     KEY "aff_reward_user_id" ("user_id"),
-    CONSTRAINT "aff_reward_fk_accesstrade_order_id" FOREIGN KEY ("accesstrade_order_id") REFERENCES "aff_order" ("accesstrade_order_id") ON UPDATE CASCADE
+    CONSTRAINT "aff_reward_fk_accesstrade_order_id" FOREIGN KEY ("accesstrade_order_id") REFERENCES "aff_order" ("accesstrade_order_id") ON UPDATE CASCADE,
+    CONSTRAINT "aff_reward_unique_accesstrade_order_id" UNIQUE ("accesstrade_order_id")
 ) ENGINE = InnoDB;
 CREATE TABLE aff_reward_withdraw (
     id INT NOT NULL AUTO_INCREMENT,

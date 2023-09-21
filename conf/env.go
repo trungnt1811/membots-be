@@ -100,7 +100,7 @@ func init() {
 	}
 	err := viper.Unmarshal(&configuration)
 	if err != nil {
-		log.Logger.Printf("Unable to decode config into map, %v", err)
+		log.Logger.Fatal().Msgf("Unable to decode config into map, %v", err)
 	}
 
 	fmt.Println("EVM ChainId:", configuration.EvmRpc.EVMChainID)

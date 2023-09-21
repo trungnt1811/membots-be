@@ -20,7 +20,7 @@ func (m *Reward) TableName() string {
 type Reward struct {
 	ID             uint      `gorm:"primarykey" json:"id"`
 	UserId         uint      `json:"user_id"`
-	AtOrderID      string    `json:"accesstrade_order_id"`
+	AtOrderID      string    `json:"accesstrade_order_id" gorm:"column:accesstrade_order_id"`
 	Amount         float64   `json:"amount"` // amount of reward after fee subtractions
 	RewardedAmount float64   `json:"rewarded_amount"`
 	CommissionFee  float64   `json:"commission_fee"` // commission fee (in percentage)

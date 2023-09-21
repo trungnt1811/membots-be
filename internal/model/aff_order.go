@@ -7,6 +7,13 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 )
 
+const (
+	OrderStatusInitial  = "initial"
+	OrderStatusPending  = "pending"
+	OrderStatusApproved = "approved"
+	OrderStatusRejected = "rejected"
+)
+
 type AffOrder struct {
 	ID                 uint      `gorm:"primarykey" json:"id"`
 	AffLink            string    `json:"aff_link"`
@@ -49,13 +56,13 @@ func (order *AffOrder) TableName() string {
 }
 
 func NewOrderFromATOrder(userId uint, atOrder *types.ATOrder) *AffOrder {
-	orderStatus := "initial"
+	orderStatus := OrderStatusInitial
 	if atOrder.OrderPending != 0 {
-		orderStatus = "pending"
+		orderStatus = OrderStatusPending
 	} else if atOrder.OrderApproved != 0 {
-		orderStatus = "approved"
+		orderStatus = OrderStatusApproved
 	} else if atOrder.OrderReject != 0 {
-		orderStatus = "rejected"
+		orderStatus = OrderStatusRejected
 	}
 
 	return &AffOrder{

@@ -8,6 +8,7 @@ import (
 )
 
 const ListAffCampaignOrderByMostCommission = "most-commission"
+const ListAffCampaignOrderByDefault = "default"
 
 type AffCampAppRepository interface {
 	GetAllAffCampaign(ctx context.Context, orderBy string, page, size int) ([]model.AffCampaignLessApp, error)

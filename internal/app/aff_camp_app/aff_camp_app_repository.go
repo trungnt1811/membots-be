@@ -30,6 +30,7 @@ func (r affCampAppRepository) GetAllAffCampaign(ctx context.Context, orderBy str
 			"WHEN stella_max_com LIKE 'Upto%' THEN 2 " +
 			"WHEN stella_max_com LIKE '%VND' THEN 3 " +
 			"WHEN stella_max_com = '' THEN 4 " +
+			"WHEN stella_max_com IS NULL THEN 5 " +
 			"ELSE 1 " +
 			"END ASC, CAST(REGEXP_SUBSTR(stella_max_com, '[+-]?([0-9]*[.])?[0-9]+') + 0 AS DECIMAL(12,2)) DESC"
 	default:

@@ -22,7 +22,7 @@ type TikiClient struct {
 
 func NewTikiClient(config TikiClientConfig) *TikiClient {
 	client := req.C().
-		SetUserAgent("reward-app-backend"). // Chainable client settings.
+		SetUserAgent("stella-affiliate-backend"). // Chainable client settings.
 		SetBaseURL(config.BaseUrl).
 		SetCommonBearerAuthToken(config.ApiKey).
 		SetTimeout(3 * time.Second).

@@ -9,6 +9,19 @@ import (
 	"github.com/spf13/viper"
 )
 
+type AffiliateConfiguration struct {
+	RewardProgram    string `mapstructure:"AFF_REWARD_PROGRAM"`
+	SellerId         string `mapstructure:"AFF_SELLER_ID"`
+	StellaCommission string `mapstructure:"AFF_STELLA_COMMISSION"`
+	WithdrawFee      string `mapstructure:"AFF_WITHDRAW_FEE"`
+}
+
+type TikiConfiguration struct {
+	ApiUrl         string `mapstructure:"TIKI_API_URL"`
+	ApiKey         string `mapstructure:"TIKI_API_KEY"`
+	ExchangeApiKey string `mapstructure:"TIKI_EXCHANGE_API_KEY"`
+}
+
 type RewardShippingConfiguration struct {
 	BaseUrl string `mapstructure:"REWARD_SHIPPING_URL"`
 	ApiKey  string `mapstructure:"REWARD_SHIPPING_KEY"`
@@ -72,6 +85,8 @@ type Configuration struct {
 	Kafka             KafkaConfiguration          `mapstructure:",squash"`
 	Webhook           WebhookConfiguration        `mapstructure:",squash"`
 	RewardShipping    RewardShippingConfiguration `mapstructure:",squash"`
+	Aff               AffiliateConfiguration      `mapstructure:",squash"`
+	Tiki              TikiConfiguration           `mapstructure:",squash"`
 	AccessTradeAPIKey string                      `mapstructure:"ACCESSTRADE_APIKEY"`
 	CreatorBEToken    string                      `mapstructure:"CREATOR_BE_TOKEN"`
 	AppName           string                      `mapstructure:"APP_NAME"`

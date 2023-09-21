@@ -71,9 +71,14 @@ func initTestReward(amount, rewardedAmount float64, timeSinceCreated time.Durati
 }
 
 var withdrawRewardTestSet = []withdrawRewardTest{
+	// rewarded = 0
 	{
 		initTestReward(100, 0, 0*model.OneDay, 60*model.OneDay),
 		50,
+	},
+	{
+		initTestReward(100, 0, 3*model.OneDay+2*time.Minute, 60*model.OneDay),
+		52.5,
 	},
 	{
 		initTestReward(100, 0, 30*model.OneDay+2*time.Minute, 60*model.OneDay),
@@ -82,6 +87,23 @@ var withdrawRewardTestSet = []withdrawRewardTest{
 	{
 		initTestReward(100, 0, 100*model.OneDay+2*time.Minute, 60*model.OneDay),
 		100,
+	},
+	// rewarded != 0
+	{
+		initTestReward(100, 0, 0*model.OneDay, 60*model.OneDay),
+		50,
+	},
+	{
+		initTestReward(100, 5, 3*model.OneDay+2*time.Minute, 60*model.OneDay),
+		47.5,
+	},
+	{
+		initTestReward(100, 10.11, 30*model.OneDay+2*time.Minute, 60*model.OneDay),
+		64.89,
+	},
+	{
+		initTestReward(100, 99, 100*model.OneDay+2*time.Minute, 60*model.OneDay),
+		1,
 	},
 }
 

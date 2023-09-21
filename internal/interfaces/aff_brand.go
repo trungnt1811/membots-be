@@ -17,4 +17,5 @@ type AffBrandUCase interface {
 	UpdateCacheListCountFavouriteAffBrand(ctx context.Context) error
 	GetTopFavouriteAffBrand(ctx context.Context, userId uint64, page, size int) (dto.AffCampaignAppDtoResponse, error)
 	GetListFavAffBrandByUserId(ctx context.Context, userId uint64, page, size int) (dto.AffCampaignAppDtoResponse, error)
+	GetMostCommissionAffCampaign(ctx context.Context, userId uint64, page, size int) (dto.AffCampaignAppDtoResponse, error)
 }

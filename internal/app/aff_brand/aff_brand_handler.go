@@ -33,7 +33,7 @@ func NewAffBrandHandler(
 // @Produce json
 // @Param page query string false "page to query, default is 1"
 // @Param size query string false "size to query, default is 10"
-// @Param filter query string false "filter to query, default is recently-visited (recently-visited/top-favorited/favorite)"
+// @Param filter query string false "filter to query, default is recently-visited (recently-visited/top-favorited/most-commission/favorite)"
 // @Success 200 		{object}	dto.AffCampaignAppDtoResponse
 // @Failure 401 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
@@ -72,6 +72,14 @@ func (handler *AffBrandHandler) GetListAffBrandByUser(ctx *gin.Context) {
 		response, err := handler.AffBrandUCase.GetTopFavouriteAffBrand(ctx, uint64(user.ID), page, size)
 		if err != nil {
 			util.RespondError(ctx, http.StatusInternalServerError, "Get top favorited aff brands error: ", err)
+			return
+		}
+		ctx.JSON(http.StatusOK, response)
+		return
+	case "most-commission":
+		response, err := handler.AffBrandUCase.GetMostCommissionAffCampaign(ctx, uint64(user.ID), page, size)
+		if err != nil {
+			util.RespondError(ctx, http.StatusInternalServerError, "Get most commission aff brands error: ", err)
 			return
 		}
 		ctx.JSON(http.StatusOK, response)

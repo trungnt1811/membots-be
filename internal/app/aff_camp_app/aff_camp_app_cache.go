@@ -28,13 +28,13 @@ func NewAffCampAppCacheRepository(repo interfaces.AffCampAppRepository,
 	}
 }
 
-func (c affCampAppCache) GetAllAffCampaign(ctx context.Context, page, size int) ([]model.AffCampaignLessApp, error) {
-	key := &caching.Keyer{Raw: keyPrefixAffCampApp + fmt.Sprint("GetAllAffCampaign_", page, "_", size)}
+func (c affCampAppCache) GetAllAffCampaign(ctx context.Context, orderBy string, page, size int) ([]model.AffCampaignLessApp, error) {
+	key := &caching.Keyer{Raw: keyPrefixAffCampApp + fmt.Sprint("GetAllAffCampaign_", orderBy, "_", page, "_", size)}
 	var listAffCampaign []model.AffCampaignLessApp
 	err := c.Cache.RetrieveItem(key, &listAffCampaign)
 	if err != nil {
 		// cache miss
-		listAffCampaign, err = c.AffCampAppRepository.GetAllAffCampaign(ctx, page, size)
+		listAffCampaign, err = c.AffCampAppRepository.GetAllAffCampaign(ctx, orderBy, page, size)
 		if err != nil {
 			return listAffCampaign, err
 		}
@@ -62,14 +62,14 @@ func (c affCampAppCache) GetAffCampaignById(ctx context.Context, id uint64) (mod
 	return affCampaign, nil
 }
 
-func (c affCampAppCache) GetListAffCampaignByBrandIds(ctx context.Context, brandIds []uint64, orderBy string) ([]model.AffCampaignComBrand, error) {
+func (c affCampAppCache) GetListAffCampaignByBrandIds(ctx context.Context, brandIds []uint64) ([]model.AffCampaignComBrand, error) {
 	s, _ := json.Marshal(brandIds)
-	key := &caching.Keyer{Raw: keyPrefixAffCampApp + fmt.Sprint("GetAffCampaignById_", string(s), "_", orderBy)}
+	key := &caching.Keyer{Raw: keyPrefixAffCampApp + fmt.Sprint("GetAffCampaignById_", string(s))}
 	var listAffCampaign []model.AffCampaignComBrand
 	err := c.Cache.RetrieveItem(key, &listAffCampaign)
 	if err != nil {
 		// cache miss
-		listAffCampaign, err = c.AffCampAppRepository.GetListAffCampaignByBrandIds(ctx, brandIds, orderBy)
+		listAffCampaign, err = c.AffCampAppRepository.GetListAffCampaignByBrandIds(ctx, brandIds)
 		if err != nil {
 			return listAffCampaign, err
 		}

@@ -36,13 +36,27 @@ func (r affCampAppRepository) GetAffCampaignById(ctx context.Context, id uint64)
 	return affCampaign, err
 }
 
-func (r affCampAppRepository) GetListAffCampaignByBrandIds(ctx context.Context, brandIds []uint64) ([]model.AffCampaignComBrand, error) {
+func (r affCampAppRepository) GetListAffCampaignByBrandIds(ctx context.Context, brandIds []uint64, orderBy string) ([]model.AffCampaignComBrand, error) {
 	var listAffCampaign []model.AffCampaignComBrand
-	// Ordering by the order of values in a IN() clause
-	s, _ := json.Marshal(brandIds)
-	findInSet := strings.Trim(string(s), "[]")
+	orderQuery := ""
+	switch orderBy {
+	case interfaces.ListAffCampaignOrderByTopFavorited:
+		// Ordering by the order of values in a IN() clause
+		s, _ := json.Marshal(brandIds)
+		findInSet := strings.Trim(string(s), "[]")
+		orderQuery = fmt.Sprintf("FIND_IN_SET(aff_campaign.brand_id,'%s')", findInSet)
+	case interfaces.ListAffCampaignOrderByMostCommission:
+		orderQuery = "CASE " +
+			"WHEN stella_max_com LIKE 'Upto%' THEN 2 " +
+			"WHEN stella_max_com LIKE '%VND' THEN 3 " +
+			"WHEN stella_max_com = '' THEN 4 " +
+			"ELSE 1 " +
+			"END ASC, CAST(REGEXP_SUBSTR(stella_max_com, '[+-]?([0-9]*[.])?[0-9]+') + 0 AS DECIMAL(12,2)) DESC"
+	default:
+		orderQuery = "aff_campaign.id ASC"
+	}
 	err := r.db.Joins("Brand").Where("aff_campaign.brand_id IN ? AND stella_status = ?", brandIds, model.StellaStatusInProgress).
-		Order(fmt.Sprintf("FIND_IN_SET(aff_campaign.brand_id,'%s')", findInSet)).
+		Order(orderQuery).
 		Find(&listAffCampaign).Error
 	return listAffCampaign, err
 }

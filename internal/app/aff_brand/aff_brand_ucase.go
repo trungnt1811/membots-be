@@ -62,7 +62,7 @@ func (s affBrandUCase) GetTopFavouriteAffBrand(ctx context.Context, userId uint6
 			Data:     nil,
 		}, nil
 	}
-	listFavAffBrand, err := s.AffCampAppRepository.GetListAffCampaignByBrandIds(ctx, brandIds)
+	listFavAffBrand, err := s.AffCampAppRepository.GetListAffCampaignByBrandIds(ctx, brandIds, interfaces.ListAffCampaignOrderByTopFavorited)
 	if err != nil {
 		return dto.AffCampaignAppDtoResponse{}, err
 	}

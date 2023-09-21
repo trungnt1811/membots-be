@@ -411,7 +411,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "filter to query, default is recently-visited (recently-visited/top-favorited/favorite)",
+                        "description": "filter to query, default is recently-visited (recently-visited/top-favorited/most-commission/favorite)",
                         "name": "filter",
                         "in": "query"
                     }

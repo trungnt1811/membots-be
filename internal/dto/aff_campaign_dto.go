@@ -55,21 +55,22 @@ type StellaInfoDto struct {
 }
 
 type AffCampaignAppDto struct {
-	ID                uint64      `json:"id"`
-	BrandId           uint64      `json:"brand_id"`
-	Brand             BrandDto    `json:"brand"`
-	AccessTradeId     string      `json:"accesstrade_id"`
-	CreatedAt         time.Time   `json:"created_at"`
-	UpdatedAt         time.Time   `json:"updated_at"`
-	Name              string      `json:"name"`
-	Url               string      `json:"url"`
-	StartTime         *time.Time  `json:"start_time"`
-	EndTime           *time.Time  `json:"end_time"`
-	StellaDescription interface{} `json:"stella_description"`
-	CategoryId        uint64      `json:"category_id"`
-	StellaStatus      string      `json:"stella_status"`
-	Thumbnail         string      `json:"thumbnail"`
-	StellaMaxCom      string      `json:"stella_max_com"`
+	ID                uint64                    `json:"id"`
+	BrandId           uint64                    `json:"brand_id"`
+	Brand             BrandDto                  `json:"brand"`
+	AccessTradeId     string                    `json:"accesstrade_id"`
+	CreatedAt         time.Time                 `json:"created_at"`
+	UpdatedAt         time.Time                 `json:"updated_at"`
+	Name              string                    `json:"name"`
+	Url               string                    `json:"url"`
+	StartTime         *time.Time                `json:"start_time"`
+	EndTime           *time.Time                `json:"end_time"`
+	StellaDescription interface{}               `json:"stella_description"`
+	CategoryId        uint64                    `json:"category_id"`
+	StellaStatus      string                    `json:"stella_status"`
+	Thumbnail         string                    `json:"thumbnail"`
+	StellaMaxCom      string                    `json:"stella_max_com"`
+	Attributes        []AffCampaignAttributeDto `json:"attributes"`
 }
 
 type AffCampaignDtoResponse struct {
@@ -91,4 +92,12 @@ type AffCampaignAppDtoResponse struct {
 type UserViewAffCampDto struct {
 	UserId    uint32 `json:"user_id"`
 	AffCampId uint64 `json:"aff_camp_id"`
+}
+
+type AffCampaignAttributeDto struct {
+	ID             uint   `gorm:"primarykey" json:"id"`
+	CampaignId     uint   `json:"campaign_id"`
+	AttributeKey   string `json:"attribute_key"`
+	AttributeValue string `json:"attribute_value"`
+	AttributeType  string `json:"attribute_type"`
 }

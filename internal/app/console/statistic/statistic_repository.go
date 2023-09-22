@@ -49,3 +49,25 @@ func (repo *StatisticRepository) TotalOrdersInRange(d dto.TimeRange) (int64, err
 	err := m.Count(&result).Error
 	return result, err
 }
+
+func (repo *StatisticRepository) CalculateCashbackInRange(d dto.TimeRange) (dto.Cashback, error) {
+	var cashback dto.Cashback
+
+	sql := repo.Db.Table("aff_reward").Select(
+		"SUM(rewarded_amount) as distributed, SUM(amount) as remain",
+	)
+	if d.Since != nil {
+		sql.Where("updated_at >= ?", d.Since)
+	}
+	if d.Until != nil {
+		sql.Where("updated_at <= ?", d.Until)
+	}
+
+	err := sql.Row().Scan(&cashback.Distributed, &cashback.Remain)
+
+	if err != nil {
+		return cashback, err
+	}
+	cashback.Remain = cashback.Remain - cashback.Distributed
+	return cashback, nil
+}

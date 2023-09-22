@@ -583,14 +583,19 @@ definitions:
   dto.RewardSummary:
     properties:
       pending_reward_amount:
+        description: amount of reward still locked
         type: number
       pending_reward_order:
+        description: number of orders that user not receive all reward
         type: integer
       reward_in_day:
+        description: amount of reward earn in day = 50% of total order approved today
         type: number
       total_withdrew_amount:
+        description: total amount of reward already withdrawn
         type: number
       withdrawable_reward:
+        description: amount of reward can be withdrawn at the moment
         type: number
     type: object
   dto.RewardWithdrawDetailsDto:
@@ -1279,13 +1284,13 @@ paths:
       description: Get affiliate order list by time range and other filter
       parameters:
       - in: query
-        name: order_status
+        name: orderStatus
         type: string
       - in: query
         name: page
         type: integer
       - in: query
-        name: per_page
+        name: perPage
         type: integer
       - in: query
         name: since
@@ -1294,7 +1299,7 @@ paths:
         name: until
         type: string
       - in: query
-        name: user_id
+        name: userId
         type: integer
       produces:
       - application/json

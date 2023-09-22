@@ -30,11 +30,11 @@ func (r *RewardRepository) GetInProgressRewards(ctx context.Context, userId uint
 }
 
 func (r *RewardRepository) GetRewardsInDay(ctx context.Context) ([]model.Reward, error) {
-	startDay := time.Now().UTC().Round(24 * time.Hour)            // 00:00
-	nextDay := startDay.Add(24 * time.Hour).Add(-1 * time.Second) // 23:59
+	startDay := time.Now().UTC().Round(24 * time.Hour)           // 00:00
+	endDay := startDay.Add(24 * time.Hour).Add(-1 * time.Second) // 23:59
 
 	var rewards []model.Reward
-	err := r.db.Where("created_at BETWEEN ? AND ?", startDay, nextDay).Scan(&rewards).Error
+	err := r.db.Where("created_at BETWEEN ? AND ?", startDay, endDay).Find(&rewards).Error
 	if err != nil {
 		return []model.Reward{}, err
 	}
@@ -104,6 +104,6 @@ func (r *RewardRepository) GetWithdrawDetails(ctx context.Context, userId uint32
 
 func (r *RewardRepository) GetTotalWithdrewAmount(ctx context.Context, userId uint32) (float64, error) {
 	var amount float64
-	err := r.db.Model(&model.RewardWithdraw{}).Select("COUNT(amount)").Where("user_id = ?", userId).Scan(&amount).Error
+	err := r.db.Model(&model.RewardWithdraw{}).Select("SUM(amount)").Where("user_id = ?", userId).Scan(&amount).Error
 	return amount, err
 }

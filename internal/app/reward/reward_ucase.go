@@ -8,6 +8,7 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/infra/shipping"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/model"
+	"github.com/astraprotocol/affiliate-system/internal/util"
 )
 
 const (
@@ -113,17 +114,19 @@ func (u *RewardUsecase) GetRewardSummary(ctx context.Context, userId uint32) (dt
 	}
 	var totalOrderRewardInDay float64 = 0
 	for _, item := range rewardsInDay {
-		totalOrderRewardInDay += item.Amount * model.FirstPartRewardPercent
+		totalOrderRewardInDay += item.Amount
 	}
+	totalOrderRewardInDay = util.RoundFloat(totalOrderRewardInDay*model.FirstPartRewardPercent, 2)
 
 	withdrawable, _, _ := u.CalculateWithdrawableReward(inProgressRewards, userId)
+	pendingRewardAmount := util.RoundFloat(totalOrderReward-withdrawable.Amount, 2)
 
 	return dto.RewardSummary{
 		TotalWithdrewAmount: totalWithdrewAmount,
 		WithdrawableReward:  withdrawable.Amount,
 		RewardInDay:         totalOrderRewardInDay,
 		PendingRewardOrder:  len(inProgressRewards),
-		PendingRewardAmount: totalOrderReward - withdrawable.Amount,
+		PendingRewardAmount: pendingRewardAmount,
 	}, nil
 }
 

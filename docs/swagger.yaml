@@ -676,6 +676,10 @@ definitions:
     type: object
   dto.StellaInfoDto:
     properties:
+      attributes:
+        items:
+          $ref: '#/definitions/dto.AffCampaignAttributeDto'
+        type: array
       brand:
         $ref: '#/definitions/dto.BrandDto'
       brand_id:

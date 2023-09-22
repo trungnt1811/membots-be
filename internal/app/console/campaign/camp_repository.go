@@ -12,6 +12,54 @@ type affCampaignRepository struct {
 	Db *gorm.DB
 }
 
+func (a *affCampaignRepository) UpdateCampaignAttribute(id uint, attributes []model.AffCampaignAttribute) error {
+	var listAttributeInDB []model.AffCampaignAttribute
+	if err := a.Db.Where("campaign_id = ?", id).Find(&listAttributeInDB).Error; err != nil {
+		return err
+	}
+	mapIdInput := make(map[uint]uint)
+	for _, attribute := range attributes {
+		mapIdInput[attribute.ID] = attribute.ID
+	}
+	var listKeyDelete []uint
+	for _, attribute := range listAttributeInDB {
+		_, ok := mapIdInput[attribute.ID]
+		if !ok {
+			listKeyDelete = append(listKeyDelete, attribute.ID)
+		}
+	}
+	var listCreate []model.AffCampaignAttribute
+	var listUpdate []model.AffCampaignAttribute
+	for _, attribute := range attributes {
+		if attribute.ID == 0 {
+			listCreate = append(listCreate, attribute)
+		} else {
+			listUpdate = append(listUpdate, attribute)
+		}
+	}
+	return a.Db.Transaction(func(tx *gorm.DB) error {
+		if len(listCreate) > 0 {
+			if err := tx.Create(&listCreate).Error; err != nil {
+				return err
+			}
+		}
+		if len(listUpdate) > 0 {
+			for _, update := range listUpdate {
+				tx.Updates(&update)
+			}
+			if err := tx.Error; err != nil {
+				return err
+			}
+		}
+		if len(listKeyDelete) > 0 {
+			if err := tx.Delete(&model.AffCampaignAttribute{}, listKeyDelete).Error; err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}
+
 func (a *affCampaignRepository) GetCampaignLessByAccessTradeId(accessTradeId string) (model.AffCampaignLess, error) {
 	var affCampaign model.AffCampaignLess
 	if err := a.Db.Where("accesstrade_id = ?", accessTradeId).First(&affCampaign).Error; err != nil {

@@ -96,7 +96,7 @@ type UserViewAffCampDto struct {
 }
 
 type AffCampaignAttributeDto struct {
-	ID             uint   `gorm:"primarykey" json:"id"`
+	ID             uint   `json:"id"`
 	CampaignId     uint   `json:"campaign_id"`
 	AttributeKey   string `json:"attribute_key"`
 	AttributeValue string `json:"attribute_value"`

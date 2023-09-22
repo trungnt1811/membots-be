@@ -2393,6 +2393,12 @@ const docTemplate = `{
         "dto.StellaInfoDto": {
             "type": "object",
             "properties": {
+                "attributes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.AffCampaignAttributeDto"
+                    }
+                },
                 "brand": {
                     "$ref": "#/definitions/dto.BrandDto"
                 },

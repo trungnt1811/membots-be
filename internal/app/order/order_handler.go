@@ -65,7 +65,7 @@ func (handler *OrderHandler) PostBackOrderHandle(c *gin.Context) {
 // GetRewardHistory Get affiliate order details
 // @Summary Get affiliate order details
 // @Description Get affiliate order details - include status timeline and reward info
-// @Tags 	reward
+// @Tags 	order
 // @Accept	json
 // @Produce json
 // @Security ApiKeyAuth
@@ -101,7 +101,7 @@ func (handler *OrderHandler) GetOrderDetails(ctx *gin.Context) {
 // GetRewardHistory Get order history
 // @Summary Get order history
 // @Description Get order history - include reward info
-// @Tags 	reward
+// @Tags 	order
 // @Accept	json
 // @Produce json
 // @Security ApiKeyAuth

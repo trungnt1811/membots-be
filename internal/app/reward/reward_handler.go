@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 
@@ -53,9 +52,9 @@ func (handler *RewardHandler) GetRewardSummary(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-// GetRewardHistory Get reward history records
-// @Summary Get reward history records
-// @Description Get reward history records
+// GetRewardHistory Get reward withdraw history records
+// @Summary Get reward withdraw history records
+// @Description Get reward withdraw history records
 // @Tags 	reward
 // @Accept	json
 // @Produce json
@@ -78,43 +77,7 @@ func (handler *RewardHandler) GetWithdrawHistory(ctx *gin.Context) {
 	// get reward
 	res, err := handler.usecase.GetWithdrawHistory(ctx, user.ID, page, size)
 	if err != nil {
-		util.RespondError(ctx, http.StatusFailedDependency, "failed to get reward history", err)
-		return
-	}
-
-	// Response transaction status
-	ctx.JSON(http.StatusOK, res)
-}
-
-// GetRewardHistory Get reward withdraw details
-// @Summary Get reward withdraw details
-// @Description Get reward withdraw details
-// @Tags 	reward
-// @Accept	json
-// @Produce json
-// @Security ApiKeyAuth
-// @Success 200 		{object}	dto.RewardWithdrawDetailsDto
-// @Failure 424 		{object}	util.GeneralError
-// @Failure 400 		{object}	util.GeneralError
-// @Router 	/api/v1/rewards/withdraw/{id} [get]
-func (handler *RewardHandler) GetWithdrawDetails(ctx *gin.Context) {
-	// First, take user from JWT
-	user, err := dto.GetUserInfo(ctx)
-	if err != nil {
-		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
-		return
-	}
-
-	withdrawId, err := strconv.Atoi(ctx.Param("id"))
-	if err != nil {
-		util.RespondError(ctx, http.StatusBadRequest, "id is required", err)
-		return
-	}
-
-	// get reward
-	res, err := handler.usecase.GetWithdrawDetails(ctx, user.ID, uint(withdrawId))
-	if err != nil {
-		util.RespondError(ctx, http.StatusFailedDependency, "failed to get reward withdraw details", err)
+		util.RespondError(ctx, http.StatusFailedDependency, "failed to get withdraw history", err)
 		return
 	}
 

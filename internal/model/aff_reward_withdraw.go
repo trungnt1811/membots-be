@@ -31,12 +31,13 @@ type RewardWithdraw struct {
 
 func (r *RewardWithdraw) ToRewardWithdrawDto() dto.RewardWithdrawDto {
 	return dto.RewardWithdrawDto{
-		ID:                r.ID,
-		UserId:            r.UserId,
-		ShippingRequestID: r.ShippingRequestID,
-		Amount:            r.Amount,
-		Fee:               r.Fee,
-		CreatedAt:         r.CreatedAt,
-		UpdatedAt:         r.UpdatedAt,
+		ID:             r.ID,
+		UserId:         r.UserId,
+		TxHash:         r.TxHash,
+		ShippingStatus: r.ShippingStatus,
+		Amount:         r.Amount,
+		Fee:            r.Fee,
+		CreatedAt:      r.CreatedAt,
+		UpdatedAt:      r.UpdatedAt,
 	}
 }

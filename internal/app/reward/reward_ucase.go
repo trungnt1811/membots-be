@@ -159,7 +159,3 @@ func (u *RewardUsecase) GetWithdrawHistory(ctx context.Context, userId uint32, p
 		Total:    totalRewardHistory,
 	}, nil
 }
-
-func (u *RewardUsecase) GetWithdrawDetails(ctx context.Context, userId uint32, withdrawId uint) (dto.RewardWithdrawDetailsDto, error) {
-	return u.repo.GetWithdrawDetails(ctx, userId, withdrawId)
-}

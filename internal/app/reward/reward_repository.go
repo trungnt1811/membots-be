@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/model"
 	"gorm.io/gorm"
 )
@@ -89,17 +88,6 @@ type RewardWithdrawDetailsDto struct {
 	Fee               float64   `json:"fee"`
 	CreatedAt         time.Time `json:"created_at"`
 	UpdatedAt         time.Time `json:"updated_at"`
-}
-
-func (r *RewardRepository) GetWithdrawDetails(ctx context.Context, userId uint32, withdrawId uint) (dto.RewardWithdrawDetailsDto, error) {
-	var withdrawDetails dto.RewardWithdrawDetailsDto
-	query := "SELECT c.id, c.user_id, c.shipping_request_id, c.amount, c.fee, d.tx_hash, c.created_at, c.updated_at " +
-		"FROM aff_reward_withdraw AS c " +
-		"LEFT JOIN reward AS r ON c.shipping_request_id = r.request_id " +
-		"LEFT JOIN deliveries AS d ON r.delivery_id = d.id " +
-		"WHERE c.user_id = ? AND c.id = ?"
-	err := r.db.Raw(query, userId, withdrawId).First(&withdrawDetails).Error
-	return withdrawDetails, err
 }
 
 func (r *RewardRepository) GetTotalWithdrewAmount(ctx context.Context, userId uint32) (float64, error) {

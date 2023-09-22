@@ -1048,7 +1048,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "reward"
+                    "order"
                 ],
                 "summary": "Get order history",
                 "responses": {
@@ -1139,7 +1139,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "reward"
+                    "order"
                 ],
                 "summary": "Get affiliate order details",
                 "responses": {
@@ -1262,7 +1262,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Get reward history records",
+                "description": "Get reward withdraw history records",
                 "consumes": [
                     "application/json"
                 ],
@@ -1272,7 +1272,7 @@ const docTemplate = `{
                 "tags": [
                     "reward"
                 ],
-                "summary": "Get reward history records",
+                "summary": "Get reward withdraw history records",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1316,46 +1316,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/dto.RewardSummary"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/util.GeneralError"
-                        }
-                    },
-                    "424": {
-                        "description": "Failed Dependency",
-                        "schema": {
-                            "$ref": "#/definitions/util.GeneralError"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/rewards/withdraw/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Get reward withdraw details",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "reward"
-                ],
-                "summary": "Get reward withdraw details",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dto.RewardWithdrawDetailsDto"
                         }
                     },
                     "400": {
@@ -2299,35 +2259,6 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.RewardWithdrawDetailsDto": {
-            "type": "object",
-            "properties": {
-                "amount": {
-                    "type": "number"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "fee": {
-                    "type": "number"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "shipping_request_id": {
-                    "type": "string"
-                },
-                "tx_hash": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "integer"
-                }
-            }
-        },
         "dto.RewardWithdrawDto": {
             "type": "object",
             "properties": {
@@ -2343,7 +2274,10 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
-                "shipping_request_id": {
+                "shipping_status": {
+                    "type": "string"
+                },
+                "tx_hash": {
                     "type": "string"
                 },
                 "updated_at": {

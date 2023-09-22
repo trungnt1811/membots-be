@@ -45,25 +45,15 @@ type RewardResponse struct {
 
 // REWARD HISTORY
 
-type RewardWithdrawDetailsDto struct {
-	ID                uint      `json:"id"`
-	UserId            uint      `json:"user_id"`
-	ShippingRequestID string    `json:"shipping_request_id"`
-	Amount            float64   `json:"amount"`
-	Fee               float64   `json:"fee"`
-	TxHash            string    `json:"tx_hash"`
-	CreatedAt         time.Time `json:"created_at"`
-	UpdatedAt         time.Time `json:"updated_at"`
-}
-
 type RewardWithdrawDto struct {
-	ID                uint      `json:"id"`
-	UserId            uint      `json:"user_id"`
-	ShippingRequestID string    `json:"shipping_request_id"`
-	Amount            float64   `json:"amount"`
-	Fee               float64   `json:"fee"`
-	CreatedAt         time.Time `json:"created_at"`
-	UpdatedAt         time.Time `json:"updated_at"`
+	ID             uint      `json:"id"`
+	UserId         uint      `json:"user_id"`
+	TxHash         string    `json:"tx_hash"`
+	ShippingStatus string    `json:"shipping_status"`
+	Amount         float64   `json:"amount"`
+	Fee            float64   `json:"fee"`
+	CreatedAt      time.Time `json:"created_at"`
+	UpdatedAt      time.Time `json:"updated_at"`
 }
 
 type RewardWithdrawResponse struct {

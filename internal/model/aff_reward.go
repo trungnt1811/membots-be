@@ -1,14 +1,13 @@
 package model
 
 import (
+	"math"
 	"time"
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 )
 
 const (
-	RewardStatusInProgress = "in_progress"
-	RewardStatusDone       = "done"
 	FirstPartRewardPercent = 0.5
 	OneDay                 = 24 * time.Hour
 )
@@ -20,7 +19,7 @@ func (m *Reward) TableName() string {
 type Reward struct {
 	ID             uint      `gorm:"primarykey" json:"id"`
 	UserId         uint      `json:"user_id"`
-	AtOrderID      string    `json:"accesstrade_order_id"`
+	AtOrderID      string    `json:"accesstrade_order_id" gorm:"column:accesstrade_order_id"`
 	Amount         float64   `json:"amount"` // amount of reward after fee subtractions
 	RewardedAmount float64   `json:"rewarded_amount"`
 	CommissionFee  float64   `json:"commission_fee"` // commission fee (in percentage)
@@ -43,7 +42,7 @@ func (r *Reward) ToRewardDto() dto.RewardDto {
 	}
 }
 
-func (r *Reward) GetClaimableReward() (rewardAmount float64, ended bool) {
+func (r *Reward) WithdrawableReward() (rewardAmount float64, ended bool) {
 	daysPassed := int(time.Since(r.CreatedAt) / OneDay)   // number of days passed since order created
 	totalDays := int(r.EndedAt.Sub(r.CreatedAt) / OneDay) // total lock days
 	withdrawablePercent := float64(daysPassed) / float64(totalDays)
@@ -53,5 +52,6 @@ func (r *Reward) GetClaimableReward() (rewardAmount float64, ended bool) {
 	}
 
 	rewardAmount = FirstPartRewardPercent*r.Amount + (1-FirstPartRewardPercent)*r.Amount*withdrawablePercent - r.RewardedAmount
+	rewardAmount = math.Round(rewardAmount*100) / 100
 	return
 }

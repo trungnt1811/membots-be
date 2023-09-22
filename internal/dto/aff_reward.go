@@ -6,10 +6,15 @@ import (
 
 // REWARD
 type RewardSummary struct {
+	// total amount of reward already withdrawn
 	TotalWithdrewAmount float64 `json:"total_withdrew_amount"`
-	WithdrawableReward  float64 `json:"withdrawable_reward"`
-	RewardInDay         float64 `json:"reward_in_day"`
-	PendingRewardOrder  int     `json:"pending_reward_order"`
+	// amount of reward earn in day = 50% of total order approved today
+	RewardInDay float64 `json:"reward_in_day"`
+	// number of orders that user not receive all reward
+	PendingRewardOrder int `json:"pending_reward_order"`
+	// amount of reward can be withdrawn at the moment
+	WithdrawableReward float64 `json:"withdrawable_reward"`
+	// amount of reward still locked
 	PendingRewardAmount float64 `json:"pending_reward_amount"`
 }
 

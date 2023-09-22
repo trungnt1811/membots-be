@@ -9,6 +9,18 @@ import (
 	"github.com/spf13/viper"
 )
 
+type AffiliateConfiguration struct {
+	RewardProgram    string  `mapstructure:"AFF_REWARD_PROGRAM"`
+	SellerId         uint    `mapstructure:"AFF_SELLER_ID"`
+	StellaCommission float64 `mapstructure:"AFF_STELLA_COMMISSION"`
+}
+
+type TikiConfiguration struct {
+	ApiUrl         string `mapstructure:"TIKI_API_URL"`
+	ApiKey         string `mapstructure:"TIKI_API_KEY"`
+	ExchangeApiKey string `mapstructure:"TIKI_EXCHANGE_API_KEY"`
+}
+
 type RewardShippingConfiguration struct {
 	BaseUrl string `mapstructure:"REWARD_SHIPPING_URL"`
 	ApiKey  string `mapstructure:"REWARD_SHIPPING_KEY"`
@@ -72,6 +84,8 @@ type Configuration struct {
 	Kafka             KafkaConfiguration          `mapstructure:",squash"`
 	Webhook           WebhookConfiguration        `mapstructure:",squash"`
 	RewardShipping    RewardShippingConfiguration `mapstructure:",squash"`
+	Aff               AffiliateConfiguration      `mapstructure:",squash"`
+	Tiki              TikiConfiguration           `mapstructure:",squash"`
 	AccessTradeAPIKey string                      `mapstructure:"ACCESSTRADE_APIKEY"`
 	CreatorBEToken    string                      `mapstructure:"CREATOR_BE_TOKEN"`
 	AppName           string                      `mapstructure:"APP_NAME"`
@@ -100,7 +114,7 @@ func init() {
 	}
 	err := viper.Unmarshal(&configuration)
 	if err != nil {
-		log.Logger.Printf("Unable to decode config into map, %v", err)
+		log.Logger.Fatal().Msgf("Unable to decode config into map, %v", err)
 	}
 
 	fmt.Println("EVM ChainId:", configuration.EvmRpc.EVMChainID)

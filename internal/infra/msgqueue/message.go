@@ -35,3 +35,31 @@ func GetOrderApprovedNotiData() map[string]string {
 	// data[NotiDataKeyOrderId] = strconv.Itoa(int(orderId))
 	return data
 }
+
+// Reward-shipping delivery receipt
+type DeliveryMsg struct {
+	SellerId uint `json:"sellerId"`
+	// Receipt transaction hash
+	TxHash string `json:"txHash"`
+	// Calling program contract
+	ProgramAddress string `json:"programAddress"`
+	// Type of shipping batch, WALLET or EMAIL-SMS
+	ShippingType string `json:"shippingType"`
+	// Transaction Status: 0 - Failed, 1 - Success
+	TxStatus  uint64             `json:"txStatus"`
+	RequestId string             `json:"requestId"`
+	Customers []DeliveryCustomer `json:"customers"`
+}
+
+type DeliveryCustomer struct {
+	CustomerId      int    `json:"customerId"`
+	HolderAddress   string `json:"holderAddress"`
+	CustomerAddress string `json:"customerAddress"`
+	RedeemCode      string `json:"redeemCode"`
+	OrderCode       string `json:"orderCode"`
+	RedeemExpiredAt int64  `json:"redeemExpiredAt"`
+	TokenAddress    string `json:"tokenAddress"`
+	Amount          string `json:"amount"`
+	Email           string `json:"email"`
+	PhoneNumber     string `json:"phoneNumber"`
+}

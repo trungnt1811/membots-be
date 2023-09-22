@@ -24,6 +24,10 @@ type authHandler struct {
 	RedisClient    caching.Repository
 }
 
+type authResponse struct {
+	User dto.UserInfo `json:"user"`
+}
+
 func (s *authHandler) CheckAdminHeader() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var token struct {
@@ -116,19 +120,22 @@ func (s *authHandler) appTokenInfo(jwtToken string) (dto.UserInfo, error) {
 	keyer := &caching.Keyer{Raw: key}
 	err := s.RedisClient.RetrieveItem(keyer, &authInfo)
 	if err != nil {
-		userExpireInfo, err1 := s.getUserExpireFromJWTToken(jwtToken)
-		if err1 != nil {
-			return authInfo, err1
-		}
+		var authResp authResponse
 		// cache miss
 		resp, err1 := s.HttpClient.R().SetHeader("Authorization", jwtToken).
-			SetSuccessResult(&authInfo).
+			SetSuccessResult(&authResp).
 			Get(s.AppAuthUrl)
 		if err1 != nil {
 			return dto.UserInfo{}, err1
 		}
+		authInfo = authResp.User
+
 		if !resp.IsSuccessState() {
 			return dto.UserInfo{}, err1
+		}
+		userExpireInfo, err1 := s.getUserExpireFromJWTToken(jwtToken)
+		if err1 != nil {
+			return authInfo, err1
 		}
 		expireAt := userExpireInfo.ExpiredAt - time.Now().Unix()
 		if err = s.RedisClient.SaveItem(keyer, authInfo, time.Duration(expireAt)*time.Second); err != nil {

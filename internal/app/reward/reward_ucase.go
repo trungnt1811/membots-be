@@ -8,32 +8,37 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/infra/shipping"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/model"
+	"github.com/astraprotocol/affiliate-system/internal/util"
 )
 
 const (
-	MinWithdrawReward      = 0.01    // asa
-	RewardLockTime         = 60 * 24 // hours
-	AffCommissionFee       = 10      // 10%, percentage preserve for stella from affiliate reward
-	AffRewardTxFee         = 0.1     // fix amount of tx fee
-	StellaSellerId         = 119
-	AstraPrice             = 200
-	StellaAffRewardProgram = "0x4744fd21dbA951890c0247b6585930E74AC6A3d5"
+	MinWithdrawReward = 0.01    // asa
+	RewardLockTime    = 60 * 24 // hours
+	AffRewardTxFee    = 0.1     // fix amount of tx fee
 )
 
+type RewardConfig struct {
+	RewardProgram string // Reward Program that send affiliate reward
+	SellerId      uint   // Owner of Reward Program
+}
+
 type RewardUsecase struct {
-	repo      interfaces.RewardRepository
-	orderRepo interfaces.OrderRepository
-	rwService *shipping.ShippingClient
+	repo         interfaces.RewardRepository
+	orderRepo    interfaces.OrderRepository
+	rwService    *shipping.ShippingClient
+	rewardConfig RewardConfig
 }
 
 func NewRewardUsecase(repo interfaces.RewardRepository,
 	orderRepo interfaces.OrderRepository,
 	rwService *shipping.ShippingClient,
+	rewardConfig RewardConfig,
 ) *RewardUsecase {
 	return &RewardUsecase{
-		repo:      repo,
-		orderRepo: orderRepo,
-		rwService: rwService,
+		repo:         repo,
+		orderRepo:    orderRepo,
+		rwService:    rwService,
+		rewardConfig: rewardConfig,
 	}
 }
 
@@ -42,9 +47,8 @@ func (u *RewardUsecase) WithdrawReward(ctx context.Context, userId uint32, userW
 	if err != nil {
 		return dto.WithdrawRewardResponse{}, err
 	}
-
 	// Calculating Reward
-	rewardClaim, rewardToClaim, orderRewardHistories := u.calculateWithdrawableReward(rewards, userId)
+	rewardClaim, rewardToClaim, orderRewardHistories := u.CalculateWithdrawableReward(rewards, userId)
 	if rewardClaim.Amount-AffRewardTxFee < MinWithdrawReward {
 		return dto.WithdrawRewardResponse{
 			Execute: false,
@@ -52,10 +56,16 @@ func (u *RewardUsecase) WithdrawReward(ctx context.Context, userId uint32, userW
 		}, nil
 	}
 
+	// Update Db
+	err = u.repo.SaveRewardWithdraw(ctx, rewardClaim, rewardToClaim, orderRewardHistories)
+	if err != nil {
+		return dto.WithdrawRewardResponse{}, err
+	}
+
 	// Call service send reward
 	sendReq := shipping.ReqSendPayload{
-		SellerId:       StellaSellerId,
-		ProgramAddress: StellaAffRewardProgram,
+		SellerId:       u.rewardConfig.SellerId,
+		ProgramAddress: u.rewardConfig.RewardProgram,
 		RequestId:      rewardClaim.ShippingRequestID,
 		Items: []shipping.ReqSendItem{
 			{
@@ -64,13 +74,14 @@ func (u *RewardUsecase) WithdrawReward(ctx context.Context, userId uint32, userW
 			},
 		},
 	}
+
 	_, err = u.rwService.SendReward(&sendReq)
 	if err != nil {
 		return dto.WithdrawRewardResponse{}, err
 	}
 
-	// Update Db
-	err = u.repo.SaveRewardWithdraw(ctx, rewardClaim, rewardToClaim, orderRewardHistories)
+	// Update Withdraw status
+	err = u.repo.UpdateWithdrawShippingStatus(ctx, sendReq.RequestId, "", model.ShippingStatusSending)
 	if err != nil {
 		return dto.WithdrawRewardResponse{}, err
 	}
@@ -103,17 +114,19 @@ func (u *RewardUsecase) GetRewardSummary(ctx context.Context, userId uint32) (dt
 	}
 	var totalOrderRewardInDay float64 = 0
 	for _, item := range rewardsInDay {
-		totalOrderRewardInDay += item.Amount * model.FirstPartRewardPercent
+		totalOrderRewardInDay += item.Amount
 	}
+	totalOrderRewardInDay = util.RoundFloat(totalOrderRewardInDay*model.FirstPartRewardPercent, 2)
 
-	withdrawable, _, _ := u.calculateWithdrawableReward(inProgressRewards, userId)
+	withdrawable, _, _ := u.CalculateWithdrawableReward(inProgressRewards, userId)
+	pendingRewardAmount := util.RoundFloat(totalOrderReward-withdrawable.Amount, 2)
 
 	return dto.RewardSummary{
 		TotalWithdrewAmount: totalWithdrewAmount,
 		WithdrawableReward:  withdrawable.Amount,
 		RewardInDay:         totalOrderRewardInDay,
 		PendingRewardOrder:  len(inProgressRewards),
-		PendingRewardAmount: totalOrderReward - withdrawable.Amount,
+		PendingRewardAmount: pendingRewardAmount,
 	}, nil
 }
 

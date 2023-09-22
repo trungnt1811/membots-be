@@ -4,15 +4,16 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"strconv"
 	"time"
 
+	"github.com/astraprotocol/affiliate-system/conf"
 	"github.com/astraprotocol/affiliate-system/internal/app/reward"
 	"github.com/astraprotocol/affiliate-system/internal/infra/msgqueue"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/model"
 	"github.com/astraprotocol/affiliate-system/internal/util"
+	"github.com/astraprotocol/affiliate-system/internal/util/log"
 	"github.com/segmentio/kafka-go"
 )
 
@@ -39,65 +40,86 @@ func NewRewardMaker(rewardRepo interfaces.RewardRepository,
 }
 
 func (u *RewardMaker) ListenOrderApproved() {
-	for {
-		ctx := context.Background()
+	stellaCommission := conf.GetConfiguration().Aff.StellaCommission
 
-		newAtOrderId, err := u.getNewApprovedAtOrderId(ctx)
-		if err != nil {
-			log.Println("Failed to comsume new AccessTrade order id", err)
-			continue
+	errChn := make(chan error)
+	go func() {
+		for err := range errChn {
+			log.LG.Errorf("Reward Maker - failed to process approved order tx: %v", err)
 		}
+	}()
 
-		order, err := u.orderRepo.FindOrderByAccessTradeId(newAtOrderId)
-		if err != nil {
-			log.Println("Failed to get affiliate order", err)
-			continue
+	go func() {
+		log.LG.Infof("Reward Maker - Start reading new approved order")
+		for {
+			ctx := context.Background()
+			/* ==========================================================================
+			SECTION: reading message
+			=========================================================================== */
+			msg, err := u.approveQ.FetchMessage(ctx)
+			if err != nil {
+				errChn <- err
+				continue
+			}
+
+			var orderApprovedMsg msgqueue.MsgOrderApproved
+			err = json.Unmarshal(msg.Value, &orderApprovedMsg)
+			if err != nil {
+				_ = u.commitOrderApprovedMsg(msg)
+				errChn <- err
+				continue
+			}
+			newAtOrderId := orderApprovedMsg.AtOrderID
+			log.LG.Infof("Read new order approved: %v", newAtOrderId)
+
+			/* ==========================================================================
+			SECTION: processing
+			=========================================================================== */
+			order, err := u.orderRepo.FindOrderByAccessTradeId(newAtOrderId)
+			if err != nil {
+				_ = u.commitOrderApprovedMsg(msg)
+				errChn <- err
+				continue
+			}
+			if order.OrderStatus != model.OrderStatusApproved {
+				continue
+			}
+
+			rewardAmount, err := u.CalculateRewardAmt(float64(order.PubCommission), stellaCommission)
+			if err != nil {
+				_ = u.commitOrderApprovedMsg(msg)
+				errChn <- err
+				continue
+			}
+
+			now := time.Now()
+			newReward := model.Reward{
+				UserId:         order.UserId,
+				AtOrderID:      newAtOrderId,
+				Amount:         rewardAmount,
+				RewardedAmount: 0,
+				CommissionFee:  stellaCommission,
+				EndedAt:        now.Add(reward.RewardLockTime * time.Hour),
+				CreatedAt:      now,
+				UpdatedAt:      now,
+			}
+			err = u.rewardRepo.CreateReward(ctx, &newReward)
+			if err != nil {
+				_ = u.commitOrderApprovedMsg(msg)
+				errChn <- err
+				continue
+			}
+
+			err = u.notiOrderApproved(order.UserId, newAtOrderId, order.Merchant)
+			if err != nil {
+				_ = u.commitOrderApprovedMsg(msg)
+				errChn <- err
+				continue
+			}
+
+			_ = u.commitOrderApprovedMsg(msg)
 		}
-
-		rewardAmount, err := u.calculateRewardAmt(float64(order.PubCommission), reward.AffCommissionFee)
-		if err != nil {
-			log.Println("Failed to calculate reward amount", err)
-			continue
-		}
-
-		now := time.Now()
-		newReward := model.Reward{
-			UserId:         order.UserId,
-			AtOrderID:      newAtOrderId,
-			Amount:         rewardAmount,
-			RewardedAmount: 0,
-			CommissionFee:  reward.AffCommissionFee,
-			EndedAt:        now.Add(reward.RewardLockTime * time.Hour),
-			CreatedAt:      now,
-			UpdatedAt:      now,
-		}
-		err = u.rewardRepo.CreateReward(ctx, &newReward)
-		if err != nil {
-			log.Println("Failed to get affiliate order", err)
-			continue
-		}
-
-		err = u.notiOrderApproved(order.UserId, newAtOrderId, order.Merchant)
-		if err != nil {
-			log.Println("Failed to send reward approved noti", err)
-			continue
-		}
-	}
-}
-
-func (u *RewardMaker) getNewApprovedAtOrderId(ctx context.Context) (string, error) {
-	var msg msgqueue.MsgOrderApproved
-	m, err := u.approveQ.FetchMessage(ctx)
-	if err != nil {
-		return "", err
-	}
-
-	err = json.Unmarshal(m.Value, &msg)
-	if err != nil {
-		return "", err
-	}
-
-	return msg.AtOrderID, nil
+	}()
 }
 
 func (u *RewardMaker) notiOrderApproved(userId uint, atOrderId string, merchant string) error {
@@ -123,16 +145,25 @@ func (u *RewardMaker) notiOrderApproved(userId uint, atOrderId string, merchant 
 		return err
 	}
 
-	log.Printf("Pushed Order Approved Msg to queue %v\n", notiMsg)
+	log.LG.Infof("Pushed Order Approved Msg to queue %v\n", notiMsg)
 
 	return nil
 }
 
-func (u *RewardMaker) calculateRewardAmt(affCommission float64, commissionFee float64) (float64, error) {
+func (u *RewardMaker) CalculateRewardAmt(affCommission float64, commissionFee float64) (float64, error) {
 	astraPrice, err := u.priceRepo.GetAstraPrice(context.Background())
 	if err != nil {
 		return 0, err
 	}
 	tokenCommission := affCommission / float64(astraPrice) * (100 - commissionFee) / 100
 	return util.RoundFloat(tokenCommission, 2), nil
+}
+
+func (u *RewardMaker) commitOrderApprovedMsg(message kafka.Message) error {
+	err := u.approveQ.CommitMessages(context.Background(), message)
+	if err != nil {
+		log.LG.Errorf("Failed to commit order approved message: %v", err)
+		return err
+	}
+	return nil
 }

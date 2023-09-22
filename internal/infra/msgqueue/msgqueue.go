@@ -20,7 +20,7 @@ const (
 	KAFKA_NEW_DATA_MAX_WAIT           = time.Minute * 1
 	KAFKA_TIME_OUT                    = time.Second * 3
 	KAFKA_READ_BATCH_TIME_OUT         = time.Second * 60
-	KAFKA_GROUP_ID                    = "affiliate-system-backend" + "-Kien"
+	KAFKA_GROUP_ID                    = "affiliate-system-backend"
 	KAFKA_TOPIC_IMPORT_RECEIPT_TX     = "reward-shipping-receipt"
 	KAFKA_TOPIC_AFF_ORDER_APPROVE     = "aff-order-approved"
 	KAFKA_TOPIC_NOTI_SMS              = "notification-SMS"

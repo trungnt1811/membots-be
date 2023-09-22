@@ -41,7 +41,7 @@ func NewRewardMaker(rewardRepo interfaces.RewardRepository,
 
 func (u *RewardMaker) ListenOrderApproved() {
 	stellaCommission := conf.GetConfiguration().Aff.StellaCommission
-
+	fmt.Println("MAKERRRRRR - stellaCommission", stellaCommission)
 	errChn := make(chan error)
 	go func() {
 		for err := range errChn {

@@ -25,6 +25,7 @@ func (a *affCampaignRepository) GetCampaignById(id uint) (model.AffCampaign, err
 	if err := a.Db.Table("aff_campaign").
 		Joins("Description").
 		Joins("Brand").
+		Preload("Attributes").
 		Joins("StellaCategory").
 		Where("aff_campaign.id = ?", id).First(&affCampaign).Error; err != nil {
 		return affCampaign, err

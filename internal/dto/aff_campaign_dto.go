@@ -40,18 +40,19 @@ type AffCampaignDto struct {
 }
 
 type StellaInfoDto struct {
-	StartTime         *time.Time     `json:"start_time"`
-	EndTime           *time.Time     `json:"end_time"`
-	StellaDescription interface{}    `json:"stella_description"`
-	CategoryId        uint           `json:"category_id"`
-	StellaStatus      string         `json:"stella_status"`
-	Thumbnail         string         `json:"thumbnail"`
-	StellaMaxCom      string         `json:"stella_max_com"`
-	Url               string         `json:"url"`
-	Name              string         `json:"name"`
-	BrandId           uint           `json:"brand_id"`
-	Brand             BrandDto       `json:"brand"`
-	Category          AffCategoryDto `json:"category"`
+	StartTime         *time.Time                `json:"start_time"`
+	EndTime           *time.Time                `json:"end_time"`
+	StellaDescription interface{}               `json:"stella_description"`
+	CategoryId        uint                      `json:"category_id"`
+	StellaStatus      string                    `json:"stella_status"`
+	Thumbnail         string                    `json:"thumbnail"`
+	StellaMaxCom      string                    `json:"stella_max_com"`
+	Url               string                    `json:"url"`
+	Name              string                    `json:"name"`
+	BrandId           uint                      `json:"brand_id"`
+	Brand             BrandDto                  `json:"brand"`
+	Category          AffCategoryDto            `json:"category"`
+	Attributes        []AffCampaignAttributeDto `json:"attributes"`
 }
 
 type AffCampaignAppDto struct {

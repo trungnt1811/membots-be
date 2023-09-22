@@ -11,28 +11,33 @@ import (
 )
 
 const (
-	MinWithdrawReward      = 0.01    // asa
-	RewardLockTime         = 60 * 24 // hours
-	AffCommissionFee       = 10      // 10%, percentage preserve for stella from affiliate reward
-	AffRewardTxFee         = 0.1     // fix amount of tx fee
-	StellaSellerId         = 105
-	StellaAffRewardProgram = "0x00F543fE92c037652601166dD00c1719E71E4219"
+	MinWithdrawReward = 0.01    // asa
+	RewardLockTime    = 60 * 24 // hours
+	AffRewardTxFee    = 0.1     // fix amount of tx fee
 )
 
+type RewardConfig struct {
+	RewardProgram string // Reward Program that send affiliate reward
+	SellerId      uint   // Owner of Reward Program
+}
+
 type RewardUsecase struct {
-	repo      interfaces.RewardRepository
-	orderRepo interfaces.OrderRepository
-	rwService *shipping.ShippingClient
+	repo         interfaces.RewardRepository
+	orderRepo    interfaces.OrderRepository
+	rwService    *shipping.ShippingClient
+	rewardConfig RewardConfig
 }
 
 func NewRewardUsecase(repo interfaces.RewardRepository,
 	orderRepo interfaces.OrderRepository,
 	rwService *shipping.ShippingClient,
+	rewardConfig RewardConfig,
 ) *RewardUsecase {
 	return &RewardUsecase{
-		repo:      repo,
-		orderRepo: orderRepo,
-		rwService: rwService,
+		repo:         repo,
+		orderRepo:    orderRepo,
+		rwService:    rwService,
+		rewardConfig: rewardConfig,
 	}
 }
 
@@ -41,7 +46,6 @@ func (u *RewardUsecase) WithdrawReward(ctx context.Context, userId uint32, userW
 	if err != nil {
 		return dto.WithdrawRewardResponse{}, err
 	}
-
 	// Calculating Reward
 	rewardClaim, rewardToClaim, orderRewardHistories := u.CalculateWithdrawableReward(rewards, userId)
 	if rewardClaim.Amount-AffRewardTxFee < MinWithdrawReward {
@@ -51,10 +55,16 @@ func (u *RewardUsecase) WithdrawReward(ctx context.Context, userId uint32, userW
 		}, nil
 	}
 
+	// Update Db
+	err = u.repo.SaveRewardWithdraw(ctx, rewardClaim, rewardToClaim, orderRewardHistories)
+	if err != nil {
+		return dto.WithdrawRewardResponse{}, err
+	}
+
 	// Call service send reward
 	sendReq := shipping.ReqSendPayload{
-		SellerId:       StellaSellerId,
-		ProgramAddress: StellaAffRewardProgram,
+		SellerId:       u.rewardConfig.SellerId,
+		ProgramAddress: u.rewardConfig.RewardProgram,
 		RequestId:      rewardClaim.ShippingRequestID,
 		Items: []shipping.ReqSendItem{
 			{
@@ -63,13 +73,14 @@ func (u *RewardUsecase) WithdrawReward(ctx context.Context, userId uint32, userW
 			},
 		},
 	}
+
 	_, err = u.rwService.SendReward(&sendReq)
 	if err != nil {
 		return dto.WithdrawRewardResponse{}, err
 	}
 
-	// Update Db
-	err = u.repo.SaveRewardWithdraw(ctx, rewardClaim, rewardToClaim, orderRewardHistories)
+	// Update Withdraw status
+	err = u.repo.UpdateWithdrawShippingStatus(ctx, sendReq.RequestId, "", model.ShippingStatusSending)
 	if err != nil {
 		return dto.WithdrawRewardResponse{}, err
 	}

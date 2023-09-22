@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/astraprotocol/affiliate-system/conf"
 	"github.com/astraprotocol/affiliate-system/internal/app/reward"
 	"github.com/astraprotocol/affiliate-system/internal/infra/msgqueue"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
@@ -39,6 +40,8 @@ func NewRewardMaker(rewardRepo interfaces.RewardRepository,
 }
 
 func (u *RewardMaker) ListenOrderApproved() {
+	stellaCommission := conf.GetConfiguration().Aff.StellaCommission
+
 	errChn := make(chan error)
 	go func() {
 		for err := range errChn {
@@ -82,7 +85,7 @@ func (u *RewardMaker) ListenOrderApproved() {
 				continue
 			}
 
-			rewardAmount, err := u.CalculateRewardAmt(float64(order.PubCommission), reward.AffCommissionFee)
+			rewardAmount, err := u.CalculateRewardAmt(float64(order.PubCommission), stellaCommission)
 			if err != nil {
 				_ = u.commitOrderApprovedMsg(msg)
 				errChn <- err
@@ -95,7 +98,7 @@ func (u *RewardMaker) ListenOrderApproved() {
 				AtOrderID:      newAtOrderId,
 				Amount:         rewardAmount,
 				RewardedAmount: 0,
-				CommissionFee:  reward.AffCommissionFee,
+				CommissionFee:  stellaCommission,
 				EndedAt:        now.Add(reward.RewardLockTime * time.Hour),
 				CreatedAt:      now,
 				UpdatedAt:      now,

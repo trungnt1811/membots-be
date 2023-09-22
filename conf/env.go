@@ -10,10 +10,9 @@ import (
 )
 
 type AffiliateConfiguration struct {
-	RewardProgram    string `mapstructure:"AFF_REWARD_PROGRAM"`
-	SellerId         string `mapstructure:"AFF_SELLER_ID"`
-	StellaCommission string `mapstructure:"AFF_STELLA_COMMISSION"`
-	WithdrawFee      string `mapstructure:"AFF_WITHDRAW_FEE"`
+	RewardProgram    string  `mapstructure:"AFF_REWARD_PROGRAM"`
+	SellerId         uint    `mapstructure:"AFF_SELLER_ID"`
+	StellaCommission float64 `mapstructure:"AFF_STELLA_COMMISSION"`
 }
 
 type TikiConfiguration struct {

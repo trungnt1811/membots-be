@@ -1,6 +1,8 @@
 package reward
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -138,6 +140,8 @@ func (handler *RewardHandler) WithdrawReward(ctx *gin.Context) {
 		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
 		return
 	}
+	u, _ := json.Marshal(user)
+	fmt.Println("USER", string(u))
 
 	// get reward
 	res, err := handler.usecase.WithdrawReward(ctx, user.ID, user.WalletAddress)

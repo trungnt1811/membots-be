@@ -8,8 +8,6 @@ import (
 )
 
 const (
-	RewardStatusInProgress = "in_progress"
-	RewardStatusDone       = "done"
 	FirstPartRewardPercent = 0.5
 	OneDay                 = 24 * time.Hour
 )

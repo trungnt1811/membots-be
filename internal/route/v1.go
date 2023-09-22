@@ -2,7 +2,6 @@ package route
 
 import (
 	"context"
-	"net/http"
 	"time"
 
 	bannerApp "github.com/astraprotocol/affiliate-system/internal/app/aff_banner_app"
@@ -114,14 +113,17 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	consoleRouter.GET("/summary", authHandler.CheckAdminHeader(), statisticHandler.GetSummary)
 
 	// SECTION: Reward module
+	rewardConf := reward.RewardConfig{
+		SellerId:      config.Aff.SellerId,
+		RewardProgram: config.Aff.RewardProgram,
+	}
 	rewardRepo := reward.NewRewardRepository(db)
-	rewardUsecase := reward.NewRewardUsecase(rewardRepo, orderRepo, shippingClient)
+	rewardUsecase := reward.NewRewardUsecase(rewardRepo, orderRepo, shippingClient, rewardConf)
 	rewardHandler := reward.NewRewardHandler(rewardUsecase)
 
-	rewardRouter := v1.Group("/rewards")
+	rewardRouter := v1.Group("/rewards", authHandler.CheckUserHeader())
 	rewardRouter.GET("/summary", rewardHandler.GetRewardSummary)
 	rewardRouter.GET("/withdraw", rewardHandler.GetWithdrawHistory)
-	rewardRouter.GET("/test", authHandler.CheckUserHeader(), func(ctx *gin.Context) { ctx.JSON(http.StatusOK, "haha") })
 	rewardRouter.GET("/withdraw/:id", rewardHandler.GetWithdrawDetails)
 	rewardRouter.POST("/withdraw", rewardHandler.WithdrawReward)
 

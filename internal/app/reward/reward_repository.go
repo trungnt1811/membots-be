@@ -25,7 +25,7 @@ func (r *RewardRepository) CreateReward(ctx context.Context, reward *model.Rewar
 
 func (r *RewardRepository) GetInProgressRewards(ctx context.Context, userId uint32) ([]model.Reward, error) {
 	var rewards []model.Reward
-	err := r.db.Model(&model.Reward{}).Where("user_id = ? AND status = ?", userId, model.RewardStatusInProgress).Order("id DESC").Scan(&rewards).Error
+	err := r.db.Model(&model.Reward{}).Where("user_id = ? AND rewarded_amount < amount", userId).Order("id DESC").Scan(&rewards).Error
 	return rewards, err
 }
 
@@ -42,12 +42,15 @@ func (r *RewardRepository) GetRewardsInDay(ctx context.Context) ([]model.Reward,
 	return rewards, err
 }
 
-func (r *RewardRepository) SaveRewardWithdraw(ctx context.Context, rewardClaim *model.RewardWithdraw, rewards []model.Reward, orderRewardHistories []model.OrderRewardHistory) error {
+func (r *RewardRepository) SaveRewardWithdraw(ctx context.Context, rewardWithdraw *model.RewardWithdraw, rewards []model.Reward, orderRewardHistories []model.OrderRewardHistory) error {
 	return r.db.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Create(rewardClaim).Error; err != nil {
+		if err := tx.Create(rewardWithdraw).Error; err != nil {
 			return err
 		}
 
+		for idx := range orderRewardHistories {
+			orderRewardHistories[idx].RewardWithdrawID = rewardWithdraw.ID
+		}
 		if err := tx.Create(orderRewardHistories).Error; err != nil {
 			return err
 		}
@@ -58,6 +61,11 @@ func (r *RewardRepository) SaveRewardWithdraw(ctx context.Context, rewardClaim *
 
 		return nil
 	})
+}
+
+func (r *RewardRepository) UpdateWithdrawShippingStatus(ctx context.Context, shippingReqId, txHash, status string) error {
+	updates := map[string]interface{}{"tx_hash": txHash, "shipping_status": status}
+	return r.db.Model(&model.RewardWithdraw{}).Where("shipping_request_id = ?", shippingReqId).Updates(updates).Error
 }
 
 func (r *RewardRepository) GetWithdrawHistory(ctx context.Context, userId uint32, page, size int) ([]model.RewardWithdraw, error) {

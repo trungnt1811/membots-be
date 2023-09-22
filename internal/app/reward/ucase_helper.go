@@ -12,6 +12,7 @@ func (u *RewardUsecase) CalculateWithdrawableReward(rewards []model.Reward, user
 	withdraw := model.RewardWithdraw{
 		UserId:            uint(userId),
 		ShippingRequestID: shippingRequestId,
+		ShippingStatus:    model.ShippingStatusInit,
 		Amount:            0,
 		Fee:               AffRewardTxFee,
 	}

@@ -1554,6 +1554,12 @@ const docTemplate = `{
                 "accesstrade_id": {
                     "type": "string"
                 },
+                "attributes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.AffCampaignAttributeDto"
+                    }
+                },
                 "brand": {
                     "$ref": "#/definitions/dto.BrandDto"
                 },
@@ -1615,6 +1621,26 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.AffCampaignAttributeDto": {
+            "type": "object",
+            "properties": {
+                "attribute_key": {
+                    "type": "string"
+                },
+                "attribute_type": {
+                    "type": "string"
+                },
+                "attribute_value": {
+                    "type": "string"
+                },
+                "campaign_id": {
+                    "type": "integer"
+                },
+                "id": {
                     "type": "integer"
                 }
             }
@@ -2367,6 +2393,12 @@ const docTemplate = `{
         "dto.StellaInfoDto": {
             "type": "object",
             "properties": {
+                "attributes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.AffCampaignAttributeDto"
+                    }
+                },
                 "brand": {
                     "$ref": "#/definitions/dto.BrandDto"
                 },

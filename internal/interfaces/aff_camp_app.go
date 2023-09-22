@@ -7,8 +7,11 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/model"
 )
 
+const ListAffCampaignOrderByMostCommission = "most-commission"
+const ListAffCampaignOrderByDefault = "default"
+
 type AffCampAppRepository interface {
-	GetAllAffCampaign(ctx context.Context, page, size int) ([]model.AffCampaignLessApp, error)
+	GetAllAffCampaign(ctx context.Context, orderBy string, page, size int) ([]model.AffCampaignLessApp, error)
 	GetAffCampaignById(ctx context.Context, id uint64) (model.AffCampaignApp, error)
 	GetListAffCampaignByBrandIds(ctx context.Context, brandIds []uint64) ([]model.AffCampaignComBrand, error)
 }

@@ -11,6 +11,7 @@ type ConsoleCampRepository interface {
 	GetCampaignLessByAccessTradeId(accessTradeId string) (model.AffCampaignLess, error)
 	CountCampaign(status []string, q string) (int64, error)
 	UpdateCampaign(id uint, updates map[string]interface{}) error
+	UpdateCampaignAttribute(id uint, attributes []model.AffCampaignAttribute) error
 }
 
 type ConsoleCampUCase interface {

@@ -3,6 +3,7 @@ package campaign
 import (
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
+	model2 "github.com/astraprotocol/affiliate-system/internal/model"
 	"strings"
 )
 
@@ -49,6 +50,23 @@ func (c *campaignUCase) UpdateCampaign(id uint, campaign dto.AffCampaignAppDto) 
 	}
 	if len(strings.TrimSpace(campaign.StellaStatus)) > 0 {
 		updates["stella_status"] = campaign.StellaStatus
+	}
+
+	if len(campaign.Attributes) > 0 {
+		var attributes []model2.AffCampaignAttribute
+		for _, attribute := range campaign.Attributes {
+			attributes = append(attributes, model2.AffCampaignAttribute{
+				ID:             attribute.ID,
+				CampaignId:     id,
+				AttributeKey:   attribute.AttributeKey,
+				AttributeValue: attribute.AttributeValue,
+				AttributeType:  attribute.AttributeType,
+			})
+		}
+		err := c.Repo.UpdateCampaignAttribute(id, attributes)
+		if err != nil {
+			return err
+		}
 	}
 	return c.Repo.UpdateCampaign(id, updates)
 }

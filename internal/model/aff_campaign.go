@@ -47,35 +47,36 @@ func (m *CampaignDescription) TableName() string {
 }
 
 type AffCampaign struct {
-	ID                uint                `gorm:"primarykey" json:"id"`
-	ActiveStatus      int                 `json:"active_status"`
-	BrandId           uint                `json:"brand_id"`
-	Brand             Brand               `json:"brand" gorm:"foreignKey:BrandId"`
-	AccessTradeId     string              `json:"accesstrade_id" gorm:"column:accesstrade_id"`
-	CreatedAt         time.Time           `json:"created_at"`
-	UpdatedAt         time.Time           `json:"updated_at"`
-	Logo              string              `json:"logo"`
-	MaxCom            string              `json:"max_com"`
-	Merchant          string              `json:"merchant"`
-	Name              string              `json:"name"`
-	Scope             string              `json:"scope"`
-	Approval          string              `json:"approval"`
-	Status            int                 `json:"status"`
-	Type              int                 `json:"type"`
-	Url               string              `json:"url"`
-	Category          string              `json:"category"`
-	SubCategory       string              `json:"sub_category"`
-	CookieDuration    int                 `json:"cookie_duration"`
-	CookiePolicy      string              `json:"cookie_policy"`
-	Description       CampaignDescription `json:"description" gorm:"foreignKey:CampaignId;references:ID"`
-	StartTime         *time.Time          `json:"start_time"`
-	EndTime           *time.Time          `json:"end_time"`
-	StellaDescription datatypes.JSON      `json:"stella_description"`
-	CategoryId        uint                `json:"category_id"`
-	StellaCategory    AffCategory         `json:"stella_category" gorm:"foreignKey:CategoryId;references:ID"`
-	StellaStatus      string              `json:"stella_status"`
-	Thumbnail         string              `json:"thumbnail"`
-	StellaMaxCom      string              `json:"stella_max_com"`
+	ID                uint                   `gorm:"primarykey" json:"id"`
+	ActiveStatus      int                    `json:"active_status"`
+	BrandId           uint                   `json:"brand_id"`
+	Brand             Brand                  `json:"brand" gorm:"foreignKey:BrandId"`
+	AccessTradeId     string                 `json:"accesstrade_id" gorm:"column:accesstrade_id"`
+	CreatedAt         time.Time              `json:"created_at"`
+	UpdatedAt         time.Time              `json:"updated_at"`
+	Logo              string                 `json:"logo"`
+	MaxCom            string                 `json:"max_com"`
+	Merchant          string                 `json:"merchant"`
+	Name              string                 `json:"name"`
+	Scope             string                 `json:"scope"`
+	Approval          string                 `json:"approval"`
+	Status            int                    `json:"status"`
+	Type              int                    `json:"type"`
+	Url               string                 `json:"url"`
+	Category          string                 `json:"category"`
+	SubCategory       string                 `json:"sub_category"`
+	CookieDuration    int                    `json:"cookie_duration"`
+	CookiePolicy      string                 `json:"cookie_policy"`
+	Description       CampaignDescription    `json:"description" gorm:"foreignKey:CampaignId;references:ID"`
+	StartTime         *time.Time             `json:"start_time"`
+	EndTime           *time.Time             `json:"end_time"`
+	StellaDescription datatypes.JSON         `json:"stella_description"`
+	CategoryId        uint                   `json:"category_id"`
+	StellaCategory    AffCategory            `json:"stella_category" gorm:"foreignKey:CategoryId;references:ID"`
+	StellaStatus      string                 `json:"stella_status"`
+	Thumbnail         string                 `json:"thumbnail"`
+	StellaMaxCom      string                 `json:"stella_max_com"`
+	Attributes        []AffCampaignAttribute `json:"attributes" gorm:"foreignKey:CampaignId"`
 }
 
 func (m *AffCampaign) TableName() string {
@@ -83,6 +84,10 @@ func (m *AffCampaign) TableName() string {
 }
 
 func (m *AffCampaign) ToDto() dto.AffCampaignDto {
+	var listAttribute []dto.AffCampaignAttributeDto
+	for _, attribute := range m.Attributes {
+		listAttribute = append(listAttribute, attribute.ToDto())
+	}
 	campDto := dto.AffCampaignDto{
 		ID:            m.ID,
 		AccessTradeId: m.AccessTradeId,
@@ -104,6 +109,7 @@ func (m *AffCampaign) ToDto() dto.AffCampaignDto {
 			BrandId:           m.BrandId,
 			Brand:             m.Brand.ToBrandDto(),
 			Category:          m.StellaCategory.ToDto(),
+			Attributes:        listAttribute,
 		},
 	}
 	campDto.Description = m.Description.ToDto()
@@ -111,21 +117,22 @@ func (m *AffCampaign) ToDto() dto.AffCampaignDto {
 }
 
 type AffCampaignApp struct {
-	ID                uint64         `gorm:"primarykey" json:"id"`
-	BrandId           uint64         `json:"brand_id"`
-	Brand             Brand          `json:"brand" gorm:"foreignKey:BrandId"`
-	AccessTradeId     string         `json:"accesstrade_id" gorm:"column:accesstrade_id"`
-	CreatedAt         time.Time      `json:"created_at"`
-	UpdatedAt         time.Time      `json:"updated_at"`
-	Name              string         `json:"name"`
-	Url               string         `json:"url"`
-	StartTime         *time.Time     `json:"start_time"`
-	EndTime           *time.Time     `json:"end_time"`
-	StellaDescription datatypes.JSON `json:"stella_description" gorm:"serializer:json"`
-	CategoryId        uint64         `json:"category_id"`
-	StellaStatus      string         `json:"stella_status"`
-	Thumbnail         string         `json:"thumbnail"`
-	StellaMaxCom      string         `json:"stella_max_com"`
+	ID                uint64                 `gorm:"primarykey" json:"id"`
+	BrandId           uint64                 `json:"brand_id"`
+	Brand             Brand                  `json:"brand" gorm:"foreignKey:BrandId"`
+	AccessTradeId     string                 `json:"accesstrade_id" gorm:"column:accesstrade_id"`
+	CreatedAt         time.Time              `json:"created_at"`
+	UpdatedAt         time.Time              `json:"updated_at"`
+	Name              string                 `json:"name"`
+	Url               string                 `json:"url"`
+	StartTime         *time.Time             `json:"start_time"`
+	EndTime           *time.Time             `json:"end_time"`
+	StellaDescription datatypes.JSON         `json:"stella_description" gorm:"serializer:json"`
+	CategoryId        uint64                 `json:"category_id"`
+	StellaStatus      string                 `json:"stella_status"`
+	Thumbnail         string                 `json:"thumbnail"`
+	StellaMaxCom      string                 `json:"stella_max_com"`
+	Attributes        []AffCampaignAttribute `json:"attributes" gorm:"foreignKey:CampaignId"`
 }
 
 func (m *AffCampaignApp) TableName() string {
@@ -133,6 +140,10 @@ func (m *AffCampaignApp) TableName() string {
 }
 
 func (m *AffCampaignApp) ToAffCampaignAppDto() dto.AffCampaignAppDto {
+	var listAttribute []dto.AffCampaignAttributeDto
+	for _, attribute := range m.Attributes {
+		listAttribute = append(listAttribute, attribute.ToDto())
+	}
 	return dto.AffCampaignAppDto{
 		ID:                m.ID,
 		BrandId:           m.BrandId,
@@ -149,6 +160,7 @@ func (m *AffCampaignApp) ToAffCampaignAppDto() dto.AffCampaignAppDto {
 		StellaDescription: m.StellaDescription,
 		StellaStatus:      m.StellaStatus,
 		StellaMaxCom:      m.StellaMaxCom,
+		Attributes:        listAttribute,
 	}
 }
 

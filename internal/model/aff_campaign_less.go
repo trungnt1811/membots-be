@@ -31,6 +31,7 @@ type AffCampaignLessApp struct {
 	StellaStatus  string `json:"stella_status"`
 	Brand         Brand  `json:"brand" gorm:"foreignKey:BrandId"`
 	CategoryId    uint   `json:"category_id"`
+	StellaMaxCom  string `json:"stella_max_com"`
 }
 
 func (c *AffCampaignLessApp) TableName() string {
@@ -46,5 +47,6 @@ func (c *AffCampaignLessApp) ToDto() dto.AffCampaignLessDto {
 		BrandId:       c.BrandId,
 		Brand:         c.Brand.ToBrandDto(),
 		StellaStatus:  c.StellaStatus,
+		StellaMaxCom:  c.StellaMaxCom,
 	}
 }

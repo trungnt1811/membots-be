@@ -124,6 +124,10 @@ definitions:
     properties:
       accesstrade_id:
         type: string
+      attributes:
+        items:
+          $ref: '#/definitions/dto.AffCampaignAttributeDto'
+        type: array
       brand:
         $ref: '#/definitions/dto.BrandDto'
       brand_id:
@@ -165,6 +169,19 @@ definitions:
       size:
         type: integer
       total:
+        type: integer
+    type: object
+  dto.AffCampaignAttributeDto:
+    properties:
+      attribute_key:
+        type: string
+      attribute_type:
+        type: string
+      attribute_value:
+        type: string
+      campaign_id:
+        type: integer
+      id:
         type: integer
     type: object
   dto.AffCampaignDto:
@@ -436,6 +453,8 @@ definitions:
         type: integer
       is_favorited:
         type: boolean
+      is_top_favorited:
+        type: boolean
       logo:
         type: string
       name:
@@ -662,6 +681,10 @@ definitions:
     type: object
   dto.StellaInfoDto:
     properties:
+      attributes:
+        items:
+          $ref: '#/definitions/dto.AffCampaignAttributeDto'
+        type: array
       brand:
         $ref: '#/definitions/dto.BrandDto'
       brand_id:
@@ -977,7 +1000,7 @@ paths:
         in: query
         name: size
         type: string
-      - description: filter to query, default is recently-visited (recently-visited/top-favorited/favorite)
+      - description: filter to query, default is recently-visited (recently-visited/top-favorited/most-commission/favorite)
         in: query
         name: filter
         type: string

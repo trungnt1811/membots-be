@@ -1007,6 +1007,137 @@ paths:
       summary: Get list aff brand by user
       tags:
       - app
+  /api/v1/app/orders:
+    get:
+      consumes:
+      - application/json
+      description: Get order history - include reward info
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.OrderHistoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get order history
+      tags:
+      - order
+  /api/v1/app/orders/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get affiliate order details - include status timeline and reward
+        info
+      parameters:
+      - description: order id to query
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.OrderDetailsDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get affiliate order details
+      tags:
+      - order
+  /api/v1/app/rewards/summary:
+    get:
+      consumes:
+      - application/json
+      description: Get reward summary of an account
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RewardSummary'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get reward summary of an account
+      tags:
+      - reward
+  /api/v1/app/rewards/withdraw:
+    get:
+      consumes:
+      - application/json
+      description: Get reward withdraw history records
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RewardWithdrawResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get reward withdraw history records
+      tags:
+      - reward
+    post:
+      consumes:
+      - application/json
+      description: Claim reward of all orders
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RewardSummary'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Claim reward of all orders
+      tags:
+      - reward
   /api/v1/campaign/link:
     post:
       consumes:
@@ -1383,57 +1514,6 @@ paths:
       summary: Get summary statistic data
       tags:
       - console
-  /api/v1/order:
-    get:
-      consumes:
-      - application/json
-      description: Get order history - include reward info
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.OrderHistoryResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/util.GeneralError'
-        "424":
-          description: Failed Dependency
-          schema:
-            $ref: '#/definitions/util.GeneralError'
-      security:
-      - ApiKeyAuth: []
-      summary: Get order history
-      tags:
-      - order
-  /api/v1/order/{id}:
-    get:
-      consumes:
-      - application/json
-      description: Get affiliate order details - include status timeline and reward
-        info
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.OrderDetailsDto'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/util.GeneralError'
-        "424":
-          description: Failed Dependency
-          schema:
-            $ref: '#/definitions/util.GeneralError'
-      security:
-      - ApiKeyAuth: []
-      summary: Get affiliate order details
-      tags:
-      - order
   /api/v1/order/post-back:
     post:
       consumes:
@@ -1498,80 +1578,6 @@ paths:
       summary: PostRequestRedeem
       tags:
       - redeem
-  /api/v1/rewards/summary:
-    get:
-      consumes:
-      - application/json
-      description: Get reward summary of an account
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.RewardSummary'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/util.GeneralError'
-        "424":
-          description: Failed Dependency
-          schema:
-            $ref: '#/definitions/util.GeneralError'
-      security:
-      - ApiKeyAuth: []
-      summary: Get reward summary of an account
-      tags:
-      - reward
-  /api/v1/rewards/withdraw:
-    get:
-      consumes:
-      - application/json
-      description: Get reward withdraw history records
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.RewardWithdrawResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/util.GeneralError'
-        "424":
-          description: Failed Dependency
-          schema:
-            $ref: '#/definitions/util.GeneralError'
-      security:
-      - ApiKeyAuth: []
-      summary: Get reward withdraw history records
-      tags:
-      - reward
-    post:
-      consumes:
-      - application/json
-      description: Claim reward of all orders
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.RewardSummary'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/util.GeneralError'
-        "424":
-          description: Failed Dependency
-          schema:
-            $ref: '#/definitions/util.GeneralError'
-      security:
-      - ApiKeyAuth: []
-      summary: Claim reward of all orders
-      tags:
-      - reward
 securityDefinitions:
   ApiKeyAuth:
     description: Use for authorization of reward creator

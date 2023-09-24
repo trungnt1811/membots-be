@@ -112,20 +112,6 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	statisticHandler := statistic.NewStatisticHandler(statisticUcase)
 	consoleRouter.GET("/summary", authHandler.CheckAdminHeader(), statisticHandler.GetSummary)
 
-	// SECTION: Reward module
-	rewardConf := reward.RewardConfig{
-		SellerId:      config.Aff.SellerId,
-		RewardProgram: config.Aff.RewardProgram,
-	}
-	rewardRepo := reward.NewRewardRepository(db)
-	rewardUsecase := reward.NewRewardUsecase(rewardRepo, orderRepo, shippingClient, rewardConf)
-	rewardHandler := reward.NewRewardHandler(rewardUsecase)
-
-	rewardRouter := v1.Group("/rewards", authHandler.CheckUserHeader())
-	rewardRouter.GET("/summary", rewardHandler.GetRewardSummary)
-	rewardRouter.GET("/withdraw", rewardHandler.GetWithdrawHistory)
-	rewardRouter.POST("/withdraw", rewardHandler.WithdrawReward)
-
 	// SECTION: App module
 	appRouter := v1.Group("/app")
 
@@ -171,6 +157,24 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	affSearchUCase := aff_search.NewAffSearchUCase(affSearchRepo)
 	affSearchHandler := aff_search.NewAffSearchHandler(affSearchUCase)
 	appRouter.GET("/aff-search", affSearchHandler.AffSearch)
+
+	// SECTION: Reward module
+	rewardConf := reward.RewardConfig{
+		SellerId:      config.Aff.SellerId,
+		RewardProgram: config.Aff.RewardProgram,
+	}
+	rewardRepo := reward.NewRewardRepository(db)
+	rewardUsecase := reward.NewRewardUsecase(rewardRepo, orderRepo, shippingClient, rewardConf)
+	rewardHandler := reward.NewRewardHandler(rewardUsecase)
+
+	rewardRouter := appRouter.Group("/rewards", authHandler.CheckUserHeader())
+	rewardRouter.GET("/summary", rewardHandler.GetRewardSummary)
+	rewardRouter.GET("/withdraw", rewardHandler.GetWithdrawHistory)
+	rewardRouter.POST("/withdraw", rewardHandler.WithdrawReward)
+
+	orderRouteApp := appRouter.Group("/orders", authHandler.CheckUserHeader())
+	orderRouteApp.GET("", orderHandler.GetOrderHistory)
+	orderRouteApp.GET("/:id", orderHandler.GetOrderDetails)
 
 	// SECTION: Cron jobs
 	cron := gocron.NewScheduler(time.UTC)

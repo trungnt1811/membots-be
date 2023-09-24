@@ -2,6 +2,7 @@ package reward
 
 import (
 	"context"
+	"database/sql"
 	"time"
 
 	"github.com/astraprotocol/affiliate-system/internal/model"
@@ -91,7 +92,7 @@ type RewardWithdrawDetailsDto struct {
 }
 
 func (r *RewardRepository) GetTotalWithdrewAmount(ctx context.Context, userId uint32) (float64, error) {
-	var amount float64
+	var amount sql.NullFloat64
 	err := r.db.Model(&model.RewardWithdraw{}).Select("SUM(amount)").Where("user_id = ?", userId).Scan(&amount).Error
-	return amount, err
+	return amount.Float64, err
 }

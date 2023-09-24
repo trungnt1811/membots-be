@@ -69,10 +69,11 @@ func (handler *OrderHandler) PostBackOrderHandle(c *gin.Context) {
 // @Accept	json
 // @Produce json
 // @Security ApiKeyAuth
+// @Param id path int true "order id to query"
 // @Success 200 		{object}	dto.OrderDetailsDto
 // @Failure 424 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
-// @Router 	/api/v1/order/{id} [get]
+// @Router 	/api/v1/app/orders/{id} [get]
 func (handler *OrderHandler) GetOrderDetails(ctx *gin.Context) {
 	// First, take user from JWT
 	user, err := dto.GetUserInfo(ctx)
@@ -108,7 +109,7 @@ func (handler *OrderHandler) GetOrderDetails(ctx *gin.Context) {
 // @Success 200 		{object}	dto.OrderHistoryResponse
 // @Failure 424 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
-// @Router 	/api/v1/order [get]
+// @Router 	/api/v1/app/orders [get]
 func (handler *OrderHandler) GetOrderHistory(ctx *gin.Context) {
 	// First, take user from JWT
 	user, err := dto.GetUserInfo(ctx)

@@ -48,7 +48,7 @@ func (r affCampAppRepository) GetAffCampaignById(ctx context.Context, id uint64)
 	err := r.db.
 		Joins("Brand").
 		Preload("Attributes").
-		Where("aff_campaign.id = ? AND aff_campaign.stella_status = ?", id, model.StellaStatusInProgress).
+		Where("aff_campaign.id = ?", id).
 		First(&affCampaign).Error
 	return affCampaign, err
 }

@@ -999,7 +999,7 @@ paths:
       - application/json
       description: Get order history - include reward info
       parameters:
-      - description: 'order status to filter, default is '
+      - description: order status to filter, valid query is 'wait_for_confirming','rewarding','complete','cancelled','rejected'
         in: query
         name: status
         type: string

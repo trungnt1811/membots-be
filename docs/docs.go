@@ -458,7 +458,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "order status to filter, default is ",
+                        "description": "order status to filter, valid query is 'wait_for_confirming','rewarding','complete','cancelled','rejected'",
                         "name": "status",
                         "in": "query"
                     },

@@ -116,7 +116,7 @@ func (repo *OrderRepository) UpdateTrackedClickOrder(trackedId uint64, order *mo
 }
 
 var selectOrderDetails = "SELECT o.user_id, o.order_status, o.at_product_link, o.billing, o.category_name, o.merchant, " +
-	"o.accesstrade_order_id, o.pub_commission, o.sales_time, o.confirmed_time, " +
+	"o.accesstrade_order_id, o.pub_commission, o.sales_time, o.confirmed_time, o.created_at, " +
 	"r.amount, r.rewarded_amount, r.commission_fee, r.end_at, r.start_at " +
 	"FROM aff_order AS o " +
 	"LEFT JOIN aff_reward AS r ON r.accesstrade_order_id = o.accesstrade_order_id "
@@ -138,7 +138,7 @@ func (repo *OrderRepository) GetOrderDetails(ctx context.Context, userId uint32,
 		var rewardEndAt sql.NullTime
 		var rewardStartAt sql.NullTime
 		err = rows.Scan(&o.UserId, &o.OrderStatus, &o.ATProductLink, &o.Billing, &o.CategoryName, &o.Merchant,
-			&o.AccessTradeOrderId, &o.PubCommission, &o.SalesTime, &o.ConfirmedTime,
+			&o.AccessTradeOrderId, &o.PubCommission, &o.SalesTime, &o.ConfirmedTime, &o.CreatedAt,
 			&rewardAmount, &rewardedAmount, &commissionFee, &rewardEndAt, &rewardStartAt)
 		if err != nil {
 			return &model.OrderDetails{}, err
@@ -158,10 +158,13 @@ func (repo *OrderRepository) GetOrderHistory(ctx context.Context, since time.Tim
 
 	limit := size + 1
 	offset := (page - 1) * size
+
+	statusQuery, statusParams := model.BuildOrderStatusQuery(status)
+
 	query := selectOrderDetails +
 		"WHERE o.user_id = ? AND o.created_at > ? "
 	if status != "" {
-		query += "AND order_status = ? "
+		query += statusQuery + " "
 	}
 	query += "ORDER BY o.id DESC " +
 		"LIMIT ? OFFSET ?"
@@ -169,7 +172,7 @@ func (repo *OrderRepository) GetOrderHistory(ctx context.Context, since time.Tim
 	var rows *sql.Rows
 	var err error
 	if status != "" {
-		rows, err = repo.db.Raw(query, userId, status, since, limit, offset).Rows()
+		rows, err = repo.db.Raw(query, userId, since, statusParams, limit, offset).Rows()
 	} else {
 		rows, err = repo.db.Raw(query, userId, since, limit, offset).Rows()
 	}
@@ -186,7 +189,7 @@ func (repo *OrderRepository) GetOrderHistory(ctx context.Context, since time.Tim
 		var rewardEndAt sql.NullTime
 		var rewardStartAt sql.NullTime
 		err = rows.Scan(&o.UserId, &o.OrderStatus, &o.ATProductLink, &o.Billing, &o.CategoryName, &o.Merchant,
-			&o.AccessTradeOrderId, &o.PubCommission, &o.SalesTime, &o.ConfirmedTime,
+			&o.AccessTradeOrderId, &o.PubCommission, &o.SalesTime, &o.ConfirmedTime, &o.CreatedAt,
 			&rewardAmount, &rewardedAmount, &commissionFee, &rewardEndAt, &rewardStartAt)
 		if err != nil {
 			return []model.OrderDetails{}, err
@@ -205,17 +208,18 @@ func (repo *OrderRepository) GetOrderHistory(ctx context.Context, since time.Tim
 
 func (repo *OrderRepository) CountOrders(ctx context.Context, since time.Time, userId uint32, status string) (int64, error) {
 	var count int64
+	statusQuery, statusParams := model.BuildOrderStatusQuery(status)
 	query := "SELECT COUNT(o.accesstrade_order_id) " +
 		"FROM aff_order AS o " +
 		"LEFT JOIN aff_reward AS r ON r.accesstrade_order_id = o.accesstrade_order_id " +
 		"WHERE o.user_id = ? AND o.created_at > ? "
 	if status != "" {
-		query += "AND order_status = ?"
+		query += statusQuery
 	}
 
 	var err error
 	if status != "" {
-		err = repo.db.Raw(query, userId, since, status).Count(&count).Error
+		err = repo.db.Raw(query, userId, since, statusParams).Count(&count).Error
 	} else {
 		err = repo.db.Raw(query, userId, since).Count(&count).Error
 	}

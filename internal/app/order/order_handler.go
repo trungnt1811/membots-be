@@ -112,7 +112,7 @@ func (handler *OrderHandler) GetOrderDetails(ctx *gin.Context) {
 // @Accept	json
 // @Produce json
 // @Security ApiKeyAuth
-// @Param status query string false "order status to filter, default is "" (no fiter)"
+// @Param status query string false "order status to filter, valid query is 'wait_for_confirming','rewarding','complete','cancelled','rejected'"
 // @Param page query string false "page to query, default is 1"
 // @Success 200 		{object}	dto.OrderHistoryResponse
 // @Failure 424 		{object}	util.GeneralError

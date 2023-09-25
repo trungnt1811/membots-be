@@ -188,9 +188,12 @@ func (u *OrderUcase) GetOrderHistory(ctx context.Context, userId uint32, status 
 		nextPage = page + 1
 	}
 
-	orderDtos := make([]dto.OrderDetailsDto, len(orderHistory))
-	for idx, item := range orderHistory {
-		orderDtos[idx] = item.ToOrderDetailsDto()
+	var orderDtos []dto.OrderDetailsDto
+	for i, item := range orderHistory {
+		if i >= size {
+			break
+		}
+		orderDtos = append(orderDtos, item.ToOrderDetailsDto())
 	}
 
 	totalOrder, err := u.Repo.CountOrders(ctx, pastTimeLimit, userId, status)

@@ -458,7 +458,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "order status to filter, default is ",
+                        "description": "order status to filter, valid query is 'wait_for_confirming','rewarding','complete','cancelled','rejected'",
                         "name": "status",
                         "in": "query"
                     },
@@ -2155,6 +2155,7 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "confirmed_time": {
+                    "description": "don hang duoc ghi nhan",
                     "type": "string"
                 },
                 "merchant": {
@@ -2170,12 +2171,14 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "reward_start_at": {
+                    "description": "xac nhan hoan tat nhan 50%",
                     "type": "string"
                 },
                 "rewarded_amount": {
                     "type": "number"
                 },
                 "sales_time": {
+                    "description": "dat hang thanh cong",
                     "type": "string"
                 },
                 "user_id": {

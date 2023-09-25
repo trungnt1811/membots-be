@@ -2,6 +2,14 @@ package dto
 
 import "time"
 
+const (
+	OrderStatusWaitForConfirming = "wait_for_confirming"
+	OrderStatusReceivingReward   = "receiving_reward"
+	OrderStatusCompleted         = "completed"
+	OrderStatusCancelled         = "cancelled"
+	OrderStatusRejected          = "rejected"
+)
+
 type OrderDetailsDto struct {
 	UserId             uint      `json:"user_id"`
 	OrderStatus        string    `json:"order_status"`
@@ -13,13 +21,11 @@ type OrderDetailsDto struct {
 	PubCommission      float32   `json:"pub_commission"`
 	SalesTime          time.Time `json:"sales_time"`
 	ConfirmedTime      time.Time `json:"confirmed_time"`
-	ApprovedTime       time.Time `json:"approved_time"`
-	RejectedTime       time.Time `json:"rejected_time"`
 	RewardAmount       float64   `json:"amount"` // amount of reward after fee subtractions
 	RewardedAmount     float64   `json:"rewarded_amount"`
 	CommissionFee      float64   `json:"commission_fee"` // commission fee (in percentage)
-	EndedAt            time.Time `json:"ended_at"`
-	CreatedAt          time.Time `json:"created_at"`
+	RewardEndAt        time.Time `json:"reward_end_at"`
+	RewardStartAt      time.Time `json:"reward_start_at"`
 }
 
 type OrderHistoryResponse struct {

@@ -83,9 +83,9 @@ func (repo *MockOrderRepository) GetOrderDetails(ctx context.Context, userId uin
 	return nil, nil
 }
 
-func (repo *MockOrderRepository) GetOrderHistory(ctx context.Context, userId uint32, page, size int) ([]model.OrderDetails, error) {
+func (repo *MockOrderRepository) GetOrderHistory(ctx context.Context, since time.Time, userId uint32, status string, page, size int) ([]model.OrderDetails, error) {
 	return []model.OrderDetails{}, nil
 }
-func (repo *MockOrderRepository) CountOrder(ctx context.Context, userId uint32) (int64, error) {
+func (repo *MockOrderRepository) CountOrders(ctx context.Context, since time.Time, userId uint32, status string) (int64, error) {
 	return 0, nil
 }

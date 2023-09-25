@@ -519,8 +519,6 @@ definitions:
       amount:
         description: amount of reward after fee subtractions
         type: number
-      approved_time:
-        type: string
       at_product_link:
         type: string
       billing:
@@ -532,17 +530,15 @@ definitions:
         type: number
       confirmed_time:
         type: string
-      created_at:
-        type: string
-      ended_at:
-        type: string
       merchant:
         type: string
       order_status:
         type: string
       pub_commission:
         type: number
-      rejected_time:
+      reward_end_at:
+        type: string
+      reward_start_at:
         type: string
       rewarded_amount:
         type: number
@@ -999,6 +995,15 @@ paths:
       consumes:
       - application/json
       description: Get order history - include reward info
+      parameters:
+      - description: 'order status to filter, default is '
+        in: query
+        name: status
+        type: string
+      - description: page to query, default is 1
+        in: query
+        name: page
+        type: string
       produces:
       - application/json
       responses:
@@ -1408,13 +1413,13 @@ paths:
       description: Get affiliate order list by time range and other filter
       parameters:
       - in: query
-        name: order_status
+        name: orderStatus
         type: string
       - in: query
         name: page
         type: integer
       - in: query
-        name: per_page
+        name: perPage
         type: integer
       - in: query
         name: since
@@ -1423,7 +1428,7 @@ paths:
         name: until
         type: string
       - in: query
-        name: user_id
+        name: userId
         type: integer
       produces:
       - application/json

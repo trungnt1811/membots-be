@@ -35,8 +35,9 @@ func (u *RewardUsecase) CalculateWithdrawableReward(rewards []model.Reward, user
 
 		// Update reward
 		rewards[idx].RewardedAmount += orderReward
-		if ended {
-			rewards[idx].EndedAt = time.Now()
+
+		if ended { // TODO: not update ended. Create status instead?
+			rewards[idx].EndAt = time.Now()
 		}
 		rewardsToWithdraw = append(rewardsToWithdraw, rewards[idx])
 	}

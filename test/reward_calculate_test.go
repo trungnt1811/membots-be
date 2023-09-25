@@ -61,12 +61,12 @@ type withdrawRewardTest struct {
 }
 
 func initTestReward(amount, rewardedAmount float64, timeSinceCreated time.Duration, lockTime time.Duration) model.Reward {
-	createdAt := time.Now().Add(-1 * timeSinceCreated)
+	startAt := time.Now().Add(-1 * timeSinceCreated)
 	return model.Reward{
 		Amount:         amount,
 		RewardedAmount: rewardedAmount,
-		CreatedAt:      createdAt,
-		EndedAt:        createdAt.Add(lockTime),
+		StartAt:        startAt,
+		EndAt:          startAt.Add(lockTime),
 	}
 }
 

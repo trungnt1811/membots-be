@@ -99,9 +99,8 @@ func (u *RewardMaker) ListenOrderApproved() {
 				Amount:         rewardAmount,
 				RewardedAmount: 0,
 				CommissionFee:  stellaCommission,
-				EndedAt:        now.Add(reward.RewardLockTime * time.Hour),
-				CreatedAt:      now,
-				UpdatedAt:      now,
+				StartAt:        now,
+				EndAt:          now.Add(reward.RewardLockTime * time.Hour),
 			}
 			err = u.rewardRepo.CreateReward(ctx, &newReward)
 			if err != nil {

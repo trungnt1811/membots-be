@@ -447,6 +447,20 @@
                     "order"
                 ],
                 "summary": "Get order history",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "order status to filter, default is ",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "page to query, default is 1",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1092,7 +1106,7 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "name": "order_status",
+                        "name": "orderStatus",
                         "in": "query"
                     },
                     {
@@ -1102,7 +1116,7 @@
                     },
                     {
                         "type": "integer",
-                        "name": "per_page",
+                        "name": "perPage",
                         "in": "query"
                     },
                     {
@@ -1117,7 +1131,7 @@
                     },
                     {
                         "type": "integer",
-                        "name": "user_id",
+                        "name": "userId",
                         "in": "query"
                     }
                 ],
@@ -2113,9 +2127,6 @@
                     "description": "amount of reward after fee subtractions",
                     "type": "number"
                 },
-                "approved_time": {
-                    "type": "string"
-                },
                 "at_product_link": {
                     "type": "string"
                 },
@@ -2132,12 +2143,6 @@
                 "confirmed_time": {
                     "type": "string"
                 },
-                "created_at": {
-                    "type": "string"
-                },
-                "ended_at": {
-                    "type": "string"
-                },
                 "merchant": {
                     "type": "string"
                 },
@@ -2147,7 +2152,10 @@
                 "pub_commission": {
                     "type": "number"
                 },
-                "rejected_time": {
+                "reward_end_at": {
+                    "type": "string"
+                },
+                "reward_start_at": {
                     "type": "string"
                 },
                 "rewarded_amount": {

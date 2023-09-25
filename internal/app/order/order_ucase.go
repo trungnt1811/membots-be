@@ -172,7 +172,7 @@ func (u *OrderUcase) GetOrderDetails(ctx context.Context, userId uint32, orderId
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("order", order)
+
 	orderDto := order.ToOrderDetailsDto()
 	return &orderDto, nil
 }
@@ -189,7 +189,7 @@ func (u *OrderUcase) GetOrderHistory(ctx context.Context, userId uint32, status 
 		nextPage = page + 1
 	}
 
-	var orderDtos []dto.OrderDetailsDto
+	orderDtos := []dto.OrderDetailsDto{}
 	for i, item := range orderHistory {
 		if i >= size {
 			break

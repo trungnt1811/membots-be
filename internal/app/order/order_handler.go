@@ -10,7 +10,7 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/util"
 	"github.com/astraprotocol/affiliate-system/internal/util/log"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
+	"golang.org/x/exp/slices"
 )
 
 type OrderHandler struct {
@@ -91,18 +91,19 @@ func (handler *OrderHandler) GetOrderDetails(ctx *gin.Context) {
 	}
 
 	// get reward
-	res, err := handler.usecase.GetOrderDetails(ctx, user.ID, uint(orderId))
+	order, err := handler.usecase.GetOrderDetails(ctx, user.ID, uint(orderId))
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			util.RespondError(ctx, http.StatusForbidden, "failed to get order details", errors.New("user do not have authorization on given order"))
-			return
-		}
 		util.RespondError(ctx, http.StatusFailedDependency, "failed to get order details", err)
 		return
 	}
 
+	if order.ID == 0 {
+		util.RespondError(ctx, http.StatusForbidden, "failed to get order details", errors.New("user do not have authorization on given order"))
+		return
+	}
+
 	// Response transaction status
-	ctx.JSON(http.StatusOK, res)
+	ctx.JSON(http.StatusOK, order)
 }
 
 // GetRewardHistory Get order history
@@ -127,6 +128,12 @@ func (handler *OrderHandler) GetOrderHistory(ctx *gin.Context) {
 	}
 
 	orderStatus := ctx.DefaultQuery("status", "")
+	validStatus := []string{dto.OrderStatusWaitForConfirming, dto.OrderStatusRewarding,
+		dto.OrderStatusComplete, dto.OrderStatusCancelled, dto.OrderStatusRejected}
+	if !slices.Contains(validStatus, orderStatus) {
+		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", errors.New("invalid status query"))
+		return
+	}
 	page := ctx.GetInt("page")
 	size := ctx.GetInt("size")
 

@@ -11,6 +11,7 @@ const (
 )
 
 type OrderDetailsDto struct {
+	ID                 uint      `json:"id"`
 	UserId             uint      `json:"user_id"`
 	OrderStatus        string    `json:"order_status"`
 	ATProductLink      string    `json:"at_product_link"`

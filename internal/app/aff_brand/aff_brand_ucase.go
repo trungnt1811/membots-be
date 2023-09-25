@@ -65,6 +65,9 @@ func (s affBrandUCase) GetTopFavouriteAffBrand(ctx context.Context, userId uint6
 
 	var listAffCampaignComBrandDto []dto.AffCampaignLessDto
 	for i := range listFavAffBrand {
+		if i >= size {
+			break
+		}
 		listAffCampaignComBrandDto = append(listAffCampaignComBrandDto, listFavAffBrand[i].ToAffCampaignLessDto())
 		listAffCampaignComBrandDto[i].Brand.IsFavorited = favBrandCheck[listAffCampaignComBrandDto[i].BrandId]
 	}

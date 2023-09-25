@@ -5,6 +5,7 @@ import (
 
 	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade/types"
 	"github.com/astraprotocol/affiliate-system/internal/dto"
+	"github.com/astraprotocol/affiliate-system/internal/util"
 )
 
 const (
@@ -156,6 +157,7 @@ type OrderDetails struct {
 	RewardAmount       float64   `json:"amount"` // amount of reward after fee subtractions
 	RewardedAmount     float64   `json:"rewarded_amount"`
 	CommissionFee      float64   `json:"commission_fee"` // commission fee (in percentage)
+	ImmediateRelease   float64   `json:"immediate_release"`
 	RewardEndAt        time.Time `json:"reward_end_at"`
 	RewardStartAt      time.Time `json:"reward_start_at"`
 }
@@ -190,11 +192,21 @@ func (o *OrderDetails) ToOrderDetailsDto() dto.OrderDetailsDto {
 	case OrderStatusCancelled:
 		status = dto.OrderStatusCancelled
 	default:
-		// case OrderStatusInitial
-		// case OrderStatusPending
-		// case OrderStatusApproved
+		// case OrderStatusInitial, OrderStatusPending, OrderStatusApproved
 		status = dto.OrderStatusWaitForConfirming
 	}
+
+	daysPassed := int(time.Since(o.RewardStartAt) / OneDay)       // number of days passed since order created
+	totalDays := int(o.RewardEndAt.Sub(o.RewardStartAt) / OneDay) // total lock days
+	dayPassedPercent := float64(daysPassed) / float64(totalDays)
+	if dayPassedPercent > 1 {
+		dayPassedPercent = 1
+	}
+
+	imReleaseAmount := util.RoundFloat(o.RewardAmount*o.ImmediateRelease, 2)
+	secondPartReward := o.RewardAmount * (1 - o.ImmediateRelease)
+	secondPartUnlockedAmount := util.RoundFloat(secondPartReward*dayPassedPercent, 2)
+	rewardRemainingAmount := util.RoundFloat(secondPartReward*(1-dayPassedPercent), 2)
 
 	return dto.OrderDetailsDto{
 		ID:                 o.ID,
@@ -206,12 +218,14 @@ func (o *OrderDetails) ToOrderDetailsDto() dto.OrderDetailsDto {
 		Merchant:           o.Merchant,
 		AccessTradeOrderId: o.AccessTradeOrderId,
 		PubCommission:      o.PubCommission,
-		SalesTime:          o.SalesTime,
-		ConfirmedTime:      o.ConfirmedTime,
-		RewardAmount:       o.RewardAmount,
-		RewardedAmount:     o.RewardedAmount,
 		CommissionFee:      o.CommissionFee,
-		RewardEndAt:        o.RewardEndAt,
-		RewardStartAt:      o.RewardStartAt,
+		BuyTime:            o.SalesTime,
+		ConfirmedTime:      o.CreatedAt,
+		// RejectedTime: ,
+		RewardFirstPartReleasedTime:    o.RewardStartAt,
+		RewardFirstPartReleasedAmount:  imReleaseAmount,
+		RewardSecondPartUnlockedAmount: secondPartUnlockedAmount,
+		RewardRemainingAmount:          rewardRemainingAmount,
+		RewardEndAt:                    o.RewardEndAt,
 	}
 }

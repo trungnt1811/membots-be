@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	FirstPartRewardPercent = 0.5
-	OneDay                 = 24 * time.Hour
+	ImmediateRelease = 0.5
+	OneDay           = 24 * time.Hour
 )
 
 func (m *Reward) TableName() string {
@@ -17,16 +17,17 @@ func (m *Reward) TableName() string {
 }
 
 type Reward struct {
-	ID             uint      `gorm:"primarykey" json:"id"`
-	UserId         uint      `json:"user_id"`
-	AtOrderID      string    `json:"accesstrade_order_id" gorm:"column:accesstrade_order_id"`
-	Amount         float64   `json:"amount"` // amount of reward after fee subtractions
-	RewardedAmount float64   `json:"rewarded_amount"`
-	CommissionFee  float64   `json:"commission_fee"` // commission fee (in percentage)
-	EndAt          time.Time `json:"end_at"`
-	StartAt        time.Time `json:"start_at"`
-	CreatedAt      time.Time `json:"created_at"`
-	UpdatedAt      time.Time `json:"updated_at"`
+	ID               uint      `gorm:"primarykey" json:"id"`
+	UserId           uint      `json:"user_id"`
+	AtOrderID        string    `json:"accesstrade_order_id" gorm:"column:accesstrade_order_id"`
+	Amount           float64   `json:"amount"` // amount of reward after fee subtractions
+	RewardedAmount   float64   `json:"rewarded_amount"`
+	CommissionFee    float64   `json:"commission_fee"`    // commission fee (in percentage)
+	ImmediateRelease float64   `json:"immediate_release"` // percentage of reward release immediate when order approved
+	EndAt            time.Time `json:"end_at"`
+	StartAt          time.Time `json:"start_at"`
+	CreatedAt        time.Time `json:"created_at"`
+	UpdatedAt        time.Time `json:"updated_at"`
 }
 
 func (r *Reward) ToRewardDto() dto.RewardDto {
@@ -53,7 +54,8 @@ func (r *Reward) WithdrawableReward() (rewardAmount float64, ended bool) {
 		ended = true
 	}
 
-	rewardAmount = FirstPartRewardPercent*r.Amount + (1-FirstPartRewardPercent)*r.Amount*withdrawablePercent - r.RewardedAmount
+	imRelease := r.ImmediateRelease
+	rewardAmount = imRelease*r.Amount + (1-imRelease)*r.Amount*withdrawablePercent - r.RewardedAmount
 	rewardAmount = math.Round(rewardAmount*100) / 100
 	return
 }

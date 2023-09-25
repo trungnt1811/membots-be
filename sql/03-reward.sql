@@ -5,6 +5,7 @@ CREATE TABLE aff_reward (
     amount DECIMAL(30, 18) DEFAULT 0,
     rewarded_amount DECIMAL(30, 18) DEFAULT 0,
     commission_fee FLOAT(5, 2) DEFAULT 0,
+    immediate_release FLOAT(5, 2) DEFAULT 0,
     end_at DATETIME,
     start_at DATETIME,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

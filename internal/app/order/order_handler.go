@@ -130,7 +130,7 @@ func (handler *OrderHandler) GetOrderHistory(ctx *gin.Context) {
 	orderStatus := ctx.DefaultQuery("status", "")
 	validStatus := []string{dto.OrderStatusWaitForConfirming, dto.OrderStatusRewarding,
 		dto.OrderStatusComplete, dto.OrderStatusCancelled, dto.OrderStatusRejected}
-	if !slices.Contains(validStatus, orderStatus) {
+	if orderStatus != "" && !slices.Contains(validStatus, orderStatus) {
 		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", errors.New("invalid status query"))
 		return
 	}

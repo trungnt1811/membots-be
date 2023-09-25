@@ -32,7 +32,7 @@ func NewRewardHandler(usecase interfaces.RewardUCase) *RewardHandler {
 // @Success 200 		{object}	dto.RewardSummary
 // @Failure 424 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
-// @Router 	/api/v1/rewards/summary [get]
+// @Router 	/api/v1/app/rewards/summary [get]
 func (handler *RewardHandler) GetRewardSummary(ctx *gin.Context) {
 	// First, take user from JWT
 	user, err := dto.GetUserInfo(ctx)
@@ -62,7 +62,7 @@ func (handler *RewardHandler) GetRewardSummary(ctx *gin.Context) {
 // @Success 200 		{object}	dto.RewardWithdrawResponse
 // @Failure 424 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
-// @Router 	/api/v1/rewards/withdraw [get]
+// @Router 	/api/v1/app/rewards/withdraw [get]
 func (handler *RewardHandler) GetWithdrawHistory(ctx *gin.Context) {
 	// First, take user from JWT
 	user, err := dto.GetUserInfo(ctx)
@@ -95,7 +95,7 @@ func (handler *RewardHandler) GetWithdrawHistory(ctx *gin.Context) {
 // @Success 200 		{object}	dto.RewardSummary
 // @Failure 424 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
-// @Router 	/api/v1/rewards/withdraw [post]
+// @Router 	/api/v1/app/rewards/withdraw [post]
 func (handler *RewardHandler) WithdrawReward(ctx *gin.Context) {
 	// First, take user from JWT
 	user, err := dto.GetUserInfo(ctx)

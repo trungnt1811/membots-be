@@ -42,11 +42,11 @@ func (c *campaignUCase) UpdateCampaign(id uint, campaign dto.AffCampaignAppDto) 
 	if campaign.EndTime != nil {
 		updates["end_time"] = campaign.EndTime
 	}
-	if campaign.CategoryId > 0 {
-		updates["category_id"] = campaign.CategoryId
-	}
 	if campaign.BrandId > 0 {
 		updates["brand_id"] = campaign.BrandId
+	}
+	if campaign.CategoryId > 0 {
+		updates["category_id"] = campaign.CategoryId
 	}
 	if len(strings.TrimSpace(campaign.StellaStatus)) > 0 {
 		updates["stella_status"] = campaign.StellaStatus

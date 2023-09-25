@@ -12,6 +12,19 @@ type affCampaignRepository struct {
 	Db *gorm.DB
 }
 
+func (a *affCampaignRepository) LoadCategoryFromBrandId(brandId uint) (uint, error) {
+	var categoryId []uint
+	query := "select distinct(cc.category_id) from coupon_category as cc " +
+		"left join coupon_brand as cb ON cc.program_id = cb.program_id where cb.brand_id = ? limit ?"
+	if err := a.Db.Raw(query, brandId, 1).Scan(&categoryId).Error; err != nil {
+		return 0, err
+	}
+	if len(categoryId) == 0 {
+		return 0, nil
+	}
+	return categoryId[0], nil
+}
+
 func (a *affCampaignRepository) UpdateCampaignAttribute(id uint, attributes []model.AffCampaignAttribute) error {
 	var listAttributeInDB []model.AffCampaignAttribute
 	if err := a.Db.Where("campaign_id = ?", id).Find(&listAttributeInDB).Error; err != nil {
@@ -97,6 +110,17 @@ func (a *affCampaignRepository) UpdateCampaign(id uint, updates map[string]inter
 	if err != nil {
 		return err
 	}
+	// check brandId
+	brandId, ok := updates["brand_id"]
+	if !ok {
+		brandId = affCampaign.BrandId
+	}
+	categoryId, err := a.LoadCategoryFromBrandId(brandId.(uint))
+	categoryIdUpdate, ok := updates["category_id"]
+	if ok {
+		categoryId = categoryIdUpdate.(uint)
+	}
+	updates["category_id"] = categoryId
 	return a.Db.Transaction(func(tx *gorm.DB) error {
 		stellaDescriptionJsonInput, _ := stellaDescription.(map[string]interface{})
 		actionPoint, ok := stellaDescriptionJsonInput["action_point"]

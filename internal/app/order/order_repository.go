@@ -119,15 +119,14 @@ func (repo *OrderRepository) UpdateTrackedClickOrder(trackedId uint64, order *mo
 
 func (repo *OrderRepository) GetOrderDetails(ctx context.Context, userId uint32, orderId uint) (*model.OrderDetails, error) {
 	var o model.OrderDetails
-	query := "o.user_id, o.order_status, o.at_product_link, o.billing, o.category_name, o.confirmed_time, o.merchant, " +
-		"o.accesstrade_order_id, o.pub_commission, o.sales_time, " +
-		"log.created_at, log.data, " +
-		"r.id, r.user_id, r.accesstrade_order_id, r.amount, r.rewarded_amount, " +
-		"r.commission_fee, r.ended_at, r.created_at, r.updated_at " +
+	query := "SELECT o.user_id, o.order_status, o.at_product_link, o.billing, o.category_name, o.merchant, " +
+		"o.accesstrade_order_id, o.pub_commission, o.sales_time, o.confirmed_time, " +
+		"lg.created_at, lg.data, " +
+		"r.amount, r.rewarded_amount, r.commission_fee, r.ended_at, r.created_at " +
 		"FROM aff_order AS o " +
-		"LEFT JOIN aff_postback_log AS log ON log.order_id = o.accesstrade_order_id " +
+		"LEFT JOIN aff_postback_log AS lg ON lg.order_id = o.accesstrade_order_id " +
 		"LEFT JOIN aff_reward AS r ON r.accesstrade_order_id = o.accesstrade_order_id " +
-		"WHERE o.user_id = ? AND o.accesstrade_order_id = ?"
+		"WHERE o.user_id = ? AND o.id = ?"
 
 	rows, err := repo.db.Raw(query, userId, orderId).Rows()
 	if err != nil {
@@ -137,14 +136,23 @@ func (repo *OrderRepository) GetOrderDetails(ctx context.Context, userId uint32,
 
 	for rows.Next() {
 		var postbackDataJson sql.NullString
-		var postbackCreatedAt time.Time
-		err = rows.Scan(&o.UserId, &o.OrderStatus, &o.ATProductLink, &o.Billing, &o.CategoryName, &o.ConfirmedTime, &o.Merchant,
-			&o.AccessTradeOrderId, &o.PubCommission, &o.SalesTime, &postbackCreatedAt, &postbackDataJson,
-			&o.Reward.ID, &o.Reward.UserId, &o.Reward.AtOrderID, &o.Reward.Amount, &o.Reward.RewardedAmount,
-			&o.Reward.CommissionFee, &o.Reward.EndedAt, &o.Reward.CreatedAt, &o.Reward.UpdatedAt)
+		var postbackCreatedAt sql.NullTime
+		var rewardAmount sql.NullFloat64
+		var rewardedAmount sql.NullFloat64
+		var commissionFee sql.NullFloat64
+		var rewardEndedAt sql.NullTime
+		var rewardCreatedAt sql.NullTime
+		err = rows.Scan(&o.UserId, &o.OrderStatus, &o.ATProductLink, &o.Billing, &o.CategoryName, &o.Merchant,
+			&o.AccessTradeOrderId, &o.PubCommission, &o.SalesTime, &o.ConfirmedTime, &postbackCreatedAt, &postbackDataJson,
+			&rewardAmount, &rewardedAmount, &commissionFee, &rewardEndedAt, &rewardCreatedAt)
 		if err != nil {
 			return &model.OrderDetails{}, err
 		}
+		o.RewardAmount = rewardAmount.Float64
+		o.RewardedAmount = rewardedAmount.Float64
+		o.CommissionFee = commissionFee.Float64
+		o.EndedAt = rewardEndedAt.Time
+		o.CreatedAt = rewardCreatedAt.Time
 
 		var postbackData dto.ATPostBackRequest
 		err = json.Unmarshal([]byte(postbackDataJson.String), &postbackData)
@@ -152,7 +160,15 @@ func (repo *OrderRepository) GetOrderDetails(ctx context.Context, userId uint32,
 			return &model.OrderDetails{}, err
 		}
 
-		o.Timeline[dto.AtOrderStatusMap[postbackData.Status]] = postbackCreatedAt
+		if postbackData.Status == dto.REQ_STATUS_APPROVED {
+			o.ApprovedTime = postbackCreatedAt.Time
+		} else if postbackData.Status == dto.REQ_STATUS_REJECTED {
+			o.RejectedTime = postbackCreatedAt.Time
+		}
+	}
+
+	if o.UserId == 0 {
+		return &o, gorm.ErrRecordNotFound
 	}
 
 	return &o, err
@@ -160,38 +176,38 @@ func (repo *OrderRepository) GetOrderDetails(ctx context.Context, userId uint32,
 
 func (repo *OrderRepository) GetOrderHistory(ctx context.Context, userId uint32, page, size int) ([]model.OrderDetails, error) {
 	orderHistory := []model.OrderDetails{}
-	limit := size + 1
-	offset := (page - 1) * size
-	query := "SELECT o.user_id, o.order_status, o.at_product_link, o.billing, o.category_name, o.confirmed_time, o.merchant, " +
-		"o.accesstrade_order_id, o.pub_commission, o.sales_time, " +
-		"r.id, r.user_id, r.accesstrade_order_id, r.amount, r.rewarded_amount, " +
-		"r.commission_fee, r.ended_at, r.created_at, r.updated_at " +
-		"FROM aff_order AS o " +
-		"LEFT JOIN aff_reward AS r ON r.accesstrade_order_id = o.accesstrade_order_id " +
-		"WHERE o.user_id = ? " +
-		"ORDER BY o.id DESC " +
-		"LIMIT ? OFFSET ?"
+	// limit := size + 1
+	// offset := (page - 1) * size
+	// query := "SELECT o.user_id, o.order_status, o.at_product_link, o.billing, o.category_name, o.confirmed_time, o.merchant, " +
+	// 	"o.accesstrade_order_id, o.pub_commission, o.sales_time, " +
+	// 	"r.id, r.user_id, r.accesstrade_order_id, r.amount, r.rewarded_amount, " +
+	// 	"r.commission_fee, r.ended_at, r.created_at, r.updated_at " +
+	// 	"FROM aff_order AS o " +
+	// 	"LEFT JOIN aff_reward AS r ON r.accesstrade_order_id = o.accesstrade_order_id " +
+	// 	"WHERE o.user_id = ? " +
+	// 	"ORDER BY o.id DESC " +
+	// 	"LIMIT ? OFFSET ?"
 
-	rows, err := repo.db.Raw(query, userId, limit, offset).Rows()
-	if err != nil {
-		return []model.OrderDetails{}, err
-	}
-	defer rows.Close()
+	// rows, err := repo.db.Raw(query, userId, limit, offset).Rows()
+	// if err != nil {
+	// 	return []model.OrderDetails{}, err
+	// }
+	// defer rows.Close()
 
-	for rows.Next() {
-		var o model.OrderDetails
-		err = rows.Scan(&o.UserId, &o.OrderStatus, &o.ATProductLink, &o.Billing, &o.CategoryName, &o.ConfirmedTime, &o.Merchant,
-			&o.AccessTradeOrderId, &o.PubCommission, &o.SalesTime,
-			&o.Reward.ID, &o.Reward.UserId, &o.Reward.AtOrderID, &o.Reward.Amount, &o.Reward.RewardedAmount,
-			&o.Reward.CommissionFee, &o.Reward.EndedAt, &o.Reward.CreatedAt, &o.Reward.UpdatedAt)
-		if err != nil {
-			return []model.OrderDetails{}, err
-		}
+	// for rows.Next() {
+	// 	var o model.OrderDetails
+	// 	err = rows.Scan(&o.UserId, &o.OrderStatus, &o.ATProductLink, &o.Billing, &o.CategoryName, &o.ConfirmedTime, &o.Merchant,
+	// 		&o.AccessTradeOrderId, &o.PubCommission, &o.SalesTime,
+	// 		&o.Reward.ID, &o.Reward.UserId, &o.Reward.AtOrderID, &o.Reward.Amount, &o.Reward.RewardedAmount,
+	// 		&o.Reward.CommissionFee, &o.Reward.EndedAt, &o.Reward.CreatedAt, &o.Reward.UpdatedAt)
+	// 	if err != nil {
+	// 		return []model.OrderDetails{}, err
+	// 	}
 
-		orderHistory = append(orderHistory, o)
-	}
+	// 	orderHistory = append(orderHistory, o)
+	// }
 
-	return orderHistory, err
+	return orderHistory, nil
 }
 
 func (repo *OrderRepository) CountOrder(ctx context.Context, userId uint32) (int64, error) {

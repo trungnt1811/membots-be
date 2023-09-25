@@ -172,6 +172,7 @@ func (u *OrderUcase) GetOrderDetails(ctx context.Context, userId uint32, orderId
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println("order", order)
 	orderDto := order.ToOrderDetailsDto()
 	return &orderDto, nil
 }

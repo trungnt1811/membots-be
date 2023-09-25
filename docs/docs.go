@@ -2131,10 +2131,6 @@ const docTemplate = `{
                 "accesstrade_order_id": {
                     "type": "string"
                 },
-                "amount": {
-                    "description": "amount of reward after fee subtractions",
-                    "type": "number"
-                },
                 "at_product_link": {
                     "type": "string"
                 },
@@ -2152,6 +2148,9 @@ const docTemplate = `{
                     "description": "don hang duoc ghi nhan",
                     "type": "string"
                 },
+                "id": {
+                    "type": "integer"
+                },
                 "merchant": {
                     "type": "string"
                 },
@@ -2161,14 +2160,24 @@ const docTemplate = `{
                 "pub_commission": {
                     "type": "number"
                 },
+                "rejected_time": {
+                    "description": "don hang duoc ghi nhan",
+                    "type": "string"
+                },
                 "reward_end_at": {
                     "type": "string"
                 },
-                "reward_start_at": {
+                "reward_first_part_released_amount": {
+                    "type": "number"
+                },
+                "reward_first_part_released_time": {
                     "description": "xac nhan hoan tat nhan 50%",
                     "type": "string"
                 },
-                "rewarded_amount": {
+                "reward_remaining_amount": {
+                    "type": "number"
+                },
+                "reward_second_part_unlocked_amount": {
                     "type": "number"
                 },
                 "sales_time": {

@@ -115,9 +115,9 @@ func (repo *OrderRepository) UpdateTrackedClickOrder(trackedId uint64, order *mo
 	return err
 }
 
-var selectOrderDetails = "SELECT o.user_id, o.order_status, o.at_product_link, o.billing, o.category_name, o.merchant, " +
+var selectOrderDetails = "SELECT o.id, o.user_id, o.order_status, o.at_product_link, o.billing, o.category_name, o.merchant, " +
 	"o.accesstrade_order_id, o.pub_commission, o.sales_time, o.confirmed_time, o.created_at, " +
-	"r.amount, r.rewarded_amount, r.commission_fee, r.end_at, r.start_at " +
+	"r.amount, r.rewarded_amount, r.commission_fee, r.immediate_release, r.end_at, r.start_at " +
 	"FROM aff_order AS o " +
 	"LEFT JOIN aff_reward AS r ON r.accesstrade_order_id = o.accesstrade_order_id "
 
@@ -135,17 +135,19 @@ func (repo *OrderRepository) GetOrderDetails(ctx context.Context, userId uint32,
 		var rewardAmount sql.NullFloat64
 		var rewardedAmount sql.NullFloat64
 		var commissionFee sql.NullFloat64
+		var immediateRelease sql.NullFloat64
 		var rewardEndAt sql.NullTime
 		var rewardStartAt sql.NullTime
-		err = rows.Scan(&o.UserId, &o.OrderStatus, &o.ATProductLink, &o.Billing, &o.CategoryName, &o.Merchant,
+		err = rows.Scan(&o.ID, &o.UserId, &o.OrderStatus, &o.ATProductLink, &o.Billing, &o.CategoryName, &o.Merchant,
 			&o.AccessTradeOrderId, &o.PubCommission, &o.SalesTime, &o.ConfirmedTime, &o.CreatedAt,
-			&rewardAmount, &rewardedAmount, &commissionFee, &rewardEndAt, &rewardStartAt)
+			&rewardAmount, &rewardedAmount, &commissionFee, &immediateRelease, &rewardEndAt, &rewardStartAt)
 		if err != nil {
 			return &model.OrderDetails{}, err
 		}
 		o.RewardAmount = rewardAmount.Float64
 		o.RewardedAmount = rewardedAmount.Float64
 		o.CommissionFee = commissionFee.Float64
+		o.ImmediateRelease = immediateRelease.Float64
 		o.RewardEndAt = rewardEndAt.Time
 		o.RewardStartAt = rewardStartAt.Time
 	}
@@ -186,17 +188,19 @@ func (repo *OrderRepository) GetOrderHistory(ctx context.Context, since time.Tim
 		var rewardAmount sql.NullFloat64
 		var rewardedAmount sql.NullFloat64
 		var commissionFee sql.NullFloat64
+		var immediateRelease sql.NullFloat64
 		var rewardEndAt sql.NullTime
 		var rewardStartAt sql.NullTime
-		err = rows.Scan(&o.UserId, &o.OrderStatus, &o.ATProductLink, &o.Billing, &o.CategoryName, &o.Merchant,
+		err = rows.Scan(&o.ID, &o.UserId, &o.OrderStatus, &o.ATProductLink, &o.Billing, &o.CategoryName, &o.Merchant,
 			&o.AccessTradeOrderId, &o.PubCommission, &o.SalesTime, &o.ConfirmedTime, &o.CreatedAt,
-			&rewardAmount, &rewardedAmount, &commissionFee, &rewardEndAt, &rewardStartAt)
+			&rewardAmount, &rewardedAmount, &commissionFee, &immediateRelease, &rewardEndAt, &rewardStartAt)
 		if err != nil {
 			return []model.OrderDetails{}, err
 		}
 		o.RewardAmount = rewardAmount.Float64
 		o.RewardedAmount = rewardedAmount.Float64
 		o.CommissionFee = commissionFee.Float64
+		o.ImmediateRelease = immediateRelease.Float64
 		o.RewardEndAt = rewardEndAt.Time
 		o.RewardStartAt = rewardStartAt.Time
 

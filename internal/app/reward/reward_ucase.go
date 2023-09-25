@@ -114,9 +114,9 @@ func (u *RewardUsecase) GetRewardSummary(ctx context.Context, userId uint32) (dt
 	}
 	var totalOrderRewardInDay float64 = 0
 	for _, item := range rewardsInDay {
-		totalOrderRewardInDay += item.Amount
+		totalOrderRewardInDay += item.Amount * item.ImmediateRelease
 	}
-	totalOrderRewardInDay = util.RoundFloat(totalOrderRewardInDay*model.FirstPartRewardPercent, 2)
+	totalOrderRewardInDay = util.RoundFloat(totalOrderRewardInDay, 2)
 
 	withdrawable, _, _ := u.CalculateWithdrawableReward(inProgressRewards, userId)
 	pendingRewardAmount := util.RoundFloat(totalOrderReward-withdrawable.Amount, 2)

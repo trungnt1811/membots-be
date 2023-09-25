@@ -53,13 +53,14 @@ func (r affCampAppRepository) GetAffCampaignById(ctx context.Context, id uint64)
 	return affCampaign, err
 }
 
-func (r affCampAppRepository) GetListAffCampaignByBrandIds(ctx context.Context, brandIds []uint) ([]model.AffCampaignComBrand, error) {
+func (r affCampAppRepository) GetListAffCampaignByBrandIds(ctx context.Context, brandIds []uint, page, size int) ([]model.AffCampaignComBrand, error) {
 	var listAffCampaign []model.AffCampaignComBrand
 	// Ordering by the order of values in a IN() clause
 	s, _ := json.Marshal(brandIds)
 	findInSet := strings.Trim(string(s), "[]")
+	offset := (page - 1) * size
 	err := r.db.Joins("Brand").Where("aff_campaign.brand_id IN ? AND stella_status = ?", brandIds, model.StellaStatusInProgress).
 		Order(fmt.Sprintf("FIND_IN_SET(aff_campaign.brand_id,'%s')", findInSet)).
-		Find(&listAffCampaign).Error
+		Find(&listAffCampaign).Limit(size + 1).Offset(offset).Error
 	return listAffCampaign, err
 }

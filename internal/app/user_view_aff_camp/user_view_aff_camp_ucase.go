@@ -5,6 +5,7 @@ import (
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
+	util "github.com/astraprotocol/affiliate-system/internal/util/commission"
 )
 
 type userViewAffCampUCase struct {
@@ -28,6 +29,7 @@ func (s userViewAffCampUCase) GetListUserViewAffCampByUserId(ctx context.Context
 			break
 		}
 		listAffCampComBrandDto = append(listAffCampComBrandDto, listUserViewAffCamp[i].ToAffCampaignLessDto())
+		listAffCampComBrandDto[i].StellaMaxCom = util.GetStellaMaxCom(listUserViewAffCamp[i].AffCampComBrand.Attributes)
 	}
 	nextPage := page
 	if len(listUserViewAffCamp) > size {

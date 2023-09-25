@@ -1715,6 +1715,12 @@ const docTemplate = `{
                 "accesstrade_id": {
                     "type": "string"
                 },
+                "attribute": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.AffCampaignAttributeDto"
+                    }
+                },
                 "brand": {
                     "$ref": "#/definitions/dto.BrandDto"
                 },

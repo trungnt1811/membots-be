@@ -6,6 +6,7 @@ import (
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/imroc/req/v3"
+	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
 
@@ -62,11 +63,12 @@ func (c *ShippingClient) SendReward(payload *ReqSendPayload) (ReqSendResponse, e
 		SetSuccessResult(&response).
 		Post(endpoint)
 	if err != nil {
-		return ReqSendResponse{}, err
+		log.Error().Msgf("send reward failed: %v", err)
+		return ReqSendResponse{}, errors.Wrapf(err, "send reward failed")
 	}
 
 	if !resp.IsSuccessState() {
-		log.Error().Msgf("request send reward: bad response status: %v", resp.Status)
+		log.Error().Msgf("send reward failed: bad response status: %v", resp.Status)
 		return ReqSendResponse{}, nil
 	}
 

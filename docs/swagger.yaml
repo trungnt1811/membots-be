@@ -516,13 +516,25 @@ definitions:
     properties:
       accesstrade_order_id:
         type: string
+      amount:
+        description: amount of reward after fee subtractions
+        type: number
+      approved_time:
+        type: string
       at_product_link:
         type: string
       billing:
         type: number
       category_name:
         type: string
+      commission_fee:
+        description: commission fee (in percentage)
+        type: number
       confirmed_time:
+        type: string
+      created_at:
+        type: string
+      ended_at:
         type: string
       merchant:
         type: string
@@ -530,15 +542,12 @@ definitions:
         type: string
       pub_commission:
         type: number
-      reward:
-        $ref: '#/definitions/dto.RewardDto'
+      rejected_time:
+        type: string
+      rewarded_amount:
+        type: number
       sales_time:
         type: string
-      timeline:
-        additionalProperties:
-          type: string
-        description: status changing history
-        type: object
       user_id:
         type: integer
     type: object
@@ -576,28 +585,6 @@ definitions:
     properties:
       message:
         type: string
-    type: object
-  dto.RewardDto:
-    properties:
-      accesstrade_order_id:
-        type: string
-      amount:
-        type: number
-      commission_fee:
-        description: commission fee (in percentage)
-        type: number
-      created_at:
-        type: string
-      ended_at:
-        type: string
-      id:
-        type: integer
-      rewarded_amount:
-        type: number
-      updated_at:
-        type: string
-      user_id:
-        type: integer
     type: object
   dto.RewardSummary:
     properties:

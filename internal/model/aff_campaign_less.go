@@ -27,7 +27,7 @@ type AffCampaignLessApp struct {
 	AccessTradeId string `json:"accesstrade_id" gorm:"column:accesstrade_id"`
 	Name          string `json:"name"`
 	Url           string `json:"url"`
-	BrandId       uint64 `json:"brand_id"`
+	BrandId       uint   `json:"brand_id"`
 	StellaStatus  string `json:"stella_status"`
 	Brand         Brand  `json:"brand" gorm:"foreignKey:BrandId"`
 	CategoryId    uint   `json:"category_id"`

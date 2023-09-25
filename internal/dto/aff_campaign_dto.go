@@ -57,7 +57,7 @@ type StellaInfoDto struct {
 
 type AffCampaignAppDto struct {
 	ID                uint64                    `json:"id"`
-	BrandId           uint64                    `json:"brand_id"`
+	BrandId           uint                      `json:"brand_id"`
 	Brand             BrandDto                  `json:"brand"`
 	AccessTradeId     string                    `json:"accesstrade_id"`
 	CreatedAt         time.Time                 `json:"created_at"`
@@ -67,7 +67,7 @@ type AffCampaignAppDto struct {
 	StartTime         *time.Time                `json:"start_time"`
 	EndTime           *time.Time                `json:"end_time"`
 	StellaDescription interface{}               `json:"stella_description"`
-	CategoryId        uint64                    `json:"category_id"`
+	CategoryId        uint                      `json:"category_id"`
 	StellaStatus      string                    `json:"stella_status"`
 	Thumbnail         string                    `json:"thumbnail"`
 	StellaMaxCom      string                    `json:"stella_max_com"`

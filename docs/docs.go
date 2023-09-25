@@ -2118,6 +2118,13 @@ const docTemplate = `{
                 "accesstrade_order_id": {
                     "type": "string"
                 },
+                "amount": {
+                    "description": "amount of reward after fee subtractions",
+                    "type": "number"
+                },
+                "approved_time": {
+                    "type": "string"
+                },
                 "at_product_link": {
                     "type": "string"
                 },
@@ -2127,7 +2134,17 @@ const docTemplate = `{
                 "category_name": {
                     "type": "string"
                 },
+                "commission_fee": {
+                    "description": "commission fee (in percentage)",
+                    "type": "number"
+                },
                 "confirmed_time": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "ended_at": {
                     "type": "string"
                 },
                 "merchant": {
@@ -2139,18 +2156,14 @@ const docTemplate = `{
                 "pub_commission": {
                     "type": "number"
                 },
-                "reward": {
-                    "$ref": "#/definitions/dto.RewardDto"
+                "rejected_time": {
+                    "type": "string"
+                },
+                "rewarded_amount": {
+                    "type": "number"
                 },
                 "sales_time": {
                     "type": "string"
-                },
-                "timeline": {
-                    "description": "status changing history",
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    }
                 },
                 "user_id": {
                     "type": "integer"
@@ -2208,39 +2221,6 @@ const docTemplate = `{
             "properties": {
                 "message": {
                     "type": "string"
-                }
-            }
-        },
-        "dto.RewardDto": {
-            "type": "object",
-            "properties": {
-                "accesstrade_order_id": {
-                    "type": "string"
-                },
-                "amount": {
-                    "type": "number"
-                },
-                "commission_fee": {
-                    "description": "commission fee (in percentage)",
-                    "type": "number"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "ended_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "rewarded_amount": {
-                    "type": "number"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "integer"
                 }
             }
         },

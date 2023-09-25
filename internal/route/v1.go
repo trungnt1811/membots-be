@@ -20,6 +20,7 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/app/auth"
 	campaign3 "github.com/astraprotocol/affiliate-system/internal/app/campaign"
 	campaignConsole "github.com/astraprotocol/affiliate-system/internal/app/console/campaign"
+	"github.com/astraprotocol/affiliate-system/internal/app/home_page"
 	"github.com/astraprotocol/affiliate-system/internal/app/order"
 	"github.com/astraprotocol/affiliate-system/internal/app/redeem"
 	"github.com/astraprotocol/affiliate-system/internal/app/reward"
@@ -157,6 +158,9 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	affSearchUCase := aff_search.NewAffSearchUCase(affSearchRepo)
 	affSearchHandler := aff_search.NewAffSearchHandler(affSearchUCase)
 	appRouter.GET("/aff-search", affSearchHandler.AffSearch)
+
+	homePageHandler := home_page.NewHomePageHandler(affBrandUCase)
+	appRouter.GET("/home-page", authHandler.CheckUserHeader(), homePageHandler.GetHomePage)
 
 	// SECTION: Reward module
 	rewardConf := reward.RewardConfig{

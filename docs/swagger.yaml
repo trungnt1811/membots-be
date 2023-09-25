@@ -990,6 +990,31 @@ paths:
       summary: Get list aff brand by user
       tags:
       - app
+  /api/v1/app/home-page:
+    get:
+      consumes:
+      - application/json
+      description: Get home page
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AffCampaignAppDtoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get home page
+      tags:
+      - app
   /api/v1/app/orders:
     get:
       consumes:
@@ -1413,13 +1438,13 @@ paths:
       description: Get affiliate order list by time range and other filter
       parameters:
       - in: query
-        name: orderStatus
+        name: order_status
         type: string
       - in: query
         name: page
         type: integer
       - in: query
-        name: perPage
+        name: per_page
         type: integer
       - in: query
         name: since
@@ -1428,7 +1453,7 @@ paths:
         name: until
         type: string
       - in: query
-        name: userId
+        name: user_id
         type: integer
       produces:
       - application/json

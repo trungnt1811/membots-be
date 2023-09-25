@@ -118,7 +118,7 @@ func (m *AffCampaign) ToDto() dto.AffCampaignDto {
 
 type AffCampaignApp struct {
 	ID                uint64                 `gorm:"primarykey" json:"id"`
-	BrandId           uint                   `json:"brand_id"`
+	BrandId           uint64                 `json:"brand_id"`
 	Brand             Brand                  `json:"brand" gorm:"foreignKey:BrandId"`
 	AccessTradeId     string                 `json:"accesstrade_id" gorm:"column:accesstrade_id"`
 	CreatedAt         time.Time              `json:"created_at"`

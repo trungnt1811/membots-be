@@ -50,7 +50,7 @@ func (s affCampAppUCase) GetAffCampaignById(ctx context.Context, id uint64, user
 		return dto.AffCampaignAppDto{}, err
 	}
 	// Get top 10 fav brand
-	favTopBrandCheck := make(map[uint]bool)
+	favTopBrandCheck := make(map[uint64]bool)
 	for index, countFavAffBrand := range listCountFavAffBrand {
 		if index >= model.FavoritedBrandsInTop {
 			break
@@ -58,7 +58,7 @@ func (s affCampAppUCase) GetAffCampaignById(ctx context.Context, id uint64, user
 		favTopBrandCheck[countFavAffBrand.BrandId] = true
 	}
 
-	brandIds := make([]uint, 0)
+	brandIds := make([]uint64, 0)
 	brandIds = append(brandIds, affCampaign.BrandId)
 	listUserFavBrand, err := s.UserFavoriteBrandRepository.GetListFavBrandByUserIdAndBrandIds(
 		ctx,
@@ -68,7 +68,7 @@ func (s affCampAppUCase) GetAffCampaignById(ctx context.Context, id uint64, user
 	if err != nil {
 		return dto.AffCampaignAppDto{}, err
 	}
-	favBrandCheck := make(map[uint]bool)
+	favBrandCheck := make(map[uint64]bool)
 	for _, userFavBrand := range listUserFavBrand {
 		favBrandCheck[userFavBrand.BrandId] = true
 	}

@@ -59,7 +59,7 @@ func (r affCampAppRepository) GetAffCampaignById(ctx context.Context, id uint64)
 	return affCampaign, err
 }
 
-func (r affCampAppRepository) GetListAffCampaignByBrandIds(ctx context.Context, brandIds []uint) ([]model.AffCampaignComBrand, error) {
+func (r affCampAppRepository) GetListAffCampaignByBrandIds(ctx context.Context, brandIds []uint64) ([]model.AffCampaignComBrand, error) {
 	var listAffCampaign []model.AffCampaignComBrand
 	// Ordering by the order of values in a IN() clause
 	s, _ := json.Marshal(brandIds)

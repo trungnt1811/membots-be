@@ -62,7 +62,7 @@ func (c affCampAppCache) GetAffCampaignById(ctx context.Context, id uint64) (mod
 	return affCampaign, nil
 }
 
-func (c affCampAppCache) GetListAffCampaignByBrandIds(ctx context.Context, brandIds []uint) ([]model.AffCampaignComBrand, error) {
+func (c affCampAppCache) GetListAffCampaignByBrandIds(ctx context.Context, brandIds []uint64) ([]model.AffCampaignComBrand, error) {
 	s, _ := json.Marshal(brandIds)
 	key := &caching.Keyer{Raw: keyPrefixAffCampApp + fmt.Sprint("GetAffCampaignById_", string(s))}
 	var listAffCampaign []model.AffCampaignComBrand

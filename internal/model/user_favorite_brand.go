@@ -11,7 +11,7 @@ const (
 type UserFavoriteBrand struct {
 	ID        uint64    `json:"id" gorm:"primaryKey"`
 	UserId    uint32    `json:"user_id"`
-	BrandId   uint      `json:"brand_id"`
+	BrandId   uint64    `json:"brand_id"`
 	Brand     Brand     `json:"brand" gorm:"foreignKey:BrandId"`
 	Status    string    `json:"status"`
 	CreatedAt time.Time `json:"created_at"`

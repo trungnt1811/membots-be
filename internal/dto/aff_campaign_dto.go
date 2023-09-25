@@ -57,7 +57,7 @@ type StellaInfoDto struct {
 
 type AffCampaignAppDto struct {
 	ID                uint64                    `json:"id"`
-	BrandId           uint64                    `json:"brand_id"`
+	BrandId           uint                      `json:"brand_id"`
 	Brand             BrandDto                  `json:"brand"`
 	AccessTradeId     string                    `json:"accesstrade_id"`
 	CreatedAt         time.Time                 `json:"created_at"`

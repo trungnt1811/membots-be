@@ -38,6 +38,6 @@ func (c *AffMerchantBrand) TableName() string {
 }
 
 type TotalFavoriteBrand struct {
-	BrandId       uint64 `json:"brand_id"`
+	BrandId       uint   `json:"brand_id"`
 	TotalFavorite uint64 `json:"total_fav"`
 }

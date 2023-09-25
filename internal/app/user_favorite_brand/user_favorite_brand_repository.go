@@ -18,7 +18,7 @@ func NewUserFavoriteBrandRepository(db *gorm.DB) interfaces.UserFavoriteBrandRep
 	}
 }
 
-func (r userFavoriteBrandRepository) GetListFavBrandByUserIdAndBrandIds(ctx context.Context, userId uint64, brandIds []uint64) ([]model.UserFavoriteBrand, error) {
+func (r userFavoriteBrandRepository) GetListFavBrandByUserIdAndBrandIds(ctx context.Context, userId uint64, brandIds []uint) ([]model.UserFavoriteBrand, error) {
 	var listUserFavoriteBrand []model.UserFavoriteBrand
 	err := r.db.Where("user_id = ? AND status = ? AND brand_id IN ?", userId, model.UserFavoriteBrandStatusAdded, brandIds).
 		Find(&listUserFavoriteBrand).Error

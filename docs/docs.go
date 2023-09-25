@@ -2157,6 +2157,9 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "image_url": {
+                    "type": "string"
+                },
                 "merchant": {
                     "type": "string"
                 },
@@ -2167,8 +2170,11 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "rejected_time": {
-                    "description": "don hang duoc ghi nhan",
+                    "description": "don hang bi huy",
                     "type": "string"
+                },
+                "reward_amount": {
+                    "type": "number"
                 },
                 "reward_end_at": {
                     "type": "string"

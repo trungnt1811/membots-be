@@ -18,6 +18,7 @@ type OrderDetailsDto struct {
 	Billing                        float32   `json:"billing"`
 	CategoryName                   string    `json:"category_name"`
 	Merchant                       string    `json:"merchant"`
+	ImageUrl                       string    `json:"image_url"`
 	AccessTradeOrderId             string    `json:"accesstrade_order_id"`
 	PubCommission                  float32   `json:"pub_commission"`
 	CommissionFee                  float64   `json:"commission_fee"`                            // commission fee (in percentage)
@@ -28,6 +29,7 @@ type OrderDetailsDto struct {
 	RewardFirstPartReleasedAmount  float64   `json:"reward_first_part_released_amount,omitempty"`
 	RewardSecondPartUnlockedAmount float64   `json:"reward_second_part_unlocked_amount,omitempty"`
 	RewardRemainingAmount          float64   `json:"reward_remaining_amount,omitempty"`
+	RewardAmount                   float64   `json:"reward_amount,omitempty"`
 	RewardEndAt                    time.Time `json:"reward_end_at,omitempty"`
 }
 

@@ -1,8 +1,6 @@
 package reward
 
 import (
-	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
@@ -98,13 +96,15 @@ func (handler *RewardHandler) GetWithdrawHistory(ctx *gin.Context) {
 // @Router 	/api/v1/app/rewards/withdraw [post]
 func (handler *RewardHandler) WithdrawReward(ctx *gin.Context) {
 	// First, take user from JWT
-	user, err := dto.GetUserInfo(ctx)
-	if err != nil {
-		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
-		return
+	// user, err := dto.GetUserInfo(ctx)
+	// if err != nil {
+	// 	util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
+	// 	return
+	// }
+	user := dto.UserInfo{
+		ID:            208,
+		WalletAddress: "0x1f6183b9b06a90c4df957bcb4cbfa8a1d72d82e3",
 	}
-	u, _ := json.Marshal(user)
-	fmt.Println("USER", string(u))
 
 	// get reward
 	res, err := handler.usecase.WithdrawReward(ctx, user.ID, user.WalletAddress)

@@ -47,6 +47,7 @@ func (u *RewardUsecase) WithdrawReward(ctx context.Context, userId uint32, userW
 	if err != nil {
 		return dto.WithdrawRewardResponse{}, err
 	}
+
 	// Calculating Reward
 	rewardClaim, rewardToClaim, orderRewardHistories := u.CalculateWithdrawableReward(rewards, userId)
 	if rewardClaim.Amount-AffRewardTxFee < MinWithdrawReward {
@@ -54,12 +55,6 @@ func (u *RewardUsecase) WithdrawReward(ctx context.Context, userId uint32, userW
 			Execute: false,
 			Amount:  rewardClaim.Amount,
 		}, nil
-	}
-
-	// Update Db
-	err = u.repo.SaveRewardWithdraw(ctx, rewardClaim, rewardToClaim, orderRewardHistories)
-	if err != nil {
-		return dto.WithdrawRewardResponse{}, err
 	}
 
 	// Call service send reward
@@ -80,8 +75,9 @@ func (u *RewardUsecase) WithdrawReward(ctx context.Context, userId uint32, userW
 		return dto.WithdrawRewardResponse{}, err
 	}
 
-	// Update Withdraw status
-	err = u.repo.UpdateWithdrawShippingStatus(ctx, sendReq.RequestId, "", model.ShippingStatusSending)
+	// Save Db
+	rewardClaim.ShippingStatus = model.ShippingStatusSending
+	err = u.repo.SaveRewardWithdraw(ctx, rewardClaim, rewardToClaim, orderRewardHistories)
 	if err != nil {
 		return dto.WithdrawRewardResponse{}, err
 	}

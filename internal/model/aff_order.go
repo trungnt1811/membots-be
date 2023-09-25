@@ -141,6 +141,7 @@ func (o *AffOrder) ToDto() dto.AffOrder {
 }
 
 type OrderDetails struct {
+	ID                 uint      `json:"id"`
 	UserId             uint      `json:"user_id"`
 	OrderStatus        string    `json:"order_status"`
 	ATProductLink      string    `json:"at_product_link"`
@@ -196,6 +197,7 @@ func (o *OrderDetails) ToOrderDetailsDto() dto.OrderDetailsDto {
 	}
 
 	return dto.OrderDetailsDto{
+		ID:                 o.ID,
 		UserId:             o.UserId,
 		OrderStatus:        status,
 		ATProductLink:      o.ATProductLink,

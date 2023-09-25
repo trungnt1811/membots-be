@@ -8,10 +8,13 @@ import (
 )
 
 const (
-	OrderStatusInitial  = "initial"
-	OrderStatusPending  = "pending"
-	OrderStatusApproved = "approved"
-	OrderStatusRejected = "rejected"
+	OrderStatusInitial   = "initial"
+	OrderStatusPending   = "pending"
+	OrderStatusApproved  = "approved"
+	OrderStatusRejected  = "rejected"
+	OrderStatusCancelled = "cancelled"
+	OrderStatusRewarding = "rewarding"
+	OrderStatusComplete  = "complete"
 )
 
 type AffOrder struct {
@@ -148,6 +151,7 @@ type OrderDetails struct {
 	PubCommission      float32   `json:"pub_commission"`
 	SalesTime          time.Time `json:"sales_time"`
 	ConfirmedTime      time.Time `json:"confirmed_time"`
+	CreatedAt          time.Time `json:"created_at"`
 	RewardAmount       float64   `json:"amount"` // amount of reward after fee subtractions
 	RewardedAmount     float64   `json:"rewarded_amount"`
 	CommissionFee      float64   `json:"commission_fee"` // commission fee (in percentage)
@@ -155,11 +159,45 @@ type OrderDetails struct {
 	RewardStartAt      time.Time `json:"reward_start_at"`
 }
 
+func BuildOrderStatusQuery(status string) (query string, params interface{}) {
+	switch status {
+	case dto.OrderStatusWaitForConfirming:
+		query = "o.status IN ?"
+		params := []string{OrderStatusInitial, OrderStatusPending, OrderStatusApproved}
+		return query, params
+	case dto.OrderStatusRewarding:
+		return "o.status = ?", OrderStatusRewarding
+	case dto.OrderStatusComplete:
+		return "o.status = ?", OrderStatusComplete
+	case dto.OrderStatusRejected:
+		return "o.status = ?", OrderStatusRejected
+	case dto.OrderStatusCancelled:
+		return "o.status = ?", OrderStatusCancelled
+	}
+	return "", nil
+}
+
 func (o *OrderDetails) ToOrderDetailsDto() dto.OrderDetailsDto {
+	var status string
+	switch o.OrderStatus {
+	case OrderStatusRewarding:
+		status = dto.OrderStatusRewarding
+	case OrderStatusComplete:
+		status = dto.OrderStatusComplete
+	case OrderStatusRejected:
+		status = dto.OrderStatusRejected
+	case OrderStatusCancelled:
+		status = dto.OrderStatusCancelled
+	default:
+		// case OrderStatusInitial
+		// case OrderStatusPending
+		// case OrderStatusApproved
+		status = dto.OrderStatusWaitForConfirming
+	}
 
 	return dto.OrderDetailsDto{
 		UserId:             o.UserId,
-		OrderStatus:        o.OrderStatus,
+		OrderStatus:        status,
 		ATProductLink:      o.ATProductLink,
 		Billing:            o.Billing,
 		CategoryName:       o.CategoryName,

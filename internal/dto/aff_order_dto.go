@@ -4,8 +4,8 @@ import "time"
 
 const (
 	OrderStatusWaitForConfirming = "wait_for_confirming"
-	OrderStatusReceivingReward   = "receiving_reward"
-	OrderStatusCompleted         = "completed"
+	OrderStatusRewarding         = "rewarding"
+	OrderStatusComplete          = "complete"
 	OrderStatusCancelled         = "cancelled"
 	OrderStatusRejected          = "rejected"
 )
@@ -19,13 +19,13 @@ type OrderDetailsDto struct {
 	Merchant           string    `json:"merchant"`
 	AccessTradeOrderId string    `json:"accesstrade_order_id"`
 	PubCommission      float32   `json:"pub_commission"`
-	SalesTime          time.Time `json:"sales_time"`
-	ConfirmedTime      time.Time `json:"confirmed_time"`
-	RewardAmount       float64   `json:"amount"` // amount of reward after fee subtractions
+	SalesTime          time.Time `json:"sales_time"`     // dat hang thanh cong
+	ConfirmedTime      time.Time `json:"confirmed_time"` // don hang duoc ghi nhan
+	RewardAmount       float64   `json:"amount"`         // amount of reward after fee subtractions
 	RewardedAmount     float64   `json:"rewarded_amount"`
 	CommissionFee      float64   `json:"commission_fee"` // commission fee (in percentage)
 	RewardEndAt        time.Time `json:"reward_end_at"`
-	RewardStartAt      time.Time `json:"reward_start_at"`
+	RewardStartAt      time.Time `json:"reward_start_at"` // xac nhan hoan tat nhan 50%
 }
 
 type OrderHistoryResponse struct {

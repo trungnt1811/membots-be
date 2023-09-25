@@ -23,24 +23,31 @@ func NewAffCampAppRepository(db *gorm.DB) interfaces.AffCampAppRepository {
 
 func (r affCampAppRepository) GetAllAffCampaign(ctx context.Context, orderBy string, page, size int) ([]model.AffCampaignLessApp, error) {
 	var listAffCampaign []model.AffCampaignLessApp
-	orderQuery := ""
+	var err error
+	offset := (page - 1) * size
 	switch orderBy {
 	case interfaces.ListAffCampaignOrderByMostCommission:
-		orderQuery = "CASE " +
-			"WHEN stella_max_com LIKE 'Upto%' THEN 2 " +
-			"WHEN stella_max_com LIKE '%VND' THEN 3 " +
-			"WHEN stella_max_com = '' THEN 4 " +
-			"WHEN stella_max_com IS NULL THEN 5 " +
+		orderQuery := "CASE " +
+			"WHEN attribute_type = 'percent' THEN 3 " +
+			"WHEN attribute_type = 'vnd' THEN 2 " +
 			"ELSE 1 " +
-			"END ASC, CAST(REGEXP_SUBSTR(stella_max_com, '[+-]?([0-9]*[.])?[0-9]+') + 0 AS DECIMAL(12,2)) DESC"
+			"END DESC, CAST(attribute_value + 0 AS DECIMAL(12,2)) DESC"
+		err = r.db.Joins("Brand").
+			Preload("Attributes", func(db *gorm.DB) *gorm.DB {
+				db = db.Order(orderQuery)
+				return db
+			}).
+			Where("stella_status = ?", model.StellaStatusInProgress).
+			Limit(size + 1).Offset(offset).
+			Find(&listAffCampaign).Error
 	default:
-		orderQuery = "aff_campaign.id ASC"
+		err = r.db.Joins("Brand").
+			Preload("Attributes").
+			Where("stella_status = ?", model.StellaStatusInProgress).
+			Limit(size + 1).Offset(offset).
+			Order("aff_campaign.id ASC").
+			Find(&listAffCampaign).Error
 	}
-	offset := (page - 1) * size
-	err := r.db.Joins("Brand").Where("stella_status = ?", model.StellaStatusInProgress).
-		Limit(size + 1).Offset(offset).
-		Order(orderQuery).
-		Find(&listAffCampaign).Error
 	return listAffCampaign, err
 }
 

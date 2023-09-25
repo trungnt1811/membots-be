@@ -9,44 +9,50 @@ type AffCampaignLess struct {
 	Url           string `json:"url"`
 }
 
-func (c *AffCampaignLess) TableName() string {
+func (m *AffCampaignLess) TableName() string {
 	return "aff_campaign"
 }
 
-func (c *AffCampaignLess) ToDto() dto.AffCampaignLessDto {
+func (m *AffCampaignLess) ToDto() dto.AffCampaignLessDto {
 	return dto.AffCampaignLessDto{
-		ID:            c.ID,
-		Name:          c.Name,
-		AccessTradeId: c.AccessTradeId,
-		Url:           c.Url,
+		ID:            m.ID,
+		Name:          m.Name,
+		AccessTradeId: m.AccessTradeId,
+		Url:           m.Url,
 	}
 }
 
 type AffCampaignLessApp struct {
-	ID            uint   `gorm:"primarykey" json:"id"`
-	AccessTradeId string `json:"accesstrade_id" gorm:"column:accesstrade_id"`
-	Name          string `json:"name"`
-	Url           string `json:"url"`
-	BrandId       uint   `json:"brand_id"`
-	StellaStatus  string `json:"stella_status"`
-	Brand         Brand  `json:"brand" gorm:"foreignKey:BrandId"`
-	CategoryId    uint   `json:"category_id"`
-	StellaMaxCom  string `json:"stella_max_com"`
+	ID            uint                   `gorm:"primarykey" json:"id"`
+	AccessTradeId string                 `json:"accesstrade_id" gorm:"column:accesstrade_id"`
+	Name          string                 `json:"name"`
+	Url           string                 `json:"url"`
+	BrandId       uint                   `json:"brand_id"`
+	StellaStatus  string                 `json:"stella_status"`
+	Brand         Brand                  `json:"brand" gorm:"foreignKey:BrandId"`
+	CategoryId    uint                   `json:"category_id"`
+	StellaMaxCom  string                 `json:"stella_max_com"`
+	Attributes    []AffCampaignAttribute `json:"attributes" gorm:"foreignKey:CampaignId"`
 }
 
-func (c *AffCampaignLessApp) TableName() string {
+func (m *AffCampaignLessApp) TableName() string {
 	return "aff_campaign"
 }
 
-func (c *AffCampaignLessApp) ToDto() dto.AffCampaignLessDto {
+func (m *AffCampaignLessApp) ToDto() dto.AffCampaignLessDto {
+	var listAttribute []dto.AffCampaignAttributeDto
+	for _, attribute := range m.Attributes {
+		listAttribute = append(listAttribute, attribute.ToDto())
+	}
 	return dto.AffCampaignLessDto{
-		ID:            c.ID,
-		Name:          c.Name,
-		AccessTradeId: c.AccessTradeId,
-		Url:           c.Url,
-		BrandId:       c.BrandId,
-		Brand:         c.Brand.ToBrandDto(),
-		StellaStatus:  c.StellaStatus,
-		StellaMaxCom:  c.StellaMaxCom,
+		ID:            m.ID,
+		Name:          m.Name,
+		AccessTradeId: m.AccessTradeId,
+		Url:           m.Url,
+		BrandId:       m.BrandId,
+		Brand:         m.Brand.ToBrandDto(),
+		StellaStatus:  m.StellaStatus,
+		StellaMaxCom:  m.StellaMaxCom,
+		Attributes:    listAttribute,
 	}
 }

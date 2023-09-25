@@ -206,7 +206,7 @@ func (o *OrderDetails) ToOrderDetailsDto() dto.OrderDetailsDto {
 	imReleaseAmount := util.RoundFloat(o.RewardAmount*o.ImmediateRelease, 2)
 	secondPartReward := o.RewardAmount * (1 - o.ImmediateRelease)
 	secondPartUnlockedAmount := util.RoundFloat(secondPartReward*dayPassedPercent, 2)
-	rewardRemainingAmount := util.RoundFloat(secondPartReward*(1-dayPassedPercent), 2)
+	rewardRemainingAmount := o.RewardAmount - imReleaseAmount - secondPartUnlockedAmount
 
 	return dto.OrderDetailsDto{
 		ID:                 o.ID,
@@ -216,6 +216,7 @@ func (o *OrderDetails) ToOrderDetailsDto() dto.OrderDetailsDto {
 		Billing:            o.Billing,
 		CategoryName:       o.CategoryName,
 		Merchant:           o.Merchant,
+		ImageUrl:           "https://content.accesstrade.vn/adv/1680775105_avatar_1680775105.gif",
 		AccessTradeOrderId: o.AccessTradeOrderId,
 		PubCommission:      o.PubCommission,
 		CommissionFee:      o.CommissionFee,
@@ -226,6 +227,7 @@ func (o *OrderDetails) ToOrderDetailsDto() dto.OrderDetailsDto {
 		RewardFirstPartReleasedAmount:  imReleaseAmount,
 		RewardSecondPartUnlockedAmount: secondPartUnlockedAmount,
 		RewardRemainingAmount:          rewardRemainingAmount,
+		RewardAmount:                   o.RewardAmount,
 		RewardEndAt:                    o.RewardEndAt,
 	}
 }

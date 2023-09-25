@@ -6,6 +6,7 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/model"
+	util "github.com/astraprotocol/affiliate-system/internal/util/commission"
 )
 
 type affCampAppUCase struct {
@@ -75,6 +76,7 @@ func (s affCampAppUCase) GetAffCampaignById(ctx context.Context, id uint64, user
 	respone := affCampaign.ToAffCampaignAppDto()
 	respone.Brand.IsTopFavorited = favTopBrandCheck[respone.BrandId]
 	respone.Brand.IsFavorited = favBrandCheck[respone.BrandId]
+	respone.StellaMaxCom = util.GetStellaMaxCom(affCampaign.Attributes)
 
 	return respone, nil
 }
@@ -90,6 +92,7 @@ func (s affCampAppUCase) GetAllAffCampaign(ctx context.Context, page, size int) 
 			break
 		}
 		listAffCampaignAppDto = append(listAffCampaignAppDto, listAffCampaign[i].ToDto())
+		listAffCampaignAppDto[i].StellaMaxCom = util.GetStellaMaxCom(listAffCampaign[i].Attributes)
 	}
 	nextPage := page
 	if len(listAffCampaign) > size {

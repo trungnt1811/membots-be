@@ -48,12 +48,12 @@ func (r affCampAppRepository) GetAffCampaignById(ctx context.Context, id uint64)
 	err := r.db.
 		Joins("Brand").
 		Preload("Attributes").
-		Where("aff_campaign.id = ? AND aff_campaign.stella_status = ?", id, model.StellaStatusInProgress).
+		Where("aff_campaign.id = ?", id).
 		First(&affCampaign).Error
 	return affCampaign, err
 }
 
-func (r affCampAppRepository) GetListAffCampaignByBrandIds(ctx context.Context, brandIds []uint64) ([]model.AffCampaignComBrand, error) {
+func (r affCampAppRepository) GetListAffCampaignByBrandIds(ctx context.Context, brandIds []uint) ([]model.AffCampaignComBrand, error) {
 	var listAffCampaign []model.AffCampaignComBrand
 	// Ordering by the order of values in a IN() clause
 	s, _ := json.Marshal(brandIds)

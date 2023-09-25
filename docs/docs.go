@@ -455,6 +455,20 @@ const docTemplate = `{
                     "order"
                 ],
                 "summary": "Get order history",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "order status to filter, default is ",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "page to query, default is 1",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -2111,17 +2125,6 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.OrderCurrentStatus": {
-            "type": "object",
-            "properties": {
-                "at": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                }
-            }
-        },
         "dto.OrderDetailsDto": {
             "type": "object",
             "properties": {
@@ -2131,10 +2134,6 @@ const docTemplate = `{
                 "amount": {
                     "description": "amount of reward after fee subtractions",
                     "type": "number"
-                },
-                "approved_time": {
-                    "description": "stella approved, unlock 50% reward",
-                    "type": "string"
                 },
                 "at_product_link": {
                     "type": "string"
@@ -2152,17 +2151,14 @@ const docTemplate = `{
                 "confirmed_time": {
                     "type": "string"
                 },
-                "current_status": {
-                    "$ref": "#/definitions/dto.OrderCurrentStatus"
-                },
                 "merchant": {
+                    "type": "string"
+                },
+                "order_status": {
                     "type": "string"
                 },
                 "pub_commission": {
                     "type": "number"
-                },
-                "rejected_time": {
-                    "type": "string"
                 },
                 "reward_end_at": {
                     "type": "string"

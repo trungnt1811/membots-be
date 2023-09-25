@@ -7,7 +7,7 @@ const (
 )
 
 type Brand struct {
-	ID         uint32  `json:"id" gorm:"primaryKey"`
+	ID         uint    `json:"id" gorm:"primaryKey"`
 	Name       string  `json:"name"`
 	Logo       string  `json:"logo"`
 	CoverPhoto *string `json:"cover_photo"`
@@ -38,6 +38,6 @@ func (c *AffMerchantBrand) TableName() string {
 }
 
 type TotalFavoriteBrand struct {
-	BrandId       uint64 `json:"brand_id"`
+	BrandId       uint   `json:"brand_id"`
 	TotalFavorite uint64 `json:"total_fav"`
 }

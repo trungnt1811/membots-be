@@ -43,7 +43,7 @@ func (s affBrandUCase) GetTopFavouriteAffBrand(ctx context.Context, userId uint6
 	}
 
 	// Get top favorited brands
-	var brandIds []uint64
+	var brandIds []uint
 	for index, favCountAffBrand := range listCountFavAffBrand {
 		if index < (page-1)*size {
 			continue
@@ -71,9 +71,9 @@ func (s affBrandUCase) GetTopFavouriteAffBrand(ctx context.Context, userId uint6
 	if err != nil {
 		return dto.AffCampaignAppDtoResponse{}, err
 	}
-	favBrandCheck := make(map[uint64]bool)
+	favBrandCheck := make(map[uint]bool)
 	for _, userFavBrand := range listUserFavBrand {
-		favBrandCheck[uint64(userFavBrand.BrandId)] = true
+		favBrandCheck[userFavBrand.BrandId] = true
 	}
 
 	var listAffCampaignComBrandDto []dto.AffCampaignLessDto
@@ -122,13 +122,13 @@ func (s affBrandUCase) GetMostCommissionAffCampaign(ctx context.Context, userId 
 	if err != nil {
 		return dto.AffCampaignAppDtoResponse{}, err
 	}
-	favTopBrandCheck := make(map[uint64]bool)
+	favTopBrandCheck := make(map[uint]bool)
 	for _, countFavAffBrand := range listCountFavAffBrand {
 		favTopBrandCheck[countFavAffBrand.BrandId] = true
 	}
 
 	// Use fav's brands check
-	brandIds := make([]uint64, 0)
+	brandIds := make([]uint, 0)
 	for _, affCampaign := range listAffCampaign {
 		brandIds = append(brandIds, affCampaign.BrandId)
 	}
@@ -140,7 +140,7 @@ func (s affBrandUCase) GetMostCommissionAffCampaign(ctx context.Context, userId 
 	if err != nil {
 		return dto.AffCampaignAppDtoResponse{}, err
 	}
-	favBrandCheck := make(map[uint64]bool)
+	favBrandCheck := make(map[uint]bool)
 	for _, userFavBrand := range listUserFavBrand {
 		favBrandCheck[userFavBrand.BrandId] = true
 	}

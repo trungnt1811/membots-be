@@ -12,6 +12,7 @@ type ConsoleCampRepository interface {
 	CountCampaign(status []string, q string) (int64, error)
 	UpdateCampaign(id uint, updates map[string]interface{}) error
 	UpdateCampaignAttribute(id uint, attributes []model.AffCampaignAttribute) error
+	LoadCategoryFromBrandId(brandId uint) (uint, error)
 }
 
 type ConsoleCampUCase interface {

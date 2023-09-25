@@ -512,13 +512,6 @@ definitions:
       original_url:
         type: string
     type: object
-  dto.OrderCurrentStatus:
-    properties:
-      at:
-        type: string
-      status:
-        type: string
-    type: object
   dto.OrderDetailsDto:
     properties:
       accesstrade_order_id:
@@ -526,9 +519,6 @@ definitions:
       amount:
         description: amount of reward after fee subtractions
         type: number
-      approved_time:
-        description: stella approved, unlock 50% reward
-        type: string
       at_product_link:
         type: string
       billing:
@@ -540,14 +530,12 @@ definitions:
         type: number
       confirmed_time:
         type: string
-      current_status:
-        $ref: '#/definitions/dto.OrderCurrentStatus'
       merchant:
+        type: string
+      order_status:
         type: string
       pub_commission:
         type: number
-      rejected_time:
-        type: string
       reward_end_at:
         type: string
       reward_start_at:
@@ -1007,6 +995,15 @@ paths:
       consumes:
       - application/json
       description: Get order history - include reward info
+      parameters:
+      - description: 'order status to filter, default is '
+        in: query
+        name: status
+        type: string
+      - description: page to query, default is 1
+        in: query
+        name: page
+        type: string
       produces:
       - application/json
       responses:

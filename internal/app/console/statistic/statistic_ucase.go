@@ -32,7 +32,7 @@ func (ucase *StatisticUcase) GetSummaryByTimeRange(d dto.TimeRange) (*dto.Statis
 
 	offset := int(0)
 	customers := map[uint]int{}
-	var rev float32 = 0
+	var rev float64 = 0
 	for {
 		if offset >= int(count) {
 			break
@@ -51,7 +51,7 @@ func (ucase *StatisticUcase) GetSummaryByTimeRange(d dto.TimeRange) (*dto.Statis
 			} else {
 				customers[order.UserId] = prev + 1
 			}
-			rev += order.PubCommission
+			rev += float64(order.PubCommission)
 		}
 
 		offset += BATCH_SIZE
@@ -61,7 +61,9 @@ func (ucase *StatisticUcase) GetSummaryByTimeRange(d dto.TimeRange) (*dto.Statis
 	resp.NumOfOrders = int(count)
 	resp.TotalRevenue = rev
 
-	// TODO: Calculate total asa cashback
+	total, err := ucase.Repo.CalculateCashbackInRange(d)
+	resp.TotalASACashback.Distributed = total.Distributed
+	resp.TotalASACashback.Remain = total.Remain
 
 	return &resp, nil
 }

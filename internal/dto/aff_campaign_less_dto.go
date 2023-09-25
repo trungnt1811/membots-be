@@ -7,6 +7,6 @@ type AffCampaignLessDto struct {
 	Url           string   `json:"url,omitempty"`
 	StellaStatus  string   `json:"stella_status,omitempty"`
 	StellaMaxCom  string   `json:"stella_max_com,omitempty"`
-	BrandId       uint64   `json:"brand_id,omitempty"`
+	BrandId       uint     `json:"brand_id,omitempty"`
 	Brand         BrandDto `json:"brand,omitempty"`
 }

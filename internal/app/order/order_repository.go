@@ -172,7 +172,7 @@ func (repo *OrderRepository) GetOrderHistory(ctx context.Context, since time.Tim
 	var rows *sql.Rows
 	var err error
 	if status != "" {
-		rows, err = repo.db.Raw(query, userId, statusParams, since, limit, offset).Rows()
+		rows, err = repo.db.Raw(query, userId, since, statusParams, limit, offset).Rows()
 	} else {
 		rows, err = repo.db.Raw(query, userId, since, limit, offset).Rows()
 	}

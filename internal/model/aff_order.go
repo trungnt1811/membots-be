@@ -162,17 +162,17 @@ type OrderDetails struct {
 func BuildOrderStatusQuery(status string) (query string, params interface{}) {
 	switch status {
 	case dto.OrderStatusWaitForConfirming:
-		query = "o.status IN ?"
+		query = "AND o.order_status IN ?"
 		params := []string{OrderStatusInitial, OrderStatusPending, OrderStatusApproved}
 		return query, params
 	case dto.OrderStatusRewarding:
-		return "o.status = ?", OrderStatusRewarding
+		return "AND o.order_status = ?", OrderStatusRewarding
 	case dto.OrderStatusComplete:
-		return "o.status = ?", OrderStatusComplete
+		return "AND o.order_status = ?", OrderStatusComplete
 	case dto.OrderStatusRejected:
-		return "o.status = ?", OrderStatusRejected
+		return "AND o.order_status = ?", OrderStatusRejected
 	case dto.OrderStatusCancelled:
-		return "o.status = ?", OrderStatusCancelled
+		return "AND o.order_status = ?", OrderStatusCancelled
 	}
 	return "", nil
 }

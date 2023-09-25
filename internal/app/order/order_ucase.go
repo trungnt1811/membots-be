@@ -176,8 +176,9 @@ func (u *OrderUcase) GetOrderDetails(ctx context.Context, userId uint32, orderId
 	return &orderDto, nil
 }
 
-func (u *OrderUcase) GetOrderHistory(ctx context.Context, userId uint32, page, size int) (dto.OrderHistoryResponse, error) {
-	orderHistory, err := u.Repo.GetOrderHistory(ctx, userId, page, size)
+func (u *OrderUcase) GetOrderHistory(ctx context.Context, userId uint32, status string, page, size int) (dto.OrderHistoryResponse, error) {
+	pastTimeLimit := time.Now().Add(-6 * 30 * 24 * time.Hour) // 6 months before - user cannot query order older than this time
+	orderHistory, err := u.Repo.GetOrderHistory(ctx, pastTimeLimit, userId, status, page, size)
 	if err != nil {
 		return dto.OrderHistoryResponse{}, err
 	}
@@ -192,7 +193,7 @@ func (u *OrderUcase) GetOrderHistory(ctx context.Context, userId uint32, page, s
 		orderDtos[idx] = item.ToOrderDetailsDto()
 	}
 
-	totalOrder, err := u.Repo.CountOrder(ctx, userId)
+	totalOrder, err := u.Repo.CountOrders(ctx, pastTimeLimit, userId, status)
 	if err != nil {
 		return dto.OrderHistoryResponse{}, err
 	}

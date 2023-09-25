@@ -24,12 +24,12 @@ type OrderRepository interface {
 
 	UpdateTrackedClickOrder(trackedId uint64, order *model.AffOrder) error
 	GetOrderDetails(ctx context.Context, userId uint32, orderId uint) (*model.OrderDetails, error)
-	GetOrderHistory(ctx context.Context, userId uint32, page, size int) ([]model.OrderDetails, error)
-	CountOrder(ctx context.Context, userId uint32) (int64, error)
+	GetOrderHistory(ctx context.Context, since time.Time, userId uint32, status string, page, size int) ([]model.OrderDetails, error)
+	CountOrders(ctx context.Context, since time.Time, userId uint32, status string) (int64, error)
 }
 
 type OrderUcase interface {
 	PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*model.AffOrder, error)
 	GetOrderDetails(ctx context.Context, userId uint32, orderId uint) (*dto.OrderDetailsDto, error)
-	GetOrderHistory(ctx context.Context, userId uint32, page, size int) (dto.OrderHistoryResponse, error)
+	GetOrderHistory(ctx context.Context, userId uint32, status string, page, size int) (dto.OrderHistoryResponse, error)
 }

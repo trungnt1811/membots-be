@@ -1,6 +1,7 @@
 package order
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -9,6 +10,7 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/util"
 	"github.com/astraprotocol/affiliate-system/internal/util/log"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type OrderHandler struct {
@@ -91,6 +93,10 @@ func (handler *OrderHandler) GetOrderDetails(ctx *gin.Context) {
 	// get reward
 	res, err := handler.usecase.GetOrderDetails(ctx, user.ID, uint(orderId))
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			util.RespondError(ctx, http.StatusForbidden, "failed to get order details", errors.New("user do not have authorization on given order"))
+			return
+		}
 		util.RespondError(ctx, http.StatusFailedDependency, "failed to get order details", err)
 		return
 	}
@@ -106,6 +112,8 @@ func (handler *OrderHandler) GetOrderDetails(ctx *gin.Context) {
 // @Accept	json
 // @Produce json
 // @Security ApiKeyAuth
+// @Param status query string false "order status to filter, default is "" (no fiter)"
+// @Param page query string false "page to query, default is 1"
 // @Success 200 		{object}	dto.OrderHistoryResponse
 // @Failure 424 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
@@ -118,11 +126,12 @@ func (handler *OrderHandler) GetOrderHistory(ctx *gin.Context) {
 		return
 	}
 
+	orderStatus := ctx.DefaultQuery("status", "")
 	page := ctx.GetInt("page")
 	size := ctx.GetInt("size")
 
 	// get reward
-	res, err := handler.usecase.GetOrderHistory(ctx, user.ID, page, size)
+	res, err := handler.usecase.GetOrderHistory(ctx, user.ID, orderStatus, page, size)
 	if err != nil {
 		util.RespondError(ctx, http.StatusFailedDependency, "failed to get order history", err)
 		return

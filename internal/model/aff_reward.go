@@ -23,7 +23,8 @@ type Reward struct {
 	Amount         float64   `json:"amount"` // amount of reward after fee subtractions
 	RewardedAmount float64   `json:"rewarded_amount"`
 	CommissionFee  float64   `json:"commission_fee"` // commission fee (in percentage)
-	EndedAt        time.Time `json:"ended_at"`
+	EndAt          time.Time `json:"end_at"`
+	StartAt        time.Time `json:"start_at"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
 }
@@ -36,15 +37,16 @@ func (r *Reward) ToRewardDto() dto.RewardDto {
 		Amount:         r.Amount,
 		RewardedAmount: r.RewardedAmount,
 		CommissionFee:  r.CommissionFee,
-		EndedAt:        r.EndedAt,
+		EndAt:          r.EndAt,
+		StartAt:        r.StartAt,
 		CreatedAt:      r.CreatedAt,
 		UpdatedAt:      r.UpdatedAt,
 	}
 }
 
 func (r *Reward) WithdrawableReward() (rewardAmount float64, ended bool) {
-	daysPassed := int(time.Since(r.CreatedAt) / OneDay)   // number of days passed since order created
-	totalDays := int(r.EndedAt.Sub(r.CreatedAt) / OneDay) // total lock days
+	daysPassed := int(time.Since(r.StartAt) / OneDay) // number of days passed since order created
+	totalDays := int(r.EndAt.Sub(r.StartAt) / OneDay) // total lock days
 	withdrawablePercent := float64(daysPassed) / float64(totalDays)
 	if withdrawablePercent > 1 {
 		withdrawablePercent = 1

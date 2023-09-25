@@ -2111,10 +2111,29 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.OrderCurrentStatus": {
+            "type": "object",
+            "properties": {
+                "at": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.OrderDetailsDto": {
             "type": "object",
             "properties": {
                 "accesstrade_order_id": {
+                    "type": "string"
+                },
+                "amount": {
+                    "description": "amount of reward after fee subtractions",
+                    "type": "number"
+                },
+                "approved_time": {
+                    "description": "stella approved, unlock 50% reward",
                     "type": "string"
                 },
                 "at_product_link": {
@@ -2126,30 +2145,36 @@ const docTemplate = `{
                 "category_name": {
                     "type": "string"
                 },
+                "commission_fee": {
+                    "description": "commission fee (in percentage)",
+                    "type": "number"
+                },
                 "confirmed_time": {
                     "type": "string"
                 },
-                "merchant": {
-                    "type": "string"
+                "current_status": {
+                    "$ref": "#/definitions/dto.OrderCurrentStatus"
                 },
-                "order_status": {
+                "merchant": {
                     "type": "string"
                 },
                 "pub_commission": {
                     "type": "number"
                 },
-                "reward": {
-                    "$ref": "#/definitions/dto.RewardDto"
+                "rejected_time": {
+                    "type": "string"
+                },
+                "reward_end_at": {
+                    "type": "string"
+                },
+                "reward_start_at": {
+                    "type": "string"
+                },
+                "rewarded_amount": {
+                    "type": "number"
                 },
                 "sales_time": {
                     "type": "string"
-                },
-                "timeline": {
-                    "description": "status changing history",
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    }
                 },
                 "user_id": {
                     "type": "integer"
@@ -2207,39 +2232,6 @@ const docTemplate = `{
             "properties": {
                 "message": {
                     "type": "string"
-                }
-            }
-        },
-        "dto.RewardDto": {
-            "type": "object",
-            "properties": {
-                "accesstrade_order_id": {
-                    "type": "string"
-                },
-                "amount": {
-                    "type": "number"
-                },
-                "commission_fee": {
-                    "description": "commission fee (in percentage)",
-                    "type": "number"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "ended_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "rewarded_amount": {
-                    "type": "number"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "integer"
                 }
             }
         },

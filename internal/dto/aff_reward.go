@@ -25,7 +25,8 @@ type RewardDto struct {
 	Amount         float64   `json:"amount"`
 	RewardedAmount float64   `json:"rewarded_amount"`
 	CommissionFee  float64   `json:"commission_fee"` // commission fee (in percentage)
-	EndedAt        time.Time `json:"ended_at"`
+	EndAt          time.Time `json:"end_at"`
+	StartAt        time.Time `json:"start_at"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
 }

@@ -148,16 +148,15 @@ type OrderDetails struct {
 	PubCommission      float32   `json:"pub_commission"`
 	SalesTime          time.Time `json:"sales_time"`
 	ConfirmedTime      time.Time `json:"confirmed_time"`
-	ApprovedTime       time.Time `json:"approved_time"`
-	RejectedTime       time.Time `json:"rejected_time"`
 	RewardAmount       float64   `json:"amount"` // amount of reward after fee subtractions
 	RewardedAmount     float64   `json:"rewarded_amount"`
 	CommissionFee      float64   `json:"commission_fee"` // commission fee (in percentage)
-	EndedAt            time.Time `json:"ended_at"`
-	CreatedAt          time.Time `json:"created_at"`
+	RewardEndAt        time.Time `json:"reward_end_at"`
+	RewardStartAt      time.Time `json:"reward_start_at"`
 }
 
 func (o *OrderDetails) ToOrderDetailsDto() dto.OrderDetailsDto {
+
 	return dto.OrderDetailsDto{
 		UserId:             o.UserId,
 		OrderStatus:        o.OrderStatus,
@@ -169,12 +168,10 @@ func (o *OrderDetails) ToOrderDetailsDto() dto.OrderDetailsDto {
 		PubCommission:      o.PubCommission,
 		SalesTime:          o.SalesTime,
 		ConfirmedTime:      o.ConfirmedTime,
-		ApprovedTime:       o.ApprovedTime,
-		RejectedTime:       o.RejectedTime,
 		RewardAmount:       o.RewardAmount,
 		RewardedAmount:     o.RewardedAmount,
 		CommissionFee:      o.CommissionFee,
-		EndedAt:            o.EndedAt,
-		CreatedAt:          o.CreatedAt,
+		RewardEndAt:        o.RewardEndAt,
+		RewardStartAt:      o.RewardStartAt,
 	}
 }

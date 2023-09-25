@@ -31,7 +31,7 @@ func (r affCampAppRepository) GetAllAffCampaign(ctx context.Context, orderBy str
 			"WHEN attribute_type = 'percent' THEN 3 " +
 			"WHEN attribute_type = 'vnd' THEN 2 " +
 			"ELSE 1 " +
-			"END DESC, attribute_value DESC"
+			"END DESC, CAST(attribute_value + 0 AS DECIMAL(12,2)) DESC"
 		err = r.db.Joins("Brand").
 			Preload("Attributes", func(db *gorm.DB) *gorm.DB {
 				db = db.Order(orderQuery)

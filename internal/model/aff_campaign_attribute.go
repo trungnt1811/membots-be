@@ -2,6 +2,11 @@ package model
 
 import "github.com/astraprotocol/affiliate-system/internal/dto"
 
+var AttributeTypePriorityMapping = map[string]int{
+	"percent": 1,
+	"vnd":     2,
+}
+
 type AffCampaignAttribute struct {
 	ID             uint   `gorm:"primarykey" json:"id"`
 	CampaignId     uint   `json:"campaign_id"`

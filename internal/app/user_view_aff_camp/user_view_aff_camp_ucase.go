@@ -2,9 +2,13 @@ package user_view_aff_camp
 
 import (
 	"context"
+	"fmt"
+	"sort"
+	"strings"
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
+	"github.com/astraprotocol/affiliate-system/internal/model"
 )
 
 type userViewAffCampUCase struct {
@@ -28,6 +32,7 @@ func (s userViewAffCampUCase) GetListUserViewAffCampByUserId(ctx context.Context
 			break
 		}
 		listAffCampComBrandDto = append(listAffCampComBrandDto, listUserViewAffCamp[i].ToAffCampaignLessDto())
+		listAffCampComBrandDto[i].StellaMaxCom = s.getStellaMaxCom(listUserViewAffCamp[i].AffCampComBrand.Attributes)
 	}
 	nextPage := page
 	if len(listUserViewAffCamp) > size {
@@ -39,4 +44,23 @@ func (s userViewAffCampUCase) GetListUserViewAffCampByUserId(ctx context.Context
 		Size:     size,
 		Data:     listAffCampComBrandDto,
 	}, nil
+}
+
+func (s userViewAffCampUCase) getStellaMaxCom(attributes []model.AffCampaignAttribute) string {
+	sort.Slice(attributes, func(i, j int) bool {
+		if attributes[i].AttributeType != attributes[j].AttributeType {
+			return model.AttributeTypePriorityMapping[attributes[i].AttributeType] < model.AttributeTypePriorityMapping[attributes[j].AttributeType]
+		}
+		switch strings.Compare(attributes[i].AttributeValue, attributes[j].AttributeValue) {
+		case 1:
+			return true
+		default:
+			return false
+		}
+	})
+	if attributes[0].AttributeType == "percent" {
+		return fmt.Sprint(attributes[0].AttributeValue, "%")
+	} else {
+		return fmt.Sprint(attributes[0].AttributeValue, " VND")
+	}
 }

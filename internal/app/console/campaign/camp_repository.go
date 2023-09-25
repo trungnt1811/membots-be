@@ -16,7 +16,7 @@ func (a *affCampaignRepository) LoadCategoryFromBrandId(brandId uint) (uint, err
 	var categoryId []uint
 	query := "select distinct(cc.category_id) from coupon_category as cc " +
 		"left join coupon_brand as cb ON cc.program_id = cb.program_id where cb.brand_id = ? limit ?"
-	if err := a.Db.Raw(query, brandId, "1").Scan(&categoryId).Error; err != nil {
+	if err := a.Db.Raw(query, brandId, 1).Scan(&categoryId).Error; err != nil {
 		return 0, err
 	}
 	if len(categoryId) == 0 {
@@ -116,6 +116,10 @@ func (a *affCampaignRepository) UpdateCampaign(id uint, updates map[string]inter
 		brandId = affCampaign.BrandId
 	}
 	categoryId, err := a.LoadCategoryFromBrandId(brandId.(uint))
+	categoryIdUpdate, ok := updates["category_id"]
+	if ok {
+		categoryId = categoryIdUpdate.(uint)
+	}
 	updates["category_id"] = categoryId
 	return a.Db.Transaction(func(tx *gorm.DB) error {
 		stellaDescriptionJsonInput, _ := stellaDescription.(map[string]interface{})

@@ -178,17 +178,12 @@ func (m *AffCampaignComBrand) TableName() string {
 }
 
 func (m *AffCampaignComBrand) ToAffCampaignLessDto() dto.AffCampaignLessDto {
-	var listAttribute []dto.AffCampaignAttributeDto
-	for _, attribute := range m.Attributes {
-		listAttribute = append(listAttribute, attribute.ToDto())
-	}
 	return dto.AffCampaignLessDto{
 		ID:           uint(m.ID),
 		Name:         m.Name,
 		BrandId:      m.BrandId,
 		Brand:        m.Brand.ToBrandDto(),
 		StellaMaxCom: m.StellaMaxCom,
-		Attributes:   listAttribute,
 	}
 }
 
@@ -206,17 +201,12 @@ func (m *AffCampComFavBrand) TableName() string {
 }
 
 func (m *AffCampComFavBrand) ToAffCampaignLessDto() dto.AffCampaignLessDto {
-	var listAttribute []dto.AffCampaignAttributeDto
-	for _, attribute := range m.Attributes {
-		listAttribute = append(listAttribute, attribute.ToDto())
-	}
 	return dto.AffCampaignLessDto{
 		ID:           uint(m.ID),
 		Name:         m.Name,
 		BrandId:      m.BrandId,
 		Brand:        m.FavoriteBrand.Brand.ToBrandDto(),
 		StellaMaxCom: m.StellaMaxCom,
-		Attributes:   listAttribute,
 	}
 }
 

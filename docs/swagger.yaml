@@ -242,10 +242,6 @@ definitions:
     properties:
       accesstrade_id:
         type: string
-      attribute:
-        items:
-          $ref: '#/definitions/dto.AffCampaignAttributeDto'
-        type: array
       brand:
         $ref: '#/definitions/dto.BrandDto'
       brand_id:

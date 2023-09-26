@@ -656,9 +656,9 @@ const docTemplate = `{
                         }
                     },
                     "429": {
-                        "description": "Too Many Requests",
+                        "description": "reach withdraw limit, max one time each two seconds",
                         "schema": {
-                            "$ref": "#/definitions/util.GeneralError"
+                            "type": "string"
                         }
                     }
                 }

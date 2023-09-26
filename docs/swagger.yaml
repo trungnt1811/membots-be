@@ -1139,9 +1139,9 @@ paths:
           schema:
             $ref: '#/definitions/util.GeneralError'
         "429":
-          description: Too Many Requests
+          description: reach withdraw limit, max one time each two seconds
           schema:
-            $ref: '#/definitions/util.GeneralError'
+            type: string
       security:
       - ApiKeyAuth: []
       summary: Claim reward of all orders

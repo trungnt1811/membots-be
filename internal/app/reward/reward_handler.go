@@ -92,7 +92,7 @@ func (handler *RewardHandler) GetWithdrawHistory(ctx *gin.Context) {
 // @Security ApiKeyAuth
 // @Success 200 		{object}	dto.RewardSummary
 // @Failure 424 		{object}	util.GeneralError
-// @Failure 429 		{object}	string
+// @Failure 429 		{object}	string "reach withdraw limit, max one time each two seconds"
 // @Failure 400 		{object}	util.GeneralError
 // @Router 	/api/v1/app/rewards/withdraw [post]
 func (handler *RewardHandler) WithdrawReward(ctx *gin.Context) {

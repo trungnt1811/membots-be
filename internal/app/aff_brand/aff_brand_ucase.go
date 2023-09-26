@@ -96,6 +96,12 @@ func (s affBrandUCase) GetListFavAffBrandByUserId(ctx context.Context, userId ui
 	if err != nil {
 		return dto.AffCampaignAppDtoResponse{}, err
 	}
+
+	total, err := s.AffBrandRepository.CountTotalFavAffBrandByUserId(ctx, userId)
+	if err != nil {
+		return dto.AffCampaignAppDtoResponse{}, err
+	}
+
 	var listAffCampaignDto []dto.AffCampaignLessDto
 	for i := range listFavAffBrand {
 		listAffCampaignDto = append(listAffCampaignDto, listFavAffBrand[i].ToAffCampaignLessDto())
@@ -109,6 +115,7 @@ func (s affBrandUCase) GetListFavAffBrandByUserId(ctx context.Context, userId ui
 		NextPage: nextPage,
 		Page:     page,
 		Size:     size,
+		Total:    total,
 		Data:     listAffCampaignDto,
 	}, nil
 }

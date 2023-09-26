@@ -53,7 +53,7 @@ func (r affBrandRepository) GetListFavAffBrandByUserId(ctx context.Context, user
 
 func (r affBrandRepository) CountTotalFavAffBrandByUserId(ctx context.Context, userId uint64) (int64, error) {
 	var total int64
-	err := r.db.Joins("FavoriteBrand").
+	err := r.db.Model(&model.AffCampComFavBrand{}).Joins("FavoriteBrand").
 		Where("FavoriteBrand.user_id = ? AND FavoriteBrand.status = ? AND aff_campaign.stella_status = ?",
 			userId,
 			model.UserFavoriteBrandStatusAdded,

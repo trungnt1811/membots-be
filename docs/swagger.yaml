@@ -1479,13 +1479,13 @@ paths:
       description: Get affiliate order list by time range and other filter
       parameters:
       - in: query
-        name: order_status
+        name: orderStatus
         type: string
       - in: query
         name: page
         type: integer
       - in: query
-        name: per_page
+        name: perPage
         type: integer
       - in: query
         name: since
@@ -1494,7 +1494,7 @@ paths:
         name: until
         type: string
       - in: query
-        name: user_id
+        name: userId
         type: integer
       produces:
       - application/json

@@ -64,7 +64,7 @@ func (client *TikiClient) GetAstraPrice(ctx context.Context) (int64, error) {
 }
 
 // GetAstraPrice get ASA price from Tiki exchange
-// @Param forSendReward - is the ASA price calculated for send to customer (true) or in opposite way (false)
+// @Params calculateMode - is the ASA price calculated for send to customer (true) or in opposite way (false)
 // - true: calculate base on asks price, to prevent user push the price down
 // - false: calculate base on bids price, to prevent user push the price up
 func (c *TikiClient) GetAstraPriceFromExchange(ctx context.Context, calculateMode int) (int64, error) {

@@ -34,10 +34,9 @@ func (r affCampAppRepository) GetAllAffCampaign(ctx context.Context, orderBy str
 			"END DESC, CAST(attribute_value + 0 AS DECIMAL(12,2)) DESC"
 		err = r.db.Joins("Brand").
 			Preload("Attributes", func(db *gorm.DB) *gorm.DB {
-				db = db.Order(orderQuery)
-				return db
+				return db.Order(orderQuery)
 			}).
-			Where("stella_status = ?", model.StellaStatusInProgress).
+			Where("aff_campaign.stella_status = ?", model.StellaStatusInProgress).
 			Limit(size + 1).Offset(offset).
 			Find(&listAffCampaign).Error
 	default:
@@ -45,7 +44,6 @@ func (r affCampAppRepository) GetAllAffCampaign(ctx context.Context, orderBy str
 			Preload("Attributes").
 			Where("stella_status = ?", model.StellaStatusInProgress).
 			Limit(size + 1).Offset(offset).
-			Order("aff_campaign.id ASC").
 			Find(&listAffCampaign).Error
 	}
 	return listAffCampaign, err

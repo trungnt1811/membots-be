@@ -7,7 +7,9 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/model"
 )
 
-func (u *rewardUCase) CalculateWithdrawalReward(rewards []model.Reward, userId uint32) (*model.RewardWithdraw, []model.Reward, []model.OrderRewardHistory) {
+type CompleteRewardOrder []string // list of accesstrade_oder_id that completely withdraw
+
+func (u *rewardUCase) CalculateWithdrawalReward(rewards []model.Reward, userId uint32) (*model.RewardWithdraw, []model.Reward, []model.OrderRewardHistory, CompleteRewardOrder) {
 	shippingRequestId := fmt.Sprintf("affiliate-%v:%v", userId, time.Now().UnixMilli())
 	withdraw := model.RewardWithdraw{
 		UserId:            uint(userId),
@@ -18,6 +20,7 @@ func (u *rewardUCase) CalculateWithdrawalReward(rewards []model.Reward, userId u
 	}
 	var rewardsToWithdraw []model.Reward
 	var orderRewardHistories []model.OrderRewardHistory
+	completeRwOrders := []string{}
 
 	for idx := range rewards {
 		orderReward, ended := rewards[idx].WithdrawableReward()
@@ -36,11 +39,12 @@ func (u *rewardUCase) CalculateWithdrawalReward(rewards []model.Reward, userId u
 		// Update reward
 		rewards[idx].RewardedAmount += orderReward
 
-		if ended { // TODO: not update ended. Create status instead?
-			rewards[idx].EndAt = time.Now()
+		if ended {
+			completeRwOrders = append(completeRwOrders, rewards[idx].AtOrderID)
 		}
+
 		rewardsToWithdraw = append(rewardsToWithdraw, rewards[idx])
 	}
 
-	return &withdraw, rewardsToWithdraw, orderRewardHistories
+	return &withdraw, rewardsToWithdraw, orderRewardHistories, completeRwOrders
 }

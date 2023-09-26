@@ -110,6 +110,13 @@ func (u *RewardMaker) ListenOrderApproved() {
 				continue
 			}
 
+			_, err = u.orderRepo.UpdateOrder(&model.AffOrder{ID: order.ID, OrderStatus: model.OrderStatusRewarding})
+			if err != nil {
+				_ = u.commitOrderApprovedMsg(msg)
+				errChn <- err
+				continue
+			}
+
 			err = u.notiOrderApproved(order.UserId, newAtOrderId, order.Merchant)
 			if err != nil {
 				_ = u.commitOrderApprovedMsg(msg)

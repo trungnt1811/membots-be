@@ -40,10 +40,6 @@ func (m *AffCampaignLessApp) TableName() string {
 }
 
 func (m *AffCampaignLessApp) ToDto() dto.AffCampaignLessDto {
-	var listAttribute []dto.AffCampaignAttributeDto
-	for _, attribute := range m.Attributes {
-		listAttribute = append(listAttribute, attribute.ToDto())
-	}
 	return dto.AffCampaignLessDto{
 		ID:            m.ID,
 		Name:          m.Name,
@@ -53,6 +49,5 @@ func (m *AffCampaignLessApp) ToDto() dto.AffCampaignLessDto {
 		Brand:         m.Brand.ToBrandDto(),
 		StellaStatus:  m.StellaStatus,
 		StellaMaxCom:  m.StellaMaxCom,
-		Attributes:    listAttribute,
 	}
 }

@@ -5,6 +5,7 @@ import (
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
+	"github.com/astraprotocol/affiliate-system/internal/util/log"
 )
 
 const (
@@ -62,8 +63,17 @@ func (ucase *StatisticUcase) GetSummaryByTimeRange(d dto.TimeRange) (*dto.Statis
 	resp.TotalRevenue = rev
 
 	total, err := ucase.Repo.CalculateCashbackInRange(d)
+	if err != nil {
+		log.LG.Errorf("calculate cashback err: %v", err)
+	}
 	resp.TotalASACashback.Distributed = total.Distributed
 	resp.TotalASACashback.Remain = total.Remain
+
+	totalCampaigns, err := ucase.Repo.TotalActiveCampaignsInRange(d)
+	if err != nil {
+		log.LG.Errorf("count active campaigns err: %v", err)
+	}
+	resp.ActiveCampaigns = int(totalCampaigns)
 
 	return &resp, nil
 }

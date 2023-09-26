@@ -149,12 +149,12 @@ type OrderDetails struct {
 	ID                 uint      `json:"id"`
 	UserId             uint      `json:"user_id"`
 	OrderStatus        string    `json:"order_status"`
-	ATProductLink      string    `json:"at_product_link"`
 	Billing            float32   `json:"billing"`
 	CategoryName       string    `json:"category_name"`
 	Merchant           string    `json:"merchant"`
 	AccessTradeOrderId string    `json:"accesstrade_order_id"`
 	PubCommission      float32   `json:"pub_commission"`
+	UpdateTime         time.Time `json:"update_time"`
 	SalesTime          time.Time `json:"sales_time"`
 	ConfirmedTime      time.Time `json:"confirmed_time"`
 	CreatedAt          time.Time `json:"created_at"`
@@ -164,6 +164,7 @@ type OrderDetails struct {
 	ImmediateRelease   float64   `json:"immediate_release"`
 	RewardEndAt        time.Time `json:"reward_end_at"`
 	RewardStartAt      time.Time `json:"reward_start_at"`
+	BrandLogo          string    `json:"brand_logo"`
 }
 
 func BuildOrderStatusQuery(status string) (query string, params interface{}) {
@@ -186,6 +187,8 @@ func BuildOrderStatusQuery(status string) (query string, params interface{}) {
 
 func (o *OrderDetails) ToOrderDetailsDto() dto.OrderDetailsDto {
 	var status string
+	rejectedTime := time.Time{}
+
 	switch o.OrderStatus {
 	case OrderStatusRewarding:
 		status = dto.OrderStatusRewarding
@@ -193,6 +196,7 @@ func (o *OrderDetails) ToOrderDetailsDto() dto.OrderDetailsDto {
 		status = dto.OrderStatusComplete
 	case OrderStatusRejected:
 		status = dto.OrderStatusRejected
+		rejectedTime = o.UpdateTime
 	case OrderStatusCancelled:
 		status = dto.OrderStatusCancelled
 	default:
@@ -213,20 +217,19 @@ func (o *OrderDetails) ToOrderDetailsDto() dto.OrderDetailsDto {
 	rewardRemainingAmount := o.RewardAmount - imReleaseAmount - secondPartUnlockedAmount
 
 	return dto.OrderDetailsDto{
-		ID:                 o.ID,
-		UserId:             o.UserId,
-		OrderStatus:        status,
-		ATProductLink:      o.ATProductLink,
-		Billing:            o.Billing,
-		CategoryName:       o.CategoryName,
-		Merchant:           o.Merchant,
-		ImageUrl:           "https://content.accesstrade.vn/adv/1680775105_avatar_1680775105.gif",
-		AccessTradeOrderId: o.AccessTradeOrderId,
-		PubCommission:      o.PubCommission,
-		CommissionFee:      o.CommissionFee,
-		BuyTime:            o.SalesTime,
-		ConfirmedTime:      o.CreatedAt,
-		// RejectedTime: ,
+		ID:                             o.ID,
+		UserId:                         o.UserId,
+		OrderStatus:                    status,
+		Billing:                        o.Billing,
+		CategoryName:                   o.CategoryName,
+		Merchant:                       o.Merchant,
+		ImageUrl:                       o.BrandLogo,
+		AccessTradeOrderId:             o.AccessTradeOrderId,
+		PubCommission:                  o.PubCommission,
+		CommissionFee:                  o.CommissionFee,
+		BuyTime:                        o.SalesTime,
+		ConfirmedTime:                  o.CreatedAt,
+		RejectedTime:                   rejectedTime,
 		RewardFirstPartReleasedTime:    o.RewardStartAt,
 		RewardFirstPartReleasedAmount:  imReleaseAmount,
 		RewardSecondPartUnlockedAmount: secondPartUnlockedAmount,

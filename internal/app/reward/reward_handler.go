@@ -92,6 +92,7 @@ func (handler *RewardHandler) GetWithdrawHistory(ctx *gin.Context) {
 // @Security ApiKeyAuth
 // @Success 200 		{object}	dto.RewardSummary
 // @Failure 424 		{object}	util.GeneralError
+// @Failure 429 		{object}	string "reach withdraw limit, max one time each three seconds"
 // @Failure 400 		{object}	util.GeneralError
 // @Router 	/api/v1/app/rewards/withdraw [post]
 func (handler *RewardHandler) WithdrawReward(ctx *gin.Context) {
@@ -101,10 +102,6 @@ func (handler *RewardHandler) WithdrawReward(ctx *gin.Context) {
 		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
 		return
 	}
-	// user := dto.UserInfo{
-	// 	ID:            208,
-	// 	WalletAddress: "0x1f6183b9b06a90c4df957bcb4cbfa8a1d72d82e3",
-	// }
 
 	// get reward
 	res, err := handler.uCase.WithdrawReward(ctx, user.ID, user.WalletAddress)

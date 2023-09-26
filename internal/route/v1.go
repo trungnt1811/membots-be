@@ -2,8 +2,9 @@ package route
 
 import (
 	"context"
-	"github.com/astraprotocol/affiliate-system/internal/app/reward"
 	"time"
+
+	"github.com/astraprotocol/affiliate-system/internal/app/reward"
 
 	bannerApp "github.com/astraprotocol/affiliate-system/internal/app/aff_banner_app"
 	"github.com/astraprotocol/affiliate-system/internal/app/aff_brand"
@@ -13,6 +14,7 @@ import (
 	consoleOrder "github.com/astraprotocol/affiliate-system/internal/app/console/order"
 	"github.com/astraprotocol/affiliate-system/internal/app/console/statistic"
 	"github.com/astraprotocol/affiliate-system/internal/app/user_favorite_brand"
+	"github.com/astraprotocol/affiliate-system/internal/middleware"
 	"github.com/go-co-op/gocron"
 
 	"github.com/astraprotocol/affiliate-system/conf"
@@ -164,13 +166,14 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 		RewardProgram: config.Aff.RewardProgram,
 	}
 	rewardRepo := reward.NewRewardRepository(db)
-	rewardUCase := reward.NewRewardUCase(rewardRepo, orderRepo, shippingClient, rewardConf)
-	rewardHandler := reward.NewRewardHandler(rewardUCase)
+	rewardUsecase := reward.NewRewardUCase(rewardRepo, orderRepo, shippingClient, rewardConf)
+	rewardHandler := reward.NewRewardHandler(rewardUsecase)
+	withdrawRateLimit := middleware.NewRateLimit(rdb, 3*time.Second, 1)
 
 	rewardRouter := appRouter.Group("/rewards", authHandler.CheckUserHeader())
 	rewardRouter.GET("/summary", rewardHandler.GetRewardSummary)
 	rewardRouter.GET("/withdraw", rewardHandler.GetWithdrawHistory)
-	rewardRouter.POST("/withdraw", rewardHandler.WithdrawReward)
+	rewardRouter.POST("/withdraw", withdrawRateLimit, rewardHandler.WithdrawReward)
 
 	orderRouteApp := appRouter.Group("/orders", authHandler.CheckUserHeader())
 	orderRouteApp.GET("", orderHandler.GetOrderHistory)

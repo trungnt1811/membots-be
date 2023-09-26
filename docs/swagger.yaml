@@ -520,8 +520,6 @@ definitions:
     properties:
       accesstrade_order_id:
         type: string
-      at_product_link:
-        type: string
       billing:
         type: number
       category_name:
@@ -535,6 +533,7 @@ definitions:
       id:
         type: integer
       image_url:
+        description: brand logo
         type: string
       merchant:
         type: string
@@ -1142,6 +1141,10 @@ paths:
           description: Failed Dependency
           schema:
             $ref: '#/definitions/util.GeneralError'
+        "429":
+          description: reach withdraw limit, max one time each three seconds
+          schema:
+            type: string
       security:
       - ApiKeyAuth: []
       summary: Claim reward of all orders
@@ -1430,13 +1433,13 @@ paths:
       description: Get affiliate order list by time range and other filter
       parameters:
       - in: query
-        name: order_status
+        name: orderStatus
         type: string
       - in: query
         name: page
         type: integer
       - in: query
-        name: per_page
+        name: perPage
         type: integer
       - in: query
         name: since
@@ -1445,7 +1448,7 @@ paths:
         name: until
         type: string
       - in: query
-        name: user_id
+        name: userId
         type: integer
       produces:
       - application/json

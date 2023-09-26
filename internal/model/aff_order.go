@@ -20,6 +20,8 @@ const (
 type AffOrder struct {
 	ID                 uint      `gorm:"primarykey" json:"id"`
 	AffLink            string    `json:"aff_link"`
+	CampaignId         uint      `json:"campaign_id"`
+	BrandId            uint      `json:"brand_id"`
 	CreatedAt          time.Time `json:"created_at"`
 	UpdatedAt          time.Time `json:"updated_at"`
 	UserId             uint      `json:"user_id"`
@@ -58,7 +60,7 @@ func (order *AffOrder) TableName() string {
 	return "aff_order"
 }
 
-func NewOrderFromATOrder(userId uint, atOrder *types.ATOrder) *AffOrder {
+func NewOrderFromATOrder(userId uint, campaignId uint, brandId uint, atOrder *types.ATOrder) *AffOrder {
 	orderStatus := OrderStatusInitial
 	if atOrder.OrderPending != 0 {
 		orderStatus = OrderStatusPending
@@ -70,6 +72,8 @@ func NewOrderFromATOrder(userId uint, atOrder *types.ATOrder) *AffOrder {
 
 	return &AffOrder{
 		UserId:             userId,
+		CampaignId:         campaignId,
+		BrandId:            brandId,
 		OrderStatus:        orderStatus,
 		ATProductLink:      atOrder.ATProductLink,
 		Billing:            atOrder.Billing,

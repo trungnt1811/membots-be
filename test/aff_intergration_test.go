@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"strings"
 	"testing"
 	"time"
 
@@ -71,6 +72,14 @@ func (s *AffRewardTestSuite) setDefaultHeader(req *resty.Request) {
 	req.SetHeader("Content-Type", "application/json")
 }
 
+func getPart(s string, sep string, idx int) string {
+	parts := strings.Split(s, sep)
+	if idx >= len(parts) {
+		return ""
+	}
+	return parts[idx]
+}
+
 func (s *AffRewardTestSuite) TestRunHappyCase() {
 	// First, get generated aff link for this account
 	req1 := s.caller.R()
@@ -91,11 +100,27 @@ func (s *AffRewardTestSuite) TestRunHappyCase() {
 	// Expect created link to have utm_content info
 	createdUrl, err := url.Parse(created.AffLink)
 	s.NoError(err)
-	s.Contains(createdUrl.RawQuery, fmt.Sprintf("utm_content=%d-", s.UserId), "utm_content is missing")
+	s.Contains(createdUrl.RawQuery, fmt.Sprintf("utm_content=%d-", s.UserId), "utm_content is missing user id")
 
-	// Expect
+	// Get utm_content from string
+	idx := strings.LastIndex(created.AffLink, "utm_content=")
+	utmContent := getPart(created.AffLink[idx:], "=", 1)
+	trackedId := getPart(utmContent, "-", 1)
+	s.NotEmpty(utmContent)
+	s.NotEmpty(trackedId)
 
 	// After that, send a mock order post back for this test
+	req2 := s.caller.R()
+	s.setDefaultHeader(req2)
+	req1.SetBody(map[string]any{
+		"campaign_id":  14,
+		"original_url": "",
+		"shorten_link": false,
+	})
+	postBackUrl := fmt.Sprint(s.TestEndpoint, "/api/v1/order/post-back")
+	resp, err = req1.Post(postBackUrl)
+	s.NoError(err)
+	s.True(resp.IsSuccess(), "http call status is not 200")
 
 	// After order initialized, update order approved with post back
 

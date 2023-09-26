@@ -48,6 +48,12 @@ func (u *OrderUcase) PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*m
 		}
 	}
 
+	// Get campaign to make sure supported
+	campaign, err := u.Repo.GetCampaignByATId(postBackReq.CampaignId)
+	if err != nil {
+		return nil, fmt.Errorf("post_back campaign: %v", err)
+	}
+
 	// Parse sale time for later request
 	salesTime, err := util.ParsePostBackTime(postBackReq.SalesTime)
 	if err != nil {
@@ -80,7 +86,7 @@ func (u *OrderUcase) PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*m
 	if err != nil {
 		if err.Error() == "record not found" {
 			// Order not exist, create new one
-			order = model.NewOrderFromATOrder(userId, atOrder)
+			order = model.NewOrderFromATOrder(userId, campaign.ID, campaign.BrandId, atOrder)
 			order.CreatedAt = time.Now()
 			order.UpdatedAt = time.Now()
 			crErr := u.Repo.CreateOrder(order)
@@ -92,7 +98,7 @@ func (u *OrderUcase) PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*m
 		}
 	} else {
 		// Or update exist order
-		updated := model.NewOrderFromATOrder(userId, atOrder)
+		updated := model.NewOrderFromATOrder(userId, campaign.ID, campaign.BrandId, atOrder)
 		order.UpdatedAt = time.Now()
 		updated.ID = order.ID
 		_, err = u.Repo.UpdateOrder(updated)

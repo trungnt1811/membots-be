@@ -126,7 +126,7 @@ func (s *authHandler) appTokenInfo(jwtToken string) (dto.UserInfo, error) {
 			SetSuccessResult(&authResp).
 			Get(s.AppAuthUrl)
 		if err1 != nil {
-			return dto.UserInfo{}, err1
+			return dto.UserInfo{}, fmt.Errorf("invalid token %v", err1)
 		}
 		authInfo = authResp.User
 

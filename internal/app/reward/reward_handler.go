@@ -2,7 +2,6 @@ package reward
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -142,7 +141,7 @@ func (handler *RewardHandler) WithdrawReward(ctx *gin.Context) {
 		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
 		return
 	}
-	fmt.Println("USERCALLED", user)
+
 	// get reward
 	res, err := handler.uCase.WithdrawReward(ctx, user.ID, user.WalletAddress)
 	if err != nil {

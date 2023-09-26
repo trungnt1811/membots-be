@@ -9,7 +9,6 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/model"
 	"github.com/astraprotocol/affiliate-system/internal/util"
-	"github.com/astraprotocol/affiliate-system/internal/util/log"
 )
 
 const (
@@ -48,13 +47,13 @@ func (u *rewardUCase) WithdrawReward(ctx context.Context, userId uint32, userWal
 	if err != nil {
 		return dto.RewardWithdrawDto{}, err
 	}
-	log.LG.Infof("WithdrawReward0")
+
 	// Calculating Reward
 	rewardClaim, rewardToClaim, orderRewardHistories, completeRwOrders := u.CalculateWithdrawalReward(rewards, userId)
 	if rewardClaim.Amount-AffRewardTxFee < MinWithdrawReward {
 		return dto.RewardWithdrawDto{}, fmt.Errorf("not enough reward to withdraw, minimum %v ASA", AffRewardTxFee+MinWithdrawReward)
 	}
-	log.LG.Infof("WithdrawReward1")
+
 	// Call service send reward
 	sendReq := shipping.ReqSendPayload{
 		SellerId:       u.rewardConfig.SellerId,
@@ -67,12 +66,12 @@ func (u *rewardUCase) WithdrawReward(ctx context.Context, userId uint32, userWal
 			},
 		},
 	}
-	log.LG.Infof("WithdrawReward2")
+
 	_, err = u.rwService.SendReward(&sendReq)
 	if err != nil {
 		return dto.RewardWithdrawDto{}, err
 	}
-	log.LG.Infof("WithdrawReward3")
+
 	// Save Db
 	rewardClaim.ShippingStatus = model.ShippingStatusSending
 	err = u.repo.SaveRewardWithdraw(ctx, rewardClaim, rewardToClaim, orderRewardHistories, completeRwOrders)

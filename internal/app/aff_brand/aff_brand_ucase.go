@@ -126,16 +126,6 @@ func (s affBrandUCase) GetMostCommissionAffCampaign(ctx context.Context, userId 
 		return dto.AffCampaignAppDtoResponse{}, err
 	}
 
-	// Top favorited brands check
-	listCountFavAffBrand, err := s.AffBrandRepository.GetListCountFavouriteAffBrand(ctx)
-	if err != nil {
-		return dto.AffCampaignAppDtoResponse{}, err
-	}
-	favTopBrandCheck := make(map[uint]bool)
-	for _, countFavAffBrand := range listCountFavAffBrand {
-		favTopBrandCheck[countFavAffBrand.BrandId] = true
-	}
-
 	// Use fav's brands check
 	brandIds := make([]uint, 0)
 	for _, affCampaign := range listAffCampaign {
@@ -162,7 +152,6 @@ func (s affBrandUCase) GetMostCommissionAffCampaign(ctx context.Context, userId 
 		}
 		listAffCampaignAppDto = append(listAffCampaignAppDto, listAffCampaign[i].ToDto())
 		listAffCampaignAppDto[i].Brand.IsFavorited = favBrandCheck[listAffCampaignAppDto[i].BrandId]
-		listAffCampaignAppDto[i].Brand.IsTopFavorited = favTopBrandCheck[listAffCampaignAppDto[i].BrandId]
 		listAffCampaignAppDto[i].StellaMaxCom = util.GetStellaMaxCom(listAffCampaign[i].Attributes)
 	}
 	nextPage := page

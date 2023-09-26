@@ -1112,7 +1112,7 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "name": "orderStatus",
+                        "name": "order_status",
                         "in": "query"
                     },
                     {
@@ -1122,7 +1122,7 @@
                     },
                     {
                         "type": "integer",
-                        "name": "perPage",
+                        "name": "per_page",
                         "in": "query"
                     },
                     {
@@ -1137,7 +1137,7 @@
                     },
                     {
                         "type": "integer",
-                        "name": "userId",
+                        "name": "user_id",
                         "in": "query"
                     }
                 ],
@@ -1712,6 +1712,12 @@
             "properties": {
                 "accesstrade_id": {
                     "type": "string"
+                },
+                "attribute": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.AffCampaignAttributeDto"
+                    }
                 },
                 "brand": {
                     "$ref": "#/definitions/dto.BrandDto"

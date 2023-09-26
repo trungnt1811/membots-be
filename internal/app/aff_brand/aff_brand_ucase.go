@@ -5,6 +5,7 @@ import (
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
+	util "github.com/astraprotocol/affiliate-system/internal/util/commission"
 )
 
 type affBrandUCase struct {
@@ -80,6 +81,7 @@ func (s affBrandUCase) GetTopFavouriteAffBrand(ctx context.Context, userId uint6
 	for i := range listFavAffBrand {
 		listAffCampaignComBrandDto = append(listAffCampaignComBrandDto, listFavAffBrand[i].ToAffCampaignLessDto())
 		listAffCampaignComBrandDto[i].Brand.IsFavorited = favBrandCheck[listAffCampaignComBrandDto[i].BrandId]
+		listAffCampaignComBrandDto[i].StellaMaxCom = util.GetStellaMaxCom(listFavAffBrand[i].Attributes)
 	}
 	return dto.AffCampaignAppDtoResponse{
 		NextPage: nextPage,
@@ -98,6 +100,7 @@ func (s affBrandUCase) GetListFavAffBrandByUserId(ctx context.Context, userId ui
 	var listAffCampaignDto []dto.AffCampaignLessDto
 	for i := range listFavAffBrand {
 		listAffCampaignDto = append(listAffCampaignDto, listFavAffBrand[i].ToAffCampaignLessDto())
+		listAffCampaignDto[i].StellaMaxCom = util.GetStellaMaxCom(listFavAffBrand[i].Attributes)
 	}
 	nextPage := page
 	if len(listFavAffBrand) > size {
@@ -154,6 +157,7 @@ func (s affBrandUCase) GetMostCommissionAffCampaign(ctx context.Context, userId 
 		listAffCampaignAppDto = append(listAffCampaignAppDto, listAffCampaign[i].ToDto())
 		listAffCampaignAppDto[i].Brand.IsFavorited = favBrandCheck[listAffCampaignAppDto[i].BrandId]
 		listAffCampaignAppDto[i].Brand.IsTopFavorited = favTopBrandCheck[listAffCampaignAppDto[i].BrandId]
+		listAffCampaignAppDto[i].StellaMaxCom = util.GetStellaMaxCom(listAffCampaign[i].Attributes)
 	}
 	nextPage := page
 	if len(listAffCampaign) > size {

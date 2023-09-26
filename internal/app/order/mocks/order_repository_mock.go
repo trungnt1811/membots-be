@@ -89,3 +89,7 @@ func (repo *MockOrderRepository) GetOrderHistory(ctx context.Context, since time
 func (repo *MockOrderRepository) CountOrders(ctx context.Context, since time.Time, userId uint32, status string) (int64, error) {
 	return 0, nil
 }
+
+func (repo *MockOrderRepository) GetCampaignByATId(id string) (*model.AffCampaign, error) {
+	return &model.AffCampaign{}, nil
+}

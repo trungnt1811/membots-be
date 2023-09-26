@@ -94,13 +94,14 @@ func (u *RewardMaker) ListenOrderApproved() {
 
 			now := time.Now()
 			newReward := model.Reward{
-				UserId:         order.UserId,
-				AtOrderID:      newAtOrderId,
-				Amount:         rewardAmount,
-				RewardedAmount: 0,
-				CommissionFee:  stellaCommission,
-				StartAt:        now,
-				EndAt:          now.Add(reward.RewardLockTime * time.Hour),
+				UserId:           order.UserId,
+				AtOrderID:        newAtOrderId,
+				Amount:           rewardAmount,
+				RewardedAmount:   0,
+				CommissionFee:    stellaCommission,
+				ImmediateRelease: model.ImmediateRelease,
+				StartAt:          now,
+				EndAt:            now.Add(reward.RewardLockTime * time.Hour),
 			}
 			err = u.rewardRepo.CreateReward(ctx, &newReward)
 			if err != nil {

@@ -10,14 +10,14 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/util"
 	"github.com/astraprotocol/affiliate-system/internal/util/log"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
+	"golang.org/x/exp/slices"
 )
 
 type OrderHandler struct {
-	usecase interfaces.OrderUcase
+	usecase interfaces.OrderUCase
 }
 
-func NewOrderHandler(usecase interfaces.OrderUcase) *OrderHandler {
+func NewOrderHandler(usecase interfaces.OrderUCase) *OrderHandler {
 	return &OrderHandler{
 		usecase: usecase,
 	}
@@ -64,7 +64,7 @@ func (handler *OrderHandler) PostBackOrderHandle(c *gin.Context) {
 	})
 }
 
-// GetRewardHistory Get affiliate order details
+// GetOrderDetails Get affiliate order details
 // @Summary Get affiliate order details
 // @Description Get affiliate order details - include status timeline and reward info
 // @Tags 	order
@@ -91,28 +91,29 @@ func (handler *OrderHandler) GetOrderDetails(ctx *gin.Context) {
 	}
 
 	// get reward
-	res, err := handler.usecase.GetOrderDetails(ctx, user.ID, uint(orderId))
+	order, err := handler.usecase.GetOrderDetails(ctx, user.ID, uint(orderId))
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			util.RespondError(ctx, http.StatusForbidden, "failed to get order details", errors.New("user do not have authorization on given order"))
-			return
-		}
 		util.RespondError(ctx, http.StatusFailedDependency, "failed to get order details", err)
 		return
 	}
 
+	if order.ID == 0 {
+		util.RespondError(ctx, http.StatusForbidden, "failed to get order details", errors.New("user do not have authorization on given order"))
+		return
+	}
+
 	// Response transaction status
-	ctx.JSON(http.StatusOK, res)
+	ctx.JSON(http.StatusOK, order)
 }
 
-// GetRewardHistory Get order history
+// GetOrderHistory Get order history
 // @Summary Get order history
 // @Description Get order history - include reward info
 // @Tags 	order
 // @Accept	json
 // @Produce json
 // @Security ApiKeyAuth
-// @Param status query string false "order status to filter, default is "" (no fiter)"
+// @Param status query string false "order status to filter, valid query is 'wait_for_confirming','rewarding','complete','cancelled','rejected'"
 // @Param page query string false "page to query, default is 1"
 // @Success 200 		{object}	dto.OrderHistoryResponse
 // @Failure 424 		{object}	util.GeneralError
@@ -127,6 +128,12 @@ func (handler *OrderHandler) GetOrderHistory(ctx *gin.Context) {
 	}
 
 	orderStatus := ctx.DefaultQuery("status", "")
+	validStatus := []string{dto.OrderStatusWaitForConfirming, dto.OrderStatusRewarding,
+		dto.OrderStatusComplete, dto.OrderStatusCancelled, dto.OrderStatusRejected}
+	if orderStatus != "" && !slices.Contains(validStatus, orderStatus) {
+		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", errors.New("invalid status query"))
+		return
+	}
 	page := ctx.GetInt("page")
 	size := ctx.GetInt("size")
 

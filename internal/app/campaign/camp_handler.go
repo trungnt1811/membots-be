@@ -2,7 +2,6 @@ package campaign
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/util"
@@ -12,12 +11,12 @@ import (
 )
 
 type CampaignHandler struct {
-	usecase interfaces.CampaignUCase
+	uCase interfaces.CampaignUCase
 }
 
-func NewCampaignHandler(usecase interfaces.CampaignUCase) *CampaignHandler {
+func NewCampaignHandler(uCase interfaces.CampaignUCase) *CampaignHandler {
 	return &CampaignHandler{
-		usecase: usecase,
+		uCase: uCase,
 	}
 }
 
@@ -35,22 +34,23 @@ func NewCampaignHandler(usecase interfaces.CampaignUCase) *CampaignHandler {
 // @Router 	/api/v1/campaign/link [post]
 func (handler *CampaignHandler) PostGenerateAffLink(ctx *gin.Context) {
 	// First, take user from JWT
-	// user, err := dto.GetUserInfo(ctx)
-	// if err != nil {
-	// 	util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
-	// 	return
-	// }
+	user, err := dto.GetUserInfo(ctx)
+	// The commented code is checking if there is an error while getting the user information from the JWT
+	// token. If there is an error, it will respond with a HTTP status code of 400 (Bad Request) and an
+	// error message indicating that a logged in user is required.
+	if err != nil {
+		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
+		return
+	}
 	// Then verify payload data
 	var payload dto.CreateLinkPayload
-	err := ctx.BindJSON(&payload)
+	err = ctx.BindJSON(&payload)
 	if err != nil {
 		util.RespondError(ctx, http.StatusBadRequest, "payload required", err)
 		return
 	}
 
-	uIdq, _ := ctx.GetQuery("user_id")
-	uId, _ := strconv.ParseUint(uIdq, 10, 64)
-	link, err := handler.usecase.GenerateAffLink(uId, &payload)
+	link, err := handler.uCase.GenerateAffLink(uint64(user.ID), &payload)
 	if err != nil {
 		util.RespondError(ctx, http.StatusFailedDependency, "create link fail", err)
 		return

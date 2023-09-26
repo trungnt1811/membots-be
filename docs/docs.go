@@ -499,7 +499,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "order status to filter, default is ",
+                        "description": "order status to filter, valid query is 'wait_for_confirming','rewarding','complete','cancelled','rejected'",
                         "name": "status",
                         "in": "query"
                     },
@@ -694,6 +694,12 @@ const docTemplate = `{
                         "description": "Failed Dependency",
                         "schema": {
                             "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "429": {
+                        "description": "reach withdraw limit, max one time each three seconds",
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 }
@@ -2207,13 +2213,6 @@ const docTemplate = `{
                 "accesstrade_order_id": {
                     "type": "string"
                 },
-                "amount": {
-                    "description": "amount of reward after fee subtractions",
-                    "type": "number"
-                },
-                "at_product_link": {
-                    "type": "string"
-                },
                 "billing": {
                     "type": "number"
                 },
@@ -2225,6 +2224,14 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "confirmed_time": {
+                    "description": "don hang duoc ghi nhan",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image_url": {
+                    "description": "brand logo",
                     "type": "string"
                 },
                 "merchant": {
@@ -2236,16 +2243,31 @@ const docTemplate = `{
                 "pub_commission": {
                     "type": "number"
                 },
+                "rejected_time": {
+                    "description": "don hang bi huy",
+                    "type": "string"
+                },
+                "reward_amount": {
+                    "type": "number"
+                },
                 "reward_end_at": {
                     "type": "string"
                 },
-                "reward_start_at": {
+                "reward_first_part_released_amount": {
+                    "type": "number"
+                },
+                "reward_first_part_released_time": {
+                    "description": "xac nhan hoan tat nhan 50%",
                     "type": "string"
                 },
-                "rewarded_amount": {
+                "reward_remaining_amount": {
+                    "type": "number"
+                },
+                "reward_second_part_unlocked_amount": {
                     "type": "number"
                 },
                 "sales_time": {
+                    "description": "dat hang thanh cong",
                     "type": "string"
                 },
                 "user_id": {

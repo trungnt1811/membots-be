@@ -5,18 +5,24 @@ import (
 
 	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade/types"
 	"github.com/astraprotocol/affiliate-system/internal/dto"
+	"github.com/astraprotocol/affiliate-system/internal/util"
 )
 
 const (
-	OrderStatusInitial  = "initial"
-	OrderStatusPending  = "pending"
-	OrderStatusApproved = "approved"
-	OrderStatusRejected = "rejected"
+	OrderStatusInitial   = "initial"
+	OrderStatusPending   = "pending"
+	OrderStatusApproved  = "approved"
+	OrderStatusRejected  = "rejected"
+	OrderStatusCancelled = "cancelled"
+	OrderStatusRewarding = "rewarding"
+	OrderStatusComplete  = "complete"
 )
 
 type AffOrder struct {
 	ID                 uint      `gorm:"primarykey" json:"id"`
 	AffLink            string    `json:"aff_link"`
+	CampaignId         uint      `json:"campaign_id"`
+	BrandId            uint      `json:"brand_id"`
 	CreatedAt          time.Time `json:"created_at"`
 	UpdatedAt          time.Time `json:"updated_at"`
 	UserId             uint      `json:"user_id"`
@@ -55,7 +61,7 @@ func (order *AffOrder) TableName() string {
 	return "aff_order"
 }
 
-func NewOrderFromATOrder(userId uint, atOrder *types.ATOrder) *AffOrder {
+func NewOrderFromATOrder(userId uint, campaignId uint, brandId uint, atOrder *types.ATOrder) *AffOrder {
 	orderStatus := OrderStatusInitial
 	if atOrder.OrderPending != 0 {
 		orderStatus = OrderStatusPending
@@ -67,6 +73,8 @@ func NewOrderFromATOrder(userId uint, atOrder *types.ATOrder) *AffOrder {
 
 	return &AffOrder{
 		UserId:             userId,
+		CampaignId:         campaignId,
+		BrandId:            brandId,
 		OrderStatus:        orderStatus,
 		ATProductLink:      atOrder.ATProductLink,
 		Billing:            atOrder.Billing,
@@ -138,40 +146,95 @@ func (o *AffOrder) ToDto() dto.AffOrder {
 }
 
 type OrderDetails struct {
+	ID                 uint      `json:"id"`
 	UserId             uint      `json:"user_id"`
 	OrderStatus        string    `json:"order_status"`
-	ATProductLink      string    `json:"at_product_link"`
 	Billing            float32   `json:"billing"`
 	CategoryName       string    `json:"category_name"`
 	Merchant           string    `json:"merchant"`
 	AccessTradeOrderId string    `json:"accesstrade_order_id"`
 	PubCommission      float32   `json:"pub_commission"`
+	UpdateTime         time.Time `json:"update_time"`
 	SalesTime          time.Time `json:"sales_time"`
 	ConfirmedTime      time.Time `json:"confirmed_time"`
+	CreatedAt          time.Time `json:"created_at"`
 	RewardAmount       float64   `json:"amount"` // amount of reward after fee subtractions
 	RewardedAmount     float64   `json:"rewarded_amount"`
 	CommissionFee      float64   `json:"commission_fee"` // commission fee (in percentage)
+	ImmediateRelease   float64   `json:"immediate_release"`
 	RewardEndAt        time.Time `json:"reward_end_at"`
 	RewardStartAt      time.Time `json:"reward_start_at"`
+	BrandLogo          string    `json:"brand_logo"`
+}
+
+func BuildOrderStatusQuery(status string) (query string, params interface{}) {
+	switch status {
+	case dto.OrderStatusWaitForConfirming:
+		query = "AND o.order_status IN ?"
+		params := []string{OrderStatusInitial, OrderStatusPending, OrderStatusApproved}
+		return query, params
+	case dto.OrderStatusRewarding:
+		return "AND o.order_status = ?", OrderStatusRewarding
+	case dto.OrderStatusComplete:
+		return "AND o.order_status = ?", OrderStatusComplete
+	case dto.OrderStatusRejected:
+		return "AND o.order_status = ?", OrderStatusRejected
+	case dto.OrderStatusCancelled:
+		return "AND o.order_status = ?", OrderStatusCancelled
+	}
+	return "", nil
 }
 
 func (o *OrderDetails) ToOrderDetailsDto() dto.OrderDetailsDto {
+	var status string
+	rejectedTime := time.Time{}
+
+	switch o.OrderStatus {
+	case OrderStatusRewarding:
+		status = dto.OrderStatusRewarding
+	case OrderStatusComplete:
+		status = dto.OrderStatusComplete
+	case OrderStatusRejected:
+		status = dto.OrderStatusRejected
+		rejectedTime = o.UpdateTime
+	case OrderStatusCancelled:
+		status = dto.OrderStatusCancelled
+	default:
+		// case OrderStatusInitial, OrderStatusPending, OrderStatusApproved
+		status = dto.OrderStatusWaitForConfirming
+	}
+
+	daysPassed := int(time.Since(o.RewardStartAt) / OneDay)       // number of days passed since order created
+	totalDays := int(o.RewardEndAt.Sub(o.RewardStartAt) / OneDay) // total lock days
+	dayPassedPercent := float64(daysPassed) / float64(totalDays)
+	if dayPassedPercent > 1 {
+		dayPassedPercent = 1
+	}
+
+	imReleaseAmount := util.RoundFloat(o.RewardAmount*o.ImmediateRelease, 2)
+	secondPartReward := o.RewardAmount * (1 - o.ImmediateRelease)
+	secondPartUnlockedAmount := util.RoundFloat(secondPartReward*dayPassedPercent, 2)
+	rewardRemainingAmount := o.RewardAmount - imReleaseAmount - secondPartUnlockedAmount
 
 	return dto.OrderDetailsDto{
-		UserId:             o.UserId,
-		OrderStatus:        o.OrderStatus,
-		ATProductLink:      o.ATProductLink,
-		Billing:            o.Billing,
-		CategoryName:       o.CategoryName,
-		Merchant:           o.Merchant,
-		AccessTradeOrderId: o.AccessTradeOrderId,
-		PubCommission:      o.PubCommission,
-		SalesTime:          o.SalesTime,
-		ConfirmedTime:      o.ConfirmedTime,
-		RewardAmount:       o.RewardAmount,
-		RewardedAmount:     o.RewardedAmount,
-		CommissionFee:      o.CommissionFee,
-		RewardEndAt:        o.RewardEndAt,
-		RewardStartAt:      o.RewardStartAt,
+		ID:                             o.ID,
+		UserId:                         o.UserId,
+		OrderStatus:                    status,
+		Billing:                        o.Billing,
+		CategoryName:                   o.CategoryName,
+		Merchant:                       o.Merchant,
+		ImageUrl:                       o.BrandLogo,
+		AccessTradeOrderId:             o.AccessTradeOrderId,
+		PubCommission:                  o.PubCommission,
+		CommissionFee:                  o.CommissionFee,
+		BuyTime:                        o.SalesTime,
+		ConfirmedTime:                  o.CreatedAt,
+		RejectedTime:                   rejectedTime,
+		RewardFirstPartReleasedTime:    o.RewardStartAt,
+		RewardFirstPartReleasedAmount:  imReleaseAmount,
+		RewardSecondPartUnlockedAmount: secondPartUnlockedAmount,
+		RewardRemainingAmount:          rewardRemainingAmount,
+		RewardAmount:                   o.RewardAmount,
+		RewardEndAt:                    o.RewardEndAt,
 	}
 }

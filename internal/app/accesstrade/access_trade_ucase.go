@@ -5,19 +5,19 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/util/log"
 )
 
-type AccessTradeUCase struct {
+type accessTradeUCase struct {
 	Repo         interfaces2.ATRepository
 	CampaignRepo interfaces2.CampaignRepository
 }
 
-func NewAccessTradeUCase(repo interfaces2.ATRepository, campRepo interfaces2.CampaignRepository) *AccessTradeUCase {
-	return &AccessTradeUCase{
+func NewAccessTradeUCase(repo interfaces2.ATRepository, campRepo interfaces2.CampaignRepository) interfaces2.ATUCase {
+	return &accessTradeUCase{
 		Repo:         repo,
 		CampaignRepo: campRepo,
 	}
 }
 
-func (u *AccessTradeUCase) QueryAndSaveCampaigns(onlyApproval bool) (int, error) {
+func (u *accessTradeUCase) QueryAndSaveCampaigns(onlyApproval bool) (int, error) {
 	// Then, query campaigns
 	page := 1
 	limit := 20
@@ -69,7 +69,7 @@ func (u *AccessTradeUCase) QueryAndSaveCampaigns(onlyApproval bool) (int, error)
 	return totalSync, nil
 }
 
-func (u *AccessTradeUCase) CreateAndSaveLink() (int, error) {
+func (u *accessTradeUCase) CreateAndSaveLink() (int, error) {
 	// TODO: Create link for campaign if not available
 	return 0, nil
 }

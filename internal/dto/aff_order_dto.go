@@ -14,7 +14,6 @@ type OrderDetailsDto struct {
 	ID                             uint      `json:"id"`
 	UserId                         uint      `json:"user_id"`
 	OrderStatus                    string    `json:"order_status"`
-	ATProductLink                  string    `json:"at_product_link"`
 	Billing                        float32   `json:"billing"`
 	CategoryName                   string    `json:"category_name"`
 	Merchant                       string    `json:"merchant"`

@@ -22,7 +22,7 @@ type RewardConfig struct {
 	SellerId      uint   // Owner of Reward Program
 }
 
-type RewardUsecase struct {
+type rewardUCase struct {
 	repo         interfaces.RewardRepository
 	orderRepo    interfaces.OrderRepository
 	rwService    *shipping.ShippingClient
@@ -33,8 +33,8 @@ func NewRewardUCase(repo interfaces.RewardRepository,
 	orderRepo interfaces.OrderRepository,
 	rwService *shipping.ShippingClient,
 	rewardConfig RewardConfig,
-) *RewardUsecase {
-	return &RewardUsecase{
+) interfaces.RewardUCase {
+	return &rewardUCase{
 		repo:         repo,
 		orderRepo:    orderRepo,
 		rwService:    rwService,
@@ -42,7 +42,7 @@ func NewRewardUCase(repo interfaces.RewardRepository,
 	}
 }
 
-func (u *RewardUsecase) WithdrawReward(ctx context.Context, userId uint32, userWallet string) (dto.WithdrawRewardResponse, error) {
+func (u *rewardUCase) WithdrawReward(ctx context.Context, userId uint32, userWallet string) (dto.WithdrawRewardResponse, error) {
 	rewards, err := u.repo.GetInProgressRewards(ctx, userId)
 	if err != nil {
 		return dto.WithdrawRewardResponse{}, err
@@ -88,7 +88,7 @@ func (u *RewardUsecase) WithdrawReward(ctx context.Context, userId uint32, userW
 	}, nil
 }
 
-func (u *RewardUsecase) GetRewardSummary(ctx context.Context, userId uint32) (dto.RewardSummary, error) {
+func (u *rewardUCase) GetRewardSummary(ctx context.Context, userId uint32) (dto.RewardSummary, error) {
 	totalWithdrewAmount, err := u.repo.GetTotalWithdrewAmount(ctx, userId)
 	if err != nil {
 		return dto.RewardSummary{}, err
@@ -126,7 +126,7 @@ func (u *RewardUsecase) GetRewardSummary(ctx context.Context, userId uint32) (dt
 	}, nil
 }
 
-func (u *RewardUsecase) GetWithdrawHistory(ctx context.Context, userId uint32, page, size int) (dto.RewardWithdrawResponse, error) {
+func (u *rewardUCase) GetWithdrawHistory(ctx context.Context, userId uint32, page, size int) (dto.RewardWithdrawResponse, error) {
 	rewards, err := u.repo.GetWithdrawHistory(ctx, userId, page, size)
 	if err != nil {
 		return dto.RewardWithdrawResponse{}, err

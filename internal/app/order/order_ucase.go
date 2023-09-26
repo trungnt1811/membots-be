@@ -17,21 +17,21 @@ import (
 	"gorm.io/datatypes"
 )
 
-type OrderUcase struct {
+type orderUCase struct {
 	Repo     interfaces.OrderRepository
 	ATRepo   interfaces.ATRepository
 	Producer *msgqueue.QueueWriter
 }
 
-func NewOrderUcase(repo interfaces.OrderRepository, atRepo interfaces.ATRepository) *OrderUcase {
-	return &OrderUcase{
+func NewOrderUCase(repo interfaces.OrderRepository, atRepo interfaces.ATRepository) interfaces.OrderUCase {
+	return &orderUCase{
 		Repo:     repo,
 		ATRepo:   atRepo,
 		Producer: msgqueue.NewKafkaProducer(msgqueue.KAFKA_TOPIC_AFF_ORDER_APPROVE),
 	}
 }
 
-func (u *OrderUcase) PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*model.AffOrder, error) {
+func (u *orderUCase) PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*model.AffOrder, error) {
 	// First, save log
 	bytes, err := json.Marshal(postBackReq)
 	if err != nil {
@@ -131,10 +131,10 @@ func (u *OrderUcase) PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*m
 	return order, nil
 }
 
-// The `SyncTransactionsByOrder` function is responsible for synchronizing transactions for a given
+// SyncTransactionsByOrder The `SyncTransactionsByOrder` function is responsible for synchronizing transactions for a given
 // order.
 // TODO: Sync txs every day instead of order time
-func (u *OrderUcase) SyncTransactionsByOrder(atOrderId string) (int, error) {
+func (u *orderUCase) SyncTransactionsByOrder(atOrderId string) (int, error) {
 	// First find created order
 	order, err := u.Repo.FindOrderByAccessTradeId(atOrderId)
 	if err != nil {
@@ -167,7 +167,7 @@ func (u *OrderUcase) SyncTransactionsByOrder(atOrderId string) (int, error) {
 	return len(txs.Data), nil
 }
 
-func (u *OrderUcase) GetOrderDetails(ctx context.Context, userId uint32, orderId uint) (*dto.OrderDetailsDto, error) {
+func (u *orderUCase) GetOrderDetails(ctx context.Context, userId uint32, orderId uint) (*dto.OrderDetailsDto, error) {
 	order, err := u.Repo.GetOrderDetails(ctx, userId, orderId)
 	if err != nil {
 		return nil, err
@@ -177,7 +177,7 @@ func (u *OrderUcase) GetOrderDetails(ctx context.Context, userId uint32, orderId
 	return &orderDto, nil
 }
 
-func (u *OrderUcase) GetOrderHistory(ctx context.Context, userId uint32, status string, page, size int) (dto.OrderHistoryResponse, error) {
+func (u *orderUCase) GetOrderHistory(ctx context.Context, userId uint32, status string, page, size int) (dto.OrderHistoryResponse, error) {
 	pastTimeLimit := time.Now().Add(-6 * 30 * 24 * time.Hour) // 6 months before - user cannot query order older than this time
 	orderHistory, err := u.Repo.GetOrderHistory(ctx, pastTimeLimit, userId, status, page, size)
 	if err != nil {

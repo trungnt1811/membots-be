@@ -2,6 +2,7 @@ package route
 
 import (
 	"context"
+	"github.com/astraprotocol/affiliate-system/internal/app/reward"
 	"time"
 
 	bannerApp "github.com/astraprotocol/affiliate-system/internal/app/aff_banner_app"
@@ -18,11 +19,10 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade"
 	"github.com/astraprotocol/affiliate-system/internal/app/aff_camp_app"
 	"github.com/astraprotocol/affiliate-system/internal/app/auth"
-	campaign3 "github.com/astraprotocol/affiliate-system/internal/app/campaign"
+	campaign1 "github.com/astraprotocol/affiliate-system/internal/app/campaign"
 	campaignConsole "github.com/astraprotocol/affiliate-system/internal/app/console/campaign"
 	"github.com/astraprotocol/affiliate-system/internal/app/order"
 	"github.com/astraprotocol/affiliate-system/internal/app/redeem"
-	"github.com/astraprotocol/affiliate-system/internal/app/reward"
 	"github.com/astraprotocol/affiliate-system/internal/app/user_view_aff_camp"
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/infra/caching"
@@ -56,15 +56,15 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	userViewAffCampQueue := msgqueue.NewKafkaProducer(msgqueue.KAFKA_TOPIC_USER_VIEW_AFF_CAMP)
 
 	// SECTION: Campaign and link
-	campaignRepo := campaign3.NewCampaignRepository(db)
-	campaignUsecase := campaign3.NewCampaignUsecase(campaignRepo, atRepo)
-	campaignHandler := campaign3.NewCampaignHandler(campaignUsecase)
+	campRepo := campaign1.NewCampaignRepository(db)
+	campaignUCase := campaign1.NewCampaignUCase(campRepo, atRepo)
+	campaignHandler := campaign1.NewCampaignHandler(campaignUCase)
 	campaignRoute := v1.Group("/campaign")
 	campaignRoute.POST("/link", authHandler.CheckUserHeader(), campaignHandler.PostGenerateAffLink)
 
 	// SECTION: Order Module and link
 	orderRepo := order.NewOrderRepository(db)
-	orderUcase := order.NewOrderUcase(orderRepo, atRepo)
+	orderUcase := order.NewOrderUCase(orderRepo, atRepo)
 	orderHandler := order.NewOrderHandler(orderUcase)
 	orderRoute := v1.Group("/order")
 	orderRoute.POST("/post-back", orderHandler.PostBackOrderHandle)
@@ -164,8 +164,8 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 		RewardProgram: config.Aff.RewardProgram,
 	}
 	rewardRepo := reward.NewRewardRepository(db)
-	rewardUsecase := reward.NewRewardUCase(rewardRepo, orderRepo, shippingClient, rewardConf)
-	rewardHandler := reward.NewRewardHandler(rewardUsecase)
+	rewardUCase := reward.NewRewardUCase(rewardRepo, orderRepo, shippingClient, rewardConf)
+	rewardHandler := reward.NewRewardHandler(rewardUCase)
 
 	rewardRouter := appRouter.Group("/rewards", authHandler.CheckUserHeader())
 	rewardRouter.GET("/summary", rewardHandler.GetRewardSummary)

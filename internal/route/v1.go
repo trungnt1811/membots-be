@@ -13,6 +13,7 @@ import (
 	bannerConsole "github.com/astraprotocol/affiliate-system/internal/app/console/banner"
 	consoleOrder "github.com/astraprotocol/affiliate-system/internal/app/console/order"
 	"github.com/astraprotocol/affiliate-system/internal/app/console/statistic"
+	"github.com/astraprotocol/affiliate-system/internal/app/home_page"
 	"github.com/astraprotocol/affiliate-system/internal/app/user_favorite_brand"
 	"github.com/astraprotocol/affiliate-system/internal/middleware"
 	"github.com/go-co-op/gocron"
@@ -141,6 +142,10 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	affBrandUCase := aff_brand.NewAffBrandUCase(affBrandCache, affCampAppCache, userFavoriteBrandCache)
 	affBrandHandler := aff_brand.NewAffBrandHandler(userViewAffCampUCase, affBrandUCase)
 	appRouter.GET("brand", authHandler.CheckUserHeader(), affBrandHandler.GetListAffBrandByUser)
+
+	homePageUCase := home_page.NewHomePageUCase(affBrandCache, affCampAppCache, userFavoriteBrandCache, userViewAffCampCache)
+	homePageHandler := home_page.NewHomePageHandler(homePageUCase)
+	appRouter.GET("/home-page", authHandler.CheckUserHeader(), homePageHandler.GetHomePage)
 
 	affAppBannerRepo := bannerApp.NewAppBannerRepository(db)
 	affAppBannerUCase := bannerApp.NewBannerUCase(affAppBannerRepo)

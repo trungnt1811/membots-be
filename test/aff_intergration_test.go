@@ -109,22 +109,39 @@ func (s *AffRewardTestSuite) TestRunHappyCase() {
 	s.NotEmpty(utmContent)
 	s.NotEmpty(trackedId)
 
-	// After that, send a mock order post back for this test
+	// After that, send a mock order post back for update order approved
 	req2 := s.caller.R()
 	s.setDefaultHeader(req2)
 	req1.SetBody(map[string]any{
-		"campaign_id":  14,
-		"original_url": "",
-		"shorten_link": false,
-	})
+		"transaction_id":       "199759877",
+		"campaign_id":          "4751584435713464237",
+		"order_id":             "230918N260WKSG",
+		"product_id":           "15688627684@shopee@20562",
+		"quantity":             1,
+		"product_category":     "Cameras_&_Flycam",
+		"product_price":        20562.0,
+		"reward":               206.0,
+		"sales_time":           "2023-09-18 08:11:45.000000",
+		"click_time":           "2023-09-18 08:09:18.000000",
+		"browser":              "Mobile Safari",
+		"conversion_platform":  "mobile_app",
+		"ip":                   "52.77.0.178",
+		"referrer":             "",
+		"utm_source":           "stella",
+		"utm_campaign":         "",
+		"utm_content":          utmContent,
+		"utm_medium":           "",
+		"status":               0,
+		"publisher_login_name": "astrarewards",
+		"is_confirmed":         0,
+		"customer_type":        ""})
 	postBackUrl := fmt.Sprint(s.TestEndpoint, "/api/v1/order/post-back")
 	resp, err = req1.Post(postBackUrl)
 	s.NoError(err)
 	s.True(resp.IsSuccess(), "http call status is not 200")
-
-	// After order initialized, update order approved with post back
+	s.Contains(string(resp.Body()), "230918N260WKSG") // Contains order id in resp
 
 	// Then, try to request ASA cashback for the order
 
-	// AFter cashback run, make sure balance is updated
+	// After cashback processed, make sure balance is updated
 }

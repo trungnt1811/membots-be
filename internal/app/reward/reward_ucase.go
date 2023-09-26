@@ -42,19 +42,16 @@ func NewRewardUCase(repo interfaces.RewardRepository,
 	}
 }
 
-func (u *rewardUCase) WithdrawReward(ctx context.Context, userId uint32, userWallet string) (dto.WithdrawRewardResponse, error) {
+func (u *rewardUCase) WithdrawReward(ctx context.Context, userId uint32, userWallet string) (dto.RewardWithdrawDto, error) {
 	rewards, err := u.repo.GetInProgressRewards(ctx, userId)
 	if err != nil {
-		return dto.WithdrawRewardResponse{}, err
+		return dto.RewardWithdrawDto{}, err
 	}
 
 	// Calculating Reward
 	rewardClaim, rewardToClaim, orderRewardHistories, completeRwOrders := u.CalculateWithdrawalReward(rewards, userId)
 	if rewardClaim.Amount-AffRewardTxFee < MinWithdrawReward {
-		return dto.WithdrawRewardResponse{
-			Execute: false,
-			Amount:  rewardClaim.Amount,
-		}, nil
+		return dto.RewardWithdrawDto{}, fmt.Errorf("not enough reward to withdraw, minimum %v ASA", AffRewardTxFee+MinWithdrawReward)
 	}
 
 	// Call service send reward
@@ -72,20 +69,17 @@ func (u *rewardUCase) WithdrawReward(ctx context.Context, userId uint32, userWal
 
 	_, err = u.rwService.SendReward(&sendReq)
 	if err != nil {
-		return dto.WithdrawRewardResponse{}, err
+		return dto.RewardWithdrawDto{}, err
 	}
 
 	// Save Db
 	rewardClaim.ShippingStatus = model.ShippingStatusSending
 	err = u.repo.SaveRewardWithdraw(ctx, rewardClaim, rewardToClaim, orderRewardHistories, completeRwOrders)
 	if err != nil {
-		return dto.WithdrawRewardResponse{}, err
+		return dto.RewardWithdrawDto{}, err
 	}
 
-	return dto.WithdrawRewardResponse{
-		Execute: true,
-		Amount:  rewardClaim.Amount,
-	}, nil
+	return rewardClaim.ToRewardWithdrawDto(), nil
 }
 
 func (u *rewardUCase) GetRewardSummary(ctx context.Context, userId uint32) (dto.RewardSummary, error) {
@@ -154,4 +148,13 @@ func (u *rewardUCase) GetWithdrawHistory(ctx context.Context, userId uint32, pag
 		Data:     rewardDtos,
 		Total:    totalRewardHistory,
 	}, nil
+}
+
+func (u *rewardUCase) GetWithdrawDetails(ctx context.Context, userId uint32, withdrawId uint) (dto.RewardWithdrawDto, error) {
+	withdraw, err := u.repo.GetWithdrawById(ctx, userId, withdrawId)
+	if err != nil {
+		return dto.RewardWithdrawDto{}, err
+	}
+
+	return withdraw.ToRewardWithdrawDto(), nil
 }

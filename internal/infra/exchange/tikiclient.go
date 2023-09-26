@@ -7,6 +7,7 @@ import (
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/imroc/req/v3"
+	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
 
@@ -78,7 +79,8 @@ func (c *TikiClient) GetAstraPriceFromExchange(ctx context.Context, calculateMod
 		SetSuccessResult(&priceRes).
 		Get(endpoint)
 	if err != nil {
-		return 0, err
+		log.Error().Msgf("failed to call send reward: %v", err)
+		return 0, errors.Wrapf(err, "failed to call send reward")
 	}
 	if !resp.IsSuccessState() {
 		log.Error().Msgf("bad response status: %v", resp.Status)

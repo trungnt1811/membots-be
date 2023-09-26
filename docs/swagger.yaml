@@ -1138,6 +1138,10 @@ paths:
           description: Failed Dependency
           schema:
             $ref: '#/definitions/util.GeneralError'
+        "429":
+          description: Too Many Requests
+          schema:
+            $ref: '#/definitions/util.GeneralError'
       security:
       - ApiKeyAuth: []
       summary: Claim reward of all orders

@@ -12,6 +12,7 @@ import (
 	consoleOrder "github.com/astraprotocol/affiliate-system/internal/app/console/order"
 	"github.com/astraprotocol/affiliate-system/internal/app/console/statistic"
 	"github.com/astraprotocol/affiliate-system/internal/app/user_favorite_brand"
+	"github.com/astraprotocol/affiliate-system/internal/middleware"
 	"github.com/go-co-op/gocron"
 
 	"github.com/astraprotocol/affiliate-system/conf"
@@ -166,11 +167,12 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	rewardRepo := reward.NewRewardRepository(db)
 	rewardUsecase := reward.NewRewardUsecase(rewardRepo, orderRepo, shippingClient, rewardConf)
 	rewardHandler := reward.NewRewardHandler(rewardUsecase)
+	withdrawRateLimit := middleware.NewRateLimit(rdb, 2*time.Second, 1)
 
 	rewardRouter := appRouter.Group("/rewards", authHandler.CheckUserHeader())
 	rewardRouter.GET("/summary", rewardHandler.GetRewardSummary)
 	rewardRouter.GET("/withdraw", rewardHandler.GetWithdrawHistory)
-	rewardRouter.POST("/withdraw", rewardHandler.WithdrawReward)
+	rewardRouter.POST("/withdraw", withdrawRateLimit, rewardHandler.WithdrawReward)
 
 	orderRouteApp := appRouter.Group("/orders", authHandler.CheckUserHeader())
 	orderRouteApp.GET("", orderHandler.GetOrderHistory)

@@ -654,6 +654,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/util.GeneralError"
                         }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
                     }
                 }
             }

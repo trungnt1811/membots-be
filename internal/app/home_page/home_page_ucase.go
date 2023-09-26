@@ -65,7 +65,7 @@ func (s homePageUCase) GetHomePage(ctx context.Context, userId uint64) (dto.Home
 			return
 		}
 
-		campaign, err := s.AffCampAppRepository.GetListAffCampaignByBrandIds(ctx, brandIds, 1, 7)
+		campaign, err := s.AffCampAppRepository.GetListAffCampaignByBrandIds(ctx, brandIds, 1, 15)
 		if err != nil {
 			reject(err)
 		} else {

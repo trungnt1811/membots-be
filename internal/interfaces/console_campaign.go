@@ -1,8 +1,8 @@
 package interfaces
 
 import (
-	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade/types"
 	"github.com/astraprotocol/affiliate-system/internal/dto"
+	"github.com/astraprotocol/affiliate-system/internal/infra/accesstrade/types"
 	model2 "github.com/astraprotocol/affiliate-system/internal/model"
 )
 

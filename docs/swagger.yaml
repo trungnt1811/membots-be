@@ -1187,7 +1187,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.RewardSummary'
+            $ref: '#/definitions/dto.RewardWithdrawDto'
         "400":
           description: Bad Request
           schema:
@@ -1203,6 +1203,37 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Claim reward of all orders
+      tags:
+      - reward
+  /api/v1/app/rewards/withdraw/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get reward withdraw details
+      parameters:
+      - description: withdraw id to query
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RewardWithdrawDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get reward withdraw details
       tags:
       - reward
   /api/v1/campaign/link:
@@ -1488,13 +1519,13 @@ paths:
       description: Get affiliate order list by time range and other filter
       parameters:
       - in: query
-        name: order_status
+        name: orderStatus
         type: string
       - in: query
         name: page
         type: integer
       - in: query
-        name: per_page
+        name: perPage
         type: integer
       - in: query
         name: since
@@ -1503,7 +1534,7 @@ paths:
         name: until
         type: string
       - in: query
-        name: user_id
+        name: userId
         type: integer
       produces:
       - application/json

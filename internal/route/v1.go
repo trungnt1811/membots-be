@@ -179,6 +179,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	rewardRouter := appRouter.Group("/rewards", authHandler.CheckUserHeader())
 	rewardRouter.GET("/summary", rewardHandler.GetRewardSummary)
 	rewardRouter.GET("/withdraw", rewardHandler.GetWithdrawHistory)
+	rewardRouter.GET("/withdraw/:id", rewardHandler.GetWithdrawDetails)
 	rewardRouter.POST("/withdraw", withdrawRateLimit, rewardHandler.WithdrawReward)
 
 	orderRouteApp := appRouter.Group("/orders", authHandler.CheckUserHeader())

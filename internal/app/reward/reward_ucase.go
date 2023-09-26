@@ -29,7 +29,7 @@ type RewardUsecase struct {
 	rewardConfig RewardConfig
 }
 
-func NewRewardUsecase(repo interfaces.RewardRepository,
+func NewRewardUCase(repo interfaces.RewardRepository,
 	orderRepo interfaces.OrderRepository,
 	rwService *shipping.ShippingClient,
 	rewardConfig RewardConfig,
@@ -49,7 +49,7 @@ func (u *RewardUsecase) WithdrawReward(ctx context.Context, userId uint32, userW
 	}
 
 	// Calculating Reward
-	rewardClaim, rewardToClaim, orderRewardHistories := u.CalculateWithdrawableReward(rewards, userId)
+	rewardClaim, rewardToClaim, orderRewardHistories := u.CalculateWithdrawalReward(rewards, userId)
 	if rewardClaim.Amount-AffRewardTxFee < MinWithdrawReward {
 		return dto.WithdrawRewardResponse{
 			Execute: false,
@@ -114,7 +114,7 @@ func (u *RewardUsecase) GetRewardSummary(ctx context.Context, userId uint32) (dt
 	}
 	totalOrderRewardInDay = util.RoundFloat(totalOrderRewardInDay, 2)
 
-	withdrawable, _, _ := u.CalculateWithdrawableReward(inProgressRewards, userId)
+	withdrawable, _, _ := u.CalculateWithdrawalReward(inProgressRewards, userId)
 	pendingRewardAmount := util.RoundFloat(totalOrderReward-withdrawable.Amount, 2)
 
 	return dto.RewardSummary{

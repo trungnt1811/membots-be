@@ -164,7 +164,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 		RewardProgram: config.Aff.RewardProgram,
 	}
 	rewardRepo := reward.NewRewardRepository(db)
-	rewardUsecase := reward.NewRewardUsecase(rewardRepo, orderRepo, shippingClient, rewardConf)
+	rewardUsecase := reward.NewRewardUCase(rewardRepo, orderRepo, shippingClient, rewardConf)
 	rewardHandler := reward.NewRewardHandler(rewardUsecase)
 
 	rewardRouter := appRouter.Group("/rewards", authHandler.CheckUserHeader())

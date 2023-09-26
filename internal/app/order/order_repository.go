@@ -3,6 +3,7 @@ package order
 import (
 	"context"
 	"database/sql"
+	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"time"
 
 	"github.com/astraprotocol/affiliate-system/internal/model"
@@ -10,17 +11,17 @@ import (
 	"gorm.io/gorm"
 )
 
-type OrderRepository struct {
+type orderRepository struct {
 	db *gorm.DB
 }
 
-func NewOrderRepository(db *gorm.DB) *OrderRepository {
-	return &OrderRepository{
+func NewOrderRepository(db *gorm.DB) interfaces.OrderRepository {
+	return &orderRepository{
 		db: db,
 	}
 }
 
-func (repo *OrderRepository) FindNonRewardOrders(
+func (repo *orderRepository) FindNonRewardOrders(
 	customerId, sellerId int,
 	fromDate time.Time,
 	minValue int64,
@@ -42,15 +43,15 @@ func (repo *OrderRepository) FindNonRewardOrders(
 	return entities, nil
 }
 
-func (repo *OrderRepository) SavePostBackLog(req *model.AffPostBackLog) error {
+func (repo *orderRepository) SavePostBackLog(req *model.AffPostBackLog) error {
 	return repo.db.Create(req).Error
 }
 
-func (repo *OrderRepository) CreateOrder(order *model.AffOrder) error {
+func (repo *orderRepository) CreateOrder(order *model.AffOrder) error {
 	return repo.db.Create(order).Error
 }
 
-func (repo *OrderRepository) UpdateOrder(updated *model.AffOrder) (int, error) {
+func (repo *orderRepository) UpdateOrder(updated *model.AffOrder) (int, error) {
 	result := repo.db.Model(updated).Where("id = ?", updated.ID).Updates(updated)
 	if result.Error != nil {
 		return 0, result.Error
@@ -58,7 +59,7 @@ func (repo *OrderRepository) UpdateOrder(updated *model.AffOrder) (int, error) {
 	return int(result.RowsAffected), nil
 }
 
-func (repo *OrderRepository) UpdateOrCreateATTransactions(newTxs []model.AffTransaction) error {
+func (repo *orderRepository) UpdateOrCreateATTransactions(newTxs []model.AffTransaction) error {
 	err := repo.db.Transaction(func(tx *gorm.DB) error {
 		for _, newTx := range newTxs {
 			// Find by id
@@ -95,13 +96,13 @@ func (repo *OrderRepository) UpdateOrCreateATTransactions(newTxs []model.AffTran
 	return nil
 }
 
-func (repo *OrderRepository) FindOrderByAccessTradeId(atOrderId string) (*model.AffOrder, error) {
+func (repo *orderRepository) FindOrderByAccessTradeId(atOrderId string) (*model.AffOrder, error) {
 	var order model.AffOrder
 	err := repo.db.First(&order, "accesstrade_order_id = ?", atOrderId).Error
 	return &order, err
 }
 
-func (repo *OrderRepository) UpdateTrackedClickOrder(trackedId uint64, order *model.AffOrder) error {
+func (repo *orderRepository) UpdateTrackedClickOrder(trackedId uint64, order *model.AffOrder) error {
 	// Only update empty order_id item
 	err := repo.db.Model(&model.AffTrackedClick{}).Where(map[string]any{
 		"id":       trackedId,
@@ -121,7 +122,7 @@ var selectOrderDetails = "SELECT o.id, o.user_id, o.order_status, o.at_product_l
 	"FROM aff_order AS o " +
 	"LEFT JOIN aff_reward AS r ON r.accesstrade_order_id = o.accesstrade_order_id "
 
-func (repo *OrderRepository) GetOrderDetails(ctx context.Context, userId uint32, orderId uint) (*model.OrderDetails, error) {
+func (repo *orderRepository) GetOrderDetails(ctx context.Context, userId uint32, orderId uint) (*model.OrderDetails, error) {
 	var o model.OrderDetails
 	query := selectOrderDetails + "WHERE o.user_id = ? AND o.id = ?"
 
@@ -155,7 +156,7 @@ func (repo *OrderRepository) GetOrderDetails(ctx context.Context, userId uint32,
 	return &o, err
 }
 
-func (repo *OrderRepository) GetOrderHistory(ctx context.Context, since time.Time, userId uint32, status string, page, size int) ([]model.OrderDetails, error) {
+func (repo *orderRepository) GetOrderHistory(ctx context.Context, since time.Time, userId uint32, status string, page, size int) ([]model.OrderDetails, error) {
 	orderHistory := []model.OrderDetails{}
 
 	limit := size + 1
@@ -210,7 +211,7 @@ func (repo *OrderRepository) GetOrderHistory(ctx context.Context, since time.Tim
 	return orderHistory, nil
 }
 
-func (repo *OrderRepository) CountOrders(ctx context.Context, since time.Time, userId uint32, status string) (int64, error) {
+func (repo *orderRepository) CountOrders(ctx context.Context, since time.Time, userId uint32, status string) (int64, error) {
 	var count int64
 	statusQuery, statusParams := model.BuildOrderStatusQuery(status)
 	query := "SELECT COUNT(o.accesstrade_order_id) " +

@@ -7,7 +7,7 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/model"
 )
 
-func (u *RewardUsecase) CalculateWithdrawableReward(rewards []model.Reward, userId uint32) (*model.RewardWithdraw, []model.Reward, []model.OrderRewardHistory) {
+func (u *rewardUCase) CalculateWithdrawalReward(rewards []model.Reward, userId uint32) (*model.RewardWithdraw, []model.Reward, []model.OrderRewardHistory) {
 	shippingRequestId := fmt.Sprintf("affiliate-%v:%v", userId, time.Now().UnixMilli())
 	withdraw := model.RewardWithdraw{
 		UserId:            uint(userId),
@@ -16,8 +16,8 @@ func (u *RewardUsecase) CalculateWithdrawableReward(rewards []model.Reward, user
 		Amount:            0,
 		Fee:               AffRewardTxFee,
 	}
-	rewardsToWithdraw := []model.Reward{}
-	orderRewardHistories := []model.OrderRewardHistory{}
+	var rewardsToWithdraw []model.Reward
+	var orderRewardHistories []model.OrderRewardHistory
 
 	for idx := range rewards {
 		orderReward, ended := rewards[idx].WithdrawableReward()

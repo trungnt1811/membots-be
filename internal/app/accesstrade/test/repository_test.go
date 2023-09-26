@@ -1,6 +1,7 @@
 package test
 
 import (
+	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"os"
 	"testing"
 	"time"
@@ -18,7 +19,7 @@ const (
 
 type RepositoryTestSuite struct {
 	suite.Suite
-	repository *accesstrade.AccessTradeRepository
+	repository interfaces.ATRepository
 }
 
 func NewRepositoryTestSuite() *RepositoryTestSuite {

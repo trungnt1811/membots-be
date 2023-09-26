@@ -11,16 +11,16 @@ import (
 )
 
 type RewardHandler struct {
-	usecase interfaces.RewardUCase
+	uCase interfaces.RewardUCase
 }
 
-func NewRewardHandler(usecase interfaces.RewardUCase) *RewardHandler {
+func NewRewardHandler(uCase interfaces.RewardUCase) *RewardHandler {
 	return &RewardHandler{
-		usecase: usecase,
+		uCase: uCase,
 	}
 }
 
-// GetAllReward Get reward summary of an account
+// GetRewardSummary Get reward summary of an account
 // @Summary Get reward summary of an account
 // @Description Get reward summary of an account
 // @Tags 	reward
@@ -40,7 +40,7 @@ func (handler *RewardHandler) GetRewardSummary(ctx *gin.Context) {
 	}
 
 	// get reward
-	res, err := handler.usecase.GetRewardSummary(ctx, user.ID)
+	res, err := handler.uCase.GetRewardSummary(ctx, user.ID)
 	if err != nil {
 		util.RespondError(ctx, http.StatusFailedDependency, "failed to get reward summary", err)
 		return
@@ -50,7 +50,7 @@ func (handler *RewardHandler) GetRewardSummary(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-// GetRewardHistory Get reward withdraw history records
+// GetWithdrawHistory Get reward withdraw history records
 // @Summary Get reward withdraw history records
 // @Description Get reward withdraw history records
 // @Tags 	reward
@@ -73,7 +73,7 @@ func (handler *RewardHandler) GetWithdrawHistory(ctx *gin.Context) {
 	size := ctx.GetInt("size")
 
 	// get reward
-	res, err := handler.usecase.GetWithdrawHistory(ctx, user.ID, page, size)
+	res, err := handler.uCase.GetWithdrawHistory(ctx, user.ID, page, size)
 	if err != nil {
 		util.RespondError(ctx, http.StatusFailedDependency, "failed to get withdraw history", err)
 		return
@@ -83,7 +83,7 @@ func (handler *RewardHandler) GetWithdrawHistory(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-// GetAllReward Claim reward of all orders
+// WithdrawReward Claim reward of all orders
 // @Summary Claim reward of all orders
 // @Description Claim reward of all orders
 // @Tags 	reward
@@ -104,7 +104,7 @@ func (handler *RewardHandler) WithdrawReward(ctx *gin.Context) {
 	}
 
 	// get reward
-	res, err := handler.usecase.WithdrawReward(ctx, user.ID, user.WalletAddress)
+	res, err := handler.uCase.WithdrawReward(ctx, user.ID, user.WalletAddress)
 	if err != nil {
 		util.RespondError(ctx, http.StatusFailedDependency, "failed to withdraw reward", err)
 		return

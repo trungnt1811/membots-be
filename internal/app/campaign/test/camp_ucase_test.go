@@ -2,6 +2,7 @@ package test
 
 import (
 	"fmt"
+	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"os"
 	"testing"
 
@@ -17,14 +18,14 @@ import (
 
 type CampaignUcaseTestSuite struct {
 	suite.Suite
-	ucase *campaign.CampaignUsecase
+	ucase interfaces.CampaignUCase
 }
 
 func NewCampaignUcaseTestSuite() *CampaignUcaseTestSuite {
 	logger.LG = logger.NewZerologLogger(os.Stdout, zerolog.InfoLevel)
 	atRepo := atMocks.NewAccessTradeRepoMock()
 	campRepo := mocks.NewCampaignRepoMock()
-	ucase := campaign.NewCampaignUsecase(campRepo, atRepo)
+	ucase := campaign.NewCampaignUCase(campRepo, atRepo)
 	return &CampaignUcaseTestSuite{
 		ucase: ucase,
 	}

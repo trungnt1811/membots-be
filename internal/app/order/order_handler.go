@@ -14,10 +14,10 @@ import (
 )
 
 type OrderHandler struct {
-	usecase interfaces.OrderUcase
+	usecase interfaces.OrderUCase
 }
 
-func NewOrderHandler(usecase interfaces.OrderUcase) *OrderHandler {
+func NewOrderHandler(usecase interfaces.OrderUCase) *OrderHandler {
 	return &OrderHandler{
 		usecase: usecase,
 	}
@@ -64,7 +64,7 @@ func (handler *OrderHandler) PostBackOrderHandle(c *gin.Context) {
 	})
 }
 
-// GetRewardHistory Get affiliate order details
+// GetOrderDetails Get affiliate order details
 // @Summary Get affiliate order details
 // @Description Get affiliate order details - include status timeline and reward info
 // @Tags 	order
@@ -106,7 +106,7 @@ func (handler *OrderHandler) GetOrderDetails(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, order)
 }
 
-// GetRewardHistory Get order history
+// GetOrderHistory Get order history
 // @Summary Get order history
 // @Description Get order history - include reward info
 // @Tags 	order

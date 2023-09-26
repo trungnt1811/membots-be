@@ -11,6 +11,7 @@ type AffBrandRepository interface {
 	GetListCountFavouriteAffBrand(ctx context.Context) ([]model.TotalFavoriteBrand, error)
 	UpdateCacheListCountFavouriteAffBrand(ctx context.Context) error
 	GetListFavAffBrandByUserId(ctx context.Context, userId uint64, page, size int) ([]model.AffCampComFavBrand, error)
+	CountTotalFavAffBrandByUserId(ctx context.Context, userId uint64) (int64, error)
 }
 
 type AffBrandUCase interface {

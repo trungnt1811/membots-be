@@ -62,10 +62,9 @@ func (r affCampAppRepository) GetAllAffCampaign(ctx context.Context, orderBy str
 	case interfaces.ListAffCampaignOrderByMostCommission:
 		err = r.db.Joins("Brand").
 			Preload("Attributes", func(db *gorm.DB) *gorm.DB {
-				db = db.Order(orderQuery)
-				return db
+				return db.Order(orderQuery)
 			}).
-			Where("stella_status = ?", model.StellaStatusInProgress).
+			Where("aff_campaign.stella_status = ?", model.StellaStatusInProgress).
 			Limit(size + 1).Offset(offset).
 			Find(&listAffCampaign).Error
 	default:
@@ -73,7 +72,6 @@ func (r affCampAppRepository) GetAllAffCampaign(ctx context.Context, orderBy str
 			Preload("Attributes").
 			Where("stella_status = ?", model.StellaStatusInProgress).
 			Limit(size + 1).Offset(offset).
-			Order("aff_campaign.id ASC").
 			Find(&listAffCampaign).Error
 	}
 	return listAffCampaign, err
@@ -95,7 +93,9 @@ func (r affCampAppRepository) GetListAffCampaignByBrandIds(ctx context.Context, 
 	s, _ := json.Marshal(brandIds)
 	findInSet := strings.Trim(string(s), "[]")
 	offset := (page - 1) * size
-	err := r.db.Joins("Brand").Where("aff_campaign.brand_id IN ? AND stella_status = ?", brandIds, model.StellaStatusInProgress).
+	err := r.db.Joins("Brand").
+		Preload("Attributes").
+		Where("aff_campaign.brand_id IN ? AND stella_status = ?", brandIds, model.StellaStatusInProgress).
 		Limit(size + 1).Offset(offset).
 		Order(fmt.Sprintf("FIND_IN_SET(aff_campaign.brand_id,'%s')", findInSet)).
 		Find(&listAffCampaign).Error

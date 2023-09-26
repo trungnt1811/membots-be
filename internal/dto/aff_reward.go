@@ -31,11 +31,6 @@ type RewardDto struct {
 	UpdatedAt      time.Time `json:"updated_at"`
 }
 
-type WithdrawRewardResponse struct {
-	Execute bool    `json:"execute"`
-	Amount  float64 `json:"amount"`
-}
-
 type RewardResponse struct {
 	NextPage int         `json:"next_page"`
 	Page     int         `json:"page"`

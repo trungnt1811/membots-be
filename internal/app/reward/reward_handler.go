@@ -1,7 +1,10 @@
 package reward
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 
@@ -83,6 +86,43 @@ func (handler *RewardHandler) GetWithdrawHistory(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
+// GetWithdrawHistory Get reward withdraw details
+// @Summary Get reward withdraw details
+// @Description Get reward withdraw details
+// @Tags 	reward
+// @Accept	json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param id path int true "withdraw id to query"
+// @Success 200 		{object}	dto.RewardWithdrawDto
+// @Failure 424 		{object}	util.GeneralError
+// @Failure 400 		{object}	util.GeneralError
+// @Router 	/api/v1/app/rewards/withdraw/{id} [get]
+func (handler *RewardHandler) GetWithdrawDetails(ctx *gin.Context) {
+	// First, take user from JWT
+	user, err := dto.GetUserInfo(ctx)
+	if err != nil {
+		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
+		return
+	}
+
+	withdrawId, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		util.RespondError(ctx, http.StatusBadRequest, "failed to get withdraw details", errors.New("withdraw id is required"))
+		return
+	}
+
+	// get reward
+	res, err := handler.uCase.GetWithdrawDetails(ctx, user.ID, uint(withdrawId))
+	if err != nil {
+		util.RespondError(ctx, http.StatusFailedDependency, "failed to get withdraw details", err)
+		return
+	}
+
+	// Response transaction status
+	ctx.JSON(http.StatusOK, res)
+}
+
 // WithdrawReward Claim reward of all orders
 // @Summary Claim reward of all orders
 // @Description Claim reward of all orders
@@ -90,7 +130,7 @@ func (handler *RewardHandler) GetWithdrawHistory(ctx *gin.Context) {
 // @Accept	json
 // @Produce json
 // @Security ApiKeyAuth
-// @Success 200 		{object}	dto.RewardSummary
+// @Success 200 		{object}	dto.RewardWithdrawDto
 // @Failure 424 		{object}	util.GeneralError
 // @Failure 429 		{object}	string "reach withdraw limit, max one time each three seconds"
 // @Failure 400 		{object}	util.GeneralError
@@ -102,7 +142,7 @@ func (handler *RewardHandler) WithdrawReward(ctx *gin.Context) {
 		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
 		return
 	}
-
+	fmt.Println("USERCALLED", user)
 	// get reward
 	res, err := handler.uCase.WithdrawReward(ctx, user.ID, user.WalletAddress)
 	if err != nil {

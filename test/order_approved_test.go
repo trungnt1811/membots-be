@@ -15,7 +15,7 @@ func TestProduceOrderApprovedMsg(t *testing.T) {
 	producer := msgqueue.NewKafkaProducer(msgqueue.KAFKA_TOPIC_AFF_ORDER_APPROVE)
 
 	msg := msgqueue.MsgOrderApproved{
-		AtOrderID: "230919NVBUJ22SAKHANH",
+		AtOrderID: "230915CPRGY3A5ADUC",
 	}
 
 	b, err := json.Marshal(msg)

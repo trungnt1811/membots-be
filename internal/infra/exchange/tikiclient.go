@@ -7,17 +7,20 @@ import (
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/imroc/req/v3"
+	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
 
 const (
-	REMAIN_VOLUME = 50000 // Ensure if user who have under 50k asa cannot manipulate the price
+	THRESHOLD_VOLUME      = 50000 // Ensure if user who have under 50k asa cannot manipulate the price
+	CURRENT_PRICE         = 0
+	FOR_SEND_TO_USER      = 1
+	FOR_RECEIVE_FROM_USER = 2
 )
 
 type TikiClientConfig struct {
-	BaseUrl        string
-	ApiKey         string
-	ExchangeApiKey string
+	BaseUrl string
+	ApiKey  string
 }
 
 type TikiClient struct {
@@ -58,12 +61,14 @@ func (client *TikiClient) GetUrl(url string) string {
 }
 
 func (client *TikiClient) GetAstraPrice(ctx context.Context) (int64, error) {
-	return 200, nil
+	return client.GetAstraPriceFromExchange(ctx, FOR_SEND_TO_USER)
 }
 
 // GetAstraPrice get ASA price from Tiki exchange
-// @Param forSendReward - is the ASA price calculated for send to customer (1) or in opposite way
-func (c *TikiClient) GetAstraPrice2(ctx context.Context, forSendReward bool) (int64, error) {
+// @Params calculateMode - is the ASA price calculated for send to customer (true) or in opposite way (false)
+// - true: calculate base on asks price, to prevent user push the price down
+// - false: calculate base on bids price, to prevent user push the price up
+func (c *TikiClient) GetAstraPriceFromExchange(ctx context.Context, calculateMode int) (int64, error) {
 	endpoint := "/sandseel/api/v2/public/markets/asaxu/depth"
 
 	var errRes ErrorResponseData
@@ -74,12 +79,15 @@ func (c *TikiClient) GetAstraPrice2(ctx context.Context, forSendReward bool) (in
 		SetSuccessResult(&priceRes).
 		Get(endpoint)
 	if err != nil {
-		return 0, err
+		log.Error().Msgf("failed to call send reward: %v", err)
+		return 0, errors.Wrapf(err, "failed to call send reward")
 	}
 	if !resp.IsSuccessState() {
 		log.Error().Msgf("bad response status: %v", resp.Status)
 		return 0, nil
 	}
 
-	return 0, nil
+	exchangePrice := priceRes.ToExchangePrice()
+	price := exchangePrice.GetPrice(calculateMode, float64(THRESHOLD_VOLUME))
+	return int64(price), nil
 }

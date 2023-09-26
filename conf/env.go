@@ -16,9 +16,7 @@ type AffiliateConfiguration struct {
 }
 
 type TikiConfiguration struct {
-	ApiUrl         string `mapstructure:"TIKI_API_URL"`
-	ApiKey         string `mapstructure:"TIKI_API_KEY"`
-	ExchangeApiKey string `mapstructure:"TIKI_EXCHANGE_API_KEY"`
+	ApiUrl string `mapstructure:"TIKI_API_URL"`
 }
 
 type RewardShippingConfiguration struct {

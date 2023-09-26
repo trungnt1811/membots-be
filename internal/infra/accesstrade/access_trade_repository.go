@@ -3,10 +3,11 @@ package accesstrade
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"time"
 
-	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade/types"
+	"github.com/astraprotocol/affiliate-system/internal/interfaces"
+
+	"github.com/astraprotocol/affiliate-system/internal/infra/accesstrade/types"
 	"github.com/astraprotocol/affiliate-system/internal/util/log"
 
 	"github.com/go-resty/resty/v2"

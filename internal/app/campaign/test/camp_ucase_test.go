@@ -2,14 +2,15 @@ package test
 
 import (
 	"fmt"
-	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"os"
 	"testing"
 
-	atMocks "github.com/astraprotocol/affiliate-system/internal/app/accesstrade/mocks"
+	"github.com/astraprotocol/affiliate-system/internal/interfaces"
+
 	"github.com/astraprotocol/affiliate-system/internal/app/campaign"
 	"github.com/astraprotocol/affiliate-system/internal/app/campaign/mocks"
 	"github.com/astraprotocol/affiliate-system/internal/dto"
+	atMocks "github.com/astraprotocol/affiliate-system/internal/infra/accesstrade/mocks"
 	"github.com/astraprotocol/affiliate-system/internal/model"
 	logger "github.com/astraprotocol/affiliate-system/internal/util/log"
 	"github.com/rs/zerolog"

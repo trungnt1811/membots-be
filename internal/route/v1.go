@@ -19,7 +19,6 @@ import (
 	"github.com/go-co-op/gocron"
 
 	"github.com/astraprotocol/affiliate-system/conf"
-	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade"
 	"github.com/astraprotocol/affiliate-system/internal/app/aff_camp_app"
 	"github.com/astraprotocol/affiliate-system/internal/app/auth"
 	campaign1 "github.com/astraprotocol/affiliate-system/internal/app/campaign"
@@ -28,6 +27,7 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/app/redeem"
 	"github.com/astraprotocol/affiliate-system/internal/app/user_view_aff_camp"
 	"github.com/astraprotocol/affiliate-system/internal/dto"
+	"github.com/astraprotocol/affiliate-system/internal/infra/accesstrade"
 	"github.com/astraprotocol/affiliate-system/internal/infra/caching"
 	"github.com/astraprotocol/affiliate-system/internal/infra/msgqueue"
 	"github.com/astraprotocol/affiliate-system/internal/infra/shipping"

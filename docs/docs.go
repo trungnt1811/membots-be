@@ -1284,11 +1284,86 @@ const docTemplate = `{
                     "console"
                 ],
                 "summary": "Get summary statistic data",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Time in RFC3339 format",
+                        "name": "since",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Time in RFC3339 format",
+                        "name": "until",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/dto.StatisticSummaryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "424": {
+                        "description": "Failed Dependency",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/console/summary/:campaignId": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get campaign statistic data",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "console"
+                ],
+                "summary": "Get campaign statistic data",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Time range",
+                        "name": "campaignId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Time in RFC3339 format",
+                        "name": "since",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Time in RFC3339 format",
+                        "name": "until",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.CampaignSummaryResponse"
                         }
                     },
                     "400": {
@@ -2132,6 +2207,23 @@ const docTemplate = `{
                 },
                 "updated_at": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.CampaignSummaryResponse": {
+            "type": "object",
+            "properties": {
+                "num_of_customers": {
+                    "type": "integer"
+                },
+                "num_of_orders": {
+                    "type": "integer"
+                },
+                "total_asa_cashback": {
+                    "$ref": "#/definitions/dto.Cashback"
+                },
+                "total_revenue": {
+                    "type": "number"
                 }
             }
         },

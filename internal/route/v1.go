@@ -2,6 +2,7 @@ package route
 
 import (
 	"context"
+	"github.com/astraprotocol/affiliate-system/internal/infra/exchange"
 	"time"
 
 	"github.com/astraprotocol/affiliate-system/internal/app/reward"
@@ -41,6 +42,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	// SECTION: Create redis client
 	rdb := conf.RedisConn()
 	redisClient := caching.NewCachingRepository(context.Background(), rdb)
+	redisClient1 := caching.NewRedisClient(rdb)
 
 	// SECTION: Create auth handler
 	authHandler := auth.NewAuthUseCase(redisClient, config.CreatorAuthUrl, config.AppAuthUrl)
@@ -57,6 +59,12 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 
 	// SECTION: Kafka Queue
 	userViewAffCampQueue := msgqueue.NewKafkaProducer(msgqueue.KAFKA_TOPIC_USER_VIEW_AFF_CAMP)
+
+	tikiClient := exchange.NewTikiClient(exchange.TikiClientConfig{
+		BaseUrl: config.Tiki.ApiUrl,
+	})
+	tikiClientCache := exchange.NewTikiClientCache(tikiClient, redisClient1)
+	convertPriceHandler := exchange.NewConvertPriceHandler(tikiClientCache)
 
 	// SECTION: Campaign and link
 	campRepo := campaign1.NewCampaignRepository(db)
@@ -125,7 +133,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 
 	userViewAffCampRepository := user_view_aff_camp.NewUserViewAffCampRepository(db)
 	userViewAffCampCache := user_view_aff_camp.NewUserViewAffCampCacheRepository(userViewAffCampRepository, redisClient)
-	userViewAffCampUCase := user_view_aff_camp.NewUserViewAffCampUCase(userViewAffCampCache)
+	userViewAffCampUCase := user_view_aff_camp.NewUserViewAffCampUCase(userViewAffCampCache, convertPriceHandler)
 
 	userFavoriteBrandRepository := user_favorite_brand.NewUserFavoriteBrandRepository(db)
 	userFavoriteBrandCache := user_favorite_brand.NewUserFavoriteBrandCacheRepository(userFavoriteBrandRepository, redisClient)
@@ -135,16 +143,17 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	affBrandRepository := aff_brand.NewAffBrandRepository(db)
 	affBrandCache := aff_brand.NewAffBrandCacheRepository(affBrandRepository, redisClient)
 
-	affCampAppUCase := aff_camp_app.NewAffCampAppUCase(affCampAppCache, affBrandCache, userFavoriteBrandCache, streamChannel)
+	affCampAppUCase := aff_camp_app.NewAffCampAppUCase(affCampAppCache, affBrandCache, userFavoriteBrandCache,
+		streamChannel, convertPriceHandler)
 	affCampAppHandler := aff_camp_app.NewAffCampAppHandler(affCampAppUCase)
 	appRouter.GET("/aff-campaign", authHandler.CheckUserHeader(), affCampAppHandler.GetAllAffCampaign)
 	appRouter.GET("/aff-campaign/:id", authHandler.CheckUserHeader(), affCampAppHandler.GetAffCampaignById)
 
-	affBrandUCase := aff_brand.NewAffBrandUCase(affBrandCache, affCampAppCache, userFavoriteBrandCache)
+	affBrandUCase := aff_brand.NewAffBrandUCase(affBrandCache, affCampAppCache, userFavoriteBrandCache, convertPriceHandler)
 	affBrandHandler := aff_brand.NewAffBrandHandler(userViewAffCampUCase, affBrandUCase)
 	appRouter.GET("brand", authHandler.CheckUserHeader(), affBrandHandler.GetListAffBrandByUser)
 
-	homePageUCase := home_page.NewHomePageUCase(affBrandCache, affCampAppCache, userFavoriteBrandCache, userViewAffCampCache)
+	homePageUCase := home_page.NewHomePageUCase(affBrandCache, affCampAppCache, userFavoriteBrandCache, userViewAffCampCache, convertPriceHandler)
 	homePageHandler := home_page.NewHomePageHandler(homePageUCase)
 	appRouter.GET("/home-page", authHandler.CheckUserHeader(), homePageHandler.GetHomePage)
 
@@ -156,7 +165,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	appRouter.GET("/aff-banner/:id", affAppBannerHandler.GetBannerById)
 
 	affCategoryRepo := categoryApp.NewAppCategoryRepository(db)
-	affCategoryUCase := categoryApp.NewAffCategoryUCase(affCategoryRepo, affBrandCache, affCampAppCache, userFavoriteBrandCache)
+	affCategoryUCase := categoryApp.NewAffCategoryUCase(affCategoryRepo, affBrandCache, affCampAppCache, userFavoriteBrandCache, convertPriceHandler)
 	affCategoryHandler := categoryApp.NewAffCategoryHandler(affCategoryUCase)
 	appRouter.GET("/aff-categories", affCategoryHandler.GetAllCategory)
 	appRouter.GET("/aff-categories/:categoryId", authHandler.CheckUserHeader(), affCategoryHandler.GetListAffBrandByUser)

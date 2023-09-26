@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
-	"github.com/astraprotocol/affiliate-system/internal/util/commission"
 )
 
 type categoryUCase struct {
@@ -12,6 +11,7 @@ type categoryUCase struct {
 	AffBrandRepository          interfaces.AffBrandRepository
 	AffCampAppRepository        interfaces.AffCampAppRepository
 	UserFavoriteBrandRepository interfaces.UserFavoriteBrandRepository
+	ConvertPrice                interfaces.ConvertPriceHandler
 }
 
 func (c *categoryUCase) GetTopFavouriteAffBrand(ctx context.Context, categoryId uint, userId uint64, page, size int) (dto.AffCampaignAppDtoResponse, error) {
@@ -55,7 +55,7 @@ func (c *categoryUCase) GetTopFavouriteAffBrand(ctx context.Context, categoryId 
 		}
 		listAffCampaignComBrandDto = append(listAffCampaignComBrandDto, listFavAffBrand[i].ToAffCampaignLessDto())
 		listAffCampaignComBrandDto[i].Brand.IsFavorited = favBrandCheck[listAffCampaignComBrandDto[i].BrandId]
-		listAffCampaignComBrandDto[i].StellaMaxCom = commission.GetStellaMaxCom(listFavAffBrand[i].Attributes)
+		listAffCampaignComBrandDto[i].StellaMaxCom = c.ConvertPrice.ConvertVndPriceToAstra(ctx, listFavAffBrand[i].Attributes)
 	}
 	nextPage := page
 	if len(listFavAffBrand) > size {
@@ -112,7 +112,7 @@ func (c *categoryUCase) GetMostCommissionAffCampaign(ctx context.Context, catego
 		listAffCampaignAppDto = append(listAffCampaignAppDto, listAffCampaign[i].ToDto())
 		listAffCampaignAppDto[i].Brand.IsFavorited = favBrandCheck[listAffCampaignAppDto[i].BrandId]
 		listAffCampaignAppDto[i].Brand.IsTopFavorited = favTopBrandCheck[listAffCampaignAppDto[i].BrandId]
-		listAffCampaignAppDto[i].StellaMaxCom = commission.GetStellaMaxCom(listAffCampaign[i].Attributes)
+		listAffCampaignAppDto[i].StellaMaxCom = c.ConvertPrice.ConvertVndPriceToAstra(ctx, listAffCampaign[i].Attributes)
 	}
 	nextPage := page
 	if len(listAffCampaign) > size {
@@ -153,11 +153,14 @@ func (c *categoryUCase) GetAllCategory(ctx context.Context, page, size int) (dto
 func NewAffCategoryUCase(repo interfaces.AffCategoryRepository,
 	affBrandRepository interfaces.AffBrandRepository,
 	affCampAppRepository interfaces.AffCampAppRepository,
-	userFavoriteBrandRepository interfaces.UserFavoriteBrandRepository) interfaces.AffCategoryUCase {
+	userFavoriteBrandRepository interfaces.UserFavoriteBrandRepository,
+	convertPrice interfaces.ConvertPriceHandler,
+) interfaces.AffCategoryUCase {
 	return &categoryUCase{
 		AffCategoryRepository:       repo,
 		AffBrandRepository:          affBrandRepository,
 		AffCampAppRepository:        affCampAppRepository,
 		UserFavoriteBrandRepository: userFavoriteBrandRepository,
+		ConvertPrice:                convertPrice,
 	}
 }

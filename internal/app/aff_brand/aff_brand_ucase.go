@@ -31,9 +31,14 @@ func (s affBrandUCase) UpdateCacheListCountFavouriteAffBrand(ctx context.Context
 }
 
 func (s affBrandUCase) GetTopFavouriteAffBrand(ctx context.Context, userId uint64, page, size int) (dto.AffCampaignAppDtoResponse, error) {
+	// Top favorited brands check
 	listCountFavAffBrand, err := s.AffBrandRepository.GetListCountFavouriteAffBrand(ctx)
 	if err != nil {
 		return dto.AffCampaignAppDtoResponse{}, err
+	}
+	favTopBrandCheck := make(map[uint]bool)
+	for _, countFavAffBrand := range listCountFavAffBrand {
+		favTopBrandCheck[countFavAffBrand.BrandId] = true
 	}
 
 	// Get top favorited brands
@@ -71,6 +76,7 @@ func (s affBrandUCase) GetTopFavouriteAffBrand(ctx context.Context, userId uint6
 		}
 		listAffCampaignComBrandDto = append(listAffCampaignComBrandDto, listFavAffBrand[i].ToAffCampaignLessDto())
 		listAffCampaignComBrandDto[i].Brand.IsFavorited = favBrandCheck[listAffCampaignComBrandDto[i].BrandId]
+		listAffCampaignComBrandDto[i].Brand.IsTopFavorited = favTopBrandCheck[listAffCampaignComBrandDto[i].BrandId]
 		listAffCampaignComBrandDto[i].StellaMaxCom = util.GetStellaMaxCom(listFavAffBrand[i].Attributes)
 	}
 	nextPage := page

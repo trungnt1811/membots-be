@@ -49,12 +49,55 @@ func (s homePageUCase) GetHomePage(ctx context.Context, userId uint64) (dto.Home
 		}
 	})
 
+	p3 := promise.New(func(resolve func([]model.AffCampaignComBrand), reject func(error)) {
+		listCountFavAffBrand, err := s.AffBrandRepository.GetListCountFavouriteAffBrand(ctx)
+		if err != nil {
+			reject(err)
+		}
+
+		// Get top favorited brands
+		var brandIds []uint
+		for _, favCountAffBrand := range listCountFavAffBrand {
+			brandIds = append(brandIds, favCountAffBrand.BrandId)
+		}
+		if len(brandIds) == 0 {
+			resolve(make([]model.AffCampaignComBrand, 0))
+			return
+		}
+
+		campaign, err := s.AffCampAppRepository.GetListAffCampaignByBrandIds(ctx, brandIds, 1, 7)
+		if err != nil {
+			reject(err)
+		} else {
+			resolve(campaign)
+		}
+	})
+
+	p4 := promise.New(func(resolve func([]model.AffCampaignLessApp), reject func(error)) {
+		campaign, err := s.AffCampAppRepository.GetAllAffCampaign(ctx, interfaces.ListAffCampaignOrderByMostCommission, 1, 7)
+		if err != nil {
+			reject(err)
+		} else {
+			resolve(campaign)
+		}
+	})
+
 	listCampaignP1, err := p1.Await(ctx)
 	if err != nil {
 		return dto.HomePageDto{}, err
 	}
 
 	listCampaignP2, err := p2.Await(ctx)
+	if err != nil {
+		return dto.HomePageDto{}, err
+	}
+
+	listCampaignP3, err := p3.Await(ctx)
+	if err != nil {
+		return dto.HomePageDto{}, err
+	}
+
+	listCampaignP4, err := p4.Await(ctx)
 	if err != nil {
 		return dto.HomePageDto{}, err
 	}
@@ -71,8 +114,22 @@ func (s homePageUCase) GetHomePage(ctx context.Context, userId uint64) (dto.Home
 		listFollowing[i].StellaMaxCom = util.GetStellaMaxCom(campaign.Attributes)
 	}
 
+	var listTopFavorited []dto.AffCampaignLessDto
+	for i, campaign := range *listCampaignP3 {
+		listTopFavorited = append(listTopFavorited, campaign.ToAffCampaignLessDto())
+		listTopFavorited[i].StellaMaxCom = util.GetStellaMaxCom(campaign.Attributes)
+	}
+
+	var listMostCommission []dto.AffCampaignLessDto
+	for i, campaign := range *listCampaignP4 {
+		listMostCommission = append(listMostCommission, campaign.ToDto())
+		listMostCommission[i].StellaMaxCom = util.GetStellaMaxCom(campaign.Attributes)
+	}
+
 	return dto.HomePageDto{
 		RecentlyVisited: listRecentlyVisited,
 		Following:       listFollowing,
+		TopFavorited:    listTopFavorited,
+		MostCommission:  listMostCommission,
 	}, nil
 }

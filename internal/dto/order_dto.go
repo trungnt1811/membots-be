@@ -5,8 +5,8 @@ import (
 )
 
 type TimeRange struct {
-	Since *time.Time `json:"since" form:"since"`
-	Until *time.Time `json:"until" form:"until"`
+	Since time.Time `json:"since" form:"since"` // Time in RFC3339 format
+	Until time.Time `json:"until" form:"until"` // Time in RFC3339 format
 }
 
 type OrderListQuery struct {

@@ -19,10 +19,10 @@ func NewStatisticRepository(db *gorm.DB) *StatisticRepository {
 func (repo *StatisticRepository) FindOrdersInRange(d dto.TimeRange, offset int, limit int) ([]model.AffOrder, error) {
 	var orders []model.AffOrder
 	m := repo.Db.Model(&orders)
-	if d.Since != nil {
+	if !d.Since.IsZero() {
 		m.Where("created_at >= ?", d.Since)
 	}
-	if d.Until != nil {
+	if !d.Until.IsZero() {
 		m.Where("created_at <= ?", d.Until)
 	}
 	if offset != 0 {
@@ -38,10 +38,10 @@ func (repo *StatisticRepository) FindOrdersInRange(d dto.TimeRange, offset int, 
 
 func (repo *StatisticRepository) TotalOrdersInRange(d dto.TimeRange) (int64, error) {
 	m := repo.Db.Model(&model.AffOrder{})
-	if d.Since != nil {
+	if !d.Since.IsZero() {
 		m.Where("created_at >= ?", d.Since)
 	}
-	if d.Until != nil {
+	if !d.Until.IsZero() {
 		m.Where("created_at <= ?", d.Until)
 	}
 
@@ -52,10 +52,10 @@ func (repo *StatisticRepository) TotalOrdersInRange(d dto.TimeRange) (int64, err
 
 func (repo *StatisticRepository) TotalActiveCampaignsInRange(d dto.TimeRange) (int64, error) {
 	m := repo.Db.Model(&model.AffOrder{})
-	if d.Since != nil {
+	if !d.Since.IsZero() {
 		m.Where("created_at >= ?", d.Since)
 	}
-	if d.Until != nil {
+	if !d.Until.IsZero() {
 		m.Where("created_at <= ?", d.Until)
 	}
 
@@ -70,10 +70,10 @@ func (repo *StatisticRepository) CalculateCashbackInRange(d dto.TimeRange) (dto.
 	sql := repo.Db.Table("aff_reward").Select(
 		"SUM(rewarded_amount) as distributed, SUM(amount) as remain",
 	)
-	if d.Since != nil {
+	if !d.Since.IsZero() {
 		sql.Where("updated_at >= ?", d.Since)
 	}
-	if d.Until != nil {
+	if !d.Until.IsZero() {
 		sql.Where("updated_at <= ?", d.Until)
 	}
 

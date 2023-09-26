@@ -49,7 +49,7 @@ func (u *rewardUCase) WithdrawReward(ctx context.Context, userId uint32, userWal
 	}
 
 	// Calculating Reward
-	rewardClaim, rewardToClaim, orderRewardHistories := u.CalculateWithdrawalReward(rewards, userId)
+	rewardClaim, rewardToClaim, orderRewardHistories, completeRwOrders := u.CalculateWithdrawalReward(rewards, userId)
 	if rewardClaim.Amount-AffRewardTxFee < MinWithdrawReward {
 		return dto.WithdrawRewardResponse{
 			Execute: false,
@@ -77,7 +77,7 @@ func (u *rewardUCase) WithdrawReward(ctx context.Context, userId uint32, userWal
 
 	// Save Db
 	rewardClaim.ShippingStatus = model.ShippingStatusSending
-	err = u.repo.SaveRewardWithdraw(ctx, rewardClaim, rewardToClaim, orderRewardHistories)
+	err = u.repo.SaveRewardWithdraw(ctx, rewardClaim, rewardToClaim, orderRewardHistories, completeRwOrders)
 	if err != nil {
 		return dto.WithdrawRewardResponse{}, err
 	}
@@ -114,7 +114,7 @@ func (u *rewardUCase) GetRewardSummary(ctx context.Context, userId uint32) (dto.
 	}
 	totalOrderRewardInDay = util.RoundFloat(totalOrderRewardInDay, 2)
 
-	withdrawable, _, _ := u.CalculateWithdrawalReward(inProgressRewards, userId)
+	withdrawable, _, _, _ := u.CalculateWithdrawalReward(inProgressRewards, userId)
 	pendingRewardAmount := util.RoundFloat(totalOrderReward-withdrawable.Amount, 2)
 
 	return dto.RewardSummary{

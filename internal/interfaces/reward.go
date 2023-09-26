@@ -9,7 +9,7 @@ import (
 
 type RewardRepository interface {
 	CreateReward(ctx context.Context, reward *model.Reward) error
-	SaveRewardWithdraw(ctx context.Context, rewardClaim *model.RewardWithdraw, rewards []model.Reward, orderRewardHistories []model.OrderRewardHistory) error
+	SaveRewardWithdraw(ctx context.Context, rewardClaim *model.RewardWithdraw, rewards []model.Reward, orderRewardHistories []model.OrderRewardHistory, completeRwOrders []string) error
 	UpdateWithdrawShippingStatus(ctx context.Context, shippingReqId, txHash, status string) error
 	GetWithdrawHistory(ctx context.Context, userId uint32, page, size int) ([]model.RewardWithdraw, error)
 	CountWithdrawal(ctx context.Context, userId uint32) (int64, error)

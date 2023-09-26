@@ -3,8 +3,9 @@ package reward
 import (
 	"context"
 	"database/sql"
-	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"time"
+
+	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 
 	"github.com/astraprotocol/affiliate-system/internal/model"
 	"gorm.io/gorm"
@@ -43,7 +44,7 @@ func (r *rewardRepository) GetRewardsInDay(ctx context.Context) ([]model.Reward,
 	return rewards, err
 }
 
-func (r *rewardRepository) SaveRewardWithdraw(ctx context.Context, rewardWithdraw *model.RewardWithdraw, rewards []model.Reward, orderRewardHistories []model.OrderRewardHistory) error {
+func (r *rewardRepository) SaveRewardWithdraw(ctx context.Context, rewardWithdraw *model.RewardWithdraw, rewards []model.Reward, orderRewardHistories []model.OrderRewardHistory, completeRwOrders []string) error {
 	return r.db.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Create(rewardWithdraw).Error; err != nil {
 			return err
@@ -58,6 +59,12 @@ func (r *rewardRepository) SaveRewardWithdraw(ctx context.Context, rewardWithdra
 
 		if err := tx.Save(rewards).Error; err != nil {
 			return err
+		}
+
+		if len(completeRwOrders) > 0 {
+			if err := tx.Model(&model.AffOrder{}).Where("accesstrade_order_id IN ?", completeRwOrders).Update("order_status", model.OrderStatusComplete).Error; err != nil {
+				return err
+			}
 		}
 
 		return nil

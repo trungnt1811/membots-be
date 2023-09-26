@@ -56,6 +56,8 @@ CREATE INDEX aff_transaction_accesstrade_order_id ON aff_transaction (accesstrad
 CREATE TABLE aff_order (
   id INT NOT NULL AUTO_INCREMENT,
   aff_link NVARCHAR(1024),
+  campaign_id INT,
+  brand_id INT,
   created_at DATETIME,
   updated_at DATETIME,
   user_id INT NOT NULL,

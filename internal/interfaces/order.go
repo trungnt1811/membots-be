@@ -30,8 +30,9 @@ type OrderRepository interface {
 	GetCampaignByATId(atId string) (*model.AffCampaign, error)
 }
 
-type OrderUcase interface {
+type OrderUCase interface {
 	PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*model.AffOrder, error)
 	GetOrderDetails(ctx context.Context, userId uint32, orderId uint) (*dto.OrderDetailsDto, error)
 	GetOrderHistory(ctx context.Context, userId uint32, status string, page, size int) (dto.OrderHistoryResponse, error)
+	SyncTransactionsByOrder(atOrderId string) (int, error)
 }

@@ -36,38 +36,25 @@ func (s affBrandUCase) GetTopFavouriteAffBrand(ctx context.Context, userId uint6
 		return dto.AffCampaignAppDtoResponse{}, err
 	}
 
-	total := len(listCountFavAffBrand)
-
-	nextPage := page
-	if total > page*size {
-		nextPage += 1
-	}
-
 	// Get top favorited brands
 	var brandIds []uint
-	for index, favCountAffBrand := range listCountFavAffBrand {
-		if index < (page-1)*size {
-			continue
-		}
-		if index >= page*size {
-			break
-		}
+	for _, favCountAffBrand := range listCountFavAffBrand {
 		brandIds = append(brandIds, favCountAffBrand.BrandId)
 	}
 	if len(brandIds) == 0 {
 		return dto.AffCampaignAppDtoResponse{
-			NextPage: nextPage,
+			NextPage: page,
 			Page:     page,
 			Size:     size,
-			Total:    int64(total),
 			Data:     nil,
 		}, nil
 	}
-	listFavAffBrand, err := s.AffCampAppRepository.GetListAffCampaignByBrandIds(ctx, brandIds)
+	listFavAffBrand, err := s.AffCampAppRepository.GetListAffCampaignByBrandIds(ctx, brandIds, page, size)
 	if err != nil {
 		return dto.AffCampaignAppDtoResponse{}, err
 	}
 
+	// Check user's fav brand
 	listUserFavBrand, err := s.UserFavoriteBrandRepository.GetListFavBrandByUserIdAndBrandIds(ctx, userId, brandIds)
 	if err != nil {
 		return dto.AffCampaignAppDtoResponse{}, err
@@ -79,15 +66,21 @@ func (s affBrandUCase) GetTopFavouriteAffBrand(ctx context.Context, userId uint6
 
 	var listAffCampaignComBrandDto []dto.AffCampaignLessDto
 	for i := range listFavAffBrand {
+		if i >= size {
+			break
+		}
 		listAffCampaignComBrandDto = append(listAffCampaignComBrandDto, listFavAffBrand[i].ToAffCampaignLessDto())
 		listAffCampaignComBrandDto[i].Brand.IsFavorited = favBrandCheck[listAffCampaignComBrandDto[i].BrandId]
 		listAffCampaignComBrandDto[i].StellaMaxCom = util.GetStellaMaxCom(listFavAffBrand[i].Attributes)
+	}
+	nextPage := page
+	if len(listFavAffBrand) > size {
+		nextPage += 1
 	}
 	return dto.AffCampaignAppDtoResponse{
 		NextPage: nextPage,
 		Page:     page,
 		Size:     size,
-		Total:    int64(total),
 		Data:     listAffCampaignComBrandDto,
 	}, nil
 }

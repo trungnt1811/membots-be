@@ -5,10 +5,12 @@ import (
 	"os"
 	"testing"
 
-	atMocks "github.com/astraprotocol/affiliate-system/internal/app/accesstrade/mocks"
+	"github.com/astraprotocol/affiliate-system/internal/interfaces"
+
 	"github.com/astraprotocol/affiliate-system/internal/app/campaign"
 	"github.com/astraprotocol/affiliate-system/internal/app/campaign/mocks"
 	"github.com/astraprotocol/affiliate-system/internal/dto"
+	atMocks "github.com/astraprotocol/affiliate-system/internal/infra/accesstrade/mocks"
 	"github.com/astraprotocol/affiliate-system/internal/model"
 	logger "github.com/astraprotocol/affiliate-system/internal/util/log"
 	"github.com/rs/zerolog"
@@ -17,14 +19,14 @@ import (
 
 type CampaignUcaseTestSuite struct {
 	suite.Suite
-	ucase *campaign.CampaignUsecase
+	ucase interfaces.CampaignUCase
 }
 
 func NewCampaignUcaseTestSuite() *CampaignUcaseTestSuite {
 	logger.LG = logger.NewZerologLogger(os.Stdout, zerolog.InfoLevel)
 	atRepo := atMocks.NewAccessTradeRepoMock()
 	campRepo := mocks.NewCampaignRepoMock()
-	ucase := campaign.NewCampaignUsecase(campRepo, atRepo)
+	ucase := campaign.NewCampaignUCase(campRepo, atRepo)
 	return &CampaignUcaseTestSuite{
 		ucase: ucase,
 	}

@@ -22,19 +22,19 @@ type RewardConfig struct {
 	SellerId      uint   // Owner of Reward Program
 }
 
-type RewardUsecase struct {
+type rewardUCase struct {
 	repo         interfaces.RewardRepository
 	orderRepo    interfaces.OrderRepository
 	rwService    *shipping.ShippingClient
 	rewardConfig RewardConfig
 }
 
-func NewRewardUsecase(repo interfaces.RewardRepository,
+func NewRewardUCase(repo interfaces.RewardRepository,
 	orderRepo interfaces.OrderRepository,
 	rwService *shipping.ShippingClient,
 	rewardConfig RewardConfig,
-) *RewardUsecase {
-	return &RewardUsecase{
+) interfaces.RewardUCase {
+	return &rewardUCase{
 		repo:         repo,
 		orderRepo:    orderRepo,
 		rwService:    rwService,
@@ -42,14 +42,14 @@ func NewRewardUsecase(repo interfaces.RewardRepository,
 	}
 }
 
-func (u *RewardUsecase) WithdrawReward(ctx context.Context, userId uint32, userWallet string) (dto.WithdrawRewardResponse, error) {
+func (u *rewardUCase) WithdrawReward(ctx context.Context, userId uint32, userWallet string) (dto.WithdrawRewardResponse, error) {
 	rewards, err := u.repo.GetInProgressRewards(ctx, userId)
 	if err != nil {
 		return dto.WithdrawRewardResponse{}, err
 	}
 
 	// Calculating Reward
-	rewardClaim, rewardToClaim, orderRewardHistories := u.CalculateWithdrawableReward(rewards, userId)
+	rewardClaim, rewardToClaim, orderRewardHistories, completeRwOrders := u.CalculateWithdrawalReward(rewards, userId)
 	if rewardClaim.Amount-AffRewardTxFee < MinWithdrawReward {
 		return dto.WithdrawRewardResponse{
 			Execute: false,
@@ -77,7 +77,7 @@ func (u *RewardUsecase) WithdrawReward(ctx context.Context, userId uint32, userW
 
 	// Save Db
 	rewardClaim.ShippingStatus = model.ShippingStatusSending
-	err = u.repo.SaveRewardWithdraw(ctx, rewardClaim, rewardToClaim, orderRewardHistories)
+	err = u.repo.SaveRewardWithdraw(ctx, rewardClaim, rewardToClaim, orderRewardHistories, completeRwOrders)
 	if err != nil {
 		return dto.WithdrawRewardResponse{}, err
 	}
@@ -88,7 +88,7 @@ func (u *RewardUsecase) WithdrawReward(ctx context.Context, userId uint32, userW
 	}, nil
 }
 
-func (u *RewardUsecase) GetRewardSummary(ctx context.Context, userId uint32) (dto.RewardSummary, error) {
+func (u *rewardUCase) GetRewardSummary(ctx context.Context, userId uint32) (dto.RewardSummary, error) {
 	totalWithdrewAmount, err := u.repo.GetTotalWithdrewAmount(ctx, userId)
 	if err != nil {
 		return dto.RewardSummary{}, err
@@ -114,7 +114,7 @@ func (u *RewardUsecase) GetRewardSummary(ctx context.Context, userId uint32) (dt
 	}
 	totalOrderRewardInDay = util.RoundFloat(totalOrderRewardInDay, 2)
 
-	withdrawable, _, _ := u.CalculateWithdrawableReward(inProgressRewards, userId)
+	withdrawable, _, _, _ := u.CalculateWithdrawalReward(inProgressRewards, userId)
 	pendingRewardAmount := util.RoundFloat(totalOrderReward-withdrawable.Amount, 2)
 
 	return dto.RewardSummary{
@@ -126,7 +126,7 @@ func (u *RewardUsecase) GetRewardSummary(ctx context.Context, userId uint32) (dt
 	}, nil
 }
 
-func (u *RewardUsecase) GetWithdrawHistory(ctx context.Context, userId uint32, page, size int) (dto.RewardWithdrawResponse, error) {
+func (u *rewardUCase) GetWithdrawHistory(ctx context.Context, userId uint32, page, size int) (dto.RewardWithdrawResponse, error) {
 	rewards, err := u.repo.GetWithdrawHistory(ctx, userId, page, size)
 	if err != nil {
 		return dto.RewardWithdrawResponse{}, err

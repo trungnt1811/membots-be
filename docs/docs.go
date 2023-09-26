@@ -268,7 +268,12 @@ const docTemplate = `{
         },
         "/api/v1/app/aff-categories/{categoryId}": {
             "get": {
-                "description": "Get all aff-campaign in category",
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get list aff brand by category",
                 "consumes": [
                     "application/json"
                 ],
@@ -278,20 +283,8 @@ const docTemplate = `{
                 "tags": [
                     "category"
                 ],
-                "summary": "Get all aff-campaign in category",
+                "summary": "Get list aff brand by category",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "by to query, default is ctime/top",
-                        "name": "by",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "order to query, default is desc",
-                        "name": "order",
-                        "in": "query"
-                    },
                     {
                         "type": "integer",
                         "description": "categoryId to query",
@@ -303,6 +296,18 @@ const docTemplate = `{
                         "type": "string",
                         "description": "page to query, default is 1",
                         "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "size to query, default is 10",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "filter to query, default is top-favorited (top-favorited/most-commission)",
+                        "name": "filter",
                         "in": "query"
                     }
                 ],
@@ -421,6 +426,46 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/dto.AffCampaignAppDtoResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/app/home-page": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get home page",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "app"
+                ],
+                "summary": "Get home page",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.HomePageDto"
                         }
                     },
                     "400": {
@@ -654,6 +699,12 @@ const docTemplate = `{
                         "description": "Failed Dependency",
                         "schema": {
                             "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "429": {
+                        "description": "reach withdraw limit, max one time each three seconds",
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 }
@@ -1233,11 +1284,86 @@ const docTemplate = `{
                     "console"
                 ],
                 "summary": "Get summary statistic data",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Time in RFC3339 format",
+                        "name": "since",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Time in RFC3339 format",
+                        "name": "until",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/dto.StatisticSummaryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "424": {
+                        "description": "Failed Dependency",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/console/summary/:campaignId": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get campaign statistic data",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "console"
+                ],
+                "summary": "Get campaign statistic data",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Time range",
+                        "name": "campaignId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Time in RFC3339 format",
+                        "name": "since",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Time in RFC3339 format",
+                        "name": "until",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.CampaignSummaryResponse"
                         }
                     },
                     "400": {
@@ -1716,12 +1842,6 @@ const docTemplate = `{
                 "accesstrade_id": {
                     "type": "string"
                 },
-                "attribute": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/dto.AffCampaignAttributeDto"
-                    }
-                },
                 "brand": {
                     "$ref": "#/definitions/dto.BrandDto"
                 },
@@ -2090,6 +2210,23 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.CampaignSummaryResponse": {
+            "type": "object",
+            "properties": {
+                "num_of_customers": {
+                    "type": "integer"
+                },
+                "num_of_orders": {
+                    "type": "integer"
+                },
+                "total_asa_cashback": {
+                    "$ref": "#/definitions/dto.Cashback"
+                },
+                "total_revenue": {
+                    "type": "number"
+                }
+            }
+        },
         "dto.Cashback": {
             "type": "object",
             "properties": {
@@ -2132,13 +2269,39 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.HomePageDto": {
+            "type": "object",
+            "properties": {
+                "following": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.AffCampaignLessDto"
+                    }
+                },
+                "most_commission": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.AffCampaignLessDto"
+                    }
+                },
+                "recently_visited": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.AffCampaignLessDto"
+                    }
+                },
+                "top_favorited": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.AffCampaignLessDto"
+                    }
+                }
+            }
+        },
         "dto.OrderDetailsDto": {
             "type": "object",
             "properties": {
                 "accesstrade_order_id": {
-                    "type": "string"
-                },
-                "at_product_link": {
                     "type": "string"
                 },
                 "billing": {
@@ -2159,6 +2322,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "image_url": {
+                    "description": "brand logo",
                     "type": "string"
                 },
                 "merchant": {
@@ -2336,6 +2500,9 @@ const docTemplate = `{
         "dto.StatisticSummaryResponse": {
             "type": "object",
             "properties": {
+                "active_campaigns": {
+                    "type": "integer"
+                },
                 "num_of_customers": {
                     "type": "integer"
                 },

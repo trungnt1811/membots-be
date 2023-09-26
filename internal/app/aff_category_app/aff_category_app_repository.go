@@ -21,18 +21,6 @@ func (a *affCategoryRepository) GetAllCategory(ctx context.Context, page, size i
 	return listCategory, err
 }
 
-func (a *affCategoryRepository) GetAllAffCampaignInCategory(ctx context.Context, categoryId uint32, orderBy string, page, size int) ([]model.AffCampaignLessApp, error) {
-	offset := (page - 1) * size
-	var listCouponInCategory []model.AffCampaignLessApp
-	err := a.Db.Table("aff_campaign").
-		Joins("Brand").
-		Where("aff_campaign.category_id = ? AND aff_campaign.stella_status = ?", categoryId, "IN_PROGRESS").
-		Limit(size + 1).
-		Offset(offset).
-		Order("id desc").Find(&listCouponInCategory).Error
-	return listCouponInCategory, err
-}
-
 func NewAppCategoryRepository(db *gorm.DB) interfaces.AffCategoryRepository {
 	return &affCategoryRepository{
 		Db: db,

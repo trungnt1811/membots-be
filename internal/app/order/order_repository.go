@@ -5,22 +5,24 @@ import (
 	"database/sql"
 	"time"
 
+	"github.com/astraprotocol/affiliate-system/internal/interfaces"
+
 	"github.com/astraprotocol/affiliate-system/internal/model"
 
 	"gorm.io/gorm"
 )
 
-type OrderRepository struct {
+type orderRepository struct {
 	db *gorm.DB
 }
 
-func NewOrderRepository(db *gorm.DB) *OrderRepository {
-	return &OrderRepository{
+func NewOrderRepository(db *gorm.DB) interfaces.OrderRepository {
+	return &orderRepository{
 		db: db,
 	}
 }
 
-func (repo *OrderRepository) FindNonRewardOrders(
+func (repo *orderRepository) FindNonRewardOrders(
 	customerId, sellerId int,
 	fromDate time.Time,
 	minValue int64,
@@ -42,15 +44,15 @@ func (repo *OrderRepository) FindNonRewardOrders(
 	return entities, nil
 }
 
-func (repo *OrderRepository) SavePostBackLog(req *model.AffPostBackLog) error {
+func (repo *orderRepository) SavePostBackLog(req *model.AffPostBackLog) error {
 	return repo.db.Create(req).Error
 }
 
-func (repo *OrderRepository) CreateOrder(order *model.AffOrder) error {
+func (repo *orderRepository) CreateOrder(order *model.AffOrder) error {
 	return repo.db.Create(order).Error
 }
 
-func (repo *OrderRepository) UpdateOrder(updated *model.AffOrder) (int, error) {
+func (repo *orderRepository) UpdateOrder(updated *model.AffOrder) (int, error) {
 	result := repo.db.Model(updated).Where("id = ?", updated.ID).Updates(updated)
 	if result.Error != nil {
 		return 0, result.Error
@@ -58,7 +60,7 @@ func (repo *OrderRepository) UpdateOrder(updated *model.AffOrder) (int, error) {
 	return int(result.RowsAffected), nil
 }
 
-func (repo *OrderRepository) UpdateOrCreateATTransactions(newTxs []model.AffTransaction) error {
+func (repo *orderRepository) UpdateOrCreateATTransactions(newTxs []model.AffTransaction) error {
 	err := repo.db.Transaction(func(tx *gorm.DB) error {
 		for _, newTx := range newTxs {
 			// Find by id
@@ -95,13 +97,13 @@ func (repo *OrderRepository) UpdateOrCreateATTransactions(newTxs []model.AffTran
 	return nil
 }
 
-func (repo *OrderRepository) FindOrderByAccessTradeId(atOrderId string) (*model.AffOrder, error) {
+func (repo *orderRepository) FindOrderByAccessTradeId(atOrderId string) (*model.AffOrder, error) {
 	var order model.AffOrder
 	err := repo.db.First(&order, "accesstrade_order_id = ?", atOrderId).Error
 	return &order, err
 }
 
-func (repo *OrderRepository) UpdateTrackedClickOrder(trackedId uint64, order *model.AffOrder) error {
+func (repo *orderRepository) UpdateTrackedClickOrder(trackedId uint64, order *model.AffOrder) error {
 	// Only update empty order_id item
 	err := repo.db.Model(&model.AffTrackedClick{}).Where(map[string]any{
 		"id":       trackedId,
@@ -115,13 +117,15 @@ func (repo *OrderRepository) UpdateTrackedClickOrder(trackedId uint64, order *mo
 	return err
 }
 
-var selectOrderDetails = "SELECT o.id, o.user_id, o.order_status, o.at_product_link, o.billing, o.category_name, o.merchant, " +
-	"o.accesstrade_order_id, o.pub_commission, o.sales_time, o.confirmed_time, o.created_at, " +
-	"r.amount, r.rewarded_amount, r.commission_fee, r.immediate_release, r.end_at, r.start_at " +
+var selectOrderDetails = "SELECT o.id, o.user_id, o.order_status, o.billing, o.category_name, o.merchant, " +
+	"o.accesstrade_order_id, o.pub_commission, o.update_time, o.sales_time, o.confirmed_time, o.created_at, " +
+	"r.amount, r.rewarded_amount, r.commission_fee, r.immediate_release, r.end_at, r.start_at, " +
+	"b.logo " +
 	"FROM aff_order AS o " +
-	"LEFT JOIN aff_reward AS r ON r.accesstrade_order_id = o.accesstrade_order_id "
+	"LEFT JOIN aff_reward AS r ON r.accesstrade_order_id = o.accesstrade_order_id " +
+	"LEFT JOIN brand AS b ON b.id = o.brand_id "
 
-func (repo *OrderRepository) GetOrderDetails(ctx context.Context, userId uint32, orderId uint) (*model.OrderDetails, error) {
+func (repo *orderRepository) GetOrderDetails(ctx context.Context, userId uint32, orderId uint) (*model.OrderDetails, error) {
 	var o model.OrderDetails
 	query := selectOrderDetails + "WHERE o.user_id = ? AND o.id = ?"
 
@@ -138,9 +142,11 @@ func (repo *OrderRepository) GetOrderDetails(ctx context.Context, userId uint32,
 		var immediateRelease sql.NullFloat64
 		var rewardEndAt sql.NullTime
 		var rewardStartAt sql.NullTime
-		err = rows.Scan(&o.ID, &o.UserId, &o.OrderStatus, &o.ATProductLink, &o.Billing, &o.CategoryName, &o.Merchant,
-			&o.AccessTradeOrderId, &o.PubCommission, &o.SalesTime, &o.ConfirmedTime, &o.CreatedAt,
-			&rewardAmount, &rewardedAmount, &commissionFee, &immediateRelease, &rewardEndAt, &rewardStartAt)
+		var brandLogo sql.NullString
+		err = rows.Scan(&o.ID, &o.UserId, &o.OrderStatus, &o.Billing, &o.CategoryName, &o.Merchant,
+			&o.AccessTradeOrderId, &o.PubCommission, &o.UpdateTime, &o.SalesTime, &o.ConfirmedTime, &o.CreatedAt,
+			&rewardAmount, &rewardedAmount, &commissionFee, &immediateRelease, &rewardEndAt, &rewardStartAt,
+			&brandLogo)
 		if err != nil {
 			return &model.OrderDetails{}, err
 		}
@@ -150,12 +156,13 @@ func (repo *OrderRepository) GetOrderDetails(ctx context.Context, userId uint32,
 		o.ImmediateRelease = immediateRelease.Float64
 		o.RewardEndAt = rewardEndAt.Time
 		o.RewardStartAt = rewardStartAt.Time
+		o.BrandLogo = brandLogo.String
 	}
 
 	return &o, err
 }
 
-func (repo *OrderRepository) GetOrderHistory(ctx context.Context, since time.Time, userId uint32, status string, page, size int) ([]model.OrderDetails, error) {
+func (repo *orderRepository) GetOrderHistory(ctx context.Context, since time.Time, userId uint32, status string, page, size int) ([]model.OrderDetails, error) {
 	orderHistory := []model.OrderDetails{}
 
 	limit := size + 1
@@ -191,9 +198,11 @@ func (repo *OrderRepository) GetOrderHistory(ctx context.Context, since time.Tim
 		var immediateRelease sql.NullFloat64
 		var rewardEndAt sql.NullTime
 		var rewardStartAt sql.NullTime
-		err = rows.Scan(&o.ID, &o.UserId, &o.OrderStatus, &o.ATProductLink, &o.Billing, &o.CategoryName, &o.Merchant,
-			&o.AccessTradeOrderId, &o.PubCommission, &o.SalesTime, &o.ConfirmedTime, &o.CreatedAt,
-			&rewardAmount, &rewardedAmount, &commissionFee, &immediateRelease, &rewardEndAt, &rewardStartAt)
+		var brandLogo sql.NullString
+		err = rows.Scan(&o.ID, &o.UserId, &o.OrderStatus, &o.Billing, &o.CategoryName, &o.Merchant,
+			&o.AccessTradeOrderId, &o.PubCommission, &o.UpdateTime, &o.SalesTime, &o.ConfirmedTime, &o.CreatedAt,
+			&rewardAmount, &rewardedAmount, &commissionFee, &immediateRelease, &rewardEndAt, &rewardStartAt,
+			&brandLogo)
 		if err != nil {
 			return []model.OrderDetails{}, err
 		}
@@ -203,6 +212,7 @@ func (repo *OrderRepository) GetOrderHistory(ctx context.Context, since time.Tim
 		o.ImmediateRelease = immediateRelease.Float64
 		o.RewardEndAt = rewardEndAt.Time
 		o.RewardStartAt = rewardStartAt.Time
+		o.BrandLogo = brandLogo.String
 
 		orderHistory = append(orderHistory, o)
 	}
@@ -210,7 +220,7 @@ func (repo *OrderRepository) GetOrderHistory(ctx context.Context, since time.Tim
 	return orderHistory, nil
 }
 
-func (repo *OrderRepository) CountOrders(ctx context.Context, since time.Time, userId uint32, status string) (int64, error) {
+func (repo *orderRepository) CountOrders(ctx context.Context, since time.Time, userId uint32, status string) (int64, error) {
 	var count int64
 	statusQuery, statusParams := model.BuildOrderStatusQuery(status)
 	query := "SELECT COUNT(o.accesstrade_order_id) " +
@@ -230,7 +240,7 @@ func (repo *OrderRepository) CountOrders(ctx context.Context, since time.Time, u
 	return count, err
 }
 
-func (repo *OrderRepository) GetCampaignByATId(atId string) (*model.AffCampaign, error) {
+func (repo *orderRepository) GetCampaignByATId(atId string) (*model.AffCampaign, error) {
 	var camp model.AffCampaign
 	err := repo.db.First(&camp, "accesstrade_id = ?", atId).Error
 	if err != nil {

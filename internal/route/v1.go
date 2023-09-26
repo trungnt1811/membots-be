@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"github.com/astraprotocol/affiliate-system/internal/app/reward"
+
 	bannerApp "github.com/astraprotocol/affiliate-system/internal/app/aff_banner_app"
 	"github.com/astraprotocol/affiliate-system/internal/app/aff_brand"
 	categoryApp "github.com/astraprotocol/affiliate-system/internal/app/aff_category_app"
@@ -11,20 +13,21 @@ import (
 	bannerConsole "github.com/astraprotocol/affiliate-system/internal/app/console/banner"
 	consoleOrder "github.com/astraprotocol/affiliate-system/internal/app/console/order"
 	"github.com/astraprotocol/affiliate-system/internal/app/console/statistic"
+	"github.com/astraprotocol/affiliate-system/internal/app/home_page"
 	"github.com/astraprotocol/affiliate-system/internal/app/user_favorite_brand"
+	"github.com/astraprotocol/affiliate-system/internal/middleware"
 	"github.com/go-co-op/gocron"
 
 	"github.com/astraprotocol/affiliate-system/conf"
-	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade"
 	"github.com/astraprotocol/affiliate-system/internal/app/aff_camp_app"
 	"github.com/astraprotocol/affiliate-system/internal/app/auth"
-	campaign3 "github.com/astraprotocol/affiliate-system/internal/app/campaign"
+	campaign1 "github.com/astraprotocol/affiliate-system/internal/app/campaign"
 	campaignConsole "github.com/astraprotocol/affiliate-system/internal/app/console/campaign"
 	"github.com/astraprotocol/affiliate-system/internal/app/order"
 	"github.com/astraprotocol/affiliate-system/internal/app/redeem"
-	"github.com/astraprotocol/affiliate-system/internal/app/reward"
 	"github.com/astraprotocol/affiliate-system/internal/app/user_view_aff_camp"
 	"github.com/astraprotocol/affiliate-system/internal/dto"
+	"github.com/astraprotocol/affiliate-system/internal/infra/accesstrade"
 	"github.com/astraprotocol/affiliate-system/internal/infra/caching"
 	"github.com/astraprotocol/affiliate-system/internal/infra/msgqueue"
 	"github.com/astraprotocol/affiliate-system/internal/infra/shipping"
@@ -56,15 +59,15 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	userViewAffCampQueue := msgqueue.NewKafkaProducer(msgqueue.KAFKA_TOPIC_USER_VIEW_AFF_CAMP)
 
 	// SECTION: Campaign and link
-	campaignRepo := campaign3.NewCampaignRepository(db)
-	campaignUsecase := campaign3.NewCampaignUsecase(campaignRepo, atRepo)
-	campaignHandler := campaign3.NewCampaignHandler(campaignUsecase)
+	campRepo := campaign1.NewCampaignRepository(db)
+	campaignUCase := campaign1.NewCampaignUCase(campRepo, atRepo)
+	campaignHandler := campaign1.NewCampaignHandler(campaignUCase)
 	campaignRoute := v1.Group("/campaign")
 	campaignRoute.POST("/link", authHandler.CheckUserHeader(), campaignHandler.PostGenerateAffLink)
 
 	// SECTION: Order Module and link
 	orderRepo := order.NewOrderRepository(db)
-	orderUcase := order.NewOrderUcase(orderRepo, atRepo)
+	orderUcase := order.NewOrderUCase(orderRepo, atRepo)
 	orderHandler := order.NewOrderHandler(orderUcase)
 	orderRoute := v1.Group("/order")
 	orderRoute.POST("/post-back", orderHandler.PostBackOrderHandle)
@@ -108,9 +111,10 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 
 	// SECTION: Console Summary
 	statisticRepo := statistic.NewStatisticRepository(db)
-	statisticUcase := statistic.NewStatisticUcase(statisticRepo)
+	statisticUcase := statistic.NewStatisticUCase(statisticRepo)
 	statisticHandler := statistic.NewStatisticHandler(statisticUcase)
 	consoleRouter.GET("/summary", authHandler.CheckAdminHeader(), statisticHandler.GetSummary)
+	consoleRouter.GET("/summary/:campaignId", authHandler.CheckAdminHeader(), statisticHandler.GetCampaignSummary)
 
 	// SECTION: App module
 	appRouter := v1.Group("/app")
@@ -140,6 +144,10 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	affBrandHandler := aff_brand.NewAffBrandHandler(userViewAffCampUCase, affBrandUCase)
 	appRouter.GET("brand", authHandler.CheckUserHeader(), affBrandHandler.GetListAffBrandByUser)
 
+	homePageUCase := home_page.NewHomePageUCase(affBrandCache, affCampAppCache, userFavoriteBrandCache, userViewAffCampCache)
+	homePageHandler := home_page.NewHomePageHandler(homePageUCase)
+	appRouter.GET("/home-page", authHandler.CheckUserHeader(), homePageHandler.GetHomePage)
+
 	affAppBannerRepo := bannerApp.NewAppBannerRepository(db)
 	affAppBannerUCase := bannerApp.NewBannerUCase(affAppBannerRepo)
 	affAppBannerHandler := bannerApp.NewAppBannerHandler(affAppBannerUCase)
@@ -148,10 +156,10 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	appRouter.GET("/aff-banner/:id", affAppBannerHandler.GetBannerById)
 
 	affCategoryRepo := categoryApp.NewAppCategoryRepository(db)
-	affCategoryUCase := categoryApp.NewAffCategoryUCase(affCategoryRepo)
+	affCategoryUCase := categoryApp.NewAffCategoryUCase(affCategoryRepo, affBrandCache, affCampAppCache, userFavoriteBrandCache)
 	affCategoryHandler := categoryApp.NewAffCategoryHandler(affCategoryUCase)
 	appRouter.GET("/aff-categories", affCategoryHandler.GetAllCategory)
-	appRouter.GET("/aff-categories/:categoryId", affCategoryHandler.GetAllAffCampaignInCategory)
+	appRouter.GET("/aff-categories/:categoryId", authHandler.CheckUserHeader(), affCategoryHandler.GetListAffBrandByUser)
 
 	affSearchRepo := aff_search.NewAffSearchRepository(db)
 	affSearchUCase := aff_search.NewAffSearchUCase(affSearchRepo)
@@ -164,13 +172,14 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 		RewardProgram: config.Aff.RewardProgram,
 	}
 	rewardRepo := reward.NewRewardRepository(db)
-	rewardUsecase := reward.NewRewardUsecase(rewardRepo, orderRepo, shippingClient, rewardConf)
+	rewardUsecase := reward.NewRewardUCase(rewardRepo, orderRepo, shippingClient, rewardConf)
 	rewardHandler := reward.NewRewardHandler(rewardUsecase)
+	withdrawRateLimit := middleware.NewRateLimit(rdb, 3*time.Second, 1)
 
 	rewardRouter := appRouter.Group("/rewards", authHandler.CheckUserHeader())
 	rewardRouter.GET("/summary", rewardHandler.GetRewardSummary)
 	rewardRouter.GET("/withdraw", rewardHandler.GetWithdrawHistory)
-	rewardRouter.POST("/withdraw", rewardHandler.WithdrawReward)
+	rewardRouter.POST("/withdraw", withdrawRateLimit, rewardHandler.WithdrawReward)
 
 	orderRouteApp := appRouter.Group("/orders", authHandler.CheckUserHeader())
 	orderRouteApp.GET("", orderHandler.GetOrderHistory)

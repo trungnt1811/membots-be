@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade/types"
+	"github.com/astraprotocol/affiliate-system/internal/interfaces"
+
+	"github.com/astraprotocol/affiliate-system/internal/infra/accesstrade/types"
 	model2 "github.com/astraprotocol/affiliate-system/internal/model"
 	"gorm.io/datatypes"
 
@@ -12,17 +14,17 @@ import (
 	"gorm.io/gorm"
 )
 
-type CampaignRepository struct {
+type campaignRepository struct {
 	Db *gorm.DB
 }
 
-func NewCampaignRepository(db *gorm.DB) *CampaignRepository {
-	return &CampaignRepository{
+func NewCampaignRepository(db *gorm.DB) interfaces.CampaignRepository {
+	return &campaignRepository{
 		Db: db,
 	}
 }
 
-func (repo *CampaignRepository) RetrieveCampaignsByAccessTradeIds(ids []string) (map[string]*model2.AffCampaign, error) {
+func (repo *campaignRepository) RetrieveCampaignsByAccessTradeIds(ids []string) (map[string]*model2.AffCampaign, error) {
 	var data []model2.AffCampaign
 	err := repo.Db.Table("aff_campaign").
 		Joins("Description").
@@ -38,7 +40,7 @@ func (repo *CampaignRepository) RetrieveCampaignsByAccessTradeIds(ids []string) 
 	return mapped, nil
 }
 
-func (repo *CampaignRepository) SaveATCampaign(atCampaign *types.ATCampaign) error {
+func (repo *campaignRepository) SaveATCampaign(atCampaign *types.ATCampaign) error {
 	// First create campaign
 	fmt.Println("SaveATCampaign", atCampaign.Id)
 	newCampaign := model2.AffCampaign{
@@ -106,7 +108,7 @@ func (repo *CampaignRepository) SaveATCampaign(atCampaign *types.ATCampaign) err
 	return nil
 }
 
-func (repo *CampaignRepository) GetCampaignLessById(campaignId uint) (model2.AffCampaignLess, error) {
+func (repo *campaignRepository) GetCampaignLessById(campaignId uint) (model2.AffCampaignLess, error) {
 	var data model2.AffCampaignLess
 	err := repo.Db.
 		Where("id = ?", campaignId).
@@ -117,7 +119,7 @@ func (repo *CampaignRepository) GetCampaignLessById(campaignId uint) (model2.Aff
 	return data, nil
 }
 
-func (repo *CampaignRepository) CreateCampaigns(data []model2.AffCampaign) ([]model2.AffCampaign, error) {
+func (repo *campaignRepository) CreateCampaigns(data []model2.AffCampaign) ([]model2.AffCampaign, error) {
 	err := repo.Db.Create(&data).Error
 
 	if err != nil {
@@ -126,7 +128,7 @@ func (repo *CampaignRepository) CreateCampaigns(data []model2.AffCampaign) ([]mo
 	return data, nil
 }
 
-func (repo *CampaignRepository) UpdateCampaigns(data []model2.AffCampaign) ([]model2.AffCampaign, error) {
+func (repo *campaignRepository) UpdateCampaigns(data []model2.AffCampaign) ([]model2.AffCampaign, error) {
 	err := repo.Db.Updates(&data).Error
 
 	if err != nil {
@@ -135,7 +137,7 @@ func (repo *CampaignRepository) UpdateCampaigns(data []model2.AffCampaign) ([]mo
 	return data, nil
 }
 
-func (repo *CampaignRepository) DeactivateCampaigns(data []model2.AffCampaign) error {
+func (repo *campaignRepository) DeactivateCampaigns(data []model2.AffCampaign) error {
 	err := repo.Db.Updates(&data).Error
 
 	if err != nil {
@@ -144,7 +146,7 @@ func (repo *CampaignRepository) DeactivateCampaigns(data []model2.AffCampaign) e
 	return nil
 }
 
-func (repo *CampaignRepository) RetrieveAffLinks(campaignId uint, originalUrl string) ([]model2.AffLink, error) {
+func (repo *campaignRepository) RetrieveAffLinks(campaignId uint, originalUrl string) ([]model2.AffLink, error) {
 	var links []model2.AffLink
 	m := repo.Db.Model(&links)
 	if originalUrl != "" {
@@ -159,12 +161,12 @@ func (repo *CampaignRepository) RetrieveAffLinks(campaignId uint, originalUrl st
 	return links, nil
 }
 
-func (repo *CampaignRepository) CreateAffLinks(data []model2.AffLink) error {
+func (repo *campaignRepository) CreateAffLinks(data []model2.AffLink) error {
 	err := repo.Db.Create(&data).Error
 	return err
 }
 
-func (repo *CampaignRepository) CreateTrackedClick(m *model2.AffTrackedClick) error {
+func (repo *campaignRepository) CreateTrackedClick(m *model2.AffTrackedClick) error {
 	err := repo.Db.Create(&m).Error
 	return err
 }

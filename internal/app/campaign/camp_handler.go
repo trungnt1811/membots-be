@@ -11,12 +11,12 @@ import (
 )
 
 type CampaignHandler struct {
-	usecase interfaces.CampaignUCase
+	uCase interfaces.CampaignUCase
 }
 
-func NewCampaignHandler(usecase interfaces.CampaignUCase) *CampaignHandler {
+func NewCampaignHandler(uCase interfaces.CampaignUCase) *CampaignHandler {
 	return &CampaignHandler{
-		usecase: usecase,
+		uCase: uCase,
 	}
 }
 
@@ -50,7 +50,7 @@ func (handler *CampaignHandler) PostGenerateAffLink(ctx *gin.Context) {
 		return
 	}
 
-	link, err := handler.usecase.GenerateAffLink(uint64(user.ID), &payload)
+	link, err := handler.uCase.GenerateAffLink(uint64(user.ID), &payload)
 	if err != nil {
 		util.RespondError(ctx, http.StatusFailedDependency, "create link fail", err)
 		return

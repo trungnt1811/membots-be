@@ -1,7 +1,7 @@
 package interfaces
 
 import (
-	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade/types"
+	"github.com/astraprotocol/affiliate-system/internal/infra/accesstrade/types"
 )
 
 type ATRepository interface {

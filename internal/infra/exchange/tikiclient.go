@@ -7,6 +7,11 @@ import (
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/imroc/req/v3"
+	"github.com/rs/zerolog/log"
+)
+
+const (
+	REMAIN_VOLUME = 50000 // Ensure if user who have under 50k asa cannot manipulate the price
 )
 
 type TikiClientConfig struct {
@@ -56,23 +61,25 @@ func (client *TikiClient) GetAstraPrice(ctx context.Context) (int64, error) {
 	return 200, nil
 }
 
-// func (c *TikiClient) LinkUserAccount(payload *LinkAccountPayload) (LinkAccountResponse, ErrorResponse, error) {
-// 	endpoint := "/charon/partners/link/verify"
+// GetAstraPrice get ASA price from Tiki exchange
+// Param forSendReward - is the ASA price calculated for send to customer (1) or in opposite way
+func (c *TikiClient) GetAstraPrice2(ctx context.Context, forSendReward bool) (int64, error) {
+	endpoint := "/sandseel/api/v2/public/markets/asaxu/depth"
 
-// 	var errRes ErrorResponseData
-// 	var linkResponse LinkAccountResponse
+	var errRes ErrorResponseData
+	var priceRes ExchangePriceResponse
 
-// 	resp, err := c.R().SetBody(payload).
-// 		SetErrorResult(&errRes).
-// 		SetSuccessResult(&linkResponse).
-// 		Post(endpoint)
-// 	if err != nil {
-// 		return LinkAccountResponse{}, errRes.Error, err
-// 	}
-// 	if !resp.IsSuccessState() {
-// 		log.Error().Msgf("bad response status: %v", resp.Status)
-// 		return LinkAccountResponse{}, errRes.Error, nil
-// 	}
+	resp, err := c.R().
+		SetErrorResult(&errRes).
+		SetSuccessResult(&priceRes).
+		Get(endpoint)
+	if err != nil {
+		return 0, err
+	}
+	if !resp.IsSuccessState() {
+		log.Error().Msgf("bad response status: %v", resp.Status)
+		return 0, nil
+	}
 
-// 	return linkResponse, errRes.Error, nil
-// }
+	return 0, nil
+}

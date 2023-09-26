@@ -5,8 +5,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade"
-	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade/types"
+	"github.com/astraprotocol/affiliate-system/internal/interfaces"
+
+	"github.com/astraprotocol/affiliate-system/internal/infra/accesstrade"
+	"github.com/astraprotocol/affiliate-system/internal/infra/accesstrade/types"
 	logger "github.com/astraprotocol/affiliate-system/internal/util/log"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/suite"
@@ -18,7 +20,7 @@ const (
 
 type RepositoryTestSuite struct {
 	suite.Suite
-	repository *accesstrade.AccessTradeRepository
+	repository interfaces.ATRepository
 }
 
 func NewRepositoryTestSuite() *RepositoryTestSuite {

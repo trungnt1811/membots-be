@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade/types"
+	"github.com/astraprotocol/affiliate-system/internal/interfaces"
+
+	"github.com/astraprotocol/affiliate-system/internal/infra/accesstrade/types"
 	"github.com/astraprotocol/affiliate-system/internal/util/log"
 
 	"github.com/go-resty/resty/v2"
@@ -14,15 +16,15 @@ import (
 )
 
 const (
-	ACCESSTRADE_ENDPOINT = "https://api.accesstrade.vn/v1"
+	AccesstradeEndpoint = "https://api.accesstrade.vn/v1"
 )
 
-type AccessTradeRepository struct {
+type accessTradeRepository struct {
 	APIKey string
 	caller *resty.Client
 }
 
-func NewAccessTradeRepository(APIKey string, retry int, timeoutSec int) *AccessTradeRepository {
+func NewAccessTradeRepository(APIKey string, retry int, timeoutSec int) interfaces.ATRepository {
 	if APIKey == "" {
 		// TODO: Alert about required API key
 	}
@@ -31,21 +33,21 @@ func NewAccessTradeRepository(APIKey string, retry int, timeoutSec int) *AccessT
 	client.SetRetryCount(retry)
 	client.SetTimeout(time.Duration(timeoutSec * int(time.Second)))
 
-	return &AccessTradeRepository{
+	return &accessTradeRepository{
 		APIKey: APIKey,
 		caller: client,
 	}
 }
 
-func (r *AccessTradeRepository) initWithHeaders() *resty.Request {
+func (r *accessTradeRepository) initWithHeaders() *resty.Request {
 	req := r.caller.R()
 	req.SetHeader("Content-Type", "application/json")
 	req.SetHeader("Authorization", fmt.Sprintf("Token %s", r.APIKey))
 	return req
 }
 
-func (r *AccessTradeRepository) QueryMerchants() ([]types.ATMerchant, error) {
-	url := fmt.Sprintf("%s/offers_informations/merchant_list", ACCESSTRADE_ENDPOINT)
+func (r *accessTradeRepository) QueryMerchants() ([]types.ATMerchant, error) {
+	url := fmt.Sprintf("%s/offers_informations/merchant_list", AccesstradeEndpoint)
 	req := r.initWithHeaders()
 	fmt.Println("QueryMerchants", url)
 
@@ -61,8 +63,8 @@ func (r *AccessTradeRepository) QueryMerchants() ([]types.ATMerchant, error) {
 	return body.Data, nil
 }
 
-func (r *AccessTradeRepository) QueryCampaigns(onlyApproval bool, page int, limit int) (*types.ATCampaignListResp, error) {
-	url := fmt.Sprintf("%s/campaigns", ACCESSTRADE_ENDPOINT)
+func (r *accessTradeRepository) QueryCampaigns(onlyApproval bool, page int, limit int) (*types.ATCampaignListResp, error) {
+	url := fmt.Sprintf("%s/campaigns", AccesstradeEndpoint)
 	req := r.initWithHeaders()
 
 	if onlyApproval {
@@ -90,8 +92,8 @@ func (r *AccessTradeRepository) QueryCampaigns(onlyApproval bool, page int, limi
 
 // The `QueryTransactions` function is used to query transactions from the AccessTrade API. It takes in parameters
 // such as `q` (of type `types.ATTransactionQuery`), `page`, and `limit`.
-func (r *AccessTradeRepository) QueryTransactions(q types.ATTransactionQuery, page int, limit int) (*types.ATTransactionResp, error) {
-	url := fmt.Sprintf("%s/transactions", ACCESSTRADE_ENDPOINT)
+func (r *accessTradeRepository) QueryTransactions(q types.ATTransactionQuery, page int, limit int) (*types.ATTransactionResp, error) {
+	url := fmt.Sprintf("%s/transactions", AccesstradeEndpoint)
 	req := r.initWithHeaders()
 
 	if page != 0 {
@@ -122,10 +124,10 @@ func (r *AccessTradeRepository) QueryTransactions(q types.ATTransactionQuery, pa
 	return &body, nil
 }
 
-// The `QueryOrders` function is used to query orders from the AccessTrade API. It takes in parameters
+// QueryOrders The `QueryOrders` function is used to query orders from the AccessTrade API. It takes in parameters
 // such as `q` (of type `types.ATOrderQuery`), `page`, and `limit`.
-func (r *AccessTradeRepository) QueryOrders(q types.ATOrderQuery, page int, limit int) (*types.ATOrderListResp, error) {
-	url := fmt.Sprintf("%s/order-list", ACCESSTRADE_ENDPOINT)
+func (r *accessTradeRepository) QueryOrders(q types.ATOrderQuery, page int, limit int) (*types.ATOrderListResp, error) {
+	url := fmt.Sprintf("%s/order-list", AccesstradeEndpoint)
 	req := r.initWithHeaders()
 
 	if page != 0 {
@@ -159,8 +161,8 @@ func (r *AccessTradeRepository) QueryOrders(q types.ATOrderQuery, page int, limi
 // CreateTrackingLinks The `CreateTrackingLinks` function is used to create tracking links for a campaign in the
 // AccessTrade API. It takes in parameters such as `campaignId` (string), `urls` (slice of strings),
 // and `additional` (map[string]string).
-func (r *AccessTradeRepository) CreateTrackingLinks(campaignId string, shorten bool, urls []string, additional map[string]string) (*types.ATLinkResp, error) {
-	url := fmt.Sprintf("%s/product_link/create", ACCESSTRADE_ENDPOINT)
+func (r *accessTradeRepository) CreateTrackingLinks(campaignId string, shorten bool, urls []string, additional map[string]string) (*types.ATLinkResp, error) {
+	url := fmt.Sprintf("%s/product_link/create", AccesstradeEndpoint)
 	req := r.initWithHeaders()
 
 	reqBody := map[string]any{

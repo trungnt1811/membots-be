@@ -13,19 +13,19 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 )
 
-type CampaignUsecase struct {
+type campaignUCase struct {
 	Repo   interfaces2.CampaignRepository
 	ATRepo interfaces2.ATRepository
 }
 
-func NewCampaignUsecase(repo interfaces2.CampaignRepository, atRepo interfaces2.ATRepository) *CampaignUsecase {
-	return &CampaignUsecase{
+func NewCampaignUCase(repo interfaces2.CampaignRepository, atRepo interfaces2.ATRepository) interfaces2.CampaignUCase {
+	return &campaignUCase{
 		Repo:   repo,
 		ATRepo: atRepo,
 	}
 }
 
-func (u *CampaignUsecase) GenerateAffLink(userId uint64, payload *dto.CreateLinkPayload) (*dto.CreateLinkResponse, error) {
+func (u *campaignUCase) GenerateAffLink(userId uint64, payload *dto.CreateLinkPayload) (*dto.CreateLinkResponse, error) {
 	// First query the campaignLess
 	campaignLess, err := u.Repo.GetCampaignLessById(payload.CampaignId)
 	if err != nil {

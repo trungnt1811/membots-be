@@ -5,10 +5,12 @@ import (
 	"os"
 	"testing"
 
-	atMocks "github.com/astraprotocol/affiliate-system/internal/app/accesstrade/mocks"
+	"github.com/astraprotocol/affiliate-system/internal/interfaces"
+
 	"github.com/astraprotocol/affiliate-system/internal/app/order"
 	"github.com/astraprotocol/affiliate-system/internal/app/order/mocks"
 	"github.com/astraprotocol/affiliate-system/internal/dto"
+	atMocks "github.com/astraprotocol/affiliate-system/internal/infra/accesstrade/mocks"
 	"github.com/astraprotocol/affiliate-system/internal/model"
 	logger "github.com/astraprotocol/affiliate-system/internal/util/log"
 	"github.com/rs/zerolog"
@@ -18,16 +20,16 @@ import (
 type OrderUcaseTestSuite struct {
 	suite.Suite
 	repoMock *mocks.MockOrderRepository
-	ucase    *order.OrderUcase
+	uCase    interfaces.OrderUCase
 }
 
 func NewOrderUcaseTestSuite() *OrderUcaseTestSuite {
 	logger.LG = logger.NewZerologLogger(os.Stdout, zerolog.InfoLevel)
 	atRepo := atMocks.NewAccessTradeRepoMock()
 	repo := mocks.NewMockOrderRepository([]model.AffOrder{})
-	ucase := order.NewOrderUcase(repo, atRepo)
+	ucase := order.NewOrderUCase(repo, atRepo)
 	return &OrderUcaseTestSuite{
-		ucase:    ucase,
+		uCase:    ucase,
 		repoMock: repo,
 	}
 }
@@ -42,7 +44,7 @@ func (s *OrderUcaseTestSuite) TestPostBackReceived() {
 	s.NoError(err)
 
 	// run post back received handle
-	m, err := s.ucase.PostBackUpdateOrder(&postBackReq)
+	m, err := s.uCase.PostBackUpdateOrder(&postBackReq)
 	s.NoError(err)
 	s.Equal(uint(1), m.ID)
 	s.Equal(uint(1), m.UserId)
@@ -56,10 +58,10 @@ func (s *OrderUcaseTestSuite) TestSyncTransactionsByOrder() {
 	s.NoError(err)
 
 	// run post back received handle first
-	_, err = s.ucase.PostBackUpdateOrder(&postBackReq)
+	_, err = s.uCase.PostBackUpdateOrder(&postBackReq)
 	s.NoError(err)
 
-	nSynced, err := s.ucase.SyncTransactionsByOrder(postBackReq.OrderId)
+	nSynced, err := s.uCase.SyncTransactionsByOrder(postBackReq.OrderId)
 	s.NoError(err)
 	s.Equal(4, nSynced)
 }

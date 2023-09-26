@@ -62,7 +62,7 @@ func (client *TikiClient) GetAstraPrice(ctx context.Context) (int64, error) {
 }
 
 // GetAstraPrice get ASA price from Tiki exchange
-// @Param forSendReward - is the ASA price calculated for send to customer (1) or in opposite way
+// Param forSendReward - is the ASA price calculated for send to customer (1) or in opposite way
 func (c *TikiClient) GetAstraPrice2(ctx context.Context, forSendReward bool) (int64, error) {
 	endpoint := "/sandseel/api/v2/public/markets/asaxu/depth"
 

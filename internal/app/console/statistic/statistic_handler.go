@@ -6,7 +6,6 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/util"
-	"github.com/astraprotocol/affiliate-system/internal/util/log"
 	"github.com/gin-gonic/gin"
 )
 
@@ -36,12 +35,13 @@ func (handler *StatisticHandler) GetSummary(ctx *gin.Context) {
 	var d dto.TimeRange
 	err := ctx.BindQuery(&d)
 	if err != nil {
-		log.LG.Errorf("parse time range error: %v", err)
+		util.RespondError(ctx, http.StatusBadRequest, "parse time range failed", err)
+		return
 	}
 
 	resp, err := handler.ucase.GetSummaryByTimeRange(d)
 	if err != nil {
-		util.RespondError(ctx, http.StatusFailedDependency, "time range is required")
+		util.RespondError(ctx, http.StatusFailedDependency, "get summary failed")
 		return
 	}
 

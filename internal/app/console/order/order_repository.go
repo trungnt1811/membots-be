@@ -28,7 +28,7 @@ func (repo *ConsoleOrderRepository) FindOrdersByQuery(timeRange dto.TimeRange, d
 		}
 	}
 
-	if timeRange.Since != nil {
+	if !timeRange.Since.IsZero() {
 		tx.Where(
 			"created_at >= ?", timeRange.Since,
 		)
@@ -36,7 +36,7 @@ func (repo *ConsoleOrderRepository) FindOrdersByQuery(timeRange dto.TimeRange, d
 			"created_at >= ?", timeRange.Since,
 		)
 	}
-	if timeRange.Until != nil {
+	if !timeRange.Until.IsZero() {
 		tx.Where(
 			"created_at <= ?", timeRange.Until,
 		)

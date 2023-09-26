@@ -27,13 +27,11 @@ func (u *ConsoleOrderUcase) GetOrderList(q *dto.OrderListQuery) (*dto.OrderListR
 		dbQuery["user_id"] = q.UserId
 	}
 
-	timeRange := dto.TimeRange{}
-	if !q.Since.IsZero() {
-		timeRange.Since = &q.Since
+	timeRange := dto.TimeRange{
+		Since: q.Since,
+		Until: q.Until,
 	}
-	if !q.Until.IsZero() {
-		timeRange.Until = &q.Until
-	}
+
 	list, total, err := u.Repo.FindOrdersByQuery(timeRange, dbQuery, q.Page, q.PerPage)
 	if err != nil {
 		return nil, fmt.Errorf("find list failed: %v", err)

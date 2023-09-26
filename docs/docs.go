@@ -2409,6 +2409,9 @@ const docTemplate = `{
         "dto.StatisticSummaryResponse": {
             "type": "object",
             "properties": {
+                "active_campaigns": {
+                    "type": "integer"
+                },
                 "num_of_customers": {
                     "type": "integer"
                 },

@@ -111,9 +111,10 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 
 	// SECTION: Console Summary
 	statisticRepo := statistic.NewStatisticRepository(db)
-	statisticUcase := statistic.NewStatisticUcase(statisticRepo)
+	statisticUcase := statistic.NewStatisticUCase(statisticRepo)
 	statisticHandler := statistic.NewStatisticHandler(statisticUcase)
 	consoleRouter.GET("/summary", authHandler.CheckAdminHeader(), statisticHandler.GetSummary)
+	consoleRouter.GET("/summary/:campaignId", authHandler.CheckAdminHeader(), statisticHandler.GetCampaignSummary)
 
 	// SECTION: App module
 	appRouter := v1.Group("/app")

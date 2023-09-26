@@ -16,7 +16,7 @@ func NewStatisticRepository(db *gorm.DB) *StatisticRepository {
 	}
 }
 
-func (repo *StatisticRepository) FindOrdersInRange(d dto.TimeRange, offset int, limit int) ([]model.AffOrder, error) {
+func (repo *StatisticRepository) FindOrdersInRange(campaignId uint, d dto.TimeRange, offset int, limit int) ([]model.AffOrder, error) {
 	var orders []model.AffOrder
 	m := repo.Db.Model(&orders)
 	if !d.Since.IsZero() {
@@ -36,13 +36,16 @@ func (repo *StatisticRepository) FindOrdersInRange(d dto.TimeRange, offset int, 
 	return orders, err
 }
 
-func (repo *StatisticRepository) TotalOrdersInRange(d dto.TimeRange) (int64, error) {
+func (repo *StatisticRepository) TotalOrdersInRange(campaignId uint, d dto.TimeRange) (int64, error) {
 	m := repo.Db.Model(&model.AffOrder{})
 	if !d.Since.IsZero() {
 		m.Where("created_at >= ?", d.Since)
 	}
 	if !d.Until.IsZero() {
 		m.Where("created_at <= ?", d.Until)
+	}
+	if campaignId != 0 {
+		m.Where("campaign_id = ?", campaignId)
 	}
 
 	var result int64 = 0
@@ -64,7 +67,7 @@ func (repo *StatisticRepository) TotalActiveCampaignsInRange(d dto.TimeRange) (i
 	return result, err
 }
 
-func (repo *StatisticRepository) CalculateCashbackInRange(d dto.TimeRange) (dto.Cashback, error) {
+func (repo *StatisticRepository) CalculateCashbackInRange(campaignId uint, d dto.TimeRange) (dto.Cashback, error) {
 	var cashback dto.Cashback
 
 	sql := repo.Db.Table("aff_reward").Select(
@@ -75,6 +78,11 @@ func (repo *StatisticRepository) CalculateCashbackInRange(d dto.TimeRange) (dto.
 	}
 	if !d.Until.IsZero() {
 		sql.Where("updated_at <= ?", d.Until)
+	}
+
+	if campaignId != 0 {
+		sql.Joins("JOIN aff_order ON aff_order.accesstrade_order_id = aff_reward.accesstrade_order_id")
+		sql.Where("aff_order.campaign_id = ?", campaignId)
 	}
 
 	err := sql.Row().Scan(&cashback.Distributed, &cashback.Remain)

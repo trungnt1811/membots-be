@@ -230,3 +230,12 @@ func (repo *orderRepository) CountOrders(ctx context.Context, since time.Time, u
 	}
 	return count, err
 }
+
+func (repo *OrderRepository) GetCampaignByATId(atId string) (*model.AffCampaign, error) {
+	var camp model.AffCampaign
+	err := repo.db.First(&camp, "accesstrade_id = ?", atId).Error
+	if err != nil {
+		return nil, err
+	}
+	return &camp, nil
+}

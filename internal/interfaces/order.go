@@ -26,6 +26,8 @@ type OrderRepository interface {
 	GetOrderDetails(ctx context.Context, userId uint32, orderId uint) (*model.OrderDetails, error)
 	GetOrderHistory(ctx context.Context, since time.Time, userId uint32, status string, page, size int) ([]model.OrderDetails, error)
 	CountOrders(ctx context.Context, since time.Time, userId uint32, status string) (int64, error)
+
+	GetCampaignByATId(atId string) (*model.AffCampaign, error)
 }
 
 type OrderUCase interface {

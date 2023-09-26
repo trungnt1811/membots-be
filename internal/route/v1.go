@@ -167,7 +167,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	rewardRepo := reward.NewRewardRepository(db)
 	rewardUsecase := reward.NewRewardUsecase(rewardRepo, orderRepo, shippingClient, rewardConf)
 	rewardHandler := reward.NewRewardHandler(rewardUsecase)
-	withdrawRateLimit := middleware.NewRateLimit(rdb, 2*time.Second, 1)
+	withdrawRateLimit := middleware.NewRateLimit(rdb, 3*time.Second, 1)
 
 	rewardRouter := appRouter.Group("/rewards", authHandler.CheckUserHeader())
 	rewardRouter.GET("/summary", rewardHandler.GetRewardSummary)

@@ -648,7 +648,7 @@
                         }
                     },
                     "429": {
-                        "description": "reach withdraw limit, max one time each two seconds",
+                        "description": "reach withdraw limit, max one time each three seconds",
                         "schema": {
                             "type": "string"
                         }
@@ -1112,7 +1112,7 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "name": "order_status",
+                        "name": "orderStatus",
                         "in": "query"
                     },
                     {
@@ -1122,7 +1122,7 @@
                     },
                     {
                         "type": "integer",
-                        "name": "per_page",
+                        "name": "perPage",
                         "in": "query"
                     },
                     {
@@ -1137,7 +1137,7 @@
                     },
                     {
                         "type": "integer",
-                        "name": "user_id",
+                        "name": "userId",
                         "in": "query"
                     }
                 ],
@@ -2135,9 +2135,6 @@
                 "accesstrade_order_id": {
                     "type": "string"
                 },
-                "at_product_link": {
-                    "type": "string"
-                },
                 "billing": {
                     "type": "number"
                 },
@@ -2156,6 +2153,7 @@
                     "type": "integer"
                 },
                 "image_url": {
+                    "description": "brand logo",
                     "type": "string"
                 },
                 "merchant": {

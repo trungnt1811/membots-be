@@ -460,7 +460,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.AffCampaignAppDtoResponse"
+                            "$ref": "#/definitions/dto.HomePageDto"
                         }
                     },
                     "400": {
@@ -2169,6 +2169,35 @@ const docTemplate = `{
                 },
                 "original_url": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.HomePageDto": {
+            "type": "object",
+            "properties": {
+                "following": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.AffCampaignLessDto"
+                    }
+                },
+                "most_commission": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.AffCampaignLessDto"
+                    }
+                },
+                "recently_visited": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.AffCampaignLessDto"
+                    }
+                },
+                "top_favorited": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.AffCampaignLessDto"
+                    }
                 }
             }
         },

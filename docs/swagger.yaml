@@ -516,6 +516,25 @@ definitions:
       original_url:
         type: string
     type: object
+  dto.HomePageDto:
+    properties:
+      following:
+        items:
+          $ref: '#/definitions/dto.AffCampaignLessDto'
+        type: array
+      most_commission:
+        items:
+          $ref: '#/definitions/dto.AffCampaignLessDto'
+        type: array
+      recently_visited:
+        items:
+          $ref: '#/definitions/dto.AffCampaignLessDto'
+        type: array
+      top_favorited:
+        items:
+          $ref: '#/definitions/dto.AffCampaignLessDto'
+        type: array
+    type: object
   dto.OrderDetailsDto:
     properties:
       accesstrade_order_id:
@@ -1005,7 +1024,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.AffCampaignAppDtoResponse'
+            $ref: '#/definitions/dto.HomePageDto'
         "400":
           description: Bad Request
           schema:

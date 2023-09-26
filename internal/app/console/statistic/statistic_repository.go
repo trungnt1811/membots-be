@@ -50,6 +50,20 @@ func (repo *StatisticRepository) TotalOrdersInRange(d dto.TimeRange) (int64, err
 	return result, err
 }
 
+func (repo *StatisticRepository) TotalActiveCampaignsInRange(d dto.TimeRange) (int64, error) {
+	m := repo.Db.Model(&model.AffOrder{})
+	if d.Since != nil {
+		m.Where("created_at >= ?", d.Since)
+	}
+	if d.Until != nil {
+		m.Where("created_at <= ?", d.Until)
+	}
+
+	var result int64 = 0
+	err := m.Distinct("campaign_id").Count(&result).Error
+	return result, err
+}
+
 func (repo *StatisticRepository) CalculateCashbackInRange(d dto.TimeRange) (dto.Cashback, error) {
 	var cashback dto.Cashback
 

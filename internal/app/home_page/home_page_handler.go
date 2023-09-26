@@ -10,14 +10,14 @@ import (
 )
 
 type HomePageHandler struct {
-	AffBrandUCase interfaces.AffBrandUCase
+	HomePageUCase interfaces.HomePageUCase
 }
 
 func NewHomePageHandler(
-	ucase interfaces.AffBrandUCase,
+	ucase interfaces.HomePageUCase,
 ) *HomePageHandler {
 	return &HomePageHandler{
-		AffBrandUCase: ucase,
+		HomePageUCase: ucase,
 	}
 }
 
@@ -27,7 +27,7 @@ func NewHomePageHandler(
 // @Tags app
 // @Accept	json
 // @Produce json
-// @Success 200 		{object}	dto.AffCampaignAppDtoResponse
+// @Success 200 		{object}	dto.HomePageDto
 // @Failure 401 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
 // @Security ApiKeyAuth
@@ -40,7 +40,7 @@ func (handler *HomePageHandler) GetHomePage(ctx *gin.Context) {
 		return
 	}
 
-	response, err := handler.AffBrandUCase.GetTopFavouriteAffBrand(ctx, uint64(user.ID), 1, 15)
+	response, err := handler.HomePageUCase.GetHomePage(ctx, uint64(user.ID))
 	if err != nil {
 		util.RespondError(ctx, http.StatusInternalServerError, "get home page error", err)
 		return

@@ -141,7 +141,8 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	affBrandHandler := aff_brand.NewAffBrandHandler(userViewAffCampUCase, affBrandUCase)
 	appRouter.GET("brand", authHandler.CheckUserHeader(), affBrandHandler.GetListAffBrandByUser)
 
-	homePageHandler := home_page.NewHomePageHandler(affBrandUCase)
+	homePageUCase := home_page.NewHomePageUCase(affBrandCache, affCampAppCache, userFavoriteBrandCache, userViewAffCampCache)
+	homePageHandler := home_page.NewHomePageHandler(homePageUCase)
 	appRouter.GET("/home-page", authHandler.CheckUserHeader(), homePageHandler.GetHomePage)
 
 	affAppBannerRepo := bannerApp.NewAppBannerRepository(db)

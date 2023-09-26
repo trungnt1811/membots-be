@@ -3,8 +3,8 @@ package model
 import (
 	"time"
 
-	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade/types"
 	"github.com/astraprotocol/affiliate-system/internal/dto"
+	"github.com/astraprotocol/affiliate-system/internal/infra/accesstrade/types"
 	"github.com/astraprotocol/affiliate-system/internal/util"
 )
 

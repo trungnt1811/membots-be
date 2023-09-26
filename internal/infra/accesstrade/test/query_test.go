@@ -3,10 +3,11 @@ package test
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade/types"
 	"net/url"
 	"testing"
 	"time"
+
+	"github.com/astraprotocol/affiliate-system/internal/infra/accesstrade/types"
 
 	"github.com/google/go-querystring/query"
 	"github.com/stretchr/testify/assert"

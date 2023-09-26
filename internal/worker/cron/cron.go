@@ -2,8 +2,8 @@ package cron
 
 import (
 	"github.com/astraprotocol/affiliate-system/conf"
-	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade"
 	"github.com/astraprotocol/affiliate-system/internal/app/campaign"
+	"github.com/astraprotocol/affiliate-system/internal/infra/accesstrade"
 	"gorm.io/gorm"
 )
 

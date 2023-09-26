@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade/types"
 	"github.com/astraprotocol/affiliate-system/internal/dto"
+	"github.com/astraprotocol/affiliate-system/internal/infra/accesstrade/types"
 	"github.com/astraprotocol/affiliate-system/internal/infra/msgqueue"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/model"

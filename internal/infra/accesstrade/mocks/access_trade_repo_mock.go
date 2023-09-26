@@ -3,7 +3,7 @@ package mocks
 import (
 	"encoding/json"
 
-	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade/types"
+	"github.com/astraprotocol/affiliate-system/internal/infra/accesstrade/types"
 )
 
 type AccessTradeRepoMock struct{}

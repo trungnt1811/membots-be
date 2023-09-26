@@ -38,13 +38,15 @@ func (r affCampAppRepository) GetAllAffCampaign(ctx context.Context, orderBy str
 				return db
 			}).
 			Where("stella_status = ?", model.StellaStatusInProgress).
-			Find(&listAffCampaign).Limit(size + 1).Offset(offset).Error
+			Limit(size + 1).Offset(offset).
+			Find(&listAffCampaign).Error
 	default:
 		err = r.db.Joins("Brand").
 			Preload("Attributes").
 			Where("stella_status = ?", model.StellaStatusInProgress).
+			Limit(size + 1).Offset(offset).
 			Order("aff_campaign.id ASC").
-			Find(&listAffCampaign).Limit(size + 1).Offset(offset).Error
+			Find(&listAffCampaign).Error
 	}
 	return listAffCampaign, err
 }
@@ -59,14 +61,14 @@ func (r affCampAppRepository) GetAffCampaignById(ctx context.Context, id uint64)
 	return affCampaign, err
 }
 
-func (r affCampAppRepository) GetListAffCampaignByBrandIds(ctx context.Context, brandIds []uint) ([]model.AffCampaignComBrand, error) {
+func (r affCampAppRepository) GetListAffCampaignByBrandIds(ctx context.Context, brandIds []uint, page, size int) ([]model.AffCampaignComBrand, error) {
 	var listAffCampaign []model.AffCampaignComBrand
 	// Ordering by the order of values in a IN() clause
 	s, _ := json.Marshal(brandIds)
 	findInSet := strings.Trim(string(s), "[]")
-	err := r.db.Joins("Brand").
-		Preload("Attributes").
-		Where("aff_campaign.brand_id IN ? AND stella_status = ?", brandIds, model.StellaStatusInProgress).
+	offset := (page - 1) * size
+	err := r.db.Joins("Brand").Where("aff_campaign.brand_id IN ? AND stella_status = ?", brandIds, model.StellaStatusInProgress).
+		Limit(size + 1).Offset(offset).
 		Order(fmt.Sprintf("FIND_IN_SET(aff_campaign.brand_id,'%s')", findInSet)).
 		Find(&listAffCampaign).Error
 	return listAffCampaign, err

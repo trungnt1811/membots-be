@@ -13,7 +13,7 @@ const ListAffCampaignOrderByDefault = "default"
 type AffCampAppRepository interface {
 	GetAllAffCampaign(ctx context.Context, orderBy string, page, size int) ([]model.AffCampaignLessApp, error)
 	GetAffCampaignById(ctx context.Context, id uint64) (model.AffCampaignApp, error)
-	GetListAffCampaignByBrandIds(ctx context.Context, brandIds []uint) ([]model.AffCampaignComBrand, error)
+	GetListAffCampaignByBrandIds(ctx context.Context, brandIds []uint, page, size int) ([]model.AffCampaignComBrand, error)
 }
 
 type AffCampAppUCase interface {

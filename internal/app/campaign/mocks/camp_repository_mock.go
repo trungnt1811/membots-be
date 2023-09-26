@@ -1,7 +1,7 @@
 package mocks
 
 import (
-	"github.com/astraprotocol/affiliate-system/internal/app/accesstrade/types"
+	"github.com/astraprotocol/affiliate-system/internal/infra/accesstrade/types"
 	"github.com/astraprotocol/affiliate-system/internal/model"
 )
 

@@ -429,6 +429,46 @@
                 }
             }
         },
+        "/api/v1/app/home-page": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get home page",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "app"
+                ],
+                "summary": "Get home page",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.HomePageDto"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/app/orders": {
             "get": {
                 "security": [
@@ -1112,7 +1152,7 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "name": "orderStatus",
+                        "name": "order_status",
                         "in": "query"
                     },
                     {
@@ -1122,7 +1162,7 @@
                     },
                     {
                         "type": "integer",
-                        "name": "perPage",
+                        "name": "per_page",
                         "in": "query"
                     },
                     {
@@ -1137,7 +1177,7 @@
                     },
                     {
                         "type": "integer",
-                        "name": "userId",
+                        "name": "user_id",
                         "in": "query"
                     }
                 ],
@@ -2129,6 +2169,35 @@
                 }
             }
         },
+        "dto.HomePageDto": {
+            "type": "object",
+            "properties": {
+                "following": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.AffCampaignLessDto"
+                    }
+                },
+                "most_commission": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.AffCampaignLessDto"
+                    }
+                },
+                "recently_visited": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.AffCampaignLessDto"
+                    }
+                },
+                "top_favorited": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.AffCampaignLessDto"
+                    }
+                }
+            }
+        },
         "dto.OrderDetailsDto": {
             "type": "object",
             "properties": {
@@ -2331,6 +2400,9 @@
         "dto.StatisticSummaryResponse": {
             "type": "object",
             "properties": {
+                "active_campaigns": {
+                    "type": "integer"
+                },
                 "num_of_customers": {
                     "type": "integer"
                 },

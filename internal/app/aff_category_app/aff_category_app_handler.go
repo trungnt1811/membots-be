@@ -1,9 +1,10 @@
 package category
 
 import (
+	"fmt"
 	util "github.com/AstraProtocol/reward-libs/utils"
+	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
-	util2 "github.com/astraprotocol/affiliate-system/internal/util"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -40,38 +41,58 @@ func (handler *AffCategoryHandler) GetAllCategory(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response)
 }
 
-// GetAllAffCampaignInCategory Get all aff-campaign in category
-// @Summary Get all aff-campaign in category
-// @Description Get all aff-campaign in category
+// GetListAffBrandByUser Get list aff brand by category
+// @Summary Get list aff brand by category
+// @Description Get list aff brand by category
 // @Tags 	category
 // @Accept	json
 // @Produce json
-// @Param by query string false "by to query, default is ctime/top"
-// @Param order query string false "order to query, default is desc"
+// @Param categoryId path int true "categoryId to query"
+// @Param page query string false "page to query, default is 1"
+// @Param size query string false "size to query, default is 10"
+// @Param filter query string false "filter to query, default is top-favorited (top-favorited/most-commission)"
 // @Success 200 		{object}	dto.AffCampaignAppDtoResponse
 // @Failure 401 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
-// @Param categoryId path int true "categoryId to query"
-// @Param page query string false "page to query, default is 1"
+// @Security ApiKeyAuth
 // @Router 	/api/v1/app/aff-categories/{categoryId} [get]
-func (handler *AffCategoryHandler) GetAllAffCampaignInCategory(ctx *gin.Context) {
+func (handler *AffCategoryHandler) GetListAffBrandByUser(ctx *gin.Context) {
 	categoryId, err := strconv.Atoi(ctx.Param("categoryId"))
 	if err != nil {
 		util.RespondError(ctx, http.StatusBadRequest, "categoryId id is required", err)
 		return
 	}
+	// First, take user from JWT
+	user, err := dto.GetUserInfo(ctx)
+	if err != nil {
+		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
+		return
+	}
+
 	page := ctx.GetInt("page")
 	size := ctx.GetInt("size")
-	queryBy := ctx.DefaultQuery("by", "ctime")
-	order := ctx.DefaultQuery("order", "desc")
-	if !util2.IsValidOrder(order) {
-		util.RespondError(ctx, http.StatusBadRequest, "query order invalid, order in {asc, desc}", nil)
+
+	filter := ctx.DefaultQuery("filter", "top-favorited")
+	switch filter {
+	case "top-favorited":
+		response, err := handler.UCase.GetTopFavouriteAffBrand(ctx, uint(categoryId), uint64(user.ID), page, size)
+		if err != nil {
+			util.RespondError(ctx, http.StatusInternalServerError, "Get top favorited aff brands error: ", err)
+			return
+		}
+		ctx.JSON(http.StatusOK, response)
+		return
+	case "most-commission":
+		response, err := handler.UCase.GetMostCommissionAffCampaign(ctx, uint(categoryId), uint64(user.ID), page, size)
+		if err != nil {
+			util.RespondError(ctx, http.StatusInternalServerError, "Get most commission aff brands error: ", err)
+			return
+		}
+		ctx.JSON(http.StatusOK, response)
+		return
+	default:
+		util.RespondError(ctx, http.StatusBadRequest, fmt.Sprintf("filter: %s is not supported", filter))
 		return
 	}
-	response, err := handler.UCase.GetAllAffCampaignInCategory(ctx, uint32(categoryId), queryBy, order, page, size)
-	if err != nil {
-		util.RespondError(ctx, http.StatusInternalServerError, "Get all aff-campaign in category error ", err)
-		return
-	}
-	ctx.JSON(http.StatusOK, response)
+
 }

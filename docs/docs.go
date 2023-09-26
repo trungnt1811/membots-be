@@ -268,7 +268,12 @@ const docTemplate = `{
         },
         "/api/v1/app/aff-categories/{categoryId}": {
             "get": {
-                "description": "Get all aff-campaign in category",
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get list aff brand by category",
                 "consumes": [
                     "application/json"
                 ],
@@ -278,20 +283,8 @@ const docTemplate = `{
                 "tags": [
                     "category"
                 ],
-                "summary": "Get all aff-campaign in category",
+                "summary": "Get list aff brand by category",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "by to query, default is ctime/top",
-                        "name": "by",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "order to query, default is desc",
-                        "name": "order",
-                        "in": "query"
-                    },
                     {
                         "type": "integer",
                         "description": "categoryId to query",
@@ -303,6 +296,18 @@ const docTemplate = `{
                         "type": "string",
                         "description": "page to query, default is 1",
                         "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "size to query, default is 10",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "filter to query, default is top-favorited (top-favorited/most-commission)",
+                        "name": "filter",
                         "in": "query"
                     }
                 ],

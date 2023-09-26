@@ -75,12 +75,20 @@ func (s affCampAppUCase) GetAffCampaignById(ctx context.Context, id uint64, user
 		favBrandCheck[userFavBrand.BrandId] = true
 	}
 
-	respone := affCampaign.ToAffCampaignAppDto()
-	respone.Brand.IsTopFavorited = favTopBrandCheck[respone.BrandId]
-	respone.Brand.IsFavorited = favBrandCheck[respone.BrandId]
-	respone.StellaMaxCom = s.ConvertPrice.ConvertVndPriceToAstra(ctx, affCampaign.Attributes)
+	response := affCampaign.ToAffCampaignAppDto()
+	response.Brand.IsTopFavorited = favTopBrandCheck[response.BrandId]
+	response.Brand.IsFavorited = favBrandCheck[response.BrandId]
+	response.StellaMaxCom = s.ConvertPrice.ConvertVndPriceToAstra(ctx, affCampaign.Attributes)
+	for i := range response.Attributes {
+		if response.Attributes[i].AttributeType == "vnd" {
+			var tmp []model.AffCampaignAttribute
+			tmp = append(tmp, affCampaign.Attributes[i])
+			response.Attributes[i].AttributeType = "asa"
+			response.Attributes[i].AttributeValue = s.ConvertPrice.ConvertVndPriceToAstra(ctx, tmp)
+		}
+	}
 
-	return respone, nil
+	return response, nil
 }
 
 func (s affCampAppUCase) GetAllAffCampaign(ctx context.Context, page, size int) (dto.AffCampaignAppDtoResponse, error) {

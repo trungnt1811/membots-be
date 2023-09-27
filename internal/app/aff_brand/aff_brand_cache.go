@@ -73,3 +73,20 @@ func (c affBrandCache) GetListFavAffBrandByUserId(ctx context.Context, userId ui
 	}
 	return listAffCampComFavBrand, nil
 }
+
+func (c affBrandCache) CountTotalFavAffBrandByUserId(ctx context.Context, userId uint64) (int64, error) {
+	key := &caching.Keyer{Raw: keyPrefixAffBrand + fmt.Sprint("CountTotalFavAffBrandByUserId_", userId)}
+	var total int64
+	err := c.Cache.RetrieveItem(key, &total)
+	if err != nil {
+		// cache miss
+		total, err = c.AffBrandRepository.CountTotalFavAffBrandByUserId(ctx, userId)
+		if err != nil {
+			return 0, err
+		}
+		if err = c.Cache.SaveItem(key, total, cacheTimeAffBrand); err != nil {
+			return 0, err
+		}
+	}
+	return total, nil
+}

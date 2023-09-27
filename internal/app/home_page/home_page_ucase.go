@@ -6,7 +6,6 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/model"
-	util "github.com/astraprotocol/affiliate-system/internal/util/commission"
 	"github.com/chebyrash/promise"
 )
 
@@ -15,18 +14,21 @@ type homePageUCase struct {
 	AffCampAppRepository        interfaces.AffCampAppRepository
 	UserFavoriteBrandRepository interfaces.UserFavoriteBrandRepository
 	UserViewAffCampRepository   interfaces.UserViewAffCampRepository
+	ConvertPrice                interfaces.ConvertPriceHandler
 }
 
 func NewHomePageUCase(affBrandRepository interfaces.AffBrandRepository,
 	affCampAppRepository interfaces.AffCampAppRepository,
 	userFavoriteBrandRepository interfaces.UserFavoriteBrandRepository,
 	userViewAffCampRepository interfaces.UserViewAffCampRepository,
+	convertPrice interfaces.ConvertPriceHandler,
 ) interfaces.HomePageUCase {
 	return &homePageUCase{
 		AffBrandRepository:          affBrandRepository,
 		AffCampAppRepository:        affCampAppRepository,
 		UserFavoriteBrandRepository: userFavoriteBrandRepository,
 		UserViewAffCampRepository:   userViewAffCampRepository,
+		ConvertPrice:                convertPrice,
 	}
 }
 
@@ -65,7 +67,7 @@ func (s homePageUCase) GetHomePage(ctx context.Context, userId uint64) (dto.Home
 			return
 		}
 
-		campaign, err := s.AffCampAppRepository.GetListAffCampaignByBrandIds(ctx, brandIds, 1, 15)
+		campaign, err := s.AffCampAppRepository.GetListAffCampaignByBrandIds(ctx, brandIds, 1, 12)
 		if err != nil {
 			reject(err)
 		} else {
@@ -105,25 +107,25 @@ func (s homePageUCase) GetHomePage(ctx context.Context, userId uint64) (dto.Home
 	var listRecentlyVisited []dto.AffCampaignLessDto
 	for i, campaign := range *listCampaignP1 {
 		listRecentlyVisited = append(listRecentlyVisited, campaign.ToAffCampaignLessDto())
-		listRecentlyVisited[i].StellaMaxCom = util.GetStellaMaxCom(campaign.AffCampComBrand.Attributes)
+		listRecentlyVisited[i].StellaMaxCom = s.ConvertPrice.ConvertVndPriceToAstra(ctx, campaign.AffCampComBrand.Attributes)
 	}
 
 	var listFollowing []dto.AffCampaignLessDto
 	for i, campaign := range *listCampaignP2 {
 		listFollowing = append(listFollowing, campaign.ToAffCampaignLessDto())
-		listFollowing[i].StellaMaxCom = util.GetStellaMaxCom(campaign.Attributes)
+		listFollowing[i].StellaMaxCom = s.ConvertPrice.ConvertVndPriceToAstra(ctx, campaign.Attributes)
 	}
 
 	var listTopFavorited []dto.AffCampaignLessDto
 	for i, campaign := range *listCampaignP3 {
 		listTopFavorited = append(listTopFavorited, campaign.ToAffCampaignLessDto())
-		listTopFavorited[i].StellaMaxCom = util.GetStellaMaxCom(campaign.Attributes)
+		listTopFavorited[i].StellaMaxCom = s.ConvertPrice.ConvertVndPriceToAstra(ctx, campaign.Attributes)
 	}
 
 	var listMostCommission []dto.AffCampaignLessDto
 	for i, campaign := range *listCampaignP4 {
 		listMostCommission = append(listMostCommission, campaign.ToDto())
-		listMostCommission[i].StellaMaxCom = util.GetStellaMaxCom(campaign.Attributes)
+		listMostCommission[i].StellaMaxCom = s.ConvertPrice.ConvertVndPriceToAstra(ctx, campaign.Attributes)
 	}
 
 	return dto.HomePageDto{

@@ -2,11 +2,11 @@ package aff_camp_app
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/model"
-	util "github.com/astraprotocol/affiliate-system/internal/util/commission"
 )
 
 type affCampAppUCase struct {
@@ -14,6 +14,7 @@ type affCampAppUCase struct {
 	AffBrandRepository          interfaces.AffBrandRepository
 	UserFavoriteBrandRepository interfaces.UserFavoriteBrandRepository
 	Stream                      chan []*dto.UserViewAffCampDto
+	ConvertPrice                interfaces.ConvertPriceHandler
 }
 
 func NewAffCampAppUCase(
@@ -21,12 +22,14 @@ func NewAffCampAppUCase(
 	affBrandRepository interfaces.AffBrandRepository,
 	userFavoriteBrandRepository interfaces.UserFavoriteBrandRepository,
 	stream chan []*dto.UserViewAffCampDto,
+	convertPrice interfaces.ConvertPriceHandler,
 ) interfaces.AffCampAppUCase {
 	return &affCampAppUCase{
 		AffCampAppRepository:        affCampAppRepository,
 		AffBrandRepository:          affBrandRepository,
 		UserFavoriteBrandRepository: userFavoriteBrandRepository,
 		Stream:                      stream,
+		ConvertPrice:                convertPrice,
 	}
 }
 
@@ -73,12 +76,25 @@ func (s affCampAppUCase) GetAffCampaignById(ctx context.Context, id uint64, user
 		favBrandCheck[userFavBrand.BrandId] = true
 	}
 
-	respone := affCampaign.ToAffCampaignAppDto()
-	respone.Brand.IsTopFavorited = favTopBrandCheck[respone.BrandId]
-	respone.Brand.IsFavorited = favBrandCheck[respone.BrandId]
-	respone.StellaMaxCom = util.GetStellaMaxCom(affCampaign.Attributes)
+	response := affCampaign.ToAffCampaignAppDto()
+	response.Brand.IsTopFavorited = favTopBrandCheck[response.BrandId]
+	response.Brand.IsFavorited = favBrandCheck[response.BrandId]
+	response.StellaMaxCom = s.ConvertPrice.ConvertVndPriceToAstra(ctx, affCampaign.Attributes)
+	for i := range response.Attributes {
+		fmt.Println(response.Attributes[i])
+		if response.Attributes[i].AttributeType == "vnd" {
+			var tmp []model.AffCampaignAttribute
+			tmp = append(tmp, model.AffCampaignAttribute{
+				AttributeKey:   response.Attributes[i].AttributeKey,
+				AttributeValue: response.Attributes[i].AttributeValue,
+				AttributeType:  response.Attributes[i].AttributeType,
+			})
+			response.Attributes[i].AttributeType = "asa"
+			response.Attributes[i].AttributeValue = s.ConvertPrice.ConvertVndPriceToAstra(ctx, tmp)
+		}
+	}
 
-	return respone, nil
+	return response, nil
 }
 
 func (s affCampAppUCase) GetAllAffCampaign(ctx context.Context, page, size int) (dto.AffCampaignAppDtoResponse, error) {
@@ -92,7 +108,7 @@ func (s affCampAppUCase) GetAllAffCampaign(ctx context.Context, page, size int) 
 			break
 		}
 		listAffCampaignAppDto = append(listAffCampaignAppDto, listAffCampaign[i].ToDto())
-		listAffCampaignAppDto[i].StellaMaxCom = util.GetStellaMaxCom(listAffCampaign[i].Attributes)
+		listAffCampaignAppDto[i].StellaMaxCom = s.ConvertPrice.ConvertVndPriceToAstra(ctx, listAffCampaign[i].Attributes)
 	}
 	nextPage := page
 	if len(listAffCampaign) > size {

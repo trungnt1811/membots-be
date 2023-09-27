@@ -242,10 +242,6 @@ definitions:
     properties:
       accesstrade_id:
         type: string
-      attribute:
-        items:
-          $ref: '#/definitions/dto.AffCampaignAttributeDto'
-        type: array
       brand:
         $ref: '#/definitions/dto.BrandDto'
       brand_id:
@@ -488,6 +484,17 @@ definitions:
         type: string
       updated_at:
         type: string
+    type: object
+  dto.CampaignSummaryResponse:
+    properties:
+      num_of_customers:
+        type: integer
+      num_of_orders:
+        type: integer
+      total_asa_cashback:
+        $ref: '#/definitions/dto.Cashback'
+      total_revenue:
+        type: number
     type: object
   dto.Cashback:
     properties:
@@ -919,16 +926,8 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get all aff-campaign in category
+      description: Get list aff brand by category
       parameters:
-      - description: by to query, default is ctime/top
-        in: query
-        name: by
-        type: string
-      - description: order to query, default is desc
-        in: query
-        name: order
-        type: string
       - description: categoryId to query
         in: path
         name: categoryId
@@ -937,6 +936,14 @@ paths:
       - description: page to query, default is 1
         in: query
         name: page
+        type: string
+      - description: size to query, default is 10
+        in: query
+        name: size
+        type: string
+      - description: filter to query, default is top-favorited (top-favorited/most-commission)
+        in: query
+        name: filter
         type: string
       produces:
       - application/json
@@ -953,7 +960,9 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/util.GeneralError'
-      summary: Get all aff-campaign in category
+      security:
+      - ApiKeyAuth: []
+      summary: Get list aff brand by category
       tags:
       - category
   /api/v1/app/aff-search:
@@ -1510,13 +1519,13 @@ paths:
       description: Get affiliate order list by time range and other filter
       parameters:
       - in: query
-        name: orderStatus
+        name: order_status
         type: string
       - in: query
         name: page
         type: integer
       - in: query
-        name: perPage
+        name: per_page
         type: integer
       - in: query
         name: since
@@ -1525,7 +1534,7 @@ paths:
         name: until
         type: string
       - in: query
-        name: userId
+        name: user_id
         type: integer
       produces:
       - application/json
@@ -1583,6 +1592,15 @@ paths:
       consumes:
       - application/json
       description: Get summary statistic data
+      parameters:
+      - description: Time in RFC3339 format
+        in: query
+        name: since
+        type: string
+      - description: Time in RFC3339 format
+        in: query
+        name: until
+        type: string
       produces:
       - application/json
       responses:
@@ -1601,6 +1619,45 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Get summary statistic data
+      tags:
+      - console
+  /api/v1/console/summary/:campaignId:
+    get:
+      consumes:
+      - application/json
+      description: Get campaign statistic data
+      parameters:
+      - description: Time range
+        in: path
+        name: campaignId
+        required: true
+        type: integer
+      - description: Time in RFC3339 format
+        in: query
+        name: since
+        type: string
+      - description: Time in RFC3339 format
+        in: query
+        name: until
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CampaignSummaryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get campaign statistic data
       tags:
       - console
   /api/v1/order/post-back:

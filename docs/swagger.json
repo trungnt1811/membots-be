@@ -259,7 +259,12 @@
         },
         "/api/v1/app/aff-categories/{categoryId}": {
             "get": {
-                "description": "Get all aff-campaign in category",
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get list aff brand by category",
                 "consumes": [
                     "application/json"
                 ],
@@ -269,20 +274,8 @@
                 "tags": [
                     "category"
                 ],
-                "summary": "Get all aff-campaign in category",
+                "summary": "Get list aff brand by category",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "by to query, default is ctime/top",
-                        "name": "by",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "order to query, default is desc",
-                        "name": "order",
-                        "in": "query"
-                    },
                     {
                         "type": "integer",
                         "description": "categoryId to query",
@@ -294,6 +287,18 @@
                         "type": "string",
                         "description": "page to query, default is 1",
                         "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "size to query, default is 10",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "filter to query, default is top-favorited (top-favorited/most-commission)",
+                        "name": "filter",
                         "in": "query"
                     }
                 ],
@@ -1201,7 +1206,7 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "name": "orderStatus",
+                        "name": "order_status",
                         "in": "query"
                     },
                     {
@@ -1211,7 +1216,7 @@
                     },
                     {
                         "type": "integer",
-                        "name": "perPage",
+                        "name": "per_page",
                         "in": "query"
                     },
                     {
@@ -1226,7 +1231,7 @@
                     },
                     {
                         "type": "integer",
-                        "name": "userId",
+                        "name": "user_id",
                         "in": "query"
                     }
                 ],
@@ -1319,11 +1324,86 @@
                     "console"
                 ],
                 "summary": "Get summary statistic data",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Time in RFC3339 format",
+                        "name": "since",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Time in RFC3339 format",
+                        "name": "until",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/dto.StatisticSummaryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "424": {
+                        "description": "Failed Dependency",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/console/summary/:campaignId": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get campaign statistic data",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "console"
+                ],
+                "summary": "Get campaign statistic data",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Time range",
+                        "name": "campaignId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Time in RFC3339 format",
+                        "name": "since",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Time in RFC3339 format",
+                        "name": "until",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.CampaignSummaryResponse"
                         }
                     },
                     "400": {
@@ -1802,12 +1882,6 @@
                 "accesstrade_id": {
                     "type": "string"
                 },
-                "attribute": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/dto.AffCampaignAttributeDto"
-                    }
-                },
                 "brand": {
                     "$ref": "#/definitions/dto.BrandDto"
                 },
@@ -2173,6 +2247,23 @@
                 },
                 "updated_at": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.CampaignSummaryResponse": {
+            "type": "object",
+            "properties": {
+                "num_of_customers": {
+                    "type": "integer"
+                },
+                "num_of_orders": {
+                    "type": "integer"
+                },
+                "total_asa_cashback": {
+                    "$ref": "#/definitions/dto.Cashback"
+                },
+                "total_revenue": {
+                    "type": "number"
                 }
             }
         },

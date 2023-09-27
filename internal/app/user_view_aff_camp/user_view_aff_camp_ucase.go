@@ -5,20 +5,22 @@ import (
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
-	util "github.com/astraprotocol/affiliate-system/internal/util/commission"
 )
 
 type userViewAffCampUCase struct {
 	UserViewAffCampRepository interfaces.UserViewAffCampRepository
+	ConvertPrice              interfaces.ConvertPriceHandler
 }
 
-func NewUserViewAffCampUCase(repository interfaces.UserViewAffCampRepository) interfaces.UserViewAffCampUCase {
+func NewUserViewAffCampUCase(repository interfaces.UserViewAffCampRepository,
+	convertPrice interfaces.ConvertPriceHandler) interfaces.UserViewAffCampUCase {
 	return &userViewAffCampUCase{
 		UserViewAffCampRepository: repository,
+		ConvertPrice:              convertPrice,
 	}
 }
 
-func (s userViewAffCampUCase) GetListUserViewAffCampByUserId(ctx context.Context, userId uint64, page, size int) (dto.AffCampaignAppDtoResponse, error) {
+func (s *userViewAffCampUCase) GetListUserViewAffCampByUserId(ctx context.Context, userId uint64, page, size int) (dto.AffCampaignAppDtoResponse, error) {
 	listUserViewAffCamp, err := s.UserViewAffCampRepository.GetListUserViewAffCampByUserId(ctx, userId, page, size)
 	if err != nil {
 		return dto.AffCampaignAppDtoResponse{}, err
@@ -29,7 +31,7 @@ func (s userViewAffCampUCase) GetListUserViewAffCampByUserId(ctx context.Context
 			break
 		}
 		listAffCampComBrandDto = append(listAffCampComBrandDto, listUserViewAffCamp[i].ToAffCampaignLessDto())
-		listAffCampComBrandDto[i].StellaMaxCom = util.GetStellaMaxCom(listUserViewAffCamp[i].AffCampComBrand.Attributes)
+		listAffCampComBrandDto[i].StellaMaxCom = s.ConvertPrice.ConvertVndPriceToAstra(ctx, listUserViewAffCamp[i].AffCampComBrand.Attributes)
 	}
 	nextPage := page
 	if len(listUserViewAffCamp) > size {

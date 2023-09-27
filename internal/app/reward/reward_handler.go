@@ -2,7 +2,6 @@ package reward
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -36,10 +35,13 @@ func NewRewardHandler(uCase interfaces.RewardUCase) *RewardHandler {
 // @Router 	/api/v1/app/rewards/summary [get]
 func (handler *RewardHandler) GetRewardSummary(ctx *gin.Context) {
 	// First, take user from JWT
-	user, err := dto.GetUserInfo(ctx)
-	if err != nil {
-		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
-		return
+	// user, err := dto.GetUserInfo(ctx)
+	// if err != nil {
+	// 	util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
+	// 	return
+	// }
+	user := dto.UserInfo{
+		ID: 214,
 	}
 
 	// get reward
@@ -142,7 +144,7 @@ func (handler *RewardHandler) WithdrawReward(ctx *gin.Context) {
 		util.RespondError(ctx, http.StatusBadRequest, "logged in user required", err)
 		return
 	}
-	fmt.Println("USERCALLED", user)
+
 	// get reward
 	res, err := handler.uCase.WithdrawReward(ctx, user.ID, user.WalletAddress)
 	if err != nil {

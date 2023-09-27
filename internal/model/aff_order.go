@@ -61,7 +61,7 @@ func (order *AffOrder) TableName() string {
 	return "aff_order"
 }
 
-func NewOrderFromATOrder(userId uint, campaignId uint, brandId uint, atOrder *types.ATOrder) *AffOrder {
+func GetAffOrderStatusFromAtOrder(atOrder *types.ATOrder) string {
 	orderStatus := OrderStatusInitial
 	if atOrder.OrderPending != 0 {
 		orderStatus = OrderStatusPending
@@ -72,12 +72,15 @@ func NewOrderFromATOrder(userId uint, campaignId uint, brandId uint, atOrder *ty
 	if atOrder.OrderReject != 0 {
 		orderStatus = OrderStatusRejected
 	}
+	return orderStatus
+}
 
+func NewOrderFromATOrder(userId uint, campaignId uint, brandId uint, atOrder *types.ATOrder) *AffOrder {
 	return &AffOrder{
 		UserId:             userId,
 		CampaignId:         campaignId,
 		BrandId:            brandId,
-		OrderStatus:        orderStatus,
+		OrderStatus:        GetAffOrderStatusFromAtOrder(atOrder),
 		ATProductLink:      atOrder.ATProductLink,
 		Billing:            atOrder.Billing,
 		Browser:            atOrder.Browser,
@@ -225,17 +228,22 @@ func (o *OrderDetails) ToOrderDetailsDto() dto.OrderDetailsDto {
 		status = dto.OrderStatusWaitForConfirming
 	}
 
-	daysPassed := int(time.Since(o.RewardStartAt) / OneDay)       // number of days passed since order created
-	totalDays := int(o.RewardEndAt.Sub(o.RewardStartAt) / OneDay) // total lock days
+	timeToCalculateUnlockAmt := time.Now()
+	if status == dto.OrderStatusRejected {
+		timeToCalculateUnlockAmt = rejectedTime
+	}
+
+	daysPassed := int(timeToCalculateUnlockAmt.Sub(o.RewardStartAt) / OneDay) // number of days passed since order created
+	totalDays := int(o.RewardEndAt.Sub(o.RewardStartAt) / OneDay)             // total lock days
 	dayPassedPercent := float64(daysPassed) / float64(totalDays)
 	if dayPassedPercent > 1 {
 		dayPassedPercent = 1
 	}
 
 	imReleaseAmount := util.RoundFloat(o.RewardAmount*o.ImmediateRelease, 2)
-	secondPartReward := o.RewardAmount * (1 - o.ImmediateRelease)
+	secondPartReward := o.RewardAmount - imReleaseAmount
 	secondPartUnlockedAmount := util.RoundFloat(secondPartReward*dayPassedPercent, 2)
-	rewardRemainingAmount := o.RewardAmount - imReleaseAmount - secondPartUnlockedAmount
+	rewardRemainingAmount := util.RoundFloat(secondPartReward-secondPartUnlockedAmount, 2)
 
 	return dto.OrderDetailsDto{
 		ID:                             o.ID,

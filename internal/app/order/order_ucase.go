@@ -83,6 +83,7 @@ func (u *orderUCase) PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*m
 	userId, trackedId := util.ParseUTMContent(atOrder.UTMContent)
 
 	order, err := u.Repo.FindOrderByAccessTradeId(atOrder.OrderId)
+	statusChanged := false
 	if err != nil {
 		if err.Error() == "record not found" {
 			// Order not exist, create new one
@@ -93,18 +94,25 @@ func (u *orderUCase) PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*m
 			if crErr != nil {
 				return nil, fmt.Errorf("create order failed: %v", crErr)
 			}
+			// When new order created, mark as status changed
+			statusChanged = true
 		} else {
 			return nil, err
 		}
 	} else {
 		// Or update exist order
 		updated := model.NewOrderFromATOrder(userId, campaign.ID, campaign.BrandId, atOrder)
-		order.UpdatedAt = time.Now()
+		updated.UpdatedAt = time.Now()
 		updated.ID = order.ID
+
+		// When order is updated, check if status changed or not
+		statusChanged = order.CheckStatusChanged(updated)
+
 		_, err = u.Repo.UpdateOrder(updated)
 		if err != nil {
 			return nil, fmt.Errorf("update order failed: %v", err)
 		}
+		order = updated
 	}
 
 	// After create order, push Kafka msg for sync transactions
@@ -112,19 +120,29 @@ func (u *orderUCase) PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*m
 	if err != nil {
 		log.LG.Errorf("sync txs failed: %v", err)
 	}
-	// Send Kafka message if order approved
-	if order.OrderApproved != 0 {
+
+	// Send Kafka message if order status changed
+	if statusChanged {
 		// Order has been approved
-		msgValue := []byte(fmt.Sprintf("{\"accesstrade_order_id\":%s}", atOrder.OrderId))
-		err = u.Producer.WriteMessages(
-			context.Background(),
-			kafka.Message{
-				Key:   []byte(atOrder.OrderId),
-				Value: msgValue,
-			},
-		)
+		msg := msgqueue.MsgOrderUpdated{
+			AtOrderID:   atOrder.OrderId,
+			OrderStatus: order.OrderStatus,
+			IsConfirmed: order.IsConfirmed,
+		}
+		msgValue, err := json.Marshal(&msg)
 		if err != nil {
-			log.LG.Errorf("produce order approved msg failed: %v", err)
+			log.LG.Errorf("marshall order approved error: %v", err)
+		} else {
+			err = u.Producer.WriteMessages(
+				context.Background(),
+				kafka.Message{
+					Key:   []byte(atOrder.OrderId),
+					Value: msgValue,
+				},
+			)
+			if err != nil {
+				log.LG.Errorf("produce order approved msg failed: %v", err)
+			}
 		}
 	}
 

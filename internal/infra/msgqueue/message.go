@@ -13,6 +13,12 @@ type MsgOrderApproved struct {
 	AtOrderID string `json:"accesstrade_order_id"`
 }
 
+type MsgOrderUpdated struct {
+	AtOrderID   string `json:"accesstrade_order_id"`
+	OrderStatus string `json:"orderStatus"`
+	IsConfirmed uint8  `json:"is_confirmed"`
+}
+
 type AppNotiMsg struct {
 	// Category is the category of the message.
 	Category string `json:"Category,omitempty"`

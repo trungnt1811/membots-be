@@ -65,9 +65,11 @@ func NewOrderFromATOrder(userId uint, campaignId uint, brandId uint, atOrder *ty
 	orderStatus := OrderStatusInitial
 	if atOrder.OrderPending != 0 {
 		orderStatus = OrderStatusPending
-	} else if atOrder.OrderApproved != 0 {
+	}
+	if atOrder.OrderApproved != 0 {
 		orderStatus = OrderStatusApproved
-	} else if atOrder.OrderReject != 0 {
+	}
+	if atOrder.OrderReject != 0 {
 		orderStatus = OrderStatusRejected
 	}
 
@@ -104,6 +106,25 @@ func NewOrderFromATOrder(userId uint, campaignId uint, brandId uint, atOrder *ty
 		Website:            atOrder.Website,
 		WebsiteURL:         atOrder.WebsiteUrl,
 	}
+}
+
+func (old *AffOrder) CheckStatusChanged(newUpdate *AffOrder) bool {
+	if old.OrderStatus == OrderStatusPending {
+		// When order is pending, check if order is approved or not
+		if newUpdate.OrderStatus == OrderStatusApproved {
+			return true
+		}
+	}
+
+	if old.OrderStatus == OrderStatusApproved {
+		// When order is approved, check if order is confirmed or not
+		if newUpdate.IsConfirmed == 1 {
+			// update order as confirmed
+			return true
+		}
+	}
+
+	return false
 }
 
 func (o *AffOrder) ToDto() dto.AffOrder {

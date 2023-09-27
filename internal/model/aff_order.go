@@ -207,8 +207,13 @@ func (o *OrderDetails) ToOrderDetailsDto() dto.OrderDetailsDto {
 		status = dto.OrderStatusWaitForConfirming
 	}
 
-	daysPassed := int(time.Since(o.RewardStartAt) / OneDay)       // number of days passed since order created
-	totalDays := int(o.RewardEndAt.Sub(o.RewardStartAt) / OneDay) // total lock days
+	timeToCalculateUnlockAmt := time.Now()
+	if status == dto.OrderStatusRejected {
+		timeToCalculateUnlockAmt = rejectedTime
+	}
+
+	daysPassed := int(timeToCalculateUnlockAmt.Sub(o.RewardStartAt) / OneDay) // number of days passed since order created
+	totalDays := int(o.RewardEndAt.Sub(o.RewardStartAt) / OneDay)             // total lock days
 	dayPassedPercent := float64(daysPassed) / float64(totalDays)
 	if dayPassedPercent > 1 {
 		dayPassedPercent = 1

@@ -28,7 +28,7 @@ func RegisConsumers(config *conf.Configuration, db *gorm.DB) {
 	userViewAffCampRepo := user_view_aff_camp.NewUserViewAffCampRepository(db)
 
 	// TODO: tiki config null
-	tikiClient := exchange.NewTikiClient(exchange.TikiClientConfig{})
+	tikiClient := exchange.NewTikiClient(exchange.TikiClientConfig{BaseUrl: config.Tiki.ApiUrl})
 	tikiClientCache := exchange.NewTikiClientCache(tikiClient, redisClient)
 
 	// Start consumer

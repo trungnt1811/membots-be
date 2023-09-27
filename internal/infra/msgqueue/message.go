@@ -9,10 +9,6 @@ const (
 	NotiDataKeyOrderId       = "orderID"
 )
 
-type MsgOrderApproved struct {
-	AtOrderID string `json:"accesstrade_order_id"`
-}
-
 type MsgOrderUpdated struct {
 	AtOrderID   string `json:"accesstrade_order_id"`
 	OrderStatus string `json:"orderStatus"`

@@ -84,6 +84,7 @@ CREATE TABLE aff_order (
   pub_commission DOUBLE(15,2),
   sales_time DATETIME,
   update_time DATETIME,
+  cancelled_time DATETIME,
   website NVARCHAR(1024),
   website_url NVARCHAR(1024),
   utm_term NVARCHAR(256),

@@ -62,7 +62,7 @@ func (u *RewardMaker) ListenOrderApproved() {
 				continue
 			}
 
-			var orderApprovedMsg msgqueue.MsgOrderApproved
+			var orderApprovedMsg msgqueue.MsgOrderUpdated
 			err = json.Unmarshal(msg.Value, &orderApprovedMsg)
 			if err != nil {
 				_ = u.commitOrderUpdateMsg(msg)

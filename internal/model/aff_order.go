@@ -48,6 +48,7 @@ type AffOrder struct {
 	PubCommission      float32   `json:"pub_commission"`
 	SalesTime          time.Time `json:"sales_time"`
 	UpdateTime         time.Time `json:"update_time"`
+	CancelledTime      time.Time `json:"cancelled_time"`
 	Website            string    `json:"website"`
 	WebsiteURL         string    `json:"website_url"`
 	UTMTerm            string    `json:"utm_term"`
@@ -112,22 +113,24 @@ func NewOrderFromATOrder(userId uint, campaignId uint, brandId uint, atOrder *ty
 }
 
 func (old *AffOrder) CheckStatusChanged(newUpdate *AffOrder) bool {
-	if old.OrderStatus == OrderStatusPending {
-		// When order is pending, check if order is approved or not
+	if old.OrderStatus == OrderStatusInitial {
+		// already notified to user, not send anymore
+		if newUpdate.OrderStatus == OrderStatusPending {
+			return false
+		}
+	}
+
+	if old.OrderStatus == OrderStatusRewarding {
 		if newUpdate.OrderStatus == OrderStatusApproved {
-			return true
+			return false
 		}
 	}
 
-	if old.OrderStatus == OrderStatusApproved {
-		// When order is approved, check if order is confirmed or not
-		if newUpdate.IsConfirmed == 1 {
-			// update order as confirmed
-			return true
-		}
+	if old.OrderStatus == OrderStatusComplete {
+		return false
 	}
 
-	return false
+	return true
 }
 
 func (o *AffOrder) ToDto() dto.AffOrder {
@@ -179,6 +182,7 @@ type OrderDetails struct {
 	AccessTradeOrderId string    `json:"accesstrade_order_id"`
 	PubCommission      float32   `json:"pub_commission"`
 	UpdateTime         time.Time `json:"update_time"`
+	CancelledTime      time.Time `json:"cancelled_time"`
 	SalesTime          time.Time `json:"sales_time"`
 	ConfirmedTime      time.Time `json:"confirmed_time"`
 	CreatedAt          time.Time `json:"created_at"`
@@ -259,6 +263,7 @@ func (o *OrderDetails) ToOrderDetailsDto() dto.OrderDetailsDto {
 		BuyTime:                        o.SalesTime,
 		ConfirmedTime:                  o.CreatedAt,
 		RejectedTime:                   rejectedTime,
+		CancelledTime:                  o.CancelledTime,
 		RewardFirstPartReleasedTime:    o.RewardStartAt,
 		RewardFirstPartReleasedAmount:  imReleaseAmount,
 		RewardSecondPartUnlockedAmount: secondPartUnlockedAmount,

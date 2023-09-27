@@ -1,20 +1,26 @@
 package test
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"math/big"
 	"net/url"
 	"strings"
 	"testing"
 	"time"
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/go-resty/resty/v2"
 	"github.com/stretchr/testify/suite"
 )
 
 const (
-	WALLET_ADDR = "0xA4872a056C7cD4a6c60A880c8F3aCE886E05A8BF"
+	API_ENDPOINT = "http://localhost:8080/api/v1"
+	WALLET_ADDR  = "0xA4872a056C7cD4a6c60A880c8F3aCE886E05A8BF"
+	RPC_ENDPOINT = "https://rpc.astranaut.dev"
 )
 
 type UserTokenInfo struct {
@@ -25,10 +31,12 @@ type UserTokenInfo struct {
 
 type AffRewardTestSuite struct {
 	suite.Suite
-	caller       *resty.Client
-	JWTToken     string
-	TestEndpoint string
-	UserId       uint
+	caller      *resty.Client
+	JWTToken    string
+	UserId      uint
+	UserWallet  common.Address
+	UserBalance *big.Int
+	RPCClient   *ethclient.Client
 }
 
 func NewAffRewardTestSuite() *AffRewardTestSuite {
@@ -36,8 +44,7 @@ func NewAffRewardTestSuite() *AffRewardTestSuite {
 	client.SetRetryCount(3)                                 // Retry 3 times
 	client.SetTimeout(time.Duration(30 * int(time.Second))) // HTTP 30s timeout
 	return &AffRewardTestSuite{
-		caller:       client,
-		TestEndpoint: "http://localhost:8080",
+		caller: client,
 	}
 }
 
@@ -65,6 +72,18 @@ func (s *AffRewardTestSuite) SetupSuite() {
 
 	s.JWTToken = userToken.AccessToken
 	s.UserId = uint(userToken.User["id"].(float64))
+	client, err := ethclient.Dial(RPC_ENDPOINT)
+	s.NoError(err)
+	s.RPCClient = client
+
+	s.UserWallet = common.HexToAddress(WALLET_ADDR[2:])
+
+	currentBlock, err := client.BlockNumber(context.Background())
+	s.NoError(err)
+	balance, err := client.BalanceAt(context.Background(), s.UserWallet, big.NewInt(int64(currentBlock)))
+	s.NoError(err)
+	s.True(balance.Cmp(big.NewInt(0)) != 0)
+	s.UserBalance = balance
 }
 
 func (s *AffRewardTestSuite) setDefaultHeader(req *resty.Request) {
@@ -89,7 +108,7 @@ func (s *AffRewardTestSuite) TestRunHappyCase() {
 		"original_url": "",
 		"shorten_link": false,
 	})
-	genLinkUrl := fmt.Sprint(s.TestEndpoint, "/api/v1/campaign/link")
+	genLinkUrl := fmt.Sprint(API_ENDPOINT, "/campaign/link")
 	resp, err := req1.Post(genLinkUrl)
 	s.NoError(err)
 	s.True(resp.IsSuccess(), "http call status is not 200")
@@ -135,13 +154,37 @@ func (s *AffRewardTestSuite) TestRunHappyCase() {
 		"publisher_login_name": "astrarewards",
 		"is_confirmed":         0,
 		"customer_type":        ""})
-	postBackUrl := fmt.Sprint(s.TestEndpoint, "/api/v1/order/post-back")
+	postBackUrl := fmt.Sprint(API_ENDPOINT, "/order/post-back")
 	resp, err = req1.Post(postBackUrl)
 	s.NoError(err)
 	s.True(resp.IsSuccess(), "http call status is not 200")
 	s.Contains(string(resp.Body()), "230918N260WKSG") // Contains order id in resp
 
-	// Then, try to request ASA cashback for the order
+	// Sleep and wait for order reward to be created
+	time.Sleep(time.Duration(time.Second * 5))
 
-	// After cashback processed, make sure balance is updated
+	// Then, try to request ASA cashback for the order
+	req3 := s.caller.R()
+	s.setDefaultHeader(req3)
+	req3.SetBody(map[string]any{})
+	withdrawUrl := fmt.Sprint(API_ENDPOINT, "/app/rewards/withdraw")
+	resp, err = req3.Post(withdrawUrl)
+	s.NoError(err)
+	s.True(resp.IsSuccess())
+	var withdrawResp dto.WithdrawRewardResponse
+	err = json.Unmarshal(resp.Body(), &withdrawResp)
+	s.NoError(err)
+	s.Condition(func() bool {
+		return withdrawResp.Amount > 0
+	}, "withdraw amount is 0")
+
+	// Sleep and wait for withdraw reward to be executed
+	time.Sleep(time.Duration(time.Second * 5))
+
+	// After withdraw processed, make sure balance is updated
+	currentBlk, err := s.RPCClient.BlockNumber(context.Background())
+	afterBalance, err := s.RPCClient.BalanceAt(context.Background(), s.UserWallet, big.NewInt(int64(currentBlk)))
+	s.Condition(func() bool {
+		return afterBalance.Cmp(s.UserBalance) > 0
+	}, "after withdraw, balance not change")
 }

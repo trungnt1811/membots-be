@@ -23,11 +23,11 @@ type orderUCase struct {
 	Producer *msgqueue.QueueWriter
 }
 
-func NewOrderUCase(repo interfaces.OrderRepository, atRepo interfaces.ATRepository) interfaces.OrderUCase {
+func NewOrderUCase(repo interfaces.OrderRepository, atRepo interfaces.ATRepository, producer *msgqueue.QueueWriter) interfaces.OrderUCase {
 	return &orderUCase{
 		Repo:     repo,
 		ATRepo:   atRepo,
-		Producer: msgqueue.NewKafkaProducer(msgqueue.KAFKA_TOPIC_AFF_ORDER_UPDATE),
+		Producer: producer,
 	}
 }
 
@@ -266,6 +266,7 @@ func (u *orderUCase) CheckOrderConfirmed() (int, error) {
 		if atOrder.IsConfirmed == 0 {
 			// Update order as cancelled
 			order.OrderStatus = model.OrderStatusCancelled
+			updatedCount += 1
 
 			_, err := u.Repo.UpdateOrder(&order)
 			if err != nil {
@@ -290,15 +291,19 @@ func (u *orderUCase) sendOrderUpdateMsg(orderId string, orderStatus string, isCo
 	if err != nil {
 		log.LG.Errorf("marshall order approved error: %v", err)
 	} else {
-		err = u.Producer.WriteMessages(
-			context.Background(),
-			kafka.Message{
-				Key:   []byte(orderId),
-				Value: msgValue,
-			},
-		)
-		if err != nil {
-			log.LG.Errorf("produce order approved msg failed: %v", err)
+		if u.Producer == nil {
+			log.LG.Error("produce is nil")
+		} else {
+			err = u.Producer.WriteMessages(
+				context.Background(),
+				kafka.Message{
+					Key:   []byte(orderId),
+					Value: msgValue,
+				},
+			)
+			if err != nil {
+				log.LG.Errorf("produce order approved msg failed: %v", err)
+			}
 		}
 	}
 }

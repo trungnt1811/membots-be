@@ -27,7 +27,7 @@ func NewOrderUcaseTestSuite() *OrderUcaseTestSuite {
 	logger.LG = logger.NewZerologLogger(os.Stdout, zerolog.InfoLevel)
 	atRepo := atMocks.NewAccessTradeRepoMock()
 	repo := mocks.NewMockOrderRepository([]model.AffOrder{})
-	ucase := order.NewOrderUCase(repo, atRepo)
+	ucase := order.NewOrderUCase(repo, atRepo, nil)
 	return &OrderUcaseTestSuite{
 		uCase:    ucase,
 		repoMock: repo,
@@ -64,4 +64,21 @@ func (s *OrderUcaseTestSuite) TestSyncTransactionsByOrder() {
 	nSynced, err := s.uCase.SyncTransactionsByOrder(postBackReq.OrderId)
 	s.NoError(err)
 	s.Equal(4, nSynced)
+}
+
+func (s *OrderUcaseTestSuite) TestCheckOrderConfirmed() {
+	// First, try create order
+	affOrder := model.AffOrder{
+		AccessTradeOrderId: "230824H3K7H4V5",
+		OrderStatus:        "approved",
+		IsConfirmed:        0,
+	}
+
+	err := s.repoMock.CreateOrder(&affOrder)
+	s.NoError(err)
+
+	// run post back received handle first
+	updatedCount, err := s.uCase.CheckOrderConfirmed()
+	s.NoError(err)
+	s.Equal(1, updatedCount)
 }

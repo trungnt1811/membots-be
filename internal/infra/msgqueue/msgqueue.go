@@ -22,7 +22,7 @@ const (
 	KAFKA_READ_BATCH_TIME_OUT         = time.Second * 60
 	KAFKA_GROUP_ID                    = "affiliate-system-backend"
 	KAFKA_TOPIC_IMPORT_RECEIPT_TX     = "reward-shipping-receipt"
-	KAFKA_TOPIC_AFF_ORDER_APPROVE     = "aff-order-approved"
+	KAFKA_TOPIC_AFF_ORDER_UPDATE      = "aff-order-update"
 	KAFKA_TOPIC_NOTI_SMS              = "notification-SMS"
 	KAFKA_TOPIC_NOTI_EMAIL            = "notification-EMAIL"
 	KAFKA_TOPIC_NOTI_STATUS_RESPONSE  = "notification-status"

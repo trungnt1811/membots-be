@@ -79,8 +79,8 @@ func (c *TikiClient) GetAstraPriceFromExchange(ctx context.Context, calculateMod
 		SetSuccessResult(&priceRes).
 		Get(endpoint)
 	if err != nil {
-		log.Error().Msgf("failed to call send reward: %v", err)
-		return 0, errors.Wrapf(err, "failed to call send reward")
+		log.Error().Msgf("failed to call exchange price: %v", err)
+		return 0, errors.Wrapf(err, "failed to call exchange price")
 	}
 	if !resp.IsSuccessState() {
 		log.Error().Msgf("bad response status: %v", resp.Status)

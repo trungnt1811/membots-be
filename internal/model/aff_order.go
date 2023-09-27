@@ -61,7 +61,7 @@ func (order *AffOrder) TableName() string {
 	return "aff_order"
 }
 
-func NewOrderFromATOrder(userId uint, campaignId uint, brandId uint, atOrder *types.ATOrder) *AffOrder {
+func GetAffOrderStatusFromAtOrder(atOrder *types.ATOrder) string {
 	orderStatus := OrderStatusInitial
 	if atOrder.OrderPending != 0 {
 		orderStatus = OrderStatusPending
@@ -70,12 +70,15 @@ func NewOrderFromATOrder(userId uint, campaignId uint, brandId uint, atOrder *ty
 	} else if atOrder.OrderReject != 0 {
 		orderStatus = OrderStatusRejected
 	}
+	return orderStatus
+}
 
+func NewOrderFromATOrder(userId uint, campaignId uint, brandId uint, atOrder *types.ATOrder) *AffOrder {
 	return &AffOrder{
 		UserId:             userId,
 		CampaignId:         campaignId,
 		BrandId:            brandId,
-		OrderStatus:        orderStatus,
+		OrderStatus:        GetAffOrderStatusFromAtOrder(atOrder),
 		ATProductLink:      atOrder.ATProductLink,
 		Billing:            atOrder.Billing,
 		Browser:            atOrder.Browser,

@@ -17,7 +17,7 @@ func RegisConsumers(config *conf.Configuration, db *gorm.DB) {
 	redisClient := caching.NewRedisClient(rdb)
 
 	// Kafka queue
-	orderApproveQueue := msgqueue.NewKafkaConsumer(msgqueue.KAFKA_TOPIC_AFF_ORDER_APPROVE, msgqueue.KAFKA_GROUP_ID)
+	orderApproveQueue := msgqueue.NewKafkaConsumer(msgqueue.KAFKA_TOPIC_AFF_ORDER_UPDATE, msgqueue.KAFKA_GROUP_ID)
 	kafkaNotiMsgProducer := msgqueue.NewKafkaProducer(msgqueue.KAFKA_TOPIC_NOTI_APP_MESSAGE)
 	userViewAffCampQueue := msgqueue.NewKafkaConsumer(msgqueue.KAFKA_TOPIC_USER_VIEW_AFF_CAMP, msgqueue.KAFKA_GROUP_ID_USER_VIEW_AFF_CAMP)
 	shippingReceiptConsumer := msgqueue.NewKafkaConsumer(msgqueue.KAFKA_TOPIC_IMPORT_RECEIPT_TX, msgqueue.KAFKA_GROUP_ID)

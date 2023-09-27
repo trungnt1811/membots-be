@@ -27,7 +27,7 @@ func NewOrderUCase(repo interfaces.OrderRepository, atRepo interfaces.ATReposito
 	return &orderUCase{
 		Repo:     repo,
 		ATRepo:   atRepo,
-		Producer: msgqueue.NewKafkaProducer(msgqueue.KAFKA_TOPIC_AFF_ORDER_APPROVE),
+		Producer: msgqueue.NewKafkaProducer(msgqueue.KAFKA_TOPIC_AFF_ORDER_UPDATE),
 	}
 }
 

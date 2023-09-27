@@ -12,10 +12,10 @@ import (
 )
 
 func TestProduceOrderApprovedMsg(t *testing.T) {
-	producer := msgqueue.NewKafkaProducer(msgqueue.KAFKA_TOPIC_AFF_ORDER_APPROVE)
+	producer := msgqueue.NewKafkaProducer(msgqueue.KAFKA_TOPIC_AFF_ORDER_UPDATE)
 
 	msg := msgqueue.MsgOrderApproved{
-		AtOrderID: "230915CPRGY3A5ADUC",
+		AtOrderID: "230918N260WKSGKien",
 	}
 
 	b, err := json.Marshal(msg)

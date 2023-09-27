@@ -65,7 +65,7 @@ func (u *RewardMaker) ListenOrderApproved() {
 			var orderApprovedMsg msgqueue.MsgOrderApproved
 			err = json.Unmarshal(msg.Value, &orderApprovedMsg)
 			if err != nil {
-				_ = u.commitOrderApprovedMsg(msg)
+				_ = u.commitOrderUpdateMsg(msg)
 				errChn <- err
 				continue
 			}
@@ -77,63 +77,85 @@ func (u *RewardMaker) ListenOrderApproved() {
 			=========================================================================== */
 			order, err := u.orderRepo.FindOrderByAccessTradeId(newAtOrderId)
 			if err != nil {
-				_ = u.commitOrderApprovedMsg(msg)
+				_ = u.commitOrderUpdateMsg(msg)
 				errChn <- err
 				continue
 			}
-			if order.OrderStatus != model.OrderStatusApproved {
-				continue
+
+			var rewardAmount float64 = 0
+			if order.OrderStatus == model.OrderStatusApproved {
+				rewardAmount, err = u.CalculateRewardAmt(float64(order.PubCommission), stellaCommission)
+				if err != nil {
+					_ = u.commitOrderUpdateMsg(msg)
+					errChn <- err
+					continue
+				}
+
+				now := time.Now()
+				newReward := model.Reward{
+					UserId:           order.UserId,
+					AtOrderID:        newAtOrderId,
+					Amount:           rewardAmount,
+					RewardedAmount:   0,
+					CommissionFee:    stellaCommission,
+					ImmediateRelease: model.ImmediateRelease,
+					StartAt:          now,
+					EndAt:            now.Add(reward.RewardLockTime * time.Hour),
+				}
+				err = u.rewardRepo.CreateReward(ctx, &newReward)
+				if err != nil {
+					_ = u.commitOrderUpdateMsg(msg)
+					errChn <- err
+					continue
+				}
+
+				_, err = u.orderRepo.UpdateOrder(&model.AffOrder{ID: order.ID, OrderStatus: model.OrderStatusRewarding})
+				if err != nil {
+					_ = u.commitOrderUpdateMsg(msg)
+					errChn <- err
+					continue
+				}
 			}
 
-			rewardAmount, err := u.CalculateRewardAmt(float64(order.PubCommission), stellaCommission)
+			err = u.notiOrderStatus(order.UserId, order.OrderStatus, newAtOrderId, order.Merchant, rewardAmount)
 			if err != nil {
-				_ = u.commitOrderApprovedMsg(msg)
+				_ = u.commitOrderUpdateMsg(msg)
 				errChn <- err
 				continue
 			}
 
-			now := time.Now()
-			newReward := model.Reward{
-				UserId:           order.UserId,
-				AtOrderID:        newAtOrderId,
-				Amount:           rewardAmount,
-				RewardedAmount:   0,
-				CommissionFee:    stellaCommission,
-				ImmediateRelease: model.ImmediateRelease,
-				StartAt:          now,
-				EndAt:            now.Add(reward.RewardLockTime * time.Hour),
-			}
-			err = u.rewardRepo.CreateReward(ctx, &newReward)
-			if err != nil {
-				_ = u.commitOrderApprovedMsg(msg)
-				errChn <- err
-				continue
-			}
-
-			_, err = u.orderRepo.UpdateOrder(&model.AffOrder{ID: order.ID, OrderStatus: model.OrderStatusRewarding})
-			if err != nil {
-				_ = u.commitOrderApprovedMsg(msg)
-				errChn <- err
-				continue
-			}
-
-			err = u.notiOrderApproved(order.UserId, newAtOrderId, order.Merchant)
-			if err != nil {
-				_ = u.commitOrderApprovedMsg(msg)
-				errChn <- err
-				continue
-			}
-
-			_ = u.commitOrderApprovedMsg(msg)
+			_ = u.commitOrderUpdateMsg(msg)
 		}
 	}()
 }
 
-func (u *RewardMaker) notiOrderApproved(userId uint, atOrderId string, merchant string) error {
+func (u *RewardMaker) notiOrderStatus(userId uint, orderStatus, atOrderId, merchant string, rewardAmount float64) error {
+	title := ""
+	body := ""
+
+	switch orderStatus {
+	case model.OrderStatusInitial, model.OrderStatusPending:
+		title = fmt.Sprintf("Đơn hoàn mua sắm mới từ %v", merchant)
+		body = fmt.Sprintf("Đơn hàng #%v của bạn vừa được cập nhật. Bấm để xem chi tiết!", atOrderId)
+	case model.OrderStatusApproved:
+		title = "Đơn hoàn mua sắm được xác nhận"
+		body = fmt.Sprintf("%v ASA sẽ được hoàn cho đơn %v #%v vừa xác nhận hoàn tất 😝", rewardAmount, merchant, atOrderId)
+	case model.OrderStatusCancelled:
+		title = "Đơn hoàn mua sắm đã huỷ"
+		body = fmt.Sprintf("Đơn hàng %v #%v của bạn đã huỷ. Bấm để xem chi tiết!", merchant, atOrderId)
+	case model.OrderStatusRejected:
+		title = "Đơn hoàn mua sắm bị từ chối"
+		body = fmt.Sprintf("Đơn hàng %v #%v của bạn đã bị từ chối hoàn ASA từ đối tác. Bấm để xem chi tiết!", merchant, atOrderId)
+	default:
+		// model.OrderStatusRewarding
+		// model.OrderStatusComplete
+		return nil
+	}
+
 	notiMsg := msgqueue.AppNotiMsg{
 		Category: msgqueue.NotiCategoryCommerce,
-		Title:    fmt.Sprintf("Đơn hàng từ %v đã được xác nhận thành công", merchant),
-		Body:     fmt.Sprintf("Đơn hàng %v đã được xác nhận thành công, bạn có thể nhận thường ngay bây giờ", atOrderId),
+		Title:    title,
+		Body:     body,
 		UserId:   userId,
 		Data:     msgqueue.GetOrderApprovedNotiData(),
 	}
@@ -152,7 +174,7 @@ func (u *RewardMaker) notiOrderApproved(userId uint, atOrderId string, merchant 
 		return err
 	}
 
-	log.LG.Infof("Pushed Order Approved Msg to queue %v\n", notiMsg)
+	log.LG.Infof("Pushed Order Update Noti to queue %v\n", notiMsg)
 
 	return nil
 }
@@ -166,7 +188,7 @@ func (u *RewardMaker) CalculateRewardAmt(affCommission float64, commissionFee fl
 	return util.RoundFloat(tokenCommission, 2), nil
 }
 
-func (u *RewardMaker) commitOrderApprovedMsg(message kafka.Message) error {
+func (u *RewardMaker) commitOrderUpdateMsg(message kafka.Message) error {
 	err := u.approveQ.CommitMessages(context.Background(), message)
 	if err != nil {
 		log.LG.Errorf("Failed to commit order approved message: %v", err)

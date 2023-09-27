@@ -20,16 +20,16 @@ type OrderDetailsDto struct {
 	ImageUrl                       string    `json:"image_url"` // brand logo
 	AccessTradeOrderId             string    `json:"accesstrade_order_id"`
 	PubCommission                  float32   `json:"pub_commission"`
-	CommissionFee                  float64   `json:"commission_fee"`                            // commission fee (in percentage)
-	BuyTime                        time.Time `json:"sales_time,omitempty"`                      // dat hang thanh cong
-	ConfirmedTime                  time.Time `json:"confirmed_time,omitempty"`                  // don hang duoc ghi nhan
-	RejectedTime                   time.Time `json:"rejected_time,omitempty"`                   // don hang bi huy
-	RewardFirstPartReleasedTime    time.Time `json:"reward_first_part_released_time,omitempty"` // xac nhan hoan tat nhan 50%
-	RewardFirstPartReleasedAmount  float64   `json:"reward_first_part_released_amount,omitempty"`
-	RewardSecondPartUnlockedAmount float64   `json:"reward_second_part_unlocked_amount,omitempty"`
-	RewardRemainingAmount          float64   `json:"reward_remaining_amount,omitempty"`
-	RewardAmount                   float64   `json:"reward_amount,omitempty"`
-	RewardEndAt                    time.Time `json:"reward_end_at,omitempty"`
+	CommissionFee                  float64   `json:"commission_fee"`                  // commission fee (in percentage)
+	BuyTime                        time.Time `json:"sales_time"`                      // dat hang thanh cong
+	ConfirmedTime                  time.Time `json:"confirmed_time"`                  // don hang duoc ghi nhan
+	RejectedTime                   time.Time `json:"rejected_time"`                   // don hang bi huy
+	RewardFirstPartReleasedTime    time.Time `json:"reward_first_part_released_time"` // xac nhan hoan tat nhan 50%
+	RewardFirstPartReleasedAmount  float64   `json:"reward_first_part_released_amount"`
+	RewardSecondPartUnlockedAmount float64   `json:"reward_second_part_unlocked_amount"`
+	RewardRemainingAmount          float64   `json:"reward_remaining_amount"`
+	RewardAmount                   float64   `json:"reward_amount"`
+	RewardEndAt                    time.Time `json:"reward_end_at"`
 }
 
 type OrderHistoryResponse struct {

@@ -220,9 +220,9 @@ func (o *OrderDetails) ToOrderDetailsDto() dto.OrderDetailsDto {
 	}
 
 	imReleaseAmount := util.RoundFloat(o.RewardAmount*o.ImmediateRelease, 2)
-	secondPartReward := o.RewardAmount * (1 - o.ImmediateRelease)
+	secondPartReward := o.RewardAmount - imReleaseAmount
 	secondPartUnlockedAmount := util.RoundFloat(secondPartReward*dayPassedPercent, 2)
-	rewardRemainingAmount := o.RewardAmount - imReleaseAmount - secondPartUnlockedAmount
+	rewardRemainingAmount := util.RoundFloat(secondPartReward-secondPartUnlockedAmount, 2)
 
 	return dto.OrderDetailsDto{
 		ID:                             o.ID,

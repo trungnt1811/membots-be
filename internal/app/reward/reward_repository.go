@@ -27,7 +27,12 @@ func (r *rewardRepository) CreateReward(ctx context.Context, reward *model.Rewar
 
 func (r *rewardRepository) GetInProgressRewards(ctx context.Context, userId uint32) ([]model.Reward, error) {
 	var rewards []model.Reward
-	err := r.db.Model(&model.Reward{}).Where("user_id = ? AND rewarded_amount < amount", userId).Order("id DESC").Scan(&rewards).Error
+	query := "SELECT r.id, r.user_id, r.accesstrade_order_id, r.amount, r.rewarded_amount, r.commission_fee, " +
+		"r.immediate_release, r.end_at, r.start_at, r.created_at, r.updated_at " +
+		"FROM aff_reward AS r " +
+		"LEFT JOIN aff_order as o ON o.accesstrade_order_id = r.accesstrade_order_id " +
+		"WHERE o.user_id = ? AND o.order_status = ?"
+	err := r.db.Raw(query, userId, model.OrderStatusRewarding).Scan(&rewards).Error
 	return rewards, err
 }
 

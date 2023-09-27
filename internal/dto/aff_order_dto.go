@@ -23,7 +23,8 @@ type OrderDetailsDto struct {
 	CommissionFee                  float64   `json:"commission_fee"`                  // commission fee (in percentage)
 	BuyTime                        time.Time `json:"sales_time"`                      // dat hang thanh cong
 	ConfirmedTime                  time.Time `json:"confirmed_time"`                  // don hang duoc ghi nhan
-	RejectedTime                   time.Time `json:"rejected_time"`                   // don hang bi huy
+	RejectedTime                   time.Time `json:"rejected_time"`                   // don hang bi tu choi
+	CancelledTime                  time.Time `json:"cancelled_time"`                  // don hang bi huy
 	RewardFirstPartReleasedTime    time.Time `json:"reward_first_part_released_time"` // xac nhan hoan tat nhan 50%
 	RewardFirstPartReleasedAmount  float64   `json:"reward_first_part_released_amount"`
 	RewardSecondPartUnlockedAmount float64   `json:"reward_second_part_unlocked_amount"`

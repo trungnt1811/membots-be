@@ -118,7 +118,7 @@ func (repo *orderRepository) UpdateTrackedClickOrder(trackedId uint64, order *mo
 }
 
 var selectOrderDetails = "SELECT o.id, o.user_id, o.order_status, o.billing, o.category_name, o.merchant, " +
-	"o.accesstrade_order_id, o.pub_commission, o.update_time, o.sales_time, o.confirmed_time, o.created_at, " +
+	"o.accesstrade_order_id, o.pub_commission, o.update_time, o.cancelled_time, o.sales_time, o.confirmed_time, o.created_at, " +
 	"r.amount, r.rewarded_amount, r.commission_fee, r.immediate_release, r.end_at, r.start_at, " +
 	"b.logo " +
 	"FROM aff_order AS o " +
@@ -140,16 +140,18 @@ func (repo *orderRepository) GetOrderDetails(ctx context.Context, userId uint32,
 		var rewardedAmount sql.NullFloat64
 		var commissionFee sql.NullFloat64
 		var immediateRelease sql.NullFloat64
+		var cancelledTime sql.NullTime
 		var rewardEndAt sql.NullTime
 		var rewardStartAt sql.NullTime
 		var brandLogo sql.NullString
 		err = rows.Scan(&o.ID, &o.UserId, &o.OrderStatus, &o.Billing, &o.CategoryName, &o.Merchant,
-			&o.AccessTradeOrderId, &o.PubCommission, &o.UpdateTime, &o.SalesTime, &o.ConfirmedTime, &o.CreatedAt,
+			&o.AccessTradeOrderId, &o.PubCommission, &o.UpdateTime, &cancelledTime, &o.SalesTime, &o.ConfirmedTime, &o.CreatedAt,
 			&rewardAmount, &rewardedAmount, &commissionFee, &immediateRelease, &rewardEndAt, &rewardStartAt,
 			&brandLogo)
 		if err != nil {
 			return &model.OrderDetails{}, err
 		}
+		o.CancelledTime = cancelledTime.Time
 		o.RewardAmount = rewardAmount.Float64
 		o.RewardedAmount = rewardedAmount.Float64
 		o.CommissionFee = commissionFee.Float64
@@ -196,16 +198,18 @@ func (repo *orderRepository) GetOrderHistory(ctx context.Context, since time.Tim
 		var rewardedAmount sql.NullFloat64
 		var commissionFee sql.NullFloat64
 		var immediateRelease sql.NullFloat64
+		var cancelledTime sql.NullTime
 		var rewardEndAt sql.NullTime
 		var rewardStartAt sql.NullTime
 		var brandLogo sql.NullString
 		err = rows.Scan(&o.ID, &o.UserId, &o.OrderStatus, &o.Billing, &o.CategoryName, &o.Merchant,
-			&o.AccessTradeOrderId, &o.PubCommission, &o.UpdateTime, &o.SalesTime, &o.ConfirmedTime, &o.CreatedAt,
+			&o.AccessTradeOrderId, &o.PubCommission, &o.UpdateTime, &cancelledTime, &o.SalesTime, &o.ConfirmedTime, &o.CreatedAt,
 			&rewardAmount, &rewardedAmount, &commissionFee, &immediateRelease, &rewardEndAt, &rewardStartAt,
 			&brandLogo)
 		if err != nil {
 			return []model.OrderDetails{}, err
 		}
+		o.CancelledTime = cancelledTime.Time
 		o.RewardAmount = rewardAmount.Float64
 		o.RewardedAmount = rewardedAmount.Float64
 		o.CommissionFee = commissionFee.Float64

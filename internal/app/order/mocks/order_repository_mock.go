@@ -22,13 +22,8 @@ func NewMockOrderRepository(orders []model.AffOrder) *MockOrderRepository {
 	}
 }
 
-func (repo *MockOrderRepository) FindNonRewardOrders(
-	customerId, sellerId int,
-	fromDate time.Time,
-	minValue int64,
-	additionalFilter map[string]interface{},
-) ([]model.AffOrder, error) {
-	return repo.Orders, nil
+func (repo *MockOrderRepository) QueryOrdersConfirmedBefore(t time.Time, q map[string]any) ([]model.AffOrder, error) {
+	return []model.AffOrder{}, nil
 }
 
 func (repo *MockOrderRepository) SavePostBackLog(req *model.AffPostBackLog) error {

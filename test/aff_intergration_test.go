@@ -171,7 +171,7 @@ func (s *AffRewardTestSuite) TestRunHappyCase() {
 	resp, err = req3.Post(withdrawUrl)
 	s.NoError(err)
 	s.True(resp.IsSuccess())
-	var withdrawResp dto.WithdrawRewardResponse
+	var withdrawResp dto.RewardWithdrawDto
 	err = json.Unmarshal(resp.Body(), &withdrawResp)
 	s.NoError(err)
 	s.Condition(func() bool {

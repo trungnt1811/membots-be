@@ -33,6 +33,22 @@ func NewHomePageUCase(affBrandRepository interfaces.AffBrandRepository,
 }
 
 func (s homePageUCase) GetHomePage(ctx context.Context, userId uint64) (dto.HomePageDto, error) {
+	// Get all attributes order by most commission
+	listAffCampaignAttribute, err := s.AffCampAppRepository.GetAllAffCampaignAttribute(ctx, interfaces.ListAffCampaignOrderByMostCommission)
+	if err != nil {
+		return dto.HomePageDto{}, err
+	}
+	// Map only the most commision/aff campaign id
+	campaignIdAtrributeMapping := make(map[uint64]model.AffCampaignAttribute)
+	listAffCampaignId := make([]uint64, 0)
+	for _, attribute := range listAffCampaignAttribute {
+		_, isExist := campaignIdAtrributeMapping[uint64(attribute.CampaignId)]
+		if !isExist {
+			campaignIdAtrributeMapping[uint64(attribute.CampaignId)] = attribute
+			listAffCampaignId = append(listAffCampaignId, uint64(attribute.CampaignId))
+		}
+	}
+
 	p1 := promise.New(func(resolve func([]model.UserViewAffCampComBrand), reject func(error)) {
 		campaign, err := s.UserViewAffCampRepository.GetListUserViewAffCampByUserId(ctx, userId, 1, 7)
 		if err != nil {
@@ -75,25 +91,7 @@ func (s homePageUCase) GetHomePage(ctx context.Context, userId uint64) (dto.Home
 		}
 	})
 
-	var campaignIdAtrributeMapping map[uint64]model.AffCampaignAttribute
 	p4 := promise.New(func(resolve func([]model.AffCampaignComBrand), reject func(error)) {
-		// Get all attributes order by most commission
-		listAffCampaignAttribute, err := s.AffCampAppRepository.GetAllAffCampaignAttribute(ctx, interfaces.ListAffCampaignOrderByMostCommission)
-		if err != nil {
-			reject(err)
-		}
-
-		// Map only the most commision/aff campaign id
-		campaignIdAtrributeMapping = make(map[uint64]model.AffCampaignAttribute)
-		listAffCampaignId := make([]uint64, 0)
-		for _, attribute := range listAffCampaignAttribute {
-			_, isExist := campaignIdAtrributeMapping[uint64(attribute.CampaignId)]
-			if !isExist {
-				campaignIdAtrributeMapping[uint64(attribute.CampaignId)] = attribute
-				listAffCampaignId = append(listAffCampaignId, uint64(attribute.CampaignId))
-			}
-		}
-
 		// Get list aff campaign by ids
 		campaign, err := s.AffCampAppRepository.GetListAffCampaignByIds(ctx, listAffCampaignId, 1, 7)
 		if err != nil {
@@ -126,19 +124,28 @@ func (s homePageUCase) GetHomePage(ctx context.Context, userId uint64) (dto.Home
 	var listRecentlyVisited []dto.AffCampaignLessDto
 	for i, campaign := range *listCampaignP1 {
 		listRecentlyVisited = append(listRecentlyVisited, campaign.ToAffCampaignLessDto())
-		listRecentlyVisited[i].StellaMaxCom = s.ConvertPrice.ConvertVndPriceToAstra(ctx, campaign.AffCampComBrand.Attributes)
+		listRecentlyVisited[i].StellaMaxCom = s.ConvertPrice.ConvertVndPriceToAstra(
+			ctx,
+			[]model.AffCampaignAttribute{campaignIdAtrributeMapping[uint64(campaign.AffCampId)]},
+		)
 	}
 
 	var listFollowing []dto.AffCampaignLessDto
 	for i, campaign := range *listCampaignP2 {
 		listFollowing = append(listFollowing, campaign.ToAffCampaignLessDto())
-		listFollowing[i].StellaMaxCom = s.ConvertPrice.ConvertVndPriceToAstra(ctx, campaign.Attributes)
+		listFollowing[i].StellaMaxCom = s.ConvertPrice.ConvertVndPriceToAstra(
+			ctx,
+			[]model.AffCampaignAttribute{campaignIdAtrributeMapping[uint64(campaign.ID)]},
+		)
 	}
 
 	var listTopFavorited []dto.AffCampaignLessDto
 	for i, campaign := range *listCampaignP3 {
 		listTopFavorited = append(listTopFavorited, campaign.ToAffCampaignLessDto())
-		listTopFavorited[i].StellaMaxCom = s.ConvertPrice.ConvertVndPriceToAstra(ctx, campaign.Attributes)
+		listTopFavorited[i].StellaMaxCom = s.ConvertPrice.ConvertVndPriceToAstra(
+			ctx,
+			[]model.AffCampaignAttribute{campaignIdAtrributeMapping[uint64(campaign.ID)]},
+		)
 	}
 
 	var listMostCommission []dto.AffCampaignLessDto

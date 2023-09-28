@@ -37,8 +37,7 @@ func (r affBrandRepository) UpdateCacheListCountFavouriteAffBrand(ctx context.Co
 func (r affBrandRepository) GetListFavAffBrandByUserId(ctx context.Context, userId uint64, page, size int) ([]model.AffCampComFavBrand, error) {
 	var listAffCampComFavBrand []model.AffCampComFavBrand
 	offset := (page - 1) * size
-	err := r.db.Joins("FavoriteBrand").
-		Joins("FavoriteBrand.Brand").
+	err := r.db.Joins("FavoriteBrand.Brand").
 		Where("FavoriteBrand.user_id = ? AND FavoriteBrand.status = ? AND aff_campaign.stella_status = ?",
 			userId,
 			model.UserFavoriteBrandStatusAdded,

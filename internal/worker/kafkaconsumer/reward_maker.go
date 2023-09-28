@@ -3,6 +3,7 @@ package kafkaconsumer
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strconv"
 	"time"
@@ -15,7 +16,11 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/util"
 	"github.com/astraprotocol/affiliate-system/internal/util/log"
 	"github.com/segmentio/kafka-go"
+	"golang.org/x/exp/slices"
+	"gorm.io/gorm"
 )
+
+var BeforeRewardingStatuses = []string{model.OrderStatusInitial, model.OrderStatusPending, model.OrderStatusApproved}
 
 type RewardMaker struct {
 	rewardRepo   interfaces.RewardRepository
@@ -40,8 +45,6 @@ func NewRewardMaker(rewardRepo interfaces.RewardRepository,
 }
 
 func (u *RewardMaker) ListenOrderApproved() {
-	stellaCommission := conf.GetConfiguration().Aff.StellaCommission
-
 	errChn := make(chan error)
 	go func() {
 		for err := range errChn {
@@ -69,55 +72,12 @@ func (u *RewardMaker) ListenOrderApproved() {
 				errChn <- err
 				continue
 			}
-			newAtOrderId := orderApprovedMsg.AtOrderID
-			log.LG.Infof("Read new order updated: %v", newAtOrderId)
+			log.LG.Infof("Read new order updated: %v", orderApprovedMsg.AtOrderID)
 
 			/* ==========================================================================
 			SECTION: processing
 			=========================================================================== */
-			order, err := u.orderRepo.FindOrderByAccessTradeId(newAtOrderId)
-			if err != nil {
-				_ = u.commitOrderUpdateMsg(msg)
-				errChn <- err
-				continue
-			}
-
-			var rewardAmount float64 = 0
-			if order.OrderStatus == model.OrderStatusApproved {
-				rewardAmount, err = u.CalculateRewardAmt(float64(order.PubCommission), stellaCommission)
-				if err != nil {
-					_ = u.commitOrderUpdateMsg(msg)
-					errChn <- err
-					continue
-				}
-
-				now := time.Now()
-				newReward := model.Reward{
-					UserId:           order.UserId,
-					AtOrderID:        newAtOrderId,
-					Amount:           rewardAmount,
-					RewardedAmount:   0,
-					CommissionFee:    stellaCommission,
-					ImmediateRelease: model.ImmediateRelease,
-					StartAt:          now,
-					EndAt:            now.Add(reward.RewardLockTime * time.Hour),
-				}
-				err = u.rewardRepo.CreateReward(ctx, &newReward)
-				if err != nil {
-					_ = u.commitOrderUpdateMsg(msg)
-					errChn <- err
-					continue
-				}
-
-				_, err = u.orderRepo.UpdateOrder(&model.AffOrder{ID: order.ID, OrderStatus: model.OrderStatusRewarding})
-				if err != nil {
-					_ = u.commitOrderUpdateMsg(msg)
-					errChn <- err
-					continue
-				}
-			}
-
-			err = u.notiOrderStatus(order.UserId, order.ID, order.OrderStatus, newAtOrderId, order.Merchant, rewardAmount)
+			err = u.processOrderUpdateMsg(ctx, orderApprovedMsg)
 			if err != nil {
 				_ = u.commitOrderUpdateMsg(msg)
 				errChn <- err
@@ -127,6 +87,70 @@ func (u *RewardMaker) ListenOrderApproved() {
 			_ = u.commitOrderUpdateMsg(msg)
 		}
 	}()
+}
+
+func (u *RewardMaker) processOrderUpdateMsg(ctx context.Context, msg msgqueue.MsgOrderUpdated) error {
+	stellaCommission := conf.GetConfiguration().Aff.StellaCommission
+
+	newAtOrderId := msg.AtOrderID
+	order, err := u.orderRepo.FindOrderByAccessTradeId(newAtOrderId)
+	if err != nil {
+		return err
+	}
+
+	rewardAmount, err := u.CalculateRewardAmt(float64(order.PubCommission), stellaCommission)
+	if err != nil {
+		return err
+	}
+
+	if slices.Contains(BeforeRewardingStatuses, order.OrderStatus) {
+		currentRw, err := u.rewardRepo.GetRewardByAtOrderId(ctx, newAtOrderId)
+		if err != nil {
+			if !errors.Is(err, gorm.ErrRecordNotFound) {
+				return err
+			}
+
+			now := time.Now()
+			newReward := model.Reward{
+				UserId:           order.UserId,
+				AtOrderID:        newAtOrderId,
+				Amount:           rewardAmount,
+				RewardedAmount:   0,
+				CommissionFee:    stellaCommission,
+				ImmediateRelease: model.ImmediateRelease,
+				StartAt:          now,
+				EndAt:            now.Add(reward.RewardLockTime * time.Hour),
+			}
+			err = u.rewardRepo.CreateReward(ctx, &newReward)
+			if err != nil {
+				return err
+			}
+
+		} else {
+			if rewardAmount != currentRw.Amount {
+				log.LG.Infof("Order %v updated reward amount", newAtOrderId)
+				now := time.Now()
+				rewardUpdates := &model.Reward{
+					Amount:  rewardAmount,
+					StartAt: now,
+					EndAt:   now.Add(reward.RewardLockTime * time.Hour),
+				}
+				err = u.rewardRepo.UpdateRewardByAtOrderId(newAtOrderId, rewardUpdates)
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+
+	if order.OrderStatus == model.OrderStatusApproved {
+		_, err = u.orderRepo.UpdateOrder(&model.AffOrder{ID: order.ID, OrderStatus: model.OrderStatusRewarding})
+		if err != nil {
+			return err
+		}
+	}
+
+	return u.notiOrderStatus(order.UserId, order.ID, order.OrderStatus, newAtOrderId, order.Merchant, rewardAmount)
 }
 
 func (u *RewardMaker) notiOrderStatus(userId uint, orderId uint, orderStatus, atOrderId, merchant string, rewardAmount float64) error {

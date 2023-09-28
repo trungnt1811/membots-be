@@ -9,13 +9,13 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/infra/msgqueue"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/model"
+	"github.com/astraprotocol/affiliate-system/internal/util"
 	"github.com/astraprotocol/affiliate-system/internal/util/log"
 	scheduler "github.com/robfig/cron/v3"
 	"github.com/segmentio/kafka-go"
 )
 
 const (
-	DayToCouponExpire   = 5
 	DailyRewardNotiTime = "45 09 * * *" // every day at 9:45
 )
 
@@ -26,7 +26,7 @@ type NotiScheduler struct {
 	orderRepo  interfaces.OrderRepository
 }
 
-func NewCouponNoti(appNotiQ *msgqueue.QueueWriter,
+func NewNotiScheduler(appNotiQ *msgqueue.QueueWriter,
 	rewardRepo interfaces.RewardRepository,
 	orderRepo interfaces.OrderRepository) *NotiScheduler {
 	parser := scheduler.NewParser(
@@ -46,7 +46,7 @@ func NewCouponNoti(appNotiQ *msgqueue.QueueWriter,
 	return couponNoti
 }
 
-func (n *NotiScheduler) StartNotiExpireCoupons() {
+func (n *NotiScheduler) StartNotiDailyReward() {
 	_, err := n.scheduler.AddFunc(DailyRewardNotiTime, n.notiRewardInDay())
 	if err != nil {
 		log.LG.Errorf("Failed to schedule notiRewardInDay. Err %v", err)
@@ -68,6 +68,10 @@ func (n *NotiScheduler) notiRewardInDay() func() {
 				continue
 			}
 
+			fmt.Println("PENDING REWARDS", len(rewards))
+			data, _ := json.Marshal(rewards)
+			fmt.Println("PENDING REWARDS", string(data))
+
 			var totalRewardInDay float64 = 0
 			var orderCount uint = 0
 			for _, r := range rewards {
@@ -78,9 +82,11 @@ func (n *NotiScheduler) notiRewardInDay() func() {
 				}
 			}
 
-			err = n.pushDailyRewardNotiToQueue(userId, totalRewardInDay, orderCount)
-			if err != nil {
-				log.LG.Errorf("Failed to pushDailyRewardNotiToQueue for user %v. Err %v", userId, err)
+			if totalRewardInDay > 0 {
+				err = n.pushDailyRewardNotiToQueue(userId, util.RoundFloat(totalRewardInDay, 2), orderCount)
+				if err != nil {
+					log.LG.Errorf("Failed to pushDailyRewardNotiToQueue for user %v. Err %v", userId, err)
+				}
 			}
 		}
 
@@ -108,7 +114,7 @@ func (n *NotiScheduler) pushDailyRewardNotiToQueue(userId uint32, amount float64
 		return err
 	}
 
-	log.LG.Infof("Pushed coupon expire noti to queue. User %v", userId)
+	log.LG.Infof("Pushed daily reward noti to queue. User %v", userId)
 
 	return nil
 }

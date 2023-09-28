@@ -54,26 +54,14 @@ func (r affCampAppRepository) GetAllAffCampaignInCategoryId(ctx context.Context,
 	return listAffCampaign, err
 }
 
-func (r affCampAppRepository) GetAllAffCampaign(ctx context.Context, orderBy string, page, size int) ([]model.AffCampaignLessApp, error) {
+func (r affCampAppRepository) GetAllAffCampaign(ctx context.Context, page, size int) ([]model.AffCampaignLessApp, error) {
 	var listAffCampaign []model.AffCampaignLessApp
-	var err error
 	offset := (page - 1) * size
-	switch orderBy {
-	case interfaces.ListAffCampaignOrderByMostCommission:
-		err = r.db.Joins("Brand").
-			Preload("Attributes", func(db *gorm.DB) *gorm.DB {
-				return db.Order(orderQuery)
-			}).
-			Where("aff_campaign.stella_status = ?", model.StellaStatusInProgress).
-			Limit(size + 1).Offset(offset).
-			Find(&listAffCampaign).Error
-	default:
-		err = r.db.Joins("Brand").
-			Preload("Attributes").
-			Where("stella_status = ?", model.StellaStatusInProgress).
-			Limit(size + 1).Offset(offset).
-			Find(&listAffCampaign).Error
-	}
+	err := r.db.Joins("Brand").
+		Preload("Attributes").
+		Where("stella_status = ?", model.StellaStatusInProgress).
+		Limit(size + 1).Offset(offset).
+		Find(&listAffCampaign).Error
 	return listAffCampaign, err
 }
 

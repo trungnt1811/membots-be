@@ -123,7 +123,8 @@ func (s affBrandUCase) GetListFavAffBrandByUserId(ctx context.Context, userId ui
 }
 
 func (s affBrandUCase) GetMostCommissionAffCampaign(ctx context.Context, userId uint64, page, size int) (dto.AffCampaignAppDtoResponse, error) {
-	listAffCampaign, err := s.AffCampAppRepository.GetAllAffCampaign(ctx, interfaces.ListAffCampaignOrderByMostCommission, page, size)
+	//TODO: implement get most aff commission here
+	listAffCampaign, err := s.AffCampAppRepository.GetAllAffCampaign(ctx, page, size)
 	if err != nil {
 		return dto.AffCampaignAppDtoResponse{}, err
 	}

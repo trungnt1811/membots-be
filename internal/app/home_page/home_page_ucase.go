@@ -76,7 +76,8 @@ func (s homePageUCase) GetHomePage(ctx context.Context, userId uint64) (dto.Home
 	})
 
 	p4 := promise.New(func(resolve func([]model.AffCampaignLessApp), reject func(error)) {
-		campaign, err := s.AffCampAppRepository.GetAllAffCampaign(ctx, interfaces.ListAffCampaignOrderByMostCommission, 1, 7)
+		//TODO: implement get most aff commission here
+		campaign, err := s.AffCampAppRepository.GetAllAffCampaign(ctx, 1, 7)
 		if err != nil {
 			reject(err)
 		} else {

@@ -29,6 +29,13 @@ func (repo *orderRepository) QueryOrdersConfirmedBefore(t time.Time, q map[strin
 		sql.Where("confirmed_time <= ?", t)
 	}
 
+	sql.Where("order_status IN ?", []string{
+		model.OrderStatusInitial,
+		model.OrderStatusPending,
+		model.OrderStatusApproved,
+		model.OrderStatusRewarding,
+	})
+
 	err := sql.Find(&orders, q).Error
 	return orders, err
 }

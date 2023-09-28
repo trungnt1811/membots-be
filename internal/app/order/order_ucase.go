@@ -221,7 +221,6 @@ func (u *orderUCase) CheckOrderConfirmed() (int, error) {
 	t := time.Now()
 	q := map[string]any{
 		"is_confirmed": 0,
-		"order_status": model.OrderStatusRewarding,
 	}
 	orders, err := u.Repo.QueryOrdersConfirmedBefore(t, q)
 	if err != nil {

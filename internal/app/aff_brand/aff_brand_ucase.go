@@ -129,6 +129,8 @@ func (s affBrandUCase) GetMostCommissionAffCampaign(ctx context.Context, userId 
 	if err != nil {
 		return dto.AffCampaignAppDtoResponse{}, err
 	}
+
+	// Map only the most commision/aff campaign id
 	campaignIdAtrributeMapping := make(map[uint64]model.AffCampaignAttribute)
 	listAffCampaignId := make([]uint64, 0)
 	for _, attribute := range listAffCampaignAttribute {

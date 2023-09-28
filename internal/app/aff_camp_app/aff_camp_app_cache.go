@@ -131,3 +131,21 @@ func (c affCampAppCache) GetAllAffCampaignAttribute(ctx context.Context, orderBy
 	}
 	return listAffCampaignAttribute, nil
 }
+
+func (c affCampAppCache) GetListAffCampaignByIds(ctx context.Context, ids []uint64, page, size int) ([]model.AffCampaignComBrand, error) {
+	s, _ := json.Marshal(ids)
+	key := &caching.Keyer{Raw: keyPrefixAffCampApp + fmt.Sprint("GetListAffCampaignByIds_", string(s), "_", page, "_", size)}
+	var listAffCampaign []model.AffCampaignComBrand
+	err := c.Cache.RetrieveItem(key, &listAffCampaign)
+	if err != nil {
+		// cache miss
+		listAffCampaign, err = c.AffCampAppRepository.GetListAffCampaignByIds(ctx, ids, page, size)
+		if err != nil {
+			return listAffCampaign, err
+		}
+		if err = c.Cache.SaveItem(key, listAffCampaign, cacheTimeAffCampApp); err != nil {
+			return listAffCampaign, err
+		}
+	}
+	return listAffCampaign, nil
+}

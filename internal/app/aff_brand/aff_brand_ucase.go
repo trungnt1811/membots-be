@@ -5,6 +5,7 @@ import (
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
+	"github.com/astraprotocol/affiliate-system/internal/model"
 )
 
 type affBrandUCase struct {
@@ -123,8 +124,23 @@ func (s affBrandUCase) GetListFavAffBrandByUserId(ctx context.Context, userId ui
 }
 
 func (s affBrandUCase) GetMostCommissionAffCampaign(ctx context.Context, userId uint64, page, size int) (dto.AffCampaignAppDtoResponse, error) {
-	//TODO: implement get most aff commission here
-	listAffCampaign, err := s.AffCampAppRepository.GetAllAffCampaign(ctx, page, size)
+	// Get all attributes order by most commission
+	listAffCampaignAttribute, err := s.AffCampAppRepository.GetAllAffCampaignAttribute(ctx, interfaces.ListAffCampaignOrderByMostCommission)
+	if err != nil {
+		return dto.AffCampaignAppDtoResponse{}, err
+	}
+	campaignIdAtrributeMapping := make(map[uint64]model.AffCampaignAttribute)
+	listAffCampaignId := make([]uint64, 0)
+	for _, attribute := range listAffCampaignAttribute {
+		_, isExist := campaignIdAtrributeMapping[uint64(attribute.CampaignId)]
+		if !isExist {
+			campaignIdAtrributeMapping[uint64(attribute.CampaignId)] = attribute
+			listAffCampaignId = append(listAffCampaignId, uint64(attribute.CampaignId))
+		}
+	}
+
+	// Get list aff campaign by ids
+	listAffCampaign, err := s.AffCampAppRepository.GetListAffCampaignByIds(ctx, listAffCampaignId, page, size)
 	if err != nil {
 		return dto.AffCampaignAppDtoResponse{}, err
 	}
@@ -153,9 +169,12 @@ func (s affBrandUCase) GetMostCommissionAffCampaign(ctx context.Context, userId 
 		if i >= size {
 			break
 		}
-		listAffCampaignAppDto = append(listAffCampaignAppDto, listAffCampaign[i].ToDto())
+		listAffCampaignAppDto = append(listAffCampaignAppDto, listAffCampaign[i].ToAffCampaignLessDto())
 		listAffCampaignAppDto[i].Brand.IsFavorited = favBrandCheck[listAffCampaignAppDto[i].BrandId]
-		listAffCampaignAppDto[i].StellaMaxCom = s.ConvertPrice.ConvertVndPriceToAstra(ctx, listAffCampaign[i].Attributes)
+		listAffCampaignAppDto[i].StellaMaxCom = s.ConvertPrice.ConvertVndPriceToAstra(
+			ctx,
+			[]model.AffCampaignAttribute{campaignIdAtrributeMapping[uint64(listAffCampaignAppDto[i].ID)]},
+		)
 	}
 	nextPage := page
 	if len(listAffCampaign) > size {

@@ -54,8 +54,15 @@ func (r *Reward) WithdrawableReward() (rewardAmount float64, ended bool) {
 		ended = true
 	}
 
-	imRelease := r.ImmediateRelease
-	rewardAmount = imRelease*r.Amount + (1-imRelease)*r.Amount*withdrawablePercent - r.RewardedAmount
+	imRelease := r.Amount * r.ImmediateRelease
+	rewardAmount = imRelease + (r.Amount-imRelease)*withdrawablePercent - r.RewardedAmount
 	rewardAmount = math.Round(rewardAmount*100) / 100
 	return
+}
+
+func (r *Reward) OneDayReward() float64 {
+	totalDays := int(r.EndAt.Sub(r.StartAt) / OneDay) // total lock days
+	imRelease := r.Amount * r.ImmediateRelease
+	reward := (r.Amount - imRelease) / float64(totalDays)
+	return reward
 }

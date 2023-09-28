@@ -18,24 +18,24 @@ import (
 )
 
 type RewardMaker struct {
-	rewardRepo interfaces.RewardRepository
-	orderRepo  interfaces.OrderRepository
-	priceRepo  interfaces.TokenPriceRepo
-	approveQ   *msgqueue.QueueReader
-	appNotiQ   *msgqueue.QueueWriter
+	rewardRepo   interfaces.RewardRepository
+	orderRepo    interfaces.OrderRepository
+	priceRepo    interfaces.TokenPriceRepo
+	orderUpdateQ *msgqueue.QueueReader
+	appNotiQ     *msgqueue.QueueWriter
 }
 
 func NewRewardMaker(rewardRepo interfaces.RewardRepository,
 	orderRepo interfaces.OrderRepository,
 	priceRepo interfaces.TokenPriceRepo,
-	approveQ *msgqueue.QueueReader,
+	orderUpdateQ *msgqueue.QueueReader,
 	appNotiQ *msgqueue.QueueWriter) *RewardMaker {
 	return &RewardMaker{
-		rewardRepo: rewardRepo,
-		orderRepo:  orderRepo,
-		priceRepo:  priceRepo,
-		approveQ:   approveQ,
-		appNotiQ:   appNotiQ,
+		rewardRepo:   rewardRepo,
+		orderRepo:    orderRepo,
+		priceRepo:    priceRepo,
+		orderUpdateQ: orderUpdateQ,
+		appNotiQ:     appNotiQ,
 	}
 }
 
@@ -56,7 +56,7 @@ func (u *RewardMaker) ListenOrderApproved() {
 			/* ==========================================================================
 			SECTION: reading message
 			=========================================================================== */
-			msg, err := u.approveQ.FetchMessage(ctx)
+			msg, err := u.orderUpdateQ.FetchMessage(ctx)
 			if err != nil {
 				errChn <- err
 				continue
@@ -189,7 +189,7 @@ func (u *RewardMaker) CalculateRewardAmt(affCommission float64, commissionFee fl
 }
 
 func (u *RewardMaker) commitOrderUpdateMsg(message kafka.Message) error {
-	err := u.approveQ.CommitMessages(context.Background(), message)
+	err := u.orderUpdateQ.CommitMessages(context.Background(), message)
 	if err != nil {
 		log.LG.Errorf("Failed to commit order update message: %v", err)
 		return err

@@ -11,6 +11,7 @@ const (
 	NotiDataKeyType                 = "type"
 	NotiDataKeyId                   = "id"
 	NotiDataDeepLinkAffOrderDetails = "astrarewards://affiliate/orders/%v"
+	NotiDataDeepLinkAffWallet       = "astrarewards://affiliate/wallet"
 )
 
 type MsgOrderUpdated struct {
@@ -38,6 +39,13 @@ func GetOrderUpdateNotiData(orderId uint) map[string]string {
 	data := make(map[string]string)
 	data[NotiDataKeyType] = NotiDataTypeUrl
 	data[NotiDataKeyId] = fmt.Sprintf(NotiDataDeepLinkAffOrderDetails, orderId)
+	return data
+}
+
+func GetDailyRewardNotiData() map[string]string {
+	data := make(map[string]string)
+	data[NotiDataKeyType] = NotiDataTypeUrl
+	data[NotiDataKeyId] = NotiDataDeepLinkAffWallet
 	return data
 }
 

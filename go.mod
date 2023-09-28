@@ -9,11 +9,12 @@ require (
 	github.com/ethereum/go-ethereum v1.10.26
 	github.com/ettle/strcase v0.1.1
 	github.com/gin-gonic/gin v1.9.1
-	github.com/go-co-op/gocron v1.32.1
+	github.com/go-co-op/gocron v1.3.1
 	github.com/grokify/html-strip-tags-go v0.0.1
 	github.com/imroc/req/v3 v3.35.0
 	github.com/mcuadros/go-gin-prometheus v0.1.0
 	github.com/pkg/errors v0.9.1
+	github.com/robfig/cron/v3 v3.0.0
 	github.com/rs/zerolog v1.29.0
 	github.com/segmentio/kafka-go v0.4.39
 	github.com/spf13/viper v1.15.0
@@ -55,7 +56,6 @@ require (
 	github.com/quic-go/qtls-go1-20 v0.2.2 // indirect
 	github.com/quic-go/quic-go v0.34.0 // indirect
 	github.com/rjeczalik/notify v0.9.2 // indirect
-	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/rs/cors v1.8.3 // indirect
 	github.com/shirou/gopsutil v3.21.5+incompatible // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
@@ -69,6 +69,7 @@ require (
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect
 	golang.org/x/mod v0.12.0 // indirect
+	golang.org/x/sync v0.3.0 // indirect
 	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce // indirect
 )
 

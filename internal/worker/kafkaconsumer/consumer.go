@@ -18,7 +18,7 @@ func RegisConsumers(config *conf.Configuration, db *gorm.DB) {
 
 	// Kafka queue
 	orderApproveQueue := msgqueue.NewKafkaConsumer(msgqueue.KAFKA_TOPIC_AFF_ORDER_UPDATE, msgqueue.KAFKA_GROUP_ID)
-	kafkaNotiMsgProducer := msgqueue.NewKafkaProducer(msgqueue.KAFKA_TOPIC_NOTI_APP_MESSAGE)
+	appNotiQueue := msgqueue.NewKafkaProducer(msgqueue.KAFKA_TOPIC_NOTI_APP_MESSAGE)
 	userViewAffCampQueue := msgqueue.NewKafkaConsumer(msgqueue.KAFKA_TOPIC_USER_VIEW_AFF_CAMP, msgqueue.KAFKA_GROUP_ID_USER_VIEW_AFF_CAMP)
 	shippingReceiptConsumer := msgqueue.NewKafkaConsumer(msgqueue.KAFKA_TOPIC_IMPORT_RECEIPT_TX, msgqueue.KAFKA_GROUP_ID)
 
@@ -27,12 +27,11 @@ func RegisConsumers(config *conf.Configuration, db *gorm.DB) {
 	rewardRepo := reward.NewRewardRepository(db)
 	userViewAffCampRepo := user_view_aff_camp.NewUserViewAffCampRepository(db)
 
-	// TODO: tiki config null
 	tikiClient := exchange.NewTikiClient(exchange.TikiClientConfig{BaseUrl: config.Tiki.ApiUrl})
 	tikiClientCache := exchange.NewTikiClientCache(tikiClient, redisClient)
 
 	// Start consumer
-	rewardMaker := NewRewardMaker(rewardRepo, orderRepo, tikiClientCache, orderApproveQueue, kafkaNotiMsgProducer)
+	rewardMaker := NewRewardMaker(rewardRepo, orderRepo, tikiClientCache, orderApproveQueue, appNotiQueue)
 	rewardMaker.ListenOrderApproved()
 
 	userViewAffCampConsumer := NewUserViewAffCampConsumer(userViewAffCampRepo, userViewAffCampQueue)

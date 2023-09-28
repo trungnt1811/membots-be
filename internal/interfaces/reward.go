@@ -9,6 +9,8 @@ import (
 
 type RewardRepository interface {
 	CreateReward(ctx context.Context, reward *model.Reward) error
+	GetRewardByAtOrderId(ctx context.Context, atOrderId string) (model.Reward, error)
+	UpdateRewardByAtOrderId(atOrderId string, updates *model.Reward) error
 	SaveRewardWithdraw(ctx context.Context, rewardClaim *model.RewardWithdraw, rewards []model.Reward, orderRewardHistories []model.OrderRewardHistory, completeRwOrders []string) error
 	UpdateWithdrawShippingStatus(ctx context.Context, shippingReqId, txHash, status string) error
 	GetWithdrawById(ctx context.Context, userId uint32, withdrawId uint) (model.RewardWithdraw, error)

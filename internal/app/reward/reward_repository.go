@@ -25,6 +25,16 @@ func (r *rewardRepository) CreateReward(ctx context.Context, reward *model.Rewar
 	return r.db.Create(reward).Error
 }
 
+func (r *rewardRepository) GetRewardByAtOrderId(ctx context.Context, atOrderId string) (model.Reward, error) {
+	var reward model.Reward
+	err := r.db.Where("accesstrade_order_id = ?", atOrderId).First(&reward).Error
+	return reward, err
+}
+
+func (r *rewardRepository) UpdateRewardByAtOrderId(atOrderId string, updates *model.Reward) error {
+	return r.db.Model(updates).Where("accesstrade_order_id = ?", atOrderId).Updates(updates).Error
+}
+
 func (r *rewardRepository) GetInProgressRewards(ctx context.Context, userId uint32) ([]model.Reward, error) {
 	var rewards []model.Reward
 	query := "SELECT r.id, r.user_id, r.accesstrade_order_id, r.amount, r.rewarded_amount, r.commission_fee, " +

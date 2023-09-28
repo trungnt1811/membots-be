@@ -260,20 +260,20 @@ func (u *orderUCase) CheckOrderConfirmed() (int, error) {
 		if atOrder.OrderId == "" {
 			// Still empty
 			log.LG.Errorf("cannot found access trade order: %s", order.AccessTradeOrderId)
-		}
+		} else {
+			// Check if confirmed or not
+			if atOrder.IsConfirmed == 0 {
+				// Update order as cancelled
+				order.OrderStatus = model.OrderStatusCancelled
+				updatedCount += 1
 
-		// Check if confirmed or not
-		if atOrder.IsConfirmed == 0 {
-			// Update order as cancelled
-			order.OrderStatus = model.OrderStatusCancelled
-			updatedCount += 1
-
-			_, err := u.Repo.UpdateOrder(&order)
-			if err != nil {
-				log.LG.Errorf("update order cancelled err: %v", err)
+				_, err := u.Repo.UpdateOrder(&order)
+				if err != nil {
+					log.LG.Errorf("update order cancelled err: %v", err)
+				}
+				// Send msg to Kafka
+				u.sendOrderUpdateMsg(atOrder.OrderId, order.OrderStatus, atOrder.IsConfirmed)
 			}
-			// Send msg to Kafka
-			u.sendOrderUpdateMsg(atOrder.OrderId, order.OrderStatus, atOrder.IsConfirmed)
 		}
 	}
 

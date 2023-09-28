@@ -39,7 +39,6 @@ func (r affBrandRepository) GetListFavAffBrandByUserId(ctx context.Context, user
 	offset := (page - 1) * size
 	err := r.db.Joins("FavoriteBrand").
 		Joins("FavoriteBrand.Brand").
-		Preload("Attributes").
 		Where("FavoriteBrand.user_id = ? AND FavoriteBrand.status = ? AND aff_campaign.stella_status = ?",
 			userId,
 			model.UserFavoriteBrandStatusAdded,

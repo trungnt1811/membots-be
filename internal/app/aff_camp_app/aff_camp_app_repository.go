@@ -96,7 +96,6 @@ func (r affCampAppRepository) GetListAffCampaignByBrandIds(ctx context.Context, 
 	findInSet := strings.Trim(string(s), "[]")
 	offset := (page - 1) * size
 	err := r.db.Joins("Brand").
-		Preload("Attributes").
 		Where("aff_campaign.brand_id IN ? AND stella_status = ?", brandIds, model.StellaStatusInProgress).
 		Limit(size + 1).Offset(offset).
 		Order(fmt.Sprintf("FIND_IN_SET(aff_campaign.brand_id,'%s')", findInSet)).

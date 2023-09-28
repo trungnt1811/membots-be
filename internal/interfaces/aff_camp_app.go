@@ -16,6 +16,7 @@ type AffCampAppRepository interface {
 	GetAffCampaignById(ctx context.Context, id uint64) (model.AffCampaignApp, error)
 	GetListAffCampaignByBrandIds(ctx context.Context, brandIds []uint, page, size int) ([]model.AffCampaignComBrand, error)
 	GetListAffCampaignByCategoryIdAndBrandIds(ctx context.Context, categoryId uint, brandIds []uint, page, size int) ([]model.AffCampaignComBrand, error)
+	GetAllAffCampaignAttribute(ctx context.Context, orderBy string) ([]model.AffCampaignAttribute, error)
 }
 
 type AffCampAppUCase interface {

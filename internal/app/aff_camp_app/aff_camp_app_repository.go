@@ -115,3 +115,17 @@ func (r affCampAppRepository) GetListAffCampaignByCategoryIdAndBrandIds(ctx cont
 		Find(&listAffCampaign).Error
 	return listAffCampaign, err
 }
+
+func (r affCampAppRepository) GetAllAffCampaignAttribute(ctx context.Context, orderBy string) ([]model.AffCampaignAttribute, error) {
+	var listAffCampaignAttribute []model.AffCampaignAttribute
+	var err error
+	switch orderBy {
+	case interfaces.ListAffCampaignOrderByMostCommission:
+		err = r.db.
+			Order(orderQuery).
+			Find(&listAffCampaignAttribute).Error
+	default:
+		err = r.db.Find(&listAffCampaignAttribute).Error
+	}
+	return listAffCampaignAttribute, err
+}

@@ -2356,6 +2356,10 @@ const docTemplate = `{
                 "billing": {
                     "type": "number"
                 },
+                "cancelled_time": {
+                    "description": "don hang bi huy",
+                    "type": "string"
+                },
                 "category_name": {
                     "type": "string"
                 },
@@ -2384,7 +2388,7 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "rejected_time": {
-                    "description": "don hang bi huy",
+                    "description": "don hang bi tu choi",
                     "type": "string"
                 },
                 "reward_amount": {

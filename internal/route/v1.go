@@ -2,8 +2,9 @@ package route
 
 import (
 	"context"
-	"github.com/astraprotocol/affiliate-system/internal/infra/exchange"
 	"time"
+
+	"github.com/astraprotocol/affiliate-system/internal/infra/exchange"
 
 	"github.com/astraprotocol/affiliate-system/internal/app/reward"
 
@@ -133,7 +134,6 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 
 	userViewAffCampRepository := user_view_aff_camp.NewUserViewAffCampRepository(db)
 	userViewAffCampCache := user_view_aff_camp.NewUserViewAffCampCacheRepository(userViewAffCampRepository, redisClient)
-	userViewAffCampUCase := user_view_aff_camp.NewUserViewAffCampUCase(userViewAffCampCache, convertPriceHandler)
 
 	userFavoriteBrandRepository := user_favorite_brand.NewUserFavoriteBrandRepository(db)
 	userFavoriteBrandCache := user_favorite_brand.NewUserFavoriteBrandCacheRepository(userFavoriteBrandRepository, redisClient)
@@ -149,6 +149,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	appRouter.GET("/aff-campaign", authHandler.CheckUserHeader(), affCampAppHandler.GetAllAffCampaign)
 	appRouter.GET("/aff-campaign/:id", authHandler.CheckUserHeader(), affCampAppHandler.GetAffCampaignById)
 
+	userViewAffCampUCase := user_view_aff_camp.NewUserViewAffCampUCase(userViewAffCampCache, affCampAppCache, convertPriceHandler)
 	affBrandUCase := aff_brand.NewAffBrandUCase(affBrandCache, affCampAppCache, userFavoriteBrandCache, convertPriceHandler)
 	affBrandHandler := aff_brand.NewAffBrandHandler(userViewAffCampUCase, affBrandUCase)
 	appRouter.GET("brand", authHandler.CheckUserHeader(), affBrandHandler.GetListAffBrandByUser)

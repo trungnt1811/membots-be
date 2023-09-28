@@ -5,6 +5,7 @@ import (
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
+	"github.com/astraprotocol/affiliate-system/internal/model"
 )
 
 type affBrandUCase struct {
@@ -33,6 +34,20 @@ func (s affBrandUCase) UpdateCacheListCountFavouriteAffBrand(ctx context.Context
 }
 
 func (s affBrandUCase) GetTopFavouriteAffBrand(ctx context.Context, userId uint64, page, size int) (dto.AffCampaignAppDtoResponse, error) {
+	// Get all attributes order by most commission
+	listAffCampaignAttribute, err := s.AffCampAppRepository.GetAllAffCampaignAttribute(ctx, interfaces.ListAffCampaignOrderByMostCommission)
+	if err != nil {
+		return dto.AffCampaignAppDtoResponse{}, err
+	}
+	// Map only the most commision/aff campaign id
+	campaignIdAtrributeMapping := make(map[uint64]model.AffCampaignAttribute)
+	for _, attribute := range listAffCampaignAttribute {
+		_, isExist := campaignIdAtrributeMapping[uint64(attribute.CampaignId)]
+		if !isExist {
+			campaignIdAtrributeMapping[uint64(attribute.CampaignId)] = attribute
+		}
+	}
+
 	// Top favorited brands check
 	listCountFavAffBrand, err := s.AffBrandRepository.GetListCountFavouriteAffBrand(ctx)
 	if err != nil {
@@ -72,14 +87,17 @@ func (s affBrandUCase) GetTopFavouriteAffBrand(ctx context.Context, userId uint6
 	}
 
 	var listAffCampaignComBrandDto []dto.AffCampaignLessDto
-	for i := range listFavAffBrand {
+	for i, campaign := range listFavAffBrand {
 		if i >= size {
 			break
 		}
 		listAffCampaignComBrandDto = append(listAffCampaignComBrandDto, listFavAffBrand[i].ToAffCampaignLessDto())
 		listAffCampaignComBrandDto[i].Brand.IsFavorited = favBrandCheck[listAffCampaignComBrandDto[i].BrandId]
 		listAffCampaignComBrandDto[i].Brand.IsTopFavorited = favTopBrandCheck[listAffCampaignComBrandDto[i].BrandId]
-		listAffCampaignComBrandDto[i].StellaMaxCom = s.ConvertPrice.ConvertVndPriceToAstra(ctx, listFavAffBrand[i].Attributes)
+		listAffCampaignComBrandDto[i].StellaMaxCom = s.ConvertPrice.ConvertVndPriceToAstra(
+			ctx,
+			[]model.AffCampaignAttribute{campaignIdAtrributeMapping[uint64(campaign.ID)]},
+		)
 	}
 	nextPage := page
 	if len(listFavAffBrand) > size {
@@ -94,6 +112,20 @@ func (s affBrandUCase) GetTopFavouriteAffBrand(ctx context.Context, userId uint6
 }
 
 func (s affBrandUCase) GetListFavAffBrandByUserId(ctx context.Context, userId uint64, page, size int) (dto.AffCampaignAppDtoResponse, error) {
+	// Get all attributes order by most commission
+	listAffCampaignAttribute, err := s.AffCampAppRepository.GetAllAffCampaignAttribute(ctx, interfaces.ListAffCampaignOrderByMostCommission)
+	if err != nil {
+		return dto.AffCampaignAppDtoResponse{}, err
+	}
+	// Map only the most commision/aff campaign id
+	campaignIdAtrributeMapping := make(map[uint64]model.AffCampaignAttribute)
+	for _, attribute := range listAffCampaignAttribute {
+		_, isExist := campaignIdAtrributeMapping[uint64(attribute.CampaignId)]
+		if !isExist {
+			campaignIdAtrributeMapping[uint64(attribute.CampaignId)] = attribute
+		}
+	}
+
 	listFavAffBrand, err := s.AffBrandRepository.GetListFavAffBrandByUserId(ctx, userId, page, size)
 	if err != nil {
 		return dto.AffCampaignAppDtoResponse{}, err
@@ -105,9 +137,12 @@ func (s affBrandUCase) GetListFavAffBrandByUserId(ctx context.Context, userId ui
 	}
 
 	var listAffCampaignDto []dto.AffCampaignLessDto
-	for i := range listFavAffBrand {
+	for i, campaign := range listFavAffBrand {
 		listAffCampaignDto = append(listAffCampaignDto, listFavAffBrand[i].ToAffCampaignLessDto())
-		listAffCampaignDto[i].StellaMaxCom = s.ConvertPrice.ConvertVndPriceToAstra(ctx, listFavAffBrand[i].Attributes)
+		listAffCampaignDto[i].StellaMaxCom = s.ConvertPrice.ConvertVndPriceToAstra(
+			ctx,
+			[]model.AffCampaignAttribute{campaignIdAtrributeMapping[uint64(campaign.ID)]},
+		)
 	}
 	nextPage := page
 	if len(listFavAffBrand) > size {
@@ -123,7 +158,25 @@ func (s affBrandUCase) GetListFavAffBrandByUserId(ctx context.Context, userId ui
 }
 
 func (s affBrandUCase) GetMostCommissionAffCampaign(ctx context.Context, userId uint64, page, size int) (dto.AffCampaignAppDtoResponse, error) {
-	listAffCampaign, err := s.AffCampAppRepository.GetAllAffCampaign(ctx, interfaces.ListAffCampaignOrderByMostCommission, page, size)
+	// Get all attributes order by most commission
+	listAffCampaignAttribute, err := s.AffCampAppRepository.GetAllAffCampaignAttribute(ctx, interfaces.ListAffCampaignOrderByMostCommission)
+	if err != nil {
+		return dto.AffCampaignAppDtoResponse{}, err
+	}
+
+	// Map only the most commision/aff campaign id
+	campaignIdAtrributeMapping := make(map[uint64]model.AffCampaignAttribute)
+	listAffCampaignId := make([]uint64, 0)
+	for _, attribute := range listAffCampaignAttribute {
+		_, isExist := campaignIdAtrributeMapping[uint64(attribute.CampaignId)]
+		if !isExist {
+			campaignIdAtrributeMapping[uint64(attribute.CampaignId)] = attribute
+			listAffCampaignId = append(listAffCampaignId, uint64(attribute.CampaignId))
+		}
+	}
+
+	// Get list aff campaign by ids
+	listAffCampaign, err := s.AffCampAppRepository.GetListAffCampaignByIds(ctx, listAffCampaignId, page, size)
 	if err != nil {
 		return dto.AffCampaignAppDtoResponse{}, err
 	}
@@ -152,9 +205,12 @@ func (s affBrandUCase) GetMostCommissionAffCampaign(ctx context.Context, userId 
 		if i >= size {
 			break
 		}
-		listAffCampaignAppDto = append(listAffCampaignAppDto, listAffCampaign[i].ToDto())
+		listAffCampaignAppDto = append(listAffCampaignAppDto, listAffCampaign[i].ToAffCampaignLessDto())
 		listAffCampaignAppDto[i].Brand.IsFavorited = favBrandCheck[listAffCampaignAppDto[i].BrandId]
-		listAffCampaignAppDto[i].StellaMaxCom = s.ConvertPrice.ConvertVndPriceToAstra(ctx, listAffCampaign[i].Attributes)
+		listAffCampaignAppDto[i].StellaMaxCom = s.ConvertPrice.ConvertVndPriceToAstra(
+			ctx,
+			[]model.AffCampaignAttribute{campaignIdAtrributeMapping[uint64(listAffCampaignAppDto[i].ID)]},
+		)
 	}
 	nextPage := page
 	if len(listAffCampaign) > size {

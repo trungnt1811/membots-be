@@ -54,26 +54,14 @@ func (r affCampAppRepository) GetAllAffCampaignInCategoryId(ctx context.Context,
 	return listAffCampaign, err
 }
 
-func (r affCampAppRepository) GetAllAffCampaign(ctx context.Context, orderBy string, page, size int) ([]model.AffCampaignLessApp, error) {
+func (r affCampAppRepository) GetAllAffCampaign(ctx context.Context, page, size int) ([]model.AffCampaignLessApp, error) {
 	var listAffCampaign []model.AffCampaignLessApp
-	var err error
 	offset := (page - 1) * size
-	switch orderBy {
-	case interfaces.ListAffCampaignOrderByMostCommission:
-		err = r.db.Joins("Brand").
-			Preload("Attributes", func(db *gorm.DB) *gorm.DB {
-				return db.Order(orderQuery)
-			}).
-			Where("aff_campaign.stella_status = ?", model.StellaStatusInProgress).
-			Limit(size + 1).Offset(offset).
-			Find(&listAffCampaign).Error
-	default:
-		err = r.db.Joins("Brand").
-			Preload("Attributes").
-			Where("stella_status = ?", model.StellaStatusInProgress).
-			Limit(size + 1).Offset(offset).
-			Find(&listAffCampaign).Error
-	}
+	err := r.db.Joins("Brand").
+		Preload("Attributes").
+		Where("stella_status = ?", model.StellaStatusInProgress).
+		Limit(size + 1).Offset(offset).
+		Find(&listAffCampaign).Error
 	return listAffCampaign, err
 }
 
@@ -87,6 +75,20 @@ func (r affCampAppRepository) GetAffCampaignById(ctx context.Context, id uint64)
 	return affCampaign, err
 }
 
+func (r affCampAppRepository) GetListAffCampaignByIds(ctx context.Context, ids []uint64, page, size int) ([]model.AffCampaignComBrand, error) {
+	var listAffCampaign []model.AffCampaignComBrand
+	// Ordering by the order of values in a IN() clause
+	s, _ := json.Marshal(ids)
+	findInSet := strings.Trim(string(s), "[]")
+	offset := (page - 1) * size
+	err := r.db.Joins("Brand").
+		Where("aff_campaign.id IN ? AND stella_status = ?", ids, model.StellaStatusInProgress).
+		Limit(size + 1).Offset(offset).
+		Order(fmt.Sprintf("FIND_IN_SET(aff_campaign.id,'%s')", findInSet)).
+		Find(&listAffCampaign).Error
+	return listAffCampaign, err
+}
+
 func (r affCampAppRepository) GetListAffCampaignByBrandIds(ctx context.Context, brandIds []uint, page, size int) ([]model.AffCampaignComBrand, error) {
 	var listAffCampaign []model.AffCampaignComBrand
 	// Ordering by the order of values in a IN() clause
@@ -94,7 +96,6 @@ func (r affCampAppRepository) GetListAffCampaignByBrandIds(ctx context.Context, 
 	findInSet := strings.Trim(string(s), "[]")
 	offset := (page - 1) * size
 	err := r.db.Joins("Brand").
-		Preload("Attributes").
 		Where("aff_campaign.brand_id IN ? AND stella_status = ?", brandIds, model.StellaStatusInProgress).
 		Limit(size + 1).Offset(offset).
 		Order(fmt.Sprintf("FIND_IN_SET(aff_campaign.brand_id,'%s')", findInSet)).
@@ -114,4 +115,18 @@ func (r affCampAppRepository) GetListAffCampaignByCategoryIdAndBrandIds(ctx cont
 		Order(fmt.Sprintf("FIND_IN_SET(aff_campaign.brand_id,'%s')", findInSet)).
 		Find(&listAffCampaign).Error
 	return listAffCampaign, err
+}
+
+func (r affCampAppRepository) GetAllAffCampaignAttribute(ctx context.Context, orderBy string) ([]model.AffCampaignAttribute, error) {
+	var listAffCampaignAttribute []model.AffCampaignAttribute
+	var err error
+	switch orderBy {
+	case interfaces.ListAffCampaignOrderByMostCommission:
+		err = r.db.
+			Order(orderQuery).
+			Find(&listAffCampaignAttribute).Error
+	default:
+		err = r.db.Find(&listAffCampaignAttribute).Error
+	}
+	return listAffCampaignAttribute, err
 }

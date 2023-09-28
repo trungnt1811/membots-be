@@ -13,6 +13,7 @@ import (
 
 const keyPrefixAffCampApp = "aff_camp_app_"
 const cacheTimeAffCampApp = 3 * time.Second
+const cacheTimeMediumAffCampApp = 10 * time.Second
 
 type affCampAppCache struct {
 	AffCampAppRepository interfaces.AffCampAppRepository
@@ -63,13 +64,13 @@ func (c affCampAppCache) GetListAffCampaignByCategoryIdAndBrandIds(ctx context.C
 	return listAffCampaign, nil
 }
 
-func (c affCampAppCache) GetAllAffCampaign(ctx context.Context, orderBy string, page, size int) ([]model.AffCampaignLessApp, error) {
-	key := &caching.Keyer{Raw: keyPrefixAffCampApp + fmt.Sprint("GetAllAffCampaign_", orderBy, "_", page, "_", size)}
+func (c affCampAppCache) GetAllAffCampaign(ctx context.Context, page, size int) ([]model.AffCampaignLessApp, error) {
+	key := &caching.Keyer{Raw: keyPrefixAffCampApp + fmt.Sprint("GetAllAffCampaign_", page, "_", size)}
 	var listAffCampaign []model.AffCampaignLessApp
 	err := c.Cache.RetrieveItem(key, &listAffCampaign)
 	if err != nil {
 		// cache miss
-		listAffCampaign, err = c.AffCampAppRepository.GetAllAffCampaign(ctx, orderBy, page, size)
+		listAffCampaign, err = c.AffCampAppRepository.GetAllAffCampaign(ctx, page, size)
 		if err != nil {
 			return listAffCampaign, err
 		}
@@ -105,6 +106,41 @@ func (c affCampAppCache) GetListAffCampaignByBrandIds(ctx context.Context, brand
 	if err != nil {
 		// cache miss
 		listAffCampaign, err = c.AffCampAppRepository.GetListAffCampaignByBrandIds(ctx, brandIds, page, size)
+		if err != nil {
+			return listAffCampaign, err
+		}
+		if err = c.Cache.SaveItem(key, listAffCampaign, cacheTimeAffCampApp); err != nil {
+			return listAffCampaign, err
+		}
+	}
+	return listAffCampaign, nil
+}
+
+func (c affCampAppCache) GetAllAffCampaignAttribute(ctx context.Context, orderBy string) ([]model.AffCampaignAttribute, error) {
+	key := &caching.Keyer{Raw: keyPrefixAffCampApp + fmt.Sprint("GetAllAffCampaignAttribute_", orderBy)}
+	var listAffCampaignAttribute []model.AffCampaignAttribute
+	err := c.Cache.RetrieveItem(key, &listAffCampaignAttribute)
+	if err != nil {
+		// cache miss
+		listAffCampaignAttribute, err = c.AffCampAppRepository.GetAllAffCampaignAttribute(ctx, orderBy)
+		if err != nil {
+			return listAffCampaignAttribute, err
+		}
+		if err = c.Cache.SaveItem(key, listAffCampaignAttribute, cacheTimeMediumAffCampApp); err != nil {
+			return listAffCampaignAttribute, err
+		}
+	}
+	return listAffCampaignAttribute, nil
+}
+
+func (c affCampAppCache) GetListAffCampaignByIds(ctx context.Context, ids []uint64, page, size int) ([]model.AffCampaignComBrand, error) {
+	s, _ := json.Marshal(ids)
+	key := &caching.Keyer{Raw: keyPrefixAffCampApp + fmt.Sprint("GetListAffCampaignByIds_", string(s), "_", page, "_", size)}
+	var listAffCampaign []model.AffCampaignComBrand
+	err := c.Cache.RetrieveItem(key, &listAffCampaign)
+	if err != nil {
+		// cache miss
+		listAffCampaign, err = c.AffCampAppRepository.GetListAffCampaignByIds(ctx, ids, page, size)
 		if err != nil {
 			return listAffCampaign, err
 		}

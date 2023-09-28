@@ -3,11 +3,12 @@ package exchange
 import (
 	"context"
 	"fmt"
-	"github.com/astraprotocol/affiliate-system/internal/interfaces"
-	"github.com/astraprotocol/affiliate-system/internal/model"
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/astraprotocol/affiliate-system/internal/interfaces"
+	"github.com/astraprotocol/affiliate-system/internal/model"
 )
 
 type convertPriceHandler struct {
@@ -24,10 +25,16 @@ func (c *convertPriceHandler) ConvertVndPriceToAstra(ctx context.Context, attrib
 			if attributes[i].AttributeType != attributes[j].AttributeType {
 				return model.AttributeTypePriorityMapping[attributes[i].AttributeType] < model.AttributeTypePriorityMapping[attributes[j].AttributeType]
 			}
-			switch strings.Compare(attributes[i].AttributeValue, attributes[j].AttributeValue) {
-			case 1:
+			if len(attributes[i].AttributeValue) == len(attributes[j].AttributeValue) {
+				switch strings.Compare(attributes[i].AttributeValue, attributes[j].AttributeValue) {
+				case 1:
+					return true
+				default:
+					return false
+				}
+			} else if len(attributes[i].AttributeValue) > len(attributes[j].AttributeValue) {
 				return true
-			default:
+			} else {
 				return false
 			}
 		})

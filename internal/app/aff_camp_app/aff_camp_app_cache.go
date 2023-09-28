@@ -13,6 +13,7 @@ import (
 
 const keyPrefixAffCampApp = "aff_camp_app_"
 const cacheTimeAffCampApp = 3 * time.Second
+const cacheTimeMediumAffCampApp = 10 * time.Second
 
 type affCampAppCache struct {
 	AffCampAppRepository interfaces.AffCampAppRepository
@@ -125,7 +126,7 @@ func (c affCampAppCache) GetAllAffCampaignAttribute(ctx context.Context, orderBy
 		if err != nil {
 			return listAffCampaignAttribute, err
 		}
-		if err = c.Cache.SaveItem(key, listAffCampaignAttribute, cacheTimeAffCampApp); err != nil {
+		if err = c.Cache.SaveItem(key, listAffCampaignAttribute, cacheTimeMediumAffCampApp); err != nil {
 			return listAffCampaignAttribute, err
 		}
 	}

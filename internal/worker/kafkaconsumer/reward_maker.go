@@ -50,7 +50,7 @@ func (u *RewardMaker) ListenOrderApproved() {
 	}()
 
 	go func() {
-		log.LG.Infof("Reward Maker - Start reading new approved order")
+		log.LG.Infof("Reward Maker - Start reading order update")
 		for {
 			ctx := context.Background()
 			/* ==========================================================================
@@ -70,7 +70,7 @@ func (u *RewardMaker) ListenOrderApproved() {
 				continue
 			}
 			newAtOrderId := orderApprovedMsg.AtOrderID
-			log.LG.Infof("Read new order approved: %v", newAtOrderId)
+			log.LG.Infof("Read new order updated: %v", newAtOrderId)
 
 			/* ==========================================================================
 			SECTION: processing
@@ -117,7 +117,7 @@ func (u *RewardMaker) ListenOrderApproved() {
 				}
 			}
 
-			err = u.notiOrderStatus(order.UserId, order.OrderStatus, newAtOrderId, order.Merchant, rewardAmount)
+			err = u.notiOrderStatus(order.UserId, order.ID, order.OrderStatus, newAtOrderId, order.Merchant, rewardAmount)
 			if err != nil {
 				_ = u.commitOrderUpdateMsg(msg)
 				errChn <- err
@@ -129,7 +129,7 @@ func (u *RewardMaker) ListenOrderApproved() {
 	}()
 }
 
-func (u *RewardMaker) notiOrderStatus(userId uint, orderStatus, atOrderId, merchant string, rewardAmount float64) error {
+func (u *RewardMaker) notiOrderStatus(userId uint, orderId uint, orderStatus, atOrderId, merchant string, rewardAmount float64) error {
 	title := ""
 	body := ""
 
@@ -153,11 +153,11 @@ func (u *RewardMaker) notiOrderStatus(userId uint, orderStatus, atOrderId, merch
 	}
 
 	notiMsg := msgqueue.AppNotiMsg{
-		Category: msgqueue.NotiCategoryCommerce,
+		Category: msgqueue.NotiCategoryAffiliate,
 		Title:    title,
 		Body:     body,
 		UserId:   userId,
-		Data:     msgqueue.GetOrderApprovedNotiData(),
+		Data:     msgqueue.GetOrderUpdateNotiData(orderId),
 	}
 
 	b, err := json.Marshal(notiMsg)
@@ -191,7 +191,7 @@ func (u *RewardMaker) CalculateRewardAmt(affCommission float64, commissionFee fl
 func (u *RewardMaker) commitOrderUpdateMsg(message kafka.Message) error {
 	err := u.approveQ.CommitMessages(context.Background(), message)
 	if err != nil {
-		log.LG.Errorf("Failed to commit order approved message: %v", err)
+		log.LG.Errorf("Failed to commit order update message: %v", err)
 		return err
 	}
 	return nil

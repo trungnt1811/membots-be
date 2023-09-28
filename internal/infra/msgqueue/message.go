@@ -1,12 +1,16 @@
 package msgqueue
 
+import "fmt"
+
 const (
-	NotiCategoryCommerce     = "commerce"
-	NotiCategorySystem       = "system"
-	NotiDataTypeCouponDetail = "coupon-detail"
-	NotiDataKeyType          = "type"
-	NotiDataKeyId            = "id"
-	NotiDataKeyOrderId       = "orderID"
+	NotiCategoryCommerce            = "commerce"
+	NotiCategoryAffiliate           = "affiliate"
+	NotiCategorySystem              = "system"
+	NotiDataTypeCouponDetail        = "coupon-detail"
+	NotiDataTypeUrl                 = "url"
+	NotiDataKeyType                 = "type"
+	NotiDataKeyId                   = "id"
+	NotiDataDeepLinkAffOrderDetails = "astrarewards://affiliate/orders/%v"
 )
 
 type MsgOrderUpdated struct {
@@ -30,11 +34,10 @@ type AppNotiMsg struct {
 	UserId uint   `json:"userId" binding:"required"`
 }
 
-func GetOrderApprovedNotiData() map[string]string {
+func GetOrderUpdateNotiData(orderId uint) map[string]string {
 	data := make(map[string]string)
-	// data[NotiDataKeyType] = NotiDataTypeCouponDetail
-	// data[NotiDataKeyId] = strconv.Itoa(int(couponId))
-	// data[NotiDataKeyOrderId] = strconv.Itoa(int(orderId))
+	data[NotiDataKeyType] = NotiDataTypeUrl
+	data[NotiDataKeyId] = fmt.Sprintf(NotiDataDeepLinkAffOrderDetails, orderId)
 	return data
 }
 

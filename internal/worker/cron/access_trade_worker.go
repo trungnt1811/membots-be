@@ -33,9 +33,9 @@ func (worker *AccessTradeWorker) RunJob() {
 	s := gocron.NewScheduler(time.UTC)
 	log.LG.Info("run accesstrade jobs")
 	mutexName := "lock-accesstrade-sync"
-	_, err := s.Every(2).Hours().Do(func() {
+	_, err := s.Every(3).Minute().Do(func() {
 		ctx := context.Background()
-		mutex := worker.RedSync.NewMutex(mutexName, redsync.WithExpiry(time.Hour))
+		mutex := worker.RedSync.NewMutex(mutexName, redsync.WithExpiry(3*time.Minute))
 		if err := mutex.LockContext(ctx); err != nil {
 			log.LG.Infof("lock error: %v", err)
 		} else {

@@ -16,7 +16,8 @@ import (
 )
 
 const (
-	DailyRewardNotiTime = "45 09 * * *" // every day at 9:45
+	DailyRewardNotiTime     = "45 09 * * *" // every day at 9:45
+	UserProcessingBatchSize = 200
 )
 
 type NotiScheduler struct {
@@ -32,6 +33,7 @@ func NewNotiScheduler(appNotiQ *msgqueue.QueueWriter,
 	parser := cron.NewParser(
 		cron.SecondOptional | cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow | cron.Descriptor,
 	)
+	// Works only if this host supports timezone
 	location, _ := time.LoadLocation("Asia/Ho_Chi_Minh")
 
 	notiScheduler := &NotiScheduler{
@@ -58,34 +60,76 @@ func (n *NotiScheduler) notiRewardInDay() func() {
 		log.LG.Info("Start to screening user have aff reward")
 		ctx := context.Background()
 
-		// TODO: find users
+		// find all users have 'rewarding' order
+		users, err := n.rewardRepo.GetUsersHaveInProgressRewards(ctx)
+		if err != nil {
+			log.LG.Errorf("Failed to GetUsersHaveInProgressRewards. Err %v", err)
+			return
+		}
 
-		users := []uint32{584}
-		for _, userId := range users {
-			rewards, err := n.rewardRepo.GetInProgressRewards(ctx, userId)
+		// batching them
+		userBatches := [][]uint32{}
+		batch := []uint32{}
+		for idx, userId := range users {
+			batch = append(batch, userId)
+			if len(batch) == UserProcessingBatchSize || idx == len(users)-1 {
+				userBatches = append(userBatches, batch)
+				batch = []uint32{} // we reassign 'batch', not change the 'batch' member. So it's not affect 'userBatches' member
+			}
+		}
+
+		for idx, userIds := range userBatches {
+			fmt.Println("Batch ", idx, ":", userIds)
+			rewards, err := n.rewardRepo.GetInProgressRewardsOfMultipleUsers(ctx, userIds)
 			if err != nil {
-				log.LG.Errorf("Failed to GetInProgressRewards of user %v. Err %v", userId, err)
+				log.LG.Errorf("Failed to GetInProgressRewardsOfMultipleUsers. Err %v", err)
 				continue
 			}
 
-			fmt.Println("PENDING REWARDS", len(rewards))
-			data, _ := json.Marshal(rewards)
-			fmt.Println("PENDING REWARDS", string(data))
+			rewardsByUser := map[uint32][]model.Reward{}
+			for _, item := range rewards {
+				rewardsByUser[uint32(item.UserId)] = append(rewardsByUser[uint32(item.UserId)], item)
+			}
 
-			var totalRewardInDay float64 = 0
-			var orderCount uint = 0
-			for _, r := range rewards {
-				now := time.Now()
-				if now.Before(r.EndAt) && now.After(r.StartAt.Add(model.OneDay)) {
-					orderCount++
-					totalRewardInDay += r.OneDayReward()
+			// Processing each user in a single batch
+			notiMessages := []kafka.Message{}
+			for userId, userRewards := range rewardsByUser {
+				fmt.Println("PENDING REWARDS", len(userRewards))
+				data, _ := json.Marshal(userRewards)
+				fmt.Println("PENDING REWARDS", string(data))
+
+				var totalRewardInDay float64 = 0
+				var orderCount uint = 0
+				for _, r := range userRewards {
+					now := time.Now()
+					if now.Before(r.EndAt) && now.After(r.StartAt.Add(model.OneDay)) {
+						orderCount++
+						totalRewardInDay += r.OneDayReward()
+					}
+				}
+
+				if totalRewardInDay > 0 {
+					notiAmount := util.RoundFloat(totalRewardInDay, 2)
+					msg := msgqueue.AppNotiMsg{
+						Title:    fmt.Sprintf("Nhận %v ASA từ hoàn mua sắm", notiAmount),
+						Body:     fmt.Sprintf("Bạn nhận được %v ASA từ %v đơn hàng hoàn mua sắm hôm nay 🤗", notiAmount, orderCount),
+						UserId:   uint(userId),
+						Category: msgqueue.NotiCategoryAffiliate,
+						Data:     msgqueue.GetDailyRewardNotiData(),
+					}
+					b, err := json.Marshal(&msg)
+					if err != nil {
+						log.LG.Errorf("Failed to marshal msg %v. Err %v", msg, err)
+						continue
+					}
+					notiMessages = append(notiMessages, kafka.Message{Value: b})
 				}
 			}
 
-			if totalRewardInDay > 0 {
-				err = n.pushDailyRewardNotiToQueue(userId, util.RoundFloat(totalRewardInDay, 2), orderCount)
+			if len(notiMessages) > 0 {
+				err = n.pushDailyRewardNotiToQueue(notiMessages)
 				if err != nil {
-					log.LG.Errorf("Failed to pushDailyRewardNotiToQueue for user %v. Err %v", userId, err)
+					log.LG.Errorf("Failed to pushDailyRewardNotiToQueue. Err %v", err)
 				}
 			}
 		}
@@ -93,28 +137,13 @@ func (n *NotiScheduler) notiRewardInDay() func() {
 	}
 }
 
-func (n *NotiScheduler) pushDailyRewardNotiToQueue(userId uint32, amount float64, orderCount uint) error {
-	msg := msgqueue.AppNotiMsg{
-		Title:    fmt.Sprintf("Nhận %v ASA từ hoàn mua sắm", amount),
-		Body:     fmt.Sprintf("Bạn nhận được %v ASA từ %v đơn hàng hoàn mua sắm hôm nay 🤗", amount, orderCount),
-		UserId:   uint(userId),
-		Category: msgqueue.NotiCategoryAffiliate,
-		Data:     msgqueue.GetDailyRewardNotiData(),
-	}
-
-	b, err := json.Marshal(&msg)
+func (n *NotiScheduler) pushDailyRewardNotiToQueue(msgs []kafka.Message) error {
+	err := n.appNotiQ.WriteMessages(context.Background(), msgs...)
 	if err != nil {
 		return err
 	}
 
-	err = n.appNotiQ.WriteMessages(context.Background(), kafka.Message{
-		Value: b,
-	})
-	if err != nil {
-		return err
-	}
-
-	log.LG.Infof("Pushed daily reward noti to queue. User %v", userId)
+	log.LG.Infof("Pushed daily reward noti to queue")
 
 	return nil
 }

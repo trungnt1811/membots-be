@@ -46,12 +46,20 @@ func (r *rewardRepository) GetInProgressRewards(ctx context.Context, userId uint
 	return rewards, err
 }
 
-func (r *rewardRepository) GetUsersHaveInProgressRewards(ctx context.Context) ([]uint32, error) {
-	var users []uint32
-	query := "SELECT DISTINCE(r.user_id) " +
+func (r *rewardRepository) GetInProgressRewardsOfMultipleUsers(ctx context.Context, userIds []uint32) ([]model.Reward, error) {
+	var rewards []model.Reward
+	query := "SELECT r.id, r.user_id, r.accesstrade_order_id, r.amount, r.rewarded_amount, r.commission_fee, " +
+		"r.immediate_release, r.end_at, r.start_at, r.created_at, r.updated_at " +
 		"FROM aff_reward AS r " +
 		"LEFT JOIN aff_order as o ON o.accesstrade_order_id = r.accesstrade_order_id " +
-		"WHERE o.order_status = ?"
+		"WHERE o.user_id IN ? AND o.order_status = ?"
+	err := r.db.Raw(query, userIds, model.OrderStatusRewarding).Scan(&rewards).Error
+	return rewards, err
+}
+
+func (r *rewardRepository) GetUsersHaveInProgressRewards(ctx context.Context) ([]uint32, error) {
+	var users []uint32
+	query := "SELECT DISTINCT(user_id) FROM aff_order WHERE order_status = ?"
 	err := r.db.Raw(query, model.OrderStatusRewarding).Scan(&users).Error
 	return users, err
 }

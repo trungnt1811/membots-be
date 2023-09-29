@@ -18,6 +18,7 @@ type RewardRepository interface {
 	CountWithdrawal(ctx context.Context, userId uint32) (int64, error)
 	GetTotalWithdrewAmount(ctx context.Context, userId uint32) (float64, error)
 	GetInProgressRewards(ctx context.Context, userId uint32) ([]model.Reward, error)
+	GetUsersHaveInProgressRewards(ctx context.Context) ([]uint32, error)
 	GetRewardsInDay(ctx context.Context) ([]model.Reward, error)
 }
 

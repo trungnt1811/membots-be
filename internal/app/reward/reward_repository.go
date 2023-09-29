@@ -46,6 +46,16 @@ func (r *rewardRepository) GetInProgressRewards(ctx context.Context, userId uint
 	return rewards, err
 }
 
+func (r *rewardRepository) GetUsersHaveInProgressRewards(ctx context.Context) ([]uint32, error) {
+	var users []uint32
+	query := "SELECT DISTINCE(r.user_id) " +
+		"FROM aff_reward AS r " +
+		"LEFT JOIN aff_order as o ON o.accesstrade_order_id = r.accesstrade_order_id " +
+		"WHERE o.order_status = ?"
+	err := r.db.Raw(query, model.OrderStatusRewarding).Scan(&users).Error
+	return users, err
+}
+
 func (r *rewardRepository) GetRewardsInDay(ctx context.Context) ([]model.Reward, error) {
 	startDay := time.Now().UTC().Round(24 * time.Hour)           // 00:00
 	endDay := startDay.Add(24 * time.Hour).Add(-1 * time.Second) // 23:59

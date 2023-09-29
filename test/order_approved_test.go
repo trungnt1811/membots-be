@@ -26,5 +26,5 @@ func TestProduceOrderApprovedMsg(t *testing.T) {
 	})
 	assert.Nil(t, err)
 
-	fmt.Println("Push MsgOrderUpdated")
+	fmt.Println("Push MsgOrderUpdated---")
 }

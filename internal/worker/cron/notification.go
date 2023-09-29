@@ -11,7 +11,7 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/model"
 	"github.com/astraprotocol/affiliate-system/internal/util"
 	"github.com/astraprotocol/affiliate-system/internal/util/log"
-	scheduler "github.com/robfig/cron/v3"
+	"github.com/robfig/cron/v3"
 	"github.com/segmentio/kafka-go"
 )
 
@@ -20,7 +20,7 @@ const (
 )
 
 type NotiScheduler struct {
-	scheduler  *scheduler.Cron
+	cron       *cron.Cron
 	appNotiQ   *msgqueue.QueueWriter
 	rewardRepo interfaces.RewardRepository
 	orderRepo  interfaces.OrderRepository
@@ -29,25 +29,25 @@ type NotiScheduler struct {
 func NewNotiScheduler(appNotiQ *msgqueue.QueueWriter,
 	rewardRepo interfaces.RewardRepository,
 	orderRepo interfaces.OrderRepository) *NotiScheduler {
-	parser := scheduler.NewParser(
-		scheduler.SecondOptional | scheduler.Minute | scheduler.Hour | scheduler.Dom | scheduler.Month | scheduler.Dow | scheduler.Descriptor,
+	parser := cron.NewParser(
+		cron.SecondOptional | cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow | cron.Descriptor,
 	)
 	location, _ := time.LoadLocation("Asia/Ho_Chi_Minh")
 
-	couponNoti := &NotiScheduler{
-		scheduler:  scheduler.New(scheduler.WithParser(parser), scheduler.WithLocation(location)),
+	notiScheduler := &NotiScheduler{
+		cron:       cron.New(cron.WithParser(parser), cron.WithLocation(location)),
 		appNotiQ:   appNotiQ,
 		rewardRepo: rewardRepo,
 		orderRepo:  orderRepo,
 	}
 
-	couponNoti.scheduler.Start()
+	notiScheduler.cron.Start()
 
-	return couponNoti
+	return notiScheduler
 }
 
 func (n *NotiScheduler) StartNotiDailyReward() {
-	_, err := n.scheduler.AddFunc(DailyRewardNotiTime, n.notiRewardInDay())
+	_, err := n.cron.AddFunc(DailyRewardNotiTime, n.notiRewardInDay())
 	if err != nil {
 		log.LG.Errorf("Failed to schedule notiRewardInDay. Err %v", err)
 	}

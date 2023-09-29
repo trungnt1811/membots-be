@@ -31,7 +31,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main ./cmd/main.g
 
 # Start a new stage from scratch
 FROM alpine:latest
-RUN apk --no-cache add ca-certificates
+RUN apk --no-cache add tzdata zip ca-certificates
 
 WORKDIR /root/
 

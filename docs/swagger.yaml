@@ -1,4 +1,189 @@
 definitions:
+  dto.ATPostBackRequest:
+    properties:
+      browser:
+        description: Trình duyệt sử dụng
+        type: string
+      campaign_id:
+        description: ID của campaign trên hệ thống
+        type: string
+      click_time:
+        description: Thời gian phát sinh click
+        type: string
+      conversion_platform:
+        description: Platform sử dụng
+        type: string
+      customer_type:
+        description: Thuộc tính của khách hàng phụ thuộc theo campaigns
+        type: string
+      ip:
+        description: IP phát sinh đơn hàng
+        type: string
+      is_confirmed:
+        description: 'Đơn hàng khóa data và được thanh toán: 0: chưa đối soát, 1:
+          đã đối soát'
+        type: integer
+      order_id:
+        description: Mã đơn hàng hiển thị trên trang pub
+        type: string
+      product_category:
+        description: Group commission của sản phẩm
+        type: string
+      product_id:
+        description: Mã sản phẩm
+        type: string
+      product_price:
+        description: Giá của một sản phẩm
+        type: number
+      publisher_login_name:
+        type: string
+      quantity:
+        description: Số lượng sản phẩm
+        type: integer
+      referrer:
+        description: click_referrer
+        type: string
+      reward:
+        description: Hoa hồng nhận được
+        type: number
+      sales_time:
+        description: Thời gian phát sinh của đơn hàng
+        type: string
+      status:
+        description: 'Status của đơn hàng gồm 3 giá trị: 0: new, 1: approved, 2: rejected'
+        type: integer
+      transaction_id:
+        description: Mã unique trên hệ thống AccessTrade
+        type: string
+      utm_campaign:
+        description: Thông tin tùy biến pub truyền vào url trong param utm_campaign
+        type: string
+      utm_content:
+        description: Thông tin tùy biến pub truyền vào url trong param utm_content
+        type: string
+      utm_medium:
+        description: Thông tin tùy biến pub truyền vào url trong param utm_medium
+        type: string
+      utm_source:
+        description: Thông tin tùy biến pub truyền vào url trong param utm_source
+        type: string
+    type: object
+  dto.ATPostBackResponse:
+    properties:
+      order_id:
+        type: string
+      success:
+        type: boolean
+    type: object
+  dto.AffBannerCreateDto:
+    properties:
+      accesstrade_id:
+        type: string
+      name:
+        type: string
+      thumbnail:
+        type: string
+      url:
+        type: string
+    type: object
+  dto.AffBannerDto:
+    properties:
+      accesstrade_id:
+        type: string
+      aff_campaign:
+        $ref: '#/definitions/dto.AffCampaignLessDto'
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      status:
+        type: string
+      thumbnail:
+        type: string
+      url:
+        type: string
+    type: object
+  dto.AffBannerDtoResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto.AffBannerDto'
+        type: array
+      next_page:
+        type: integer
+      page:
+        type: integer
+      size:
+        type: integer
+      total:
+        type: integer
+    type: object
+  dto.AffCampaignAppDto:
+    properties:
+      accesstrade_id:
+        type: string
+      attributes:
+        items:
+          $ref: '#/definitions/dto.AffCampaignAttributeDto'
+        type: array
+      brand:
+        $ref: '#/definitions/dto.BrandDto'
+      brand_id:
+        type: integer
+      category_id:
+        type: integer
+      created_at:
+        type: string
+      end_time:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      start_time:
+        type: string
+      stella_description: {}
+      stella_max_com:
+        type: string
+      stella_status:
+        type: string
+      thumbnail:
+        type: string
+      updated_at:
+        type: string
+      url:
+        type: string
+    type: object
+  dto.AffCampaignAppDtoResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto.AffCampaignLessDto'
+        type: array
+      next_page:
+        type: integer
+      page:
+        type: integer
+      size:
+        type: integer
+      total:
+        type: integer
+    type: object
+  dto.AffCampaignAttributeDto:
+    properties:
+      attribute_key:
+        type: string
+      attribute_type:
+        type: string
+      attribute_value:
+        type: string
+      campaign_id:
+        type: integer
+      id:
+        type: integer
+    type: object
   dto.AffCampaignDto:
     properties:
       accesstrade_id:
@@ -7,12 +192,8 @@ definitions:
         type: integer
       approval:
         type: string
-      brand_id:
-        type: integer
       category:
         type: string
-      category_id:
-        type: integer
       cookie_duration:
         type: integer
       cookie_policy:
@@ -21,8 +202,6 @@ definitions:
         type: string
       description:
         $ref: '#/definitions/dto.CampaignDescriptionDto'
-      end_time:
-        type: string
       id:
         type: integer
       logo:
@@ -31,26 +210,17 @@ definitions:
         type: string
       merchant:
         type: string
-      name:
-        type: string
       scope:
-        type: string
-      start_time:
         type: string
       status:
         type: integer
-      stella_description: {}
-      stella_status:
-        type: string
+      stella_info:
+        $ref: '#/definitions/dto.StellaInfoDto'
       sub_category:
-        type: string
-      thumbnail:
         type: string
       type:
         type: integer
       updated_at:
-        type: string
-      url:
         type: string
     type: object
   dto.AffCampaignDtoResponse:
@@ -67,6 +237,228 @@ definitions:
         type: integer
       total:
         type: integer
+    type: object
+  dto.AffCampaignLessDto:
+    properties:
+      accesstrade_id:
+        type: string
+      brand:
+        $ref: '#/definitions/dto.BrandDto'
+      brand_id:
+        type: integer
+      campaign_id:
+        type: integer
+      name:
+        type: string
+      stella_max_com:
+        type: string
+      stella_status:
+        type: string
+      url:
+        type: string
+    type: object
+  dto.AffCategoryDto:
+    properties:
+      id:
+        type: integer
+      logo:
+        type: string
+      name:
+        type: string
+      total_aff_campaign:
+        type: integer
+    type: object
+  dto.AffCategoryResponseDto:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto.AffCategoryDto'
+        type: array
+      next_page:
+        type: integer
+      page:
+        type: integer
+      size:
+        type: integer
+    type: object
+  dto.AffOrder:
+    properties:
+      accesstrade_order_id:
+        type: string
+      aff_link:
+        type: string
+      at_product_link:
+        type: string
+      billing:
+        type: number
+      browser:
+        type: string
+      category_name:
+        type: string
+      click_time:
+        type: string
+      client_platform:
+        type: string
+      confirmed_time:
+        type: string
+      conversion_platform:
+        type: string
+      created_at:
+        type: string
+      customer_type:
+        type: string
+      id:
+        type: integer
+      is_confirmed:
+        type: integer
+      landing_page:
+        type: string
+      merchant:
+        type: string
+      order_approved:
+        type: integer
+      order_pending:
+        type: integer
+      order_reject:
+        type: integer
+      order_status:
+        type: string
+      product_category:
+        type: string
+      products_count:
+        type: integer
+      pub_commission:
+        type: number
+      sales_time:
+        type: string
+      transactions:
+        items:
+          $ref: '#/definitions/dto.AffTransaction'
+        type: array
+      update_time:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+      utm_campaign:
+        type: string
+      utm_content:
+        type: string
+      utm_medium:
+        type: string
+      utm_source:
+        type: string
+      utm_term:
+        type: string
+      website:
+        type: string
+      website_url:
+        type: string
+    type: object
+  dto.AffSearchDto:
+    properties:
+      aff_campaigns:
+        items:
+          $ref: '#/definitions/dto.AffCampaignLessDto'
+        type: array
+      total_campaign:
+        type: integer
+    type: object
+  dto.AffSearchResponseDto:
+    properties:
+      data:
+        $ref: '#/definitions/dto.AffSearchDto'
+      next_page:
+        type: integer
+      page:
+        type: integer
+      size:
+        type: integer
+    type: object
+  dto.AffTransaction:
+    properties:
+      accesstrade_conversion_id:
+        type: integer
+      accesstrade_id:
+        type: string
+      accesstrade_order_id:
+        description: 'NOTE: AccessTrade Order ID'
+        type: string
+      category_name:
+        type: string
+      click_time:
+        type: string
+      click_url:
+        type: string
+      commission:
+        type: number
+      confirmed_time:
+        type: string
+      conversion_platform:
+        type: string
+      created_at:
+        type: string
+      customer_type:
+        type: string
+      extra: {}
+      id:
+        type: integer
+      is_confirmed:
+        type: integer
+      merchant:
+        type: string
+      product_category:
+        type: string
+      product_id:
+        type: string
+      product_image:
+        type: string
+      product_name:
+        type: string
+      product_price:
+        type: number
+      product_quantity:
+        type: integer
+      reason_rejected:
+        type: string
+      status:
+        type: integer
+      transaction_time:
+        type: string
+      transaction_value:
+        type: number
+      update_time:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+      utm_campaign:
+        type: string
+      utm_content:
+        type: string
+      utm_medium:
+        type: string
+      utm_source:
+        type: string
+      utm_term:
+        type: string
+    type: object
+  dto.BrandDto:
+    properties:
+      cover_photo:
+        type: string
+      id:
+        type: integer
+      is_favorited:
+        type: boolean
+      is_top_favorited:
+        type: boolean
+      logo:
+        type: string
+      name:
+        type: string
     type: object
   dto.CampaignDescriptionDto:
     properties:
@@ -93,6 +485,24 @@ definitions:
       updated_at:
         type: string
     type: object
+  dto.CampaignSummaryResponse:
+    properties:
+      num_of_customers:
+        type: integer
+      num_of_orders:
+        type: integer
+      total_asa_cashback:
+        $ref: '#/definitions/dto.Cashback'
+      total_revenue:
+        type: number
+    type: object
+  dto.Cashback:
+    properties:
+      distributed:
+        type: number
+      remain:
+        type: number
+    type: object
   dto.CreateLinkPayload:
     properties:
       campaign_id:
@@ -106,11 +516,210 @@ definitions:
     properties:
       aff_link:
         type: string
+      brand_new:
+        type: boolean
       campaign_id:
         type: integer
       original_url:
         type: string
-      short_link:
+    type: object
+  dto.HomePageDto:
+    properties:
+      following:
+        items:
+          $ref: '#/definitions/dto.AffCampaignLessDto'
+        type: array
+      most_commission:
+        items:
+          $ref: '#/definitions/dto.AffCampaignLessDto'
+        type: array
+      recently_visited:
+        items:
+          $ref: '#/definitions/dto.AffCampaignLessDto'
+        type: array
+      top_favorited:
+        items:
+          $ref: '#/definitions/dto.AffCampaignLessDto'
+        type: array
+    type: object
+  dto.OrderDetailsDto:
+    properties:
+      accesstrade_order_id:
+        type: string
+      billing:
+        type: number
+      cancelled_time:
+        description: don hang bi huy
+        type: string
+      category_name:
+        type: string
+      commission_fee:
+        description: commission fee (in percentage)
+        type: number
+      confirmed_time:
+        description: don hang duoc ghi nhan
+        type: string
+      id:
+        type: integer
+      image_url:
+        description: brand logo
+        type: string
+      merchant:
+        type: string
+      order_status:
+        type: string
+      pub_commission:
+        type: number
+      rejected_time:
+        description: don hang bi tu choi
+        type: string
+      reward_amount:
+        type: number
+      reward_end_at:
+        type: string
+      reward_first_part_released_amount:
+        type: number
+      reward_first_part_released_time:
+        description: xac nhan hoan tat nhan 50%
+        type: string
+      reward_remaining_amount:
+        type: number
+      reward_second_part_unlocked_amount:
+        type: number
+      sales_time:
+        description: dat hang thanh cong
+        type: string
+      user_id:
+        type: integer
+    type: object
+  dto.OrderHistoryResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto.OrderDetailsDto'
+        type: array
+      next_page:
+        type: integer
+      page:
+        type: integer
+      size:
+        type: integer
+      total:
+        type: integer
+    type: object
+  dto.OrderListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto.AffOrder'
+        type: array
+      page:
+        type: integer
+      per_page:
+        type: integer
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  dto.ResponseMessage:
+    properties:
+      message:
+        type: string
+    type: object
+  dto.RewardSummary:
+    properties:
+      pending_reward_amount:
+        description: amount of reward still locked
+        type: number
+      pending_reward_order:
+        description: number of orders that user not receive all reward
+        type: integer
+      reward_in_day:
+        description: amount of reward earn in day = 50% of total order approved today
+        type: number
+      total_withdrew_amount:
+        description: total amount of reward already withdrawn
+        type: number
+      withdrawable_reward:
+        description: amount of reward can be withdrawn at the moment
+        type: number
+    type: object
+  dto.RewardWithdrawDto:
+    properties:
+      amount:
+        type: number
+      created_at:
+        type: string
+      fee:
+        type: number
+      id:
+        type: integer
+      shipping_status:
+        type: string
+      tx_hash:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  dto.RewardWithdrawResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto.RewardWithdrawDto'
+        type: array
+      next_page:
+        type: integer
+      page:
+        type: integer
+      size:
+        type: integer
+      total:
+        type: integer
+    type: object
+  dto.StatisticSummaryResponse:
+    properties:
+      active_campaigns:
+        type: integer
+      num_of_customers:
+        type: integer
+      num_of_orders:
+        type: integer
+      total_asa_cashback:
+        $ref: '#/definitions/dto.Cashback'
+      total_revenue:
+        type: number
+    type: object
+  dto.StellaInfoDto:
+    properties:
+      attributes:
+        items:
+          $ref: '#/definitions/dto.AffCampaignAttributeDto'
+        type: array
+      brand:
+        $ref: '#/definitions/dto.BrandDto'
+      brand_id:
+        type: integer
+      category:
+        $ref: '#/definitions/dto.AffCategoryDto'
+      category_id:
+        type: integer
+      end_time:
+        type: string
+      name:
+        type: string
+      start_time:
+        type: string
+      stella_description: {}
+      stella_max_com:
+        type: string
+      stella_status:
+        type: string
+      thumbnail:
+        type: string
+      url:
         type: string
     type: object
   types.RedeemRequestPayload:
@@ -155,7 +764,7 @@ info:
     email: support@swagger.io
     name: API Support
     url: http://www.swagger.io/support
-  description: This Swagger docs for Astra Affiliate System.
+  description: Use for authorization during server to server calls
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
@@ -163,10 +772,648 @@ info:
   title: Affiliate System API
   version: "1.0"
 paths:
+  /api/v1/app/aff-banner:
+    get:
+      description: Get list aff banner
+      parameters:
+      - description: order to query, default is desc
+        in: query
+        name: order
+        type: string
+      - description: page to query, default is 1
+        in: query
+        name: page
+        type: string
+      - description: size to query, default is 10
+        in: query
+        name: size
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AffBannerDtoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get list aff banner
+      tags:
+      - app-banner
+  /api/v1/app/aff-banner/{id}:
+    get:
+      description: Get aff-banner by id
+      parameters:
+      - description: id to query
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AffBannerDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get aff-banner by id
+      tags:
+      - app-banner
+  /api/v1/app/aff-campaign:
+    get:
+      consumes:
+      - application/json
+      description: Get list of all aff campaign
+      parameters:
+      - description: page to query, default is 1
+        in: query
+        name: page
+        type: string
+      - description: size to query, default is 10
+        in: query
+        name: size
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AffCampaignAppDtoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get list of all aff campaign
+      tags:
+      - app
+  /api/v1/app/aff-campaign/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get aff campaign by id
+      parameters:
+      - description: id to query
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AffCampaignAppDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get aff campaign by id
+      tags:
+      - app
+  /api/v1/app/aff-categories:
+    get:
+      consumes:
+      - application/json
+      description: Get all category have aff-campaign
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AffCategoryResponseDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      summary: Get all category have aff-campaign
+      tags:
+      - category
+  /api/v1/app/aff-categories/{categoryId}:
+    get:
+      consumes:
+      - application/json
+      description: Get list aff brand by category
+      parameters:
+      - description: categoryId to query
+        in: path
+        name: categoryId
+        required: true
+        type: integer
+      - description: page to query, default is 1
+        in: query
+        name: page
+        type: string
+      - description: size to query, default is 10
+        in: query
+        name: size
+        type: string
+      - description: filter to query, default is top-favorited (top-favorited/most-commission)
+        in: query
+        name: filter
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AffCampaignAppDtoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get list aff brand by category
+      tags:
+      - category
+  /api/v1/app/aff-search:
+    get:
+      consumes:
+      - application/json
+      description: search aff campaign
+      parameters:
+      - description: q to search
+        in: query
+        name: q
+        required: true
+        type: string
+      - description: page to query, default is 1
+        in: query
+        name: page
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AffSearchResponseDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      summary: search aff campaign
+      tags:
+      - search
+  /api/v1/app/brand:
+    get:
+      consumes:
+      - application/json
+      description: Get list aff brand by user
+      parameters:
+      - description: page to query, default is 1
+        in: query
+        name: page
+        type: string
+      - description: size to query, default is 10
+        in: query
+        name: size
+        type: string
+      - description: filter to query, default is recently-visited (recently-visited/top-favorited/most-commission/favorite)
+        in: query
+        name: filter
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AffCampaignAppDtoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get list aff brand by user
+      tags:
+      - app
+  /api/v1/app/home-page:
+    get:
+      consumes:
+      - application/json
+      description: Get home page
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.HomePageDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get home page
+      tags:
+      - app
+  /api/v1/app/orders:
+    get:
+      consumes:
+      - application/json
+      description: Get order history - include reward info
+      parameters:
+      - description: order status to filter, valid query is 'wait_for_confirming','rewarding','complete','cancelled','rejected'
+        in: query
+        name: status
+        type: string
+      - description: page to query, default is 1
+        in: query
+        name: page
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.OrderHistoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get order history
+      tags:
+      - order
+  /api/v1/app/orders/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get affiliate order details - include status timeline and reward
+        info
+      parameters:
+      - description: order id to query
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.OrderDetailsDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get affiliate order details
+      tags:
+      - order
+  /api/v1/app/rewards/summary:
+    get:
+      consumes:
+      - application/json
+      description: Get reward summary of an account
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RewardSummary'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get reward summary of an account
+      tags:
+      - reward
+  /api/v1/app/rewards/withdraw:
+    get:
+      consumes:
+      - application/json
+      description: Get reward withdraw history records
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RewardWithdrawResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get reward withdraw history records
+      tags:
+      - reward
+    post:
+      consumes:
+      - application/json
+      description: Claim reward of all orders
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RewardWithdrawDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "429":
+          description: reach withdraw limit, max one time each three seconds
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Claim reward of all orders
+      tags:
+      - reward
+  /api/v1/app/rewards/withdraw/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get reward withdraw details
+      parameters:
+      - description: withdraw id to query
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RewardWithdrawDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get reward withdraw details
+      tags:
+      - reward
+  /api/v1/campaign/link:
+    post:
+      consumes:
+      - application/json
+      description: Request create a new campaign link or pick the active old one
+      parameters:
+      - description: Request create link payload, required
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateLinkPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: when success, return the created link for this request campaign
+          schema:
+            $ref: '#/definitions/dto.CreateLinkResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: PostGenerateAffLink
+      tags:
+      - redeem
+  /api/v1/console/aff-banner:
+    get:
+      description: Get list aff banner
+      parameters:
+      - description: by to query, default is all(active, inactive)
+        in: query
+        name: status
+        type: string
+      - description: order to query, default is desc
+        in: query
+        name: order
+        type: string
+      - description: page to query, default is 1
+        in: query
+        name: page
+        type: string
+      - description: size to query, default is 10
+        in: query
+        name: size
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AffBannerDtoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get list aff banner
+      tags:
+      - console
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Send data, required
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AffBannerCreateDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AffBannerDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Add a aff-banner
+      tags:
+      - console
+  /api/v1/console/aff-banner/{id}:
+    get:
+      description: Get aff-banner by id
+      parameters:
+      - description: id to query
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AffBannerDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get aff-banner by id
+      tags:
+      - console
+    put:
+      consumes:
+      - application/json
+      description: update aff-banner info
+      parameters:
+      - description: banner info to update, required
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AffBannerDto'
+      - description: id to query
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ResponseMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: update aff-banner info
+      tags:
+      - console
   /api/v1/console/aff-campaign:
     get:
       description: Get list aff campaign
       parameters:
+      - description: q to search
+        in: query
+        name: q
+        type: string
       - description: by to query, default is all
         in: query
         name: stella_status
@@ -198,9 +1445,256 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
       summary: Get list aff campaign
       tags:
       - console
+  /api/v1/console/aff-campaign/{id}:
+    get:
+      description: Get campaign by id
+      parameters:
+      - description: id to query
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AffCampaignDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get campaign by id
+      tags:
+      - console
+    put:
+      consumes:
+      - application/json
+      description: update campaign info
+      parameters:
+      - description: Campaign info to update, required
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AffCampaignAppDto'
+      - description: id to query
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ResponseMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: update campaign info
+      tags:
+      - console
+  /api/v1/console/orders:
+    get:
+      consumes:
+      - application/json
+      description: Get affiliate order list by time range and other filter
+      parameters:
+      - in: query
+        name: order_status
+        type: string
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: per_page
+        type: integer
+      - in: query
+        name: since
+        type: string
+      - in: query
+        name: until
+        type: string
+      - in: query
+        name: user_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.OrderListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get affiliate order list
+      tags:
+      - console
+  /api/v1/console/orders/:orderId:
+    get:
+      consumes:
+      - application/json
+      description: Get affiliate order by order id
+      parameters:
+      - description: Order id param
+        in: path
+        name: orderId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AffOrder'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get affiliate order by order id
+      tags:
+      - console
+  /api/v1/console/summary:
+    get:
+      consumes:
+      - application/json
+      description: Get summary statistic data
+      parameters:
+      - description: Time in RFC3339 format
+        in: query
+        name: since
+        type: string
+      - description: Time in RFC3339 format
+        in: query
+        name: until
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.StatisticSummaryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get summary statistic data
+      tags:
+      - console
+  /api/v1/console/summary/:campaignId:
+    get:
+      consumes:
+      - application/json
+      description: Get campaign statistic data
+      parameters:
+      - description: Time range
+        in: path
+        name: campaignId
+        required: true
+        type: integer
+      - description: Time in RFC3339 format
+        in: query
+        name: since
+        type: string
+      - description: Time in RFC3339 format
+        in: query
+        name: until
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CampaignSummaryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get campaign statistic data
+      tags:
+      - console
+  /api/v1/order/post-back:
+    post:
+      consumes:
+      - application/json
+      description: A callback to receive order from AccessTrade
+      parameters:
+      - description: Request create link payload, required
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ATPostBackRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: when success, return the modified order for this post back
+          schema:
+            $ref: '#/definitions/dto.ATPostBackResponse'
+        "417":
+          description: Expectation Failed
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: PostBackOrderHandle
+      tags:
+      - redeem
   /api/v1/redeem/request:
     post:
       consumes:
@@ -228,34 +1722,14 @@ paths:
           description: Failed Dependency
           schema:
             $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
       summary: PostRequestRedeem
       tags:
       - redeem
-  /api/v1/users/{uid}:
-    get:
-      description: Get a user detail by uid
-      parameters:
-      - description: User uid to query
-        in: path
-        name: uid
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      security:
-      - ApiKeyAuth: []
-      summary: GetUserDetail
-      tags:
-      - user
 securityDefinitions:
   ApiKeyAuth:
     description: Use for authorization of reward creator
-    in: header
-    name: Authorization
-    type: apiKey
-  BasicKeyAuth:
-    description: Use for authorization during server to server calls
     in: header
     name: Authorization
     type: apiKey

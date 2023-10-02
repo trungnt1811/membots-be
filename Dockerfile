@@ -1,5 +1,5 @@
 # Start from golang base image
-FROM golang:alpine as builder
+FROM golang:1.20-alpine as builder
 
 # ENV GO111MODULE=on
 
@@ -31,16 +31,17 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main ./cmd/main.g
 
 # Start a new stage from scratch
 FROM alpine:latest
-RUN apk --no-cache add ca-certificates
+RUN apk --no-cache add tzdata zip ca-certificates
 
 WORKDIR /root/
 
 # Copy the Pre-built binary file from the previous stage
 COPY --from=builder /app/main .
 COPY --from=builder /app/.env .
+COPY --from=builder /app/internal/infra/msgqueue/ca-dev.crt ./internal/infra/msgqueue/ca-dev.crt
 
 # Expose port 8888 to the outside world
-EXPOSE 8888
+EXPOSE 8080
 
 #Command to run the executable
 CMD ["./main"]

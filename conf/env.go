@@ -2,11 +2,27 @@ package conf
 
 import (
 	"fmt"
-	"log"
 	"os"
+
+	"github.com/rs/zerolog/log"
 
 	"github.com/spf13/viper"
 )
+
+type AffiliateConfiguration struct {
+	RewardProgram    string  `mapstructure:"AFF_REWARD_PROGRAM"`
+	SellerId         uint    `mapstructure:"AFF_SELLER_ID"`
+	StellaCommission float64 `mapstructure:"AFF_STELLA_COMMISSION"`
+}
+
+type TikiConfiguration struct {
+	ApiUrl string `mapstructure:"TIKI_API_URL"`
+}
+
+type RewardShippingConfiguration struct {
+	BaseUrl string `mapstructure:"REWARD_SHIPPING_URL"`
+	ApiKey  string `mapstructure:"REWARD_SHIPPING_KEY"`
+}
 
 type RedisConfiguration struct {
 	RedisAddress string `mapstructure:"REDIS_ADDRESS"`
@@ -65,12 +81,17 @@ type Configuration struct {
 	EvmRpc            EvmRpcEndpointConfiguration `mapstructure:",squash"`
 	Kafka             KafkaConfiguration          `mapstructure:",squash"`
 	Webhook           WebhookConfiguration        `mapstructure:",squash"`
+	RewardShipping    RewardShippingConfiguration `mapstructure:",squash"`
+	Aff               AffiliateConfiguration      `mapstructure:",squash"`
+	Tiki              TikiConfiguration           `mapstructure:",squash"`
 	AccessTradeAPIKey string                      `mapstructure:"ACCESSTRADE_APIKEY"`
 	CreatorBEToken    string                      `mapstructure:"CREATOR_BE_TOKEN"`
 	AppName           string                      `mapstructure:"APP_NAME"`
 	AppPort           uint32                      `mapstructure:"APP_PORT"`
 	Env               string                      `mapstructure:"ENV"`
 	WebhookEndPoint   string                      `mapstructure:"WEBHOOK_ENDPOINT"`
+	CreatorAuthUrl    string                      `mapstructure:"CREATOR_AUTH_URL"`
+	AppAuthUrl        string                      `mapstructure:"APP_AUTH_URL"`
 }
 
 var configuration Configuration
@@ -80,30 +101,23 @@ func init() {
 	if envFile == "" {
 		envFile = ".env"
 	}
-
-	err := LoadEnv(envFile)
-	if err != nil {
-		depth := 0
-		for err != nil && depth < 10 {
-			envFile = "../" + envFile
-			err = LoadEnv(envFile)
-			depth += 1
+	fmt.Println(envFile)
+	viper.SetConfigFile("./.env")
+	viper.AutomaticEnv()
+	if err := viper.ReadInConfig(); err != nil {
+		viper.SetConfigFile(fmt.Sprintf("../%s", envFile))
+		if err := viper.ReadInConfig(); err != nil {
+			log.Logger.Printf("Error reading config file \"%s\", %v", envFile, err)
 		}
 	}
-
-	err = viper.Unmarshal(&configuration)
+	err := viper.Unmarshal(&configuration)
 	if err != nil {
-		log.Fatalf("Unable to decode config into map, %v", err)
+		log.Logger.Fatal().Msgf("Unable to decode config into map, %v", err)
 	}
 
 	fmt.Println("EVM ChainId:", configuration.EvmRpc.EVMChainID)
 	fmt.Println("EVM Rpc URL:", configuration.EvmRpc.EndPoint)
-}
-
-func LoadEnv(envFile string) error {
-	viper.SetConfigFile("./" + envFile)
-	viper.AutomaticEnv()
-	return viper.ReadInConfig()
+	fmt.Println("DB url", configuration.Database.WriteDbHost)
 }
 
 func GetConfiguration() *Configuration {

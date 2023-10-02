@@ -22,28 +22,6 @@ func NewOrderRepository(db *gorm.DB) interfaces.OrderRepository {
 	}
 }
 
-func (repo *orderRepository) FindNonRewardOrders(
-	customerId, sellerId int,
-	fromDate time.Time,
-	minValue int64,
-	additionalFilter map[string]interface{},
-) ([]model.AffOrder, error) {
-	var entities []model.AffOrder
-	err := repo.db.
-		Table("order").
-		Where("customer_id = ?", customerId).
-		Where("seller_id = ?", sellerId).
-		Where("amount >= ?", minValue).
-		Where("reward_id", nil).
-		Where("initialized_at >= ?", fromDate).
-		Find(&entities, additionalFilter).Error
-
-	if err != nil {
-		return nil, err
-	}
-	return entities, nil
-}
-
 func (repo *orderRepository) SavePostBackLog(req *model.AffPostBackLog) error {
 	return repo.db.Create(req).Error
 }

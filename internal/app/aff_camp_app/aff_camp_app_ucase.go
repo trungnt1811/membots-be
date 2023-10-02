@@ -98,7 +98,7 @@ func (s affCampAppUCase) GetAffCampaignById(ctx context.Context, id uint64, user
 }
 
 func (s affCampAppUCase) GetAllAffCampaign(ctx context.Context, page, size int) (dto.AffCampaignAppDtoResponse, error) {
-	listAffCampaign, err := s.AffCampAppRepository.GetAllAffCampaign(ctx, interfaces.ListAffCampaignOrderByDefault, page, size)
+	listAffCampaign, err := s.AffCampAppRepository.GetAllAffCampaign(ctx, page, size)
 	if err != nil {
 		return dto.AffCampaignAppDtoResponse{}, err
 	}

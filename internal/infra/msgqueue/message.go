@@ -1,17 +1,18 @@
 package msgqueue
 
-const (
-	NotiCategoryCommerce     = "commerce"
-	NotiCategorySystem       = "system"
-	NotiDataTypeCouponDetail = "coupon-detail"
-	NotiDataKeyType          = "type"
-	NotiDataKeyId            = "id"
-	NotiDataKeyOrderId       = "orderID"
-)
+import "fmt"
 
-type MsgOrderApproved struct {
-	AtOrderID string `json:"accesstrade_order_id"`
-}
+const (
+	NotiCategoryCommerce            = "commerce"
+	NotiCategoryAffiliate           = "affiliate"
+	NotiCategorySystem              = "system"
+	NotiDataTypeCouponDetail        = "coupon-detail"
+	NotiDataTypeUrl                 = "url"
+	NotiDataKeyType                 = "type"
+	NotiDataKeyId                   = "id"
+	NotiDataDeepLinkAffOrderDetails = "astrarewards://affiliate/orders/%v"
+	NotiDataDeepLinkAffWallet       = "astrarewards://affiliate/wallet"
+)
 
 type MsgOrderUpdated struct {
 	AtOrderID   string `json:"accesstrade_order_id"`
@@ -34,11 +35,17 @@ type AppNotiMsg struct {
 	UserId uint   `json:"userId" binding:"required"`
 }
 
-func GetOrderApprovedNotiData() map[string]string {
+func GetOrderUpdateNotiData(orderId uint) map[string]string {
 	data := make(map[string]string)
-	// data[NotiDataKeyType] = NotiDataTypeCouponDetail
-	// data[NotiDataKeyId] = strconv.Itoa(int(couponId))
-	// data[NotiDataKeyOrderId] = strconv.Itoa(int(orderId))
+	data[NotiDataKeyType] = NotiDataTypeUrl
+	data[NotiDataKeyId] = fmt.Sprintf(NotiDataDeepLinkAffOrderDetails, orderId)
+	return data
+}
+
+func GetDailyRewardNotiData() map[string]string {
+	data := make(map[string]string)
+	data[NotiDataKeyType] = NotiDataTypeUrl
+	data[NotiDataKeyId] = NotiDataDeepLinkAffWallet
 	return data
 }
 

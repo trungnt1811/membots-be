@@ -1,0 +1,7 @@
+envFrom:
+- secretRef:
+    name: env-affiliate-system
+    optional: false
+specAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "8080"

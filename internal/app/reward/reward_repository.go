@@ -25,6 +25,16 @@ func (r *rewardRepository) CreateReward(ctx context.Context, reward *model.Rewar
 	return r.db.Create(reward).Error
 }
 
+func (r *rewardRepository) GetRewardByAtOrderId(ctx context.Context, atOrderId string) (model.Reward, error) {
+	var reward model.Reward
+	err := r.db.Where("accesstrade_order_id = ?", atOrderId).First(&reward).Error
+	return reward, err
+}
+
+func (r *rewardRepository) UpdateRewardByAtOrderId(atOrderId string, updates *model.Reward) error {
+	return r.db.Model(updates).Where("accesstrade_order_id = ?", atOrderId).Updates(updates).Error
+}
+
 func (r *rewardRepository) GetInProgressRewards(ctx context.Context, userId uint32) ([]model.Reward, error) {
 	var rewards []model.Reward
 	query := "SELECT r.id, r.user_id, r.accesstrade_order_id, r.amount, r.rewarded_amount, r.commission_fee, " +
@@ -34,6 +44,24 @@ func (r *rewardRepository) GetInProgressRewards(ctx context.Context, userId uint
 		"WHERE o.user_id = ? AND o.order_status = ?"
 	err := r.db.Raw(query, userId, model.OrderStatusRewarding).Scan(&rewards).Error
 	return rewards, err
+}
+
+func (r *rewardRepository) GetInProgressRewardsOfMultipleUsers(ctx context.Context, userIds []uint32) ([]model.Reward, error) {
+	var rewards []model.Reward
+	query := "SELECT r.id, r.user_id, r.accesstrade_order_id, r.amount, r.rewarded_amount, r.commission_fee, " +
+		"r.immediate_release, r.end_at, r.start_at, r.created_at, r.updated_at " +
+		"FROM aff_reward AS r " +
+		"LEFT JOIN aff_order as o ON o.accesstrade_order_id = r.accesstrade_order_id " +
+		"WHERE o.user_id IN ? AND o.order_status = ?"
+	err := r.db.Raw(query, userIds, model.OrderStatusRewarding).Scan(&rewards).Error
+	return rewards, err
+}
+
+func (r *rewardRepository) GetUsersHaveInProgressRewards(ctx context.Context) ([]uint32, error) {
+	var users []uint32
+	query := "SELECT DISTINCT(user_id) FROM aff_order WHERE order_status = ?"
+	err := r.db.Raw(query, model.OrderStatusRewarding).Scan(&users).Error
+	return users, err
 }
 
 func (r *rewardRepository) GetRewardsInDay(ctx context.Context) ([]model.Reward, error) {
@@ -90,7 +118,7 @@ func (r *rewardRepository) GetWithdrawById(ctx context.Context, userId uint32, w
 func (r *rewardRepository) GetWithdrawHistory(ctx context.Context, userId uint32, page, size int) ([]model.RewardWithdraw, error) {
 	var withdrawHistory []model.RewardWithdraw
 	offset := (page - 1) * size
-	err := r.db.Model(&model.RewardWithdraw{}).Where("user_id = ?", userId).Limit(size + 1).Offset(offset).Scan(&withdrawHistory).Error
+	err := r.db.Model(&model.RewardWithdraw{}).Where("user_id = ?", userId).Order("id DESC").Limit(size + 1).Offset(offset).Scan(&withdrawHistory).Error
 	return withdrawHistory, err
 }
 

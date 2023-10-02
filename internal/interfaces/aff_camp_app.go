@@ -11,11 +11,13 @@ const ListAffCampaignOrderByMostCommission = "most-commission"
 const ListAffCampaignOrderByDefault = "default"
 
 type AffCampAppRepository interface {
-	GetAllAffCampaign(ctx context.Context, orderBy string, page, size int) ([]model.AffCampaignLessApp, error)
+	GetAllAffCampaign(ctx context.Context, page, size int) ([]model.AffCampaignLessApp, error)
 	GetAllAffCampaignInCategoryId(ctx context.Context, categoryId uint, orderBy string, page, size int) ([]model.AffCampaignLessApp, error)
 	GetAffCampaignById(ctx context.Context, id uint64) (model.AffCampaignApp, error)
 	GetListAffCampaignByBrandIds(ctx context.Context, brandIds []uint, page, size int) ([]model.AffCampaignComBrand, error)
 	GetListAffCampaignByCategoryIdAndBrandIds(ctx context.Context, categoryId uint, brandIds []uint, page, size int) ([]model.AffCampaignComBrand, error)
+	GetAllAffCampaignAttribute(ctx context.Context, orderBy string) ([]model.AffCampaignAttribute, error)
+	GetListAffCampaignByIds(ctx context.Context, ids []uint64, page, size int) ([]model.AffCampaignComBrand, error)
 }
 
 type AffCampAppUCase interface {

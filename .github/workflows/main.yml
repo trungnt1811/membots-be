@@ -11,4 +11,5 @@ jobs:
       ingressHost: "affiliate-system.prod.astranet.services"
       replicas: "1"
       servicePort: "8080"
+      kafkaCert: "yes"
     secrets: inherit

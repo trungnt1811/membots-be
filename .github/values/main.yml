@@ -6,4 +6,4 @@ envVars:
       key: SC_SECRET
 specAnnotations:
   prometheus.io/scrape: "true"
-  prometheus.io/port: "8888"
+  prometheus.io/port: "8080"

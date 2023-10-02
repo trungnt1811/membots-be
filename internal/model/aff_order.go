@@ -40,9 +40,9 @@ type AffOrder struct {
 	LandingPage        string    `json:"landing_page"`
 	Merchant           string    `json:"merchant"`
 	AccessTradeOrderId string    `json:"accesstrade_order_id" gorm:"column:accesstrade_order_id"`
-	OrderPending       uint8     `json:"order_pending"`
-	OrderReject        uint8     `json:"order_reject"`
-	OrderApproved      uint8     `json:"order_approved"`
+	OrderPending       *uint8    `json:"order_pending"`
+	OrderReject        *uint8    `json:"order_reject"`
+	OrderApproved      *uint8    `json:"order_approved"`
 	ProductCategory    string    `json:"product_category"`
 	ProductsCount      int       `json:"products_count"`
 	PubCommission      float32   `json:"pub_commission"`
@@ -95,9 +95,9 @@ func NewOrderFromATOrder(userId uint, campaignId uint, brandId uint, atOrder *ty
 		LandingPage:        atOrder.LandingPage,
 		Merchant:           atOrder.Merchant,
 		AccessTradeOrderId: atOrder.OrderId,
-		OrderApproved:      atOrder.OrderApproved,
-		OrderPending:       atOrder.OrderPending,
-		OrderReject:        atOrder.OrderReject,
+		OrderApproved:      &atOrder.OrderApproved,
+		OrderPending:       &atOrder.OrderPending,
+		OrderReject:        &atOrder.OrderReject,
 		ProductCategory:    atOrder.ProductCategory,
 		ProductsCount:      atOrder.ProductsCount,
 		PubCommission:      atOrder.PubCommission,
@@ -154,9 +154,9 @@ func (o *AffOrder) ToDto() dto.AffOrder {
 		LandingPage:        o.LandingPage,
 		Merchant:           o.Merchant,
 		AccessTradeOrderId: o.AccessTradeOrderId,
-		OrderPending:       o.OrderPending,
-		OrderReject:        o.OrderReject,
-		OrderApproved:      o.OrderApproved,
+		OrderPending:       *o.OrderPending,
+		OrderReject:        *o.OrderReject,
+		OrderApproved:      *o.OrderApproved,
 		ProductCategory:    o.ProductCategory,
 		ProductsCount:      o.ProductsCount,
 		PubCommission:      o.PubCommission,

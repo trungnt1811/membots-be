@@ -67,7 +67,7 @@ func GetAffOrderStatusFromAtOrder(atOrder *types.ATOrder) string {
 	if atOrder.OrderPending != 0 {
 		orderStatus = OrderStatusPending
 	}
-	if atOrder.OrderApproved != 0 {
+	if atOrder.OrderApproved != 0 && atOrder.OrderPending == 0 {
 		orderStatus = OrderStatusApproved
 	}
 	if atOrder.OrderReject != 0 {

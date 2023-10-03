@@ -22,6 +22,24 @@ func NewOrderRepository(db *gorm.DB) interfaces.OrderRepository {
 	}
 }
 
+func (repo *orderRepository) QueryOrdersConfirmedBefore(t time.Time, q map[string]any) ([]model.AffOrder, error) {
+	var orders []model.AffOrder
+	sql := repo.db.Model(&orders)
+	if !t.IsZero() {
+		sql.Where("sales_time <= ?", t)
+	}
+
+	sql.Where("order_status IN ?", []string{
+		model.OrderStatusInitial,
+		model.OrderStatusPending,
+		model.OrderStatusApproved,
+		model.OrderStatusRewarding,
+	})
+
+	err := sql.Find(&orders, q).Error
+	return orders, err
+}
+
 func (repo *orderRepository) SavePostBackLog(req *model.AffPostBackLog) error {
 	return repo.db.Create(req).Error
 }

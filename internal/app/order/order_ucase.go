@@ -23,11 +23,11 @@ type orderUCase struct {
 	Producer *msgqueue.QueueWriter
 }
 
-func NewOrderUCase(repo interfaces.OrderRepository, atRepo interfaces.ATRepository) interfaces.OrderUCase {
+func NewOrderUCase(repo interfaces.OrderRepository, atRepo interfaces.ATRepository, producer *msgqueue.QueueWriter) interfaces.OrderUCase {
 	return &orderUCase{
 		Repo:     repo,
 		ATRepo:   atRepo,
-		Producer: msgqueue.NewKafkaProducer(msgqueue.KAFKA_TOPIC_AFF_ORDER_UPDATE),
+		Producer: producer,
 	}
 }
 
@@ -107,6 +107,9 @@ func (u *orderUCase) PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*m
 
 		// When order is updated, check if status changed or not
 		statusChanged = order.CheckStatusChanged(updated)
+		if !statusChanged {
+			updated.OrderStatus = order.OrderStatus
+		}
 
 		_, err = u.Repo.UpdateOrder(updated)
 		if err != nil {
@@ -124,26 +127,7 @@ func (u *orderUCase) PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*m
 	// Send Kafka message if order status changed
 	if statusChanged {
 		// Order has been approved
-		msg := msgqueue.MsgOrderUpdated{
-			AtOrderID:   atOrder.OrderId,
-			OrderStatus: order.OrderStatus,
-			IsConfirmed: order.IsConfirmed,
-		}
-		msgValue, err := json.Marshal(&msg)
-		if err != nil {
-			log.LG.Errorf("marshall order approved error: %v", err)
-		} else {
-			err = u.Producer.WriteMessages(
-				context.Background(),
-				kafka.Message{
-					Key:   []byte(atOrder.OrderId),
-					Value: msgValue,
-				},
-			)
-			if err != nil {
-				log.LG.Errorf("produce order approved msg failed: %v", err)
-			}
-		}
+		u.sendOrderUpdateMsg(atOrder.OrderId, order.OrderStatus, atOrder.IsConfirmed)
 	}
 
 	// And update tracked item
@@ -233,4 +217,96 @@ func (u *orderUCase) GetOrderHistory(ctx context.Context, userId uint32, status 
 		Data:     orderDtos,
 		Total:    totalOrder,
 	}, nil
+}
+
+func (u *orderUCase) CheckOrderConfirmed() (int, error) {
+	// First query approved order which is not confirmed
+	// After sales time 60 days
+	t := time.Now().Add(time.Duration(-time.Hour * 24 * 60))
+	q := map[string]any{
+		"is_confirmed": 0,
+	}
+	orders, err := u.Repo.QueryOrdersConfirmedBefore(t, q)
+	if err != nil {
+		return 0, err
+	}
+
+	if len(orders) == 0 {
+		return 0, nil
+	}
+
+	updatedCount := 0
+
+	mappedATOrders := map[string]types.ATOrder{}
+	for _, order := range orders {
+		atOrder, ok := mappedATOrders[order.AccessTradeOrderId]
+		if !ok {
+			// Fetch from AT
+			since, until := util.GetSinceUntilTime(order.SalesTime, 2)
+			resp, err := u.ATRepo.QueryOrders(types.ATOrderQuery{
+				Since: since,
+				Until: until,
+			}, 0, 0)
+			if err != nil {
+				log.LG.Errorf("query orders from accesstrade failed: %v", err)
+				continue
+			}
+
+			for idx, item := range resp.Data {
+				mappedATOrders[item.OrderId] = resp.Data[idx]
+				if item.OrderId == order.AccessTradeOrderId {
+					atOrder = resp.Data[idx]
+				}
+			}
+		}
+
+		if atOrder.OrderId == "" {
+			// Still empty
+			log.LG.Errorf("cannot found access trade order: %s", order.AccessTradeOrderId)
+		} else {
+			// Check if confirmed or not
+			if atOrder.IsConfirmed == 0 {
+				// Update order as cancelled
+				order.OrderStatus = model.OrderStatusCancelled
+				updatedCount += 1
+
+				_, err := u.Repo.UpdateOrder(&order)
+				if err != nil {
+					log.LG.Errorf("update order cancelled err: %v", err)
+				}
+				// Send msg to Kafka
+				u.sendOrderUpdateMsg(atOrder.OrderId, order.OrderStatus, atOrder.IsConfirmed)
+			}
+		}
+	}
+
+	return updatedCount, nil
+}
+
+func (u *orderUCase) sendOrderUpdateMsg(orderId string, orderStatus string, isConfirmed uint8) {
+	// Order has been approved
+	msg := msgqueue.MsgOrderUpdated{
+		AtOrderID:   orderId,
+		OrderStatus: orderStatus,
+		IsConfirmed: isConfirmed,
+	}
+	msgValue, err := json.Marshal(&msg)
+	if err != nil {
+		log.LG.Errorf("marshall order approved error: %v", err)
+	} else {
+		if u.Producer == nil {
+			log.LG.Error("produce is nil")
+		} else {
+			err = u.Producer.WriteMessages(
+				context.Background(),
+				kafka.Message{
+					Key:   []byte(orderId),
+					Value: msgValue,
+				},
+			)
+			if err != nil {
+				log.LG.Errorf("produce order approved msg failed: %v", err)
+			}
+		}
+	}
 }

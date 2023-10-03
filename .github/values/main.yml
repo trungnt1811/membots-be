@@ -1,9 +1,7 @@
-envVars:
-- name: SC_SECRET
-  valueFrom:
-    secretKeyRef:
-      name: affiliate-system-sc-secret
-      key: SC_SECRET
+envFrom:
+- secretRef:
+    name: env-affiliate-system
+    optional: false
 specAnnotations:
   prometheus.io/scrape: "true"
   prometheus.io/port: "8080"

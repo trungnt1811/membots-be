@@ -22,6 +22,15 @@ func NewMockOrderRepository(orders []model.AffOrder) *MockOrderRepository {
 	}
 }
 
+func (repo *MockOrderRepository) QueryOrdersConfirmedBefore(t time.Time, q map[string]any) ([]model.AffOrder, error) {
+	return []model.AffOrder{
+		{
+			AccessTradeOrderId: "230824H3K7H4V5",
+			IsConfirmed:        0,
+		},
+	}, nil
+}
+
 func (repo *MockOrderRepository) SavePostBackLog(req *model.AffPostBackLog) error {
 	req.ID = uint(len(repo.Logs) + 1)
 	repo.Logs = append(repo.Logs, *req)

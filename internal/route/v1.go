@@ -76,7 +76,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 
 	// SECTION: Order Module and link
 	orderRepo := order.NewOrderRepository(db)
-	orderUcase := order.NewOrderUCase(orderRepo, atRepo)
+	orderUcase := order.NewOrderUCase(orderRepo, atRepo, msgqueue.NewKafkaProducer(msgqueue.KAFKA_TOPIC_AFF_ORDER_UPDATE))
 	orderHandler := order.NewOrderHandler(orderUcase)
 	orderRoute := v1.Group("/order")
 	orderRoute.POST("/post-back", orderHandler.PostBackOrderHandle)

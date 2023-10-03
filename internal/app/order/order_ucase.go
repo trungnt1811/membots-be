@@ -218,7 +218,8 @@ func (u *orderUCase) GetOrderHistory(ctx context.Context, userId uint32, status 
 
 func (u *orderUCase) CheckOrderConfirmed() (int, error) {
 	// First query approved order which is not confirmed
-	t := time.Now()
+	// After sales time 60 days
+	t := time.Now().Add(time.Duration(-time.Hour * 24 * 60))
 	q := map[string]any{
 		"is_confirmed": 0,
 	}

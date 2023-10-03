@@ -26,7 +26,7 @@ func (repo *orderRepository) QueryOrdersConfirmedBefore(t time.Time, q map[strin
 	var orders []model.AffOrder
 	sql := repo.db.Model(&orders)
 	if !t.IsZero() {
-		sql.Where("confirmed_time <= ?", t)
+		sql.Where("sales_time <= ?", t)
 	}
 
 	sql.Where("order_status IN ?", []string{

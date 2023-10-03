@@ -107,6 +107,9 @@ func (u *orderUCase) PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*m
 
 		// When order is updated, check if status changed or not
 		statusChanged = order.CheckStatusChanged(updated)
+		if !statusChanged {
+			updated.OrderStatus = order.OrderStatus
+		}
 
 		_, err = u.Repo.UpdateOrder(updated)
 		if err != nil {

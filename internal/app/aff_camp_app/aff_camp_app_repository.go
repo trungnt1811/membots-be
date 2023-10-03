@@ -4,10 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strconv"
 	"strings"
 
-	"github.com/astraprotocol/affiliate-system/conf"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/model"
 	"gorm.io/gorm"
@@ -53,10 +51,6 @@ func (r affCampAppRepository) GetAllAffCampaignInCategoryId(ctx context.Context,
 			Order("aff_campaign.id ASC").
 			Find(&listAffCampaign).Error
 	}
-
-	for idx := range listAffCampaign {
-		calculateNetAttributeValue(listAffCampaign[idx].Attributes)
-	}
 	return listAffCampaign, err
 }
 
@@ -68,10 +62,6 @@ func (r affCampAppRepository) GetAllAffCampaign(ctx context.Context, page, size 
 		Where("stella_status = ?", model.StellaStatusInProgress).
 		Limit(size + 1).Offset(offset).
 		Find(&listAffCampaign).Error
-
-	for idx := range listAffCampaign {
-		calculateNetAttributeValue(listAffCampaign[idx].Attributes)
-	}
 	return listAffCampaign, err
 }
 
@@ -82,7 +72,6 @@ func (r affCampAppRepository) GetAffCampaignById(ctx context.Context, id uint64)
 		Preload("Attributes").
 		Where("aff_campaign.id = ?", id).
 		First(&affCampaign).Error
-	calculateNetAttributeValue(affCampaign.Attributes)
 	return affCampaign, err
 }
 
@@ -139,26 +128,5 @@ func (r affCampAppRepository) GetAllAffCampaignAttribute(ctx context.Context, or
 	default:
 		err = r.db.Find(&listAffCampaignAttribute).Error
 	}
-	if err != nil {
-		return []model.AffCampaignAttribute{}, err
-	}
-
-	calculateNetAttributeValue(listAffCampaignAttribute)
 	return listAffCampaignAttribute, err
-}
-
-func calculateNetAttributeValue(attrs []model.AffCampaignAttribute) error {
-	stellaCommission := conf.GetConfiguration().Aff.StellaCommission
-
-	for idx, item := range attrs {
-		value, err := strconv.ParseFloat(item.AttributeValue, 64)
-		if err != nil {
-			return err
-		}
-
-		netValue := value - value*stellaCommission/100
-		attrs[idx].AttributeValue = fmt.Sprintf("%.2f", netValue)
-	}
-
-	return nil
 }

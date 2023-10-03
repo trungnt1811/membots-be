@@ -9,6 +9,8 @@ import (
 )
 
 type OrderRepository interface {
+	QueryOrdersConfirmedBefore(t time.Time, q map[string]any) ([]model.AffOrder, error)
+
 	SavePostBackLog(req *model.AffPostBackLog) error
 	CreateOrder(order *model.AffOrder) error
 	UpdateOrder(updated *model.AffOrder) (int, error)
@@ -28,4 +30,6 @@ type OrderUCase interface {
 	GetOrderDetails(ctx context.Context, userId uint32, orderId uint) (*dto.OrderDetailsDto, error)
 	GetOrderHistory(ctx context.Context, userId uint32, status string, page, size int) (dto.OrderHistoryResponse, error)
 	SyncTransactionsByOrder(atOrderId string) (int, error)
+
+	CheckOrderConfirmed() (int, error)
 }

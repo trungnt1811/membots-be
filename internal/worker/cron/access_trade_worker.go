@@ -39,11 +39,11 @@ func (worker *AccessTradeWorker) RunJob() {
 		if err := mutex.LockContext(ctx); err != nil {
 			log.LG.Infof("lock error: %v", err)
 		} else {
-			count, err := worker.Usecase.QueryAndSaveCampaigns(true)
+			newCount, updatedCount, err := worker.Usecase.QueryAndSaveCampaigns(true)
 			if err != nil {
 				log.LG.Infof("sync campaigns error: %v", err)
 			} else {
-				log.LG.Infof("sync campaigns success: %d synced", count)
+				log.LG.Infof("sync campaigns success: %d new, %d updated", newCount, updatedCount)
 			}
 			// After run, release the lock so other processes or threads can obtain a lock.
 			if ok, err1 := mutex.UnlockContext(ctx); !ok || err1 != nil {

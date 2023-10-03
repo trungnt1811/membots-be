@@ -1,7 +1,9 @@
 package accesstrade
 
 import (
+	"github.com/astraprotocol/affiliate-system/internal/app/campaign"
 	interfaces2 "github.com/astraprotocol/affiliate-system/internal/interfaces"
+	"github.com/astraprotocol/affiliate-system/internal/model"
 	"github.com/astraprotocol/affiliate-system/internal/util/log"
 )
 
@@ -17,12 +19,13 @@ func NewAccessTradeUCase(repo interfaces2.ATRepository, campRepo interfaces2.Cam
 	}
 }
 
-func (u *accessTradeUCase) QueryAndSaveCampaigns(onlyApproval bool) (int, error) {
+func (u *accessTradeUCase) QueryAndSaveCampaigns(onlyApproval bool) (int, int, error) {
 	// Then, query campaigns
 	page := 1
 	limit := 20
 	totalPages := 1
-	totalSync := 0
+	totalSynced := 0
+	totalUpdated := 0
 
 	for true {
 		atResp, err := u.Repo.QueryCampaigns(true, page, limit)
@@ -45,7 +48,8 @@ func (u *accessTradeUCase) QueryAndSaveCampaigns(onlyApproval bool) (int, error)
 		}
 
 		for _, atApproved := range atResp.Data {
-			if _, ok := savedCampaigns[atApproved.Id]; !ok {
+			oldCampaign, ok := savedCampaigns[atApproved.Id]
+			if !ok {
 				// Not yet save, insert this new campaign
 				// and find merchant
 				err := u.CampaignRepo.SaveATCampaign(&atApproved)
@@ -53,9 +57,28 @@ func (u *accessTradeUCase) QueryAndSaveCampaigns(onlyApproval bool) (int, error)
 					log.LG.Errorf("create campaign error: %v", err)
 					continue
 				}
-				totalSync += 1
+				// TODO: push kafka message for synced campaign
+				totalSynced += 1
 			} else {
-				// TODO: Update if campaign is changed
+				// Update campaign if changed
+				campChanges, descriptionChanges := campaign.CheckCampaignChanged(&oldCampaign, &atApproved)
+				err := u.CampaignRepo.UpdateCampaignByID(oldCampaign.ID, campChanges, descriptionChanges)
+				if err != nil {
+					log.LG.Errorf("update campaign '%d' error: %v", oldCampaign.ID, err)
+					continue
+				}
+				// TODO: push kafka message for updated campaign
+				if len(campChanges) != 0 || len(descriptionChanges) != 0 {
+					totalUpdated += 1
+				}
+				// Update aff_link active status if campaign ended
+				if campChanges["stella_status"] == model.StellaStatusEnded {
+					err := u.CampaignRepo.DeactivateCampaignLinks(oldCampaign.ID)
+					if err != nil {
+						log.LG.Errorf("deactivate campaign '%d' links error: %v", oldCampaign.ID, err)
+						continue
+					}
+				}
 			}
 		}
 
@@ -66,10 +89,5 @@ func (u *accessTradeUCase) QueryAndSaveCampaigns(onlyApproval bool) (int, error)
 		page += 1
 	}
 
-	return totalSync, nil
-}
-
-func (u *accessTradeUCase) CreateAndSaveLink() (int, error) {
-	// TODO: Create link for campaign if not available
-	return 0, nil
+	return totalSynced, totalUpdated, nil
 }

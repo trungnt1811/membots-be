@@ -13,6 +13,5 @@ type ATRepository interface {
 }
 
 type ATUCase interface {
-	QueryAndSaveCampaigns(onlyApproval bool) (int, error)
-	CreateAndSaveLink() (int, error)
+	QueryAndSaveCampaigns(onlyApproval bool) (int, int, error)
 }

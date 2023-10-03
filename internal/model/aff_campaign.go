@@ -10,6 +10,8 @@ import (
 
 const (
 	StellaStatusInProgress = "IN_PROGRESS"
+	StellaStatusPaused     = "PAUSED"
+	StellaStatusEnded      = "ENDED"
 )
 
 type CampaignDescription struct {

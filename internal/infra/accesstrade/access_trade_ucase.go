@@ -1,6 +1,10 @@
 package accesstrade
 
 import (
+	"errors"
+	"fmt"
+	"strings"
+
 	"github.com/astraprotocol/affiliate-system/internal/app/campaign"
 	interfaces2 "github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/model"
@@ -8,14 +12,16 @@ import (
 )
 
 type accessTradeUCase struct {
-	Repo         interfaces2.ATRepository
-	CampaignRepo interfaces2.CampaignRepository
+	Repo           interfaces2.ATRepository
+	CampaignRepo   interfaces2.CampaignRepository
+	DiscordWebhook string
 }
 
-func NewAccessTradeUCase(repo interfaces2.ATRepository, campRepo interfaces2.CampaignRepository) interfaces2.ATUCase {
+func NewAccessTradeUCase(repo interfaces2.ATRepository, campRepo interfaces2.CampaignRepository, discordWebhook string) interfaces2.ATUCase {
 	return &accessTradeUCase{
-		Repo:         repo,
-		CampaignRepo: campRepo,
+		Repo:           repo,
+		CampaignRepo:   campRepo,
+		DiscordWebhook: discordWebhook,
 	}
 }
 
@@ -52,13 +58,16 @@ func (u *accessTradeUCase) QueryAndSaveCampaigns(onlyApproval bool) (int, int, e
 			if !ok {
 				// Not yet save, insert this new campaign
 				// and find merchant
-				err := u.CampaignRepo.SaveATCampaign(&atApproved)
+				created, err := u.CampaignRepo.SaveATCampaign(&atApproved)
 				if err != nil {
 					log.LG.Errorf("create campaign error: %v", err)
 					continue
 				}
-				// TODO: push kafka message for synced campaign
 				totalSynced += 1
+				err = u.sendMsgNewCampaignSync(created)
+				if err != nil {
+					log.LG.Errorf("send msg discord error: %v", err)
+				}
 			} else {
 				// Update campaign if changed
 				campChanges, descriptionChanges := campaign.CheckCampaignChanged(&oldCampaign, &atApproved)
@@ -67,9 +76,13 @@ func (u *accessTradeUCase) QueryAndSaveCampaigns(onlyApproval bool) (int, int, e
 					log.LG.Errorf("update campaign '%d' error: %v", oldCampaign.ID, err)
 					continue
 				}
-				// TODO: push kafka message for updated campaign
 				if len(campChanges) != 0 || len(descriptionChanges) != 0 {
 					totalUpdated += 1
+
+					err = u.sendMsgCampaignUpdated(&oldCampaign, campChanges, descriptionChanges)
+					if err != nil {
+						log.LG.Errorf("send msg discord error: %v", err)
+					}
 				}
 				// Update aff_link active status if campaign ended
 				if campChanges["stella_status"] == model.StellaStatusEnded {
@@ -90,4 +103,38 @@ func (u *accessTradeUCase) QueryAndSaveCampaigns(onlyApproval bool) (int, int, e
 	}
 
 	return totalSynced, totalUpdated, nil
+}
+
+func (u *accessTradeUCase) sendMsgNewCampaignSync(camp *model.AffCampaign) error {
+	msg := fmt.Sprintf("Action: New Campaign Synced\nCampaign ID: %d\nName: %s", camp.ID, camp.Name)
+	return u.sendDiscordMsg(msg)
+}
+
+func (u *accessTradeUCase) sendMsgCampaignUpdated(camp *model.AffCampaign, changes map[string]any, description map[string]any) error {
+	fields := make([]string, 0, len(changes)+len(description))
+	for k := range changes {
+		fields = append(fields, k)
+	}
+	for k := range description {
+		fields = append(fields, k)
+	}
+
+	msg := fmt.Sprintf("Action: Campaign Updated\nCampaign ID: %d\nName: %s\nFields Changed: %s", camp.ID, camp.Name, strings.Join(fields, ","))
+	return u.sendDiscordMsg(msg)
+}
+
+func (u *accessTradeUCase) sendDiscordMsg(msg string) error {
+	if u.DiscordWebhook == "" {
+		return errors.New("no discord webhook")
+	}
+	resp, err := NewHttpRequestBuilder().SetBody(map[string]any{
+		"content": fmt.Sprintf("========== [AFFILIATE SYSTEM - CAMPAIGN SYNC] ==========\n%s", msg),
+	}).Build().Post(u.DiscordWebhook)
+	if err != nil {
+		return err
+	}
+	if resp.IsSuccess() {
+		return nil
+	}
+	return errors.New("send discord msg receive error")
 }

@@ -30,8 +30,8 @@ func (repo *CampaignRepoMock) GetCampaignLessById(campaignId uint) (model.AffCam
 func (repo *CampaignRepoMock) RetrieveCampaignsByAccessTradeIds(ids []string) (map[string]model.AffCampaign, error) {
 	return nil, nil
 }
-func (repo *CampaignRepoMock) SaveATCampaign(atCampaign *types.ATCampaign) error {
-	return nil
+func (repo *CampaignRepoMock) SaveATCampaign(atCampaign *types.ATCampaign) (*model.AffCampaign, error) {
+	return nil, nil
 }
 
 func (repo *CampaignRepoMock) CreateCampaigns(data []model.AffCampaign) ([]model.AffCampaign, error) {

@@ -66,6 +66,8 @@ type KafkaConfiguration struct {
 }
 
 type DiscordConfig struct {
+	// Alert Webhook URL
+	AlertWebhookUrl string `mapstructure:"DISCORD_WEBHOOK_URL" yaml:"webhookUrl" toml:"webhookUrl" xml:"webhookUrl" json:"webhookUrl,omitempty"`
 	// Token is the OAuth token for pushing messages.
 	Token       string   `mapstructure:"DISCORD_TOKEN" yaml:"token" toml:"token" xml:"token" json:"token,omitempty"`
 	SubChannels []string `mapstructure:"DISCORD_SUB_CHANNELS" yaml:"subChannels" toml:"subChannels" xml:"subChannels" json:"subChannels,omitempty"`

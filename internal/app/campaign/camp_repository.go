@@ -42,7 +42,7 @@ func (repo *campaignRepository) RetrieveCampaignsByAccessTradeIds(ids []string) 
 	return mapped, nil
 }
 
-func (repo *campaignRepository) SaveATCampaign(atCampaign *types.ATCampaign) error {
+func (repo *campaignRepository) SaveATCampaign(atCampaign *types.ATCampaign) (*model.AffCampaign, error) {
 	// First create campaign
 	fmt.Println("SaveATCampaign", atCampaign.Id)
 	newCampaign := model2.AffCampaign{
@@ -104,10 +104,11 @@ func (repo *campaignRepository) SaveATCampaign(atCampaign *types.ATCampaign) err
 		return nil
 	})
 	if err != nil {
-		return errors.Errorf("campaign tx error: %v", err)
+		return nil, errors.Errorf("campaign tx error: %v", err)
 	}
 
-	return nil
+	newCampaign.Description = campaignDescription
+	return &newCampaign, nil
 }
 
 func (repo *campaignRepository) GetCampaignLessById(campaignId uint) (model2.AffCampaignLess, error) {

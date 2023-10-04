@@ -25,14 +25,9 @@ func (c *convertPriceHandler) ConvertVndPriceToAstra(ctx context.Context, attrib
 			if attributes[i].AttributeType != attributes[j].AttributeType {
 				return model.AttributeTypePriorityMapping[attributes[i].AttributeType] < model.AttributeTypePriorityMapping[attributes[j].AttributeType]
 			}
-			if len(attributes[i].AttributeValue) == len(attributes[j].AttributeValue) {
-				switch strings.Compare(attributes[i].AttributeValue, attributes[j].AttributeValue) {
-				case 1:
-					return true
-				default:
-					return false
-				}
-			} else if len(attributes[i].AttributeValue) > len(attributes[j].AttributeValue) {
+			value1, _ := strconv.ParseFloat(strings.TrimSpace(attributes[i].AttributeValue), 64)
+			value2, _ := strconv.ParseFloat(strings.TrimSpace(attributes[j].AttributeValue), 64)
+			if value1 > value2 {
 				return true
 			} else {
 				return false

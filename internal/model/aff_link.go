@@ -3,8 +3,8 @@ package model
 import "time"
 
 const (
-	AFF_LINK_STATUS_INACTIVE = 0
 	AFF_LINK_STATUS_ACTIVE   = 1
+	AFF_LINK_STATUS_INACTIVE = 2
 )
 
 type AffLink struct {

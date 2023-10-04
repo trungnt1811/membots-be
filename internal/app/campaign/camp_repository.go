@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
+	"github.com/astraprotocol/affiliate-system/internal/model"
 
 	"github.com/astraprotocol/affiliate-system/internal/infra/accesstrade/types"
 	model2 "github.com/astraprotocol/affiliate-system/internal/model"
@@ -24,7 +25,7 @@ func NewCampaignRepository(db *gorm.DB) interfaces.CampaignRepository {
 	}
 }
 
-func (repo *campaignRepository) RetrieveCampaignsByAccessTradeIds(ids []string) (map[string]*model2.AffCampaign, error) {
+func (repo *campaignRepository) RetrieveCampaignsByAccessTradeIds(ids []string) (map[string]model2.AffCampaign, error) {
 	var data []model2.AffCampaign
 	err := repo.Db.Table("aff_campaign").
 		Joins("Description").
@@ -32,15 +33,16 @@ func (repo *campaignRepository) RetrieveCampaignsByAccessTradeIds(ids []string) 
 	if err != nil {
 		return nil, err
 	}
-	mapped := map[string]*model2.AffCampaign{}
-	for _, it := range data {
-		mapped[it.AccessTradeId] = &it
+	mapped := map[string]model2.AffCampaign{}
+	for idx := range data {
+		it := data[idx]
+		mapped[it.AccessTradeId] = it
 	}
 
 	return mapped, nil
 }
 
-func (repo *campaignRepository) SaveATCampaign(atCampaign *types.ATCampaign) error {
+func (repo *campaignRepository) SaveATCampaign(atCampaign *types.ATCampaign) (*model.AffCampaign, error) {
 	// First create campaign
 	fmt.Println("SaveATCampaign", atCampaign.Id)
 	newCampaign := model2.AffCampaign{
@@ -102,10 +104,11 @@ func (repo *campaignRepository) SaveATCampaign(atCampaign *types.ATCampaign) err
 		return nil
 	})
 	if err != nil {
-		return errors.Errorf("campaign tx error: %v", err)
+		return nil, errors.Errorf("campaign tx error: %v", err)
 	}
 
-	return nil
+	newCampaign.Description = campaignDescription
+	return &newCampaign, nil
 }
 
 func (repo *campaignRepository) GetCampaignLessById(campaignId uint) (model2.AffCampaignLess, error) {
@@ -137,9 +140,33 @@ func (repo *campaignRepository) UpdateCampaigns(data []model2.AffCampaign) ([]mo
 	return data, nil
 }
 
-func (repo *campaignRepository) DeactivateCampaigns(data []model2.AffCampaign) error {
-	err := repo.Db.Updates(&data).Error
+func (repo *campaignRepository) UpdateCampaignByID(ID uint, camp map[string]any, description map[string]any) error {
+	txErr := repo.Db.Transaction(func(tx *gorm.DB) error {
+		if len(description) != 0 {
+			description["updated_at"] = time.Now()
+			err := tx.Table("aff_campaign_description").Where("campaign_id = ?", ID).Updates(description).Error
+			if err != nil {
+				return err
+			}
+		}
+		if len(camp) != 0 {
+			camp["updated_at"] = time.Now()
+			err := repo.Db.Table("aff_campaign").Where("id = ?", ID).Updates(&camp).Error
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 
+	if txErr != nil {
+		return txErr
+	}
+	return nil
+}
+
+func (repo *campaignRepository) DeactivateCampaignLinks(campaignId uint) error {
+	err := repo.Db.Model(&model.AffLink{}).Where("campaign_id = ?", campaignId).Update("active_status", model.AFF_LINK_STATUS_INACTIVE).Error
 	if err != nil {
 		return err
 	}

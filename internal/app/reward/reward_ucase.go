@@ -3,6 +3,7 @@ package reward
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/infra/shipping"
@@ -98,13 +99,12 @@ func (u *rewardUCase) GetRewardSummary(ctx context.Context, userId uint32) (dto.
 		totalOrderReward += item.Amount - item.RewardedAmount
 	}
 
-	rewardsInDay, err := u.repo.GetRewardsInDay(ctx)
-	if err != nil {
-		return dto.RewardSummary{}, err
-	}
 	var totalOrderRewardInDay float64 = 0
-	for _, item := range rewardsInDay {
-		totalOrderRewardInDay += item.Amount * item.ImmediateRelease
+	now := time.Now()
+	for _, r := range inProgressRewards {
+		if now.Before(r.EndAt) && now.After(r.StartAt.Add(model.OneDay)) {
+			totalOrderRewardInDay += r.OneDayReward()
+		}
 	}
 	totalOrderRewardInDay = util.RoundFloat(totalOrderRewardInDay, 2)
 

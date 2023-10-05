@@ -20,7 +20,6 @@ type RewardRepository interface {
 	GetInProgressRewards(ctx context.Context, userId uint32) ([]model.Reward, error)
 	GetUsersHaveInProgressRewards(ctx context.Context) ([]uint32, error)
 	GetInProgressRewardsOfMultipleUsers(ctx context.Context, userIds []uint32) ([]model.Reward, error)
-	GetRewardsInDay(ctx context.Context) ([]model.Reward, error)
 }
 
 type RewardUCase interface {

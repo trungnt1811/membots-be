@@ -78,15 +78,14 @@ func (s affCampAppUCase) GetAffCampaignById(ctx context.Context, id uint64, user
 	response := affCampaign.ToAffCampaignAppDto()
 	response.Brand.IsTopFavorited = favTopBrandCheck[response.BrandId]
 	response.Brand.IsFavorited = favBrandCheck[response.BrandId]
-	response.StellaMaxCom = s.ConvertPrice.ConvertVndPriceToAstra(ctx, affCampaign.Attributes)
+	response.StellaMaxCom = s.ConvertPrice.GetStellaMaxCommission(ctx, affCampaign.Attributes)
 
 	for i := range response.Attributes {
-		var tmp []model.AffCampaignAttribute
-		tmp = append(tmp, model.AffCampaignAttribute{
+		tmp := model.AffCampaignAttribute{
 			AttributeKey:   response.Attributes[i].AttributeKey,
 			AttributeValue: response.Attributes[i].AttributeValue,
 			AttributeType:  response.Attributes[i].AttributeType,
-		})
+		}
 		response.Attributes[i].AttributeValue = s.ConvertPrice.ConvertVndPriceToAstra(ctx, tmp)
 	}
 
@@ -104,7 +103,7 @@ func (s affCampAppUCase) GetAllAffCampaign(ctx context.Context, page, size int) 
 			break
 		}
 		listAffCampaignAppDto = append(listAffCampaignAppDto, listAffCampaign[i].ToDto())
-		listAffCampaignAppDto[i].StellaMaxCom = s.ConvertPrice.ConvertVndPriceToAstra(ctx, listAffCampaign[i].Attributes)
+		listAffCampaignAppDto[i].StellaMaxCom = s.ConvertPrice.GetStellaMaxCommission(ctx, listAffCampaign[i].Attributes)
 	}
 	nextPage := page
 	if len(listAffCampaign) > size {

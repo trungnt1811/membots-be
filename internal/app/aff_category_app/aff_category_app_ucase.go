@@ -2,6 +2,7 @@ package category
 
 import (
 	"context"
+
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 )
@@ -55,7 +56,7 @@ func (c *categoryUCase) GetTopFavouriteAffBrand(ctx context.Context, categoryId 
 		}
 		listAffCampaignComBrandDto = append(listAffCampaignComBrandDto, listFavAffBrand[i].ToAffCampaignLessDto())
 		listAffCampaignComBrandDto[i].Brand.IsFavorited = favBrandCheck[listAffCampaignComBrandDto[i].BrandId]
-		listAffCampaignComBrandDto[i].StellaMaxCom = c.ConvertPrice.ConvertVndPriceToAstra(ctx, listFavAffBrand[i].Attributes)
+		listAffCampaignComBrandDto[i].StellaMaxCom = c.ConvertPrice.GetStellaMaxCommission(ctx, listFavAffBrand[i].Attributes)
 	}
 	nextPage := page
 	if len(listFavAffBrand) > size {
@@ -112,7 +113,7 @@ func (c *categoryUCase) GetMostCommissionAffCampaign(ctx context.Context, catego
 		listAffCampaignAppDto = append(listAffCampaignAppDto, listAffCampaign[i].ToDto())
 		listAffCampaignAppDto[i].Brand.IsFavorited = favBrandCheck[listAffCampaignAppDto[i].BrandId]
 		listAffCampaignAppDto[i].Brand.IsTopFavorited = favTopBrandCheck[listAffCampaignAppDto[i].BrandId]
-		listAffCampaignAppDto[i].StellaMaxCom = c.ConvertPrice.ConvertVndPriceToAstra(ctx, listAffCampaign[i].Attributes)
+		listAffCampaignAppDto[i].StellaMaxCom = c.ConvertPrice.GetStellaMaxCommission(ctx, listAffCampaign[i].Attributes)
 	}
 	nextPage := page
 	if len(listAffCampaign) > size {

@@ -49,7 +49,7 @@ func (s *userViewAffCampUCase) GetListUserViewAffCampByUserId(ctx context.Contex
 			break
 		}
 		listAffCampComBrandDto = append(listAffCampComBrandDto, listUserViewAffCamp[i].ToAffCampaignLessDto())
-		listAffCampComBrandDto[i].StellaMaxCom = s.ConvertPrice.ConvertVndPriceToAstra(
+		listAffCampComBrandDto[i].StellaMaxCom = s.ConvertPrice.GetStellaMaxCommission(
 			ctx,
 			[]model.AffCampaignAttribute{campaignIdAtrributeMapping[uint64(campaign.AffCampId)]},
 		)

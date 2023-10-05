@@ -96,6 +96,7 @@ func (r affCampAppRepository) GetListAffCampaignByBrandIds(ctx context.Context, 
 	findInSet := strings.Trim(string(s), "[]")
 	offset := (page - 1) * size
 	err := r.db.Joins("Brand").
+		Preload("Attributes").
 		Where("aff_campaign.brand_id IN ? AND stella_status = ?", brandIds, model.StellaStatusInProgress).
 		Limit(size + 1).Offset(offset).
 		Order(fmt.Sprintf("FIND_IN_SET(aff_campaign.brand_id,'%s')", findInSet)).
@@ -109,8 +110,10 @@ func (r affCampAppRepository) GetListAffCampaignByCategoryIdAndBrandIds(ctx cont
 	s, _ := json.Marshal(brandIds)
 	findInSet := strings.Trim(string(s), "[]")
 	offset := (page - 1) * size
-	err := r.db.Joins("Brand").Where("category_id = ? AND aff_campaign.brand_id IN ? AND stella_status = ?",
-		categoryId, brandIds, model.StellaStatusInProgress).
+	err := r.db.Joins("Brand").
+		Preload("Attributes").
+		Where("category_id = ? AND aff_campaign.brand_id IN ? AND stella_status = ?",
+			categoryId, brandIds, model.StellaStatusInProgress).
 		Limit(size + 1).Offset(offset).
 		Order(fmt.Sprintf("FIND_IN_SET(aff_campaign.brand_id,'%s')", findInSet)).
 		Find(&listAffCampaign).Error

@@ -98,15 +98,17 @@ func (c *categoryUCase) GetMostCommissionAffCampaign(ctx context.Context, catego
 
 	// Map only the most commision/aff campaign id
 	campaignIdAtrributeMapping := make(map[uint64]model.AffCampaignAttribute)
+	listAffCampaignId := make([]uint64, 0)
 	for _, attribute := range listAffCampaignAttribute {
 		_, isExist := campaignIdAtrributeMapping[uint64(attribute.CampaignId)]
 		if !isExist {
 			campaignIdAtrributeMapping[uint64(attribute.CampaignId)] = attribute
+			listAffCampaignId = append(listAffCampaignId, uint64(attribute.CampaignId))
 		}
 	}
 
 	// Get list aff campaign in category id
-	listAffCampaign, err := c.AffCampAppRepository.GetAllAffCampaignInCategoryId(ctx, categoryId, page, size)
+	listAffCampaign, err := c.AffCampAppRepository.GetAllAffCampaignInCategoryIdOrderByIds(ctx, categoryId, listAffCampaignId, page, size)
 	if err != nil {
 		return dto.AffCampaignAppDtoResponse{}, err
 	}

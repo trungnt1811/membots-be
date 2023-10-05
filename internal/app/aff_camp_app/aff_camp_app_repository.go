@@ -21,15 +21,20 @@ func NewAffCampAppRepository(db *gorm.DB) interfaces.AffCampAppRepository {
 	}
 }
 
-func (r affCampAppRepository) GetAllAffCampaignInCategoryId(ctx context.Context, categoryId uint, page, size int) ([]model.AffCampaignLessApp, error) {
+func (r affCampAppRepository) GetAllAffCampaignInCategoryIdOrderByIds(ctx context.Context, categoryId uint, ids []uint64, page, size int) ([]model.AffCampaignLessApp, error) {
 	var listAffCampaign []model.AffCampaignLessApp
+	// Ordering by the order of values in ids
+	s, _ := json.Marshal(ids)
+	findInSet := strings.Trim(string(s), "[]")
 	var err error
 	offset := (page - 1) * size
 	err = r.db.Joins("Brand").
-		Preload("Attributes").
-		Where("category_id = ? AND stella_status = ?", categoryId, model.StellaStatusInProgress).
+		Where("category_id = ? AND stella_status = ?",
+			categoryId,
+			model.StellaStatusInProgress,
+		).
 		Limit(size + 1).Offset(offset).
-		Order("aff_campaign.id ASC").
+		Order(fmt.Sprintf("FIND_IN_SET(aff_campaign.id,'%s')", findInSet)).
 		Find(&listAffCampaign).Error
 	return listAffCampaign, err
 }

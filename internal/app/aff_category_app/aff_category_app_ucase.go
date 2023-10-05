@@ -2,8 +2,10 @@ package category
 
 import (
 	"context"
+
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
+	"github.com/astraprotocol/affiliate-system/internal/model"
 )
 
 type categoryUCase struct {
@@ -15,6 +17,21 @@ type categoryUCase struct {
 }
 
 func (c *categoryUCase) GetTopFavouriteAffBrand(ctx context.Context, categoryId uint, userId uint64, page, size int) (dto.AffCampaignAppDtoResponse, error) {
+	// Get all attributes order by most commission
+	listAffCampaignAttribute, err := c.AffCampAppRepository.GetAllAffCampaignAttribute(ctx, interfaces.ListAffCampaignOrderByMostCommission)
+	if err != nil {
+		return dto.AffCampaignAppDtoResponse{}, err
+	}
+	// Map only the most commision/aff campaign id
+	campaignIdAtrributeMapping := make(map[uint64]model.AffCampaignAttribute)
+	for _, attribute := range listAffCampaignAttribute {
+		_, isExist := campaignIdAtrributeMapping[uint64(attribute.CampaignId)]
+		if !isExist {
+			campaignIdAtrributeMapping[uint64(attribute.CampaignId)] = attribute
+		}
+	}
+
+	// Top favorited brands check
 	listCountFavAffBrand, err := c.AffBrandRepository.GetListCountFavouriteAffBrand(ctx)
 	if err != nil {
 		return dto.AffCampaignAppDtoResponse{}, err
@@ -49,13 +66,16 @@ func (c *categoryUCase) GetTopFavouriteAffBrand(ctx context.Context, categoryId 
 	}
 
 	var listAffCampaignComBrandDto []dto.AffCampaignLessDto
-	for i := range listFavAffBrand {
+	for i, campaign := range listFavAffBrand {
 		if i >= size {
 			break
 		}
 		listAffCampaignComBrandDto = append(listAffCampaignComBrandDto, listFavAffBrand[i].ToAffCampaignLessDto())
 		listAffCampaignComBrandDto[i].Brand.IsFavorited = favBrandCheck[listAffCampaignComBrandDto[i].BrandId]
-		listAffCampaignComBrandDto[i].StellaMaxCom = c.ConvertPrice.ConvertVndPriceToAstra(ctx, listFavAffBrand[i].Attributes)
+		listAffCampaignComBrandDto[i].StellaMaxCom = c.ConvertPrice.ConvertVndPriceToAstra(
+			ctx,
+			[]model.AffCampaignAttribute{campaignIdAtrributeMapping[uint64(campaign.ID)]},
+		)
 	}
 	nextPage := page
 	if len(listFavAffBrand) > size {
@@ -70,7 +90,23 @@ func (c *categoryUCase) GetTopFavouriteAffBrand(ctx context.Context, categoryId 
 }
 
 func (c *categoryUCase) GetMostCommissionAffCampaign(ctx context.Context, categoryId uint, userId uint64, page, size int) (dto.AffCampaignAppDtoResponse, error) {
-	listAffCampaign, err := c.AffCampAppRepository.GetAllAffCampaignInCategoryId(ctx, categoryId, interfaces.ListAffCampaignOrderByMostCommission, page, size)
+	// Get all attributes order by most commission
+	listAffCampaignAttribute, err := c.AffCampAppRepository.GetAllAffCampaignAttribute(ctx, interfaces.ListAffCampaignOrderByMostCommission)
+	if err != nil {
+		return dto.AffCampaignAppDtoResponse{}, err
+	}
+
+	// Map only the most commision/aff campaign id
+	campaignIdAtrributeMapping := make(map[uint64]model.AffCampaignAttribute)
+	for _, attribute := range listAffCampaignAttribute {
+		_, isExist := campaignIdAtrributeMapping[uint64(attribute.CampaignId)]
+		if !isExist {
+			campaignIdAtrributeMapping[uint64(attribute.CampaignId)] = attribute
+		}
+	}
+
+	// Get list aff campaign in category id
+	listAffCampaign, err := c.AffCampAppRepository.GetAllAffCampaignInCategoryId(ctx, categoryId, page, size)
 	if err != nil {
 		return dto.AffCampaignAppDtoResponse{}, err
 	}
@@ -112,7 +148,10 @@ func (c *categoryUCase) GetMostCommissionAffCampaign(ctx context.Context, catego
 		listAffCampaignAppDto = append(listAffCampaignAppDto, listAffCampaign[i].ToDto())
 		listAffCampaignAppDto[i].Brand.IsFavorited = favBrandCheck[listAffCampaignAppDto[i].BrandId]
 		listAffCampaignAppDto[i].Brand.IsTopFavorited = favTopBrandCheck[listAffCampaignAppDto[i].BrandId]
-		listAffCampaignAppDto[i].StellaMaxCom = c.ConvertPrice.ConvertVndPriceToAstra(ctx, listAffCampaign[i].Attributes)
+		listAffCampaignAppDto[i].StellaMaxCom = c.ConvertPrice.ConvertVndPriceToAstra(
+			ctx,
+			[]model.AffCampaignAttribute{campaignIdAtrributeMapping[uint64(listAffCampaignAppDto[i].ID)]},
+		)
 	}
 	nextPage := page
 	if len(listAffCampaign) > size {

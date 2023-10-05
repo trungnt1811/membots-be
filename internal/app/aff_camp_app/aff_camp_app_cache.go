@@ -29,13 +29,13 @@ func NewAffCampAppCacheRepository(repo interfaces.AffCampAppRepository,
 	}
 }
 
-func (c affCampAppCache) GetAllAffCampaignInCategoryId(ctx context.Context, categoryId uint, orderBy string, page, size int) ([]model.AffCampaignLessApp, error) {
-	key := &caching.Keyer{Raw: keyPrefixAffCampApp + fmt.Sprint("GetAllAffCampaignInCategoryId_", categoryId, "_", orderBy, "_", page, "_", size)}
+func (c affCampAppCache) GetAllAffCampaignInCategoryId(ctx context.Context, categoryId uint, page, size int) ([]model.AffCampaignLessApp, error) {
+	key := &caching.Keyer{Raw: keyPrefixAffCampApp + fmt.Sprint("GetAllAffCampaignInCategoryId_", categoryId, "_", page, "_", size)}
 	var listAffCampaign []model.AffCampaignLessApp
 	err := c.Cache.RetrieveItem(key, &listAffCampaign)
 	if err != nil {
 		// cache miss
-		listAffCampaign, err = c.AffCampAppRepository.GetAllAffCampaignInCategoryId(ctx, categoryId, orderBy, page, size)
+		listAffCampaign, err = c.AffCampAppRepository.GetAllAffCampaignInCategoryId(ctx, categoryId, page, size)
 		if err != nil {
 			return listAffCampaign, err
 		}

@@ -2,7 +2,6 @@ package aff_camp_app
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
@@ -80,18 +79,15 @@ func (s affCampAppUCase) GetAffCampaignById(ctx context.Context, id uint64, user
 	response.Brand.IsTopFavorited = favTopBrandCheck[response.BrandId]
 	response.Brand.IsFavorited = favBrandCheck[response.BrandId]
 	response.StellaMaxCom = s.ConvertPrice.ConvertVndPriceToAstra(ctx, affCampaign.Attributes)
+
 	for i := range response.Attributes {
-		fmt.Println(response.Attributes[i])
-		if response.Attributes[i].AttributeType == "vnd" {
-			var tmp []model.AffCampaignAttribute
-			tmp = append(tmp, model.AffCampaignAttribute{
-				AttributeKey:   response.Attributes[i].AttributeKey,
-				AttributeValue: response.Attributes[i].AttributeValue,
-				AttributeType:  response.Attributes[i].AttributeType,
-			})
-			response.Attributes[i].AttributeType = "asa"
-			response.Attributes[i].AttributeValue = s.ConvertPrice.ConvertVndPriceToAstra(ctx, tmp)
-		}
+		var tmp []model.AffCampaignAttribute
+		tmp = append(tmp, model.AffCampaignAttribute{
+			AttributeKey:   response.Attributes[i].AttributeKey,
+			AttributeValue: response.Attributes[i].AttributeValue,
+			AttributeType:  response.Attributes[i].AttributeType,
+		})
+		response.Attributes[i].AttributeValue = s.ConvertPrice.ConvertVndPriceToAstra(ctx, tmp)
 	}
 
 	return response, nil

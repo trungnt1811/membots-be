@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/astraprotocol/affiliate-system/conf"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/model"
 )
@@ -33,15 +34,19 @@ func (c *convertPriceHandler) ConvertVndPriceToAstra(ctx context.Context, attrib
 				return false
 			}
 		})
+
+		stellaCommission := conf.GetConfiguration().Aff.StellaCommission
+		value, err := strconv.ParseFloat(attributes[0].AttributeValue, 64)
+		if err != nil {
+			return ""
+		}
+		netValue := value - value*stellaCommission/100
+
 		if attributes[0].AttributeType == "percent" {
-			return fmt.Sprint(attributes[0].AttributeValue, "%")
+			return fmt.Sprintf("%.2f%%", netValue)
 		} else {
-			s, err := strconv.ParseFloat(attributes[0].AttributeValue, 64)
-			if err != nil {
-				return ""
-			}
-			tmp := s / float64(astraPrice)
-			return fmt.Sprintf("%.2f ASA", tmp)
+			asaValue := netValue / float64(astraPrice)
+			return fmt.Sprintf("%.2f ASA", asaValue)
 		}
 	} else {
 		return ""

@@ -3,7 +3,6 @@ package reward
 import (
 	"context"
 	"database/sql"
-	"time"
 
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 
@@ -62,19 +61,6 @@ func (r *rewardRepository) GetUsersHaveInProgressRewards(ctx context.Context) ([
 	query := "SELECT DISTINCT(user_id) FROM aff_order WHERE order_status = ?"
 	err := r.db.Raw(query, model.OrderStatusRewarding).Scan(&users).Error
 	return users, err
-}
-
-func (r *rewardRepository) GetRewardsInDay(ctx context.Context) ([]model.Reward, error) {
-	startDay := time.Now().UTC().Round(24 * time.Hour)           // 00:00
-	endDay := startDay.Add(24 * time.Hour).Add(-1 * time.Second) // 23:59
-
-	var rewards []model.Reward
-	err := r.db.Where("created_at BETWEEN ? AND ?", startDay, endDay).Find(&rewards).Error
-	if err != nil {
-		return []model.Reward{}, err
-	}
-
-	return rewards, err
 }
 
 func (r *rewardRepository) SaveRewardWithdraw(ctx context.Context, rewardWithdraw *model.RewardWithdraw, rewards []model.Reward, orderRewardHistories []model.OrderRewardHistory, completeRwOrders []string) error {

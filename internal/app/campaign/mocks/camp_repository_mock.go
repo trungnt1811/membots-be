@@ -27,11 +27,11 @@ func (repo *CampaignRepoMock) GetCampaignLessById(campaignId uint) (model.AffCam
 	return model.AffCampaignLess{}, nil
 }
 
-func (repo *CampaignRepoMock) RetrieveCampaignsByAccessTradeIds(ids []string) (map[string]*model.AffCampaign, error) {
+func (repo *CampaignRepoMock) RetrieveCampaignsByAccessTradeIds(ids []string) (map[string]model.AffCampaign, error) {
 	return nil, nil
 }
-func (repo *CampaignRepoMock) SaveATCampaign(atCampaign *types.ATCampaign) error {
-	return nil
+func (repo *CampaignRepoMock) SaveATCampaign(atCampaign *types.ATCampaign) (*model.AffCampaign, error) {
+	return nil, nil
 }
 
 func (repo *CampaignRepoMock) CreateCampaigns(data []model.AffCampaign) ([]model.AffCampaign, error) {
@@ -40,7 +40,11 @@ func (repo *CampaignRepoMock) CreateCampaigns(data []model.AffCampaign) ([]model
 func (repo *CampaignRepoMock) UpdateCampaigns(data []model.AffCampaign) ([]model.AffCampaign, error) {
 	return nil, nil
 }
-func (repo *CampaignRepoMock) DeactivateCampaigns(data []model.AffCampaign) error {
+func (repo *CampaignRepoMock) UpdateCampaignByID(ID uint, updates map[string]any, description map[string]any) error {
+	return nil
+}
+
+func (repo *CampaignRepoMock) DeactivateCampaignLinks(campaignId uint) error {
 	return nil
 }
 

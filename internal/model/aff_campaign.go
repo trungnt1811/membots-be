@@ -1,6 +1,7 @@
 package model
 
 import (
+	"sort"
 	"time"
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
@@ -10,6 +11,8 @@ import (
 
 const (
 	StellaStatusInProgress = "IN_PROGRESS"
+	StellaStatusPaused     = "PAUSED"
+	StellaStatusEnded      = "ENDED"
 )
 
 type CampaignDescription struct {
@@ -88,6 +91,9 @@ func (m *AffCampaign) ToDto() dto.AffCampaignDto {
 	for _, attribute := range m.Attributes {
 		listAttribute = append(listAttribute, attribute.ToDto())
 	}
+	sort.Slice(listAttribute, func(i, j int) bool {
+		return listAttribute[i].ID < listAttribute[j].ID
+	})
 	campDto := dto.AffCampaignDto{
 		ID:            m.ID,
 		AccessTradeId: m.AccessTradeId,
@@ -144,6 +150,9 @@ func (m *AffCampaignApp) ToAffCampaignAppDto() dto.AffCampaignAppDto {
 	for _, attribute := range m.Attributes {
 		listAttribute = append(listAttribute, attribute.ToDto())
 	}
+	sort.Slice(listAttribute, func(i, j int) bool {
+		return listAttribute[i].ID < listAttribute[j].ID
+	})
 	return dto.AffCampaignAppDto{
 		ID:                m.ID,
 		BrandId:           m.BrandId,

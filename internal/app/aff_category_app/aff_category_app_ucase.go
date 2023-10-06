@@ -170,15 +170,32 @@ func (c *categoryUCase) GetAllCategory(ctx context.Context, page, size int) (dto
 		return dto.AffCategoryResponseDto{}, err
 	}
 	var categoryDtos []dto.AffCategoryDto
+	categoryIds := make([]uint64, size)
 	for i := range listCategory {
 		if i >= size {
 			continue
 		}
+		categoryIds = append(categoryIds, listCategory[i].ID)
 		categoryDtos = append(categoryDtos, listCategory[i].ToDto())
+	}
+	listCategoryWithAttribute, err := c.AffCategoryRepository.GetAttributeInCategories(ctx, categoryIds)
+	mapCategoryAttribute := make(map[uint64][]model.AffCampaignAttribute)
+	for _, attribute := range listCategoryWithAttribute {
+		_, isExist := mapCategoryAttribute[attribute.ID]
+		if !isExist {
+			mapCategoryAttribute[attribute.ID] = make([]model.AffCampaignAttribute, 0)
+		}
+		mapCategoryAttribute[attribute.ID] = append(mapCategoryAttribute[attribute.ID], model.AffCampaignAttribute{
+			AttributeValue: attribute.AttributeValue,
+			AttributeType:  attribute.AttributeType,
+		})
 	}
 	nextPage := page
 	if len(listCategory) > size {
 		nextPage = page + 1
+	}
+	for i := range categoryDtos {
+		categoryDtos[i].StellaMaxCom = c.ConvertPrice.GetStellaMaxCommission(ctx, mapCategoryAttribute[categoryDtos[i].ID])
 	}
 	return dto.AffCategoryResponseDto{
 		NextPage: nextPage,

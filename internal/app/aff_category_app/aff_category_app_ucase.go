@@ -2,7 +2,6 @@ package category
 
 import (
 	"context"
-
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/model"
@@ -22,7 +21,7 @@ func (c *categoryUCase) GetTopFavouriteAffBrand(ctx context.Context, categoryId 
 	if err != nil {
 		return dto.AffCampaignAppDtoResponse{}, err
 	}
-	// Map only the most commision/aff campaign id
+	// Map only the most commission/aff campaign id
 	campaignIdAtrributeMapping := make(map[uint64]model.AffCampaignAttribute)
 	for _, attribute := range listAffCampaignAttribute {
 		_, isExist := campaignIdAtrributeMapping[uint64(attribute.CampaignId)]
@@ -72,7 +71,8 @@ func (c *categoryUCase) GetTopFavouriteAffBrand(ctx context.Context, categoryId 
 		}
 		listAffCampaignComBrandDto = append(listAffCampaignComBrandDto, listFavAffBrand[i].ToAffCampaignLessDto())
 		listAffCampaignComBrandDto[i].Brand.IsFavorited = favBrandCheck[listAffCampaignComBrandDto[i].BrandId]
-		listAffCampaignComBrandDto[i].StellaMaxCom = c.ConvertPrice.GetStellaMaxCommission(ctx, listFavAffBrand[i].Attributes)
+		listAffCampaignComBrandDto[i].StellaMaxCom =
+			c.ConvertPrice.GetStellaMaxCommission(ctx, []model.AffCampaignAttribute{campaignIdAtrributeMapping[listFavAffBrand[i].ID]})
 
 	}
 	nextPage := page
@@ -148,7 +148,9 @@ func (c *categoryUCase) GetMostCommissionAffCampaign(ctx context.Context, catego
 		listAffCampaignAppDto = append(listAffCampaignAppDto, listAffCampaign[i].ToDto())
 		listAffCampaignAppDto[i].Brand.IsFavorited = favBrandCheck[listAffCampaignAppDto[i].BrandId]
 		listAffCampaignAppDto[i].Brand.IsTopFavorited = favTopBrandCheck[listAffCampaignAppDto[i].BrandId]
-		listAffCampaignAppDto[i].StellaMaxCom = c.ConvertPrice.GetStellaMaxCommission(ctx, listAffCampaign[i].Attributes)
+		listAffCampaignAppDto[i].StellaMaxCom = c.ConvertPrice.GetStellaMaxCommission(ctx,
+			[]model.AffCampaignAttribute{campaignIdAtrributeMapping[uint64(listAffCampaign[i].ID)]})
+
 	}
 	nextPage := page
 	if len(listAffCampaign) > size {

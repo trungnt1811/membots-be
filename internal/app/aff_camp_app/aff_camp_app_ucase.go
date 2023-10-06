@@ -87,6 +87,9 @@ func (s affCampAppUCase) GetAffCampaignById(ctx context.Context, id uint64, user
 			AttributeType:  response.Attributes[i].AttributeType,
 		}
 		response.Attributes[i].AttributeValue = s.ConvertPrice.ConvertVndPriceToAstra(ctx, tmp)
+		if tmp.AttributeType == "vnd" {
+			response.Attributes[i].AttributeType = "ASA"
+		}
 	}
 
 	return response, nil

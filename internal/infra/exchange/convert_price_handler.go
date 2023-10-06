@@ -37,6 +37,8 @@ func (c *convertPriceHandler) GetStellaMaxCommission(ctx context.Context, attrib
 	maxCommission := c.ConvertVndPriceToAstra(ctx, attributes[0])
 	if attributes[0].AttributeType == "percent" {
 		maxCommission += "%"
+	} else if attributes[0].AttributeType == "vnd" {
+		maxCommission += " ASA"
 	}
 	return maxCommission
 }
@@ -54,14 +56,11 @@ func (c *convertPriceHandler) ConvertVndPriceToAstra(ctx context.Context, attrib
 	}
 	netValue := value - value*stellaCommission/100
 
-	if attribute.AttributeType == "percent" {
-		// for percentage attribute, remove unit
-		return fmt.Sprintf("%.2f", netValue)
-	} else {
-		// for vnd attribute, we convert to asa
-		asaValue := netValue / float64(astraPrice)
-		return fmt.Sprintf("%.2f ASA", asaValue)
+	if attribute.AttributeType == "vnd" {
+		netValue = netValue / float64(astraPrice)
 	}
+
+	return fmt.Sprintf("%.2f", netValue)
 
 }
 

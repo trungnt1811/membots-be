@@ -124,7 +124,7 @@ func (s homePageUCase) GetHomePage(ctx context.Context, userId uint64) (dto.Home
 	var listRecentlyVisited []dto.AffCampaignLessDto
 	for i, campaign := range *listCampaignP1 {
 		listRecentlyVisited = append(listRecentlyVisited, campaign.ToAffCampaignLessDto())
-		listRecentlyVisited[i].StellaMaxCom = s.ConvertPrice.ConvertVndPriceToAstra(
+		listRecentlyVisited[i].StellaMaxCom = s.ConvertPrice.GetStellaMaxCommission(
 			ctx,
 			[]model.AffCampaignAttribute{campaignIdAtrributeMapping[uint64(campaign.AffCampId)]},
 		)
@@ -133,7 +133,7 @@ func (s homePageUCase) GetHomePage(ctx context.Context, userId uint64) (dto.Home
 	var listFollowing []dto.AffCampaignLessDto
 	for i, campaign := range *listCampaignP2 {
 		listFollowing = append(listFollowing, campaign.ToAffCampaignLessDto())
-		listFollowing[i].StellaMaxCom = s.ConvertPrice.ConvertVndPriceToAstra(
+		listFollowing[i].StellaMaxCom = s.ConvertPrice.GetStellaMaxCommission(
 			ctx,
 			[]model.AffCampaignAttribute{campaignIdAtrributeMapping[uint64(campaign.ID)]},
 		)
@@ -142,7 +142,7 @@ func (s homePageUCase) GetHomePage(ctx context.Context, userId uint64) (dto.Home
 	var listTopFavorited []dto.AffCampaignLessDto
 	for i, campaign := range *listCampaignP3 {
 		listTopFavorited = append(listTopFavorited, campaign.ToAffCampaignLessDto())
-		listTopFavorited[i].StellaMaxCom = s.ConvertPrice.ConvertVndPriceToAstra(
+		listTopFavorited[i].StellaMaxCom = s.ConvertPrice.GetStellaMaxCommission(
 			ctx,
 			[]model.AffCampaignAttribute{campaignIdAtrributeMapping[uint64(campaign.ID)]},
 		)
@@ -151,7 +151,7 @@ func (s homePageUCase) GetHomePage(ctx context.Context, userId uint64) (dto.Home
 	var listMostCommission []dto.AffCampaignLessDto
 	for i, campaign := range *listCampaignP4 {
 		listMostCommission = append(listMostCommission, campaign.ToAffCampaignLessDto())
-		listMostCommission[i].StellaMaxCom = s.ConvertPrice.ConvertVndPriceToAstra(
+		listMostCommission[i].StellaMaxCom = s.ConvertPrice.GetStellaMaxCommission(
 			ctx,
 			[]model.AffCampaignAttribute{campaignIdAtrributeMapping[uint64(campaign.ID)]},
 		)

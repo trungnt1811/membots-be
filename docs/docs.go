@@ -1926,6 +1926,9 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "stella_max_com": {
+                    "type": "string"
+                },
                 "total_aff_campaign": {
                     "type": "integer"
                 }

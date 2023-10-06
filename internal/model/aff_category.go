@@ -27,6 +27,12 @@ type AffCategoryAndTotalCampaign struct {
 	TotalAffCampaign uint32 `json:"total_aff_campaign"`
 }
 
+type CategoryWithCommissionAttribute struct {
+	ID             uint64 `json:"id" gorm:"primaryKey"`
+	AttributeValue string `json:"attribute_value"`
+	AttributeType  string `json:"attribute_type"`
+}
+
 func (c *AffCategoryAndTotalCampaign) ToDto() dto.AffCategoryDto {
 	return dto.AffCategoryDto{
 		ID:               c.ID,

@@ -14,4 +14,5 @@ type AffCategoryUCase interface {
 
 type AffCategoryRepository interface {
 	GetAllCategory(ctx context.Context, page, size int) ([]model.AffCategoryAndTotalCampaign, error)
+	GetAttributeInCategories(ctx context.Context, ids []uint64) ([]model.CategoryWithCommissionAttribute, error)
 }

@@ -2,9 +2,9 @@ package category
 
 import (
 	"context"
-
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
+	"github.com/astraprotocol/affiliate-system/internal/model"
 )
 
 type categoryUCase struct {
@@ -16,6 +16,21 @@ type categoryUCase struct {
 }
 
 func (c *categoryUCase) GetTopFavouriteAffBrand(ctx context.Context, categoryId uint, userId uint64, page, size int) (dto.AffCampaignAppDtoResponse, error) {
+	// Get all attributes order by most commission
+	listAffCampaignAttribute, err := c.AffCampAppRepository.GetAllAffCampaignAttribute(ctx, interfaces.ListAffCampaignOrderByMostCommission)
+	if err != nil {
+		return dto.AffCampaignAppDtoResponse{}, err
+	}
+	// Map only the most commission/aff campaign id
+	campaignIdAtrributeMapping := make(map[uint64]model.AffCampaignAttribute)
+	for _, attribute := range listAffCampaignAttribute {
+		_, isExist := campaignIdAtrributeMapping[uint64(attribute.CampaignId)]
+		if !isExist {
+			campaignIdAtrributeMapping[uint64(attribute.CampaignId)] = attribute
+		}
+	}
+
+	// Top favorited brands check
 	listCountFavAffBrand, err := c.AffBrandRepository.GetListCountFavouriteAffBrand(ctx)
 	if err != nil {
 		return dto.AffCampaignAppDtoResponse{}, err
@@ -56,7 +71,9 @@ func (c *categoryUCase) GetTopFavouriteAffBrand(ctx context.Context, categoryId 
 		}
 		listAffCampaignComBrandDto = append(listAffCampaignComBrandDto, listFavAffBrand[i].ToAffCampaignLessDto())
 		listAffCampaignComBrandDto[i].Brand.IsFavorited = favBrandCheck[listAffCampaignComBrandDto[i].BrandId]
-		listAffCampaignComBrandDto[i].StellaMaxCom = c.ConvertPrice.GetStellaMaxCommission(ctx, listFavAffBrand[i].Attributes)
+		listAffCampaignComBrandDto[i].StellaMaxCom =
+			c.ConvertPrice.GetStellaMaxCommission(ctx, []model.AffCampaignAttribute{campaignIdAtrributeMapping[listFavAffBrand[i].ID]})
+
 	}
 	nextPage := page
 	if len(listFavAffBrand) > size {
@@ -71,7 +88,25 @@ func (c *categoryUCase) GetTopFavouriteAffBrand(ctx context.Context, categoryId 
 }
 
 func (c *categoryUCase) GetMostCommissionAffCampaign(ctx context.Context, categoryId uint, userId uint64, page, size int) (dto.AffCampaignAppDtoResponse, error) {
-	listAffCampaign, err := c.AffCampAppRepository.GetAllAffCampaignInCategoryId(ctx, categoryId, interfaces.ListAffCampaignOrderByMostCommission, page, size)
+	// Get all attributes order by most commission
+	listAffCampaignAttribute, err := c.AffCampAppRepository.GetAllAffCampaignAttribute(ctx, interfaces.ListAffCampaignOrderByMostCommission)
+	if err != nil {
+		return dto.AffCampaignAppDtoResponse{}, err
+	}
+
+	// Map only the most commision/aff campaign id
+	campaignIdAtrributeMapping := make(map[uint64]model.AffCampaignAttribute)
+	listAffCampaignId := make([]uint64, 0)
+	for _, attribute := range listAffCampaignAttribute {
+		_, isExist := campaignIdAtrributeMapping[uint64(attribute.CampaignId)]
+		if !isExist {
+			campaignIdAtrributeMapping[uint64(attribute.CampaignId)] = attribute
+			listAffCampaignId = append(listAffCampaignId, uint64(attribute.CampaignId))
+		}
+	}
+
+	// Get list aff campaign in category id
+	listAffCampaign, err := c.AffCampAppRepository.GetAllAffCampaignInCategoryIdOrderByIds(ctx, categoryId, listAffCampaignId, page, size)
 	if err != nil {
 		return dto.AffCampaignAppDtoResponse{}, err
 	}
@@ -113,7 +148,9 @@ func (c *categoryUCase) GetMostCommissionAffCampaign(ctx context.Context, catego
 		listAffCampaignAppDto = append(listAffCampaignAppDto, listAffCampaign[i].ToDto())
 		listAffCampaignAppDto[i].Brand.IsFavorited = favBrandCheck[listAffCampaignAppDto[i].BrandId]
 		listAffCampaignAppDto[i].Brand.IsTopFavorited = favTopBrandCheck[listAffCampaignAppDto[i].BrandId]
-		listAffCampaignAppDto[i].StellaMaxCom = c.ConvertPrice.GetStellaMaxCommission(ctx, listAffCampaign[i].Attributes)
+		listAffCampaignAppDto[i].StellaMaxCom = c.ConvertPrice.GetStellaMaxCommission(ctx,
+			[]model.AffCampaignAttribute{campaignIdAtrributeMapping[uint64(listAffCampaign[i].ID)]})
+
 	}
 	nextPage := page
 	if len(listAffCampaign) > size {
@@ -133,15 +170,32 @@ func (c *categoryUCase) GetAllCategory(ctx context.Context, page, size int) (dto
 		return dto.AffCategoryResponseDto{}, err
 	}
 	var categoryDtos []dto.AffCategoryDto
+	categoryIds := make([]uint64, size)
 	for i := range listCategory {
 		if i >= size {
 			continue
 		}
+		categoryIds = append(categoryIds, listCategory[i].ID)
 		categoryDtos = append(categoryDtos, listCategory[i].ToDto())
+	}
+	listCategoryWithAttribute, err := c.AffCategoryRepository.GetAttributeInCategories(ctx, categoryIds)
+	mapCategoryAttribute := make(map[uint64][]model.AffCampaignAttribute)
+	for _, attribute := range listCategoryWithAttribute {
+		_, isExist := mapCategoryAttribute[attribute.ID]
+		if !isExist {
+			mapCategoryAttribute[attribute.ID] = make([]model.AffCampaignAttribute, 0)
+		}
+		mapCategoryAttribute[attribute.ID] = append(mapCategoryAttribute[attribute.ID], model.AffCampaignAttribute{
+			AttributeValue: attribute.AttributeValue,
+			AttributeType:  attribute.AttributeType,
+		})
 	}
 	nextPage := page
 	if len(listCategory) > size {
 		nextPage = page + 1
+	}
+	for i := range categoryDtos {
+		categoryDtos[i].StellaMaxCom = c.ConvertPrice.GetStellaMaxCommission(ctx, mapCategoryAttribute[categoryDtos[i].ID])
 	}
 	return dto.AffCategoryResponseDto{
 		NextPage: nextPage,

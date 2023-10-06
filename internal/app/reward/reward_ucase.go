@@ -106,15 +106,14 @@ func (u *rewardUCase) GetRewardSummary(ctx context.Context, userId uint32) (dto.
 			totalOrderRewardInDay += r.OneDayReward()
 		}
 	}
-	totalOrderRewardInDay = util.RoundFloat(totalOrderRewardInDay, 2)
 
 	withdrawable, _, _, _ := u.CalculateWithdrawalReward(inProgressRewards, userId)
 	pendingRewardAmount := util.RoundFloat(totalOrderReward-withdrawable.Amount, 2)
 
 	return dto.RewardSummary{
-		TotalWithdrewAmount: totalWithdrewAmount,
-		WithdrawableReward:  withdrawable.Amount,
-		RewardInDay:         totalOrderRewardInDay,
+		TotalWithdrewAmount: util.RoundFloat(totalWithdrewAmount, 2),
+		WithdrawableReward:  util.RoundFloat(withdrawable.Amount, 2),
+		RewardInDay:         util.RoundFloat(totalOrderRewardInDay, 2),
 		PendingRewardOrder:  len(inProgressRewards),
 		PendingRewardAmount: pendingRewardAmount,
 	}, nil

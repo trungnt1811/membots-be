@@ -94,7 +94,7 @@ func (s affBrandUCase) GetTopFavouriteAffBrand(ctx context.Context, userId uint6
 		listAffCampaignComBrandDto = append(listAffCampaignComBrandDto, listFavAffBrand[i].ToAffCampaignLessDto())
 		listAffCampaignComBrandDto[i].Brand.IsFavorited = favBrandCheck[listAffCampaignComBrandDto[i].BrandId]
 		listAffCampaignComBrandDto[i].Brand.IsTopFavorited = favTopBrandCheck[listAffCampaignComBrandDto[i].BrandId]
-		listAffCampaignComBrandDto[i].StellaMaxCom = s.ConvertPrice.ConvertVndPriceToAstra(
+		listAffCampaignComBrandDto[i].StellaMaxCom = s.ConvertPrice.GetStellaMaxCommission(
 			ctx,
 			[]model.AffCampaignAttribute{campaignIdAtrributeMapping[uint64(campaign.ID)]},
 		)
@@ -139,7 +139,7 @@ func (s affBrandUCase) GetListFavAffBrandByUserId(ctx context.Context, userId ui
 	var listAffCampaignDto []dto.AffCampaignLessDto
 	for i, campaign := range listFavAffBrand {
 		listAffCampaignDto = append(listAffCampaignDto, listFavAffBrand[i].ToAffCampaignLessDto())
-		listAffCampaignDto[i].StellaMaxCom = s.ConvertPrice.ConvertVndPriceToAstra(
+		listAffCampaignDto[i].StellaMaxCom = s.ConvertPrice.GetStellaMaxCommission(
 			ctx,
 			[]model.AffCampaignAttribute{campaignIdAtrributeMapping[uint64(campaign.ID)]},
 		)
@@ -207,7 +207,7 @@ func (s affBrandUCase) GetMostCommissionAffCampaign(ctx context.Context, userId 
 		}
 		listAffCampaignAppDto = append(listAffCampaignAppDto, listAffCampaign[i].ToAffCampaignLessDto())
 		listAffCampaignAppDto[i].Brand.IsFavorited = favBrandCheck[listAffCampaignAppDto[i].BrandId]
-		listAffCampaignAppDto[i].StellaMaxCom = s.ConvertPrice.ConvertVndPriceToAstra(
+		listAffCampaignAppDto[i].StellaMaxCom = s.ConvertPrice.GetStellaMaxCommission(
 			ctx,
 			[]model.AffCampaignAttribute{campaignIdAtrributeMapping[uint64(listAffCampaignAppDto[i].ID)]},
 		)

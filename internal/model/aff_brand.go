@@ -35,5 +35,5 @@ func (c *AffMerchantBrand) TableName() string {
 
 type TotalFavoriteBrand struct {
 	BrandId       uint   `json:"brand_id"`
-	TotalFavorite uint64 `json:"total_fav"`
+	TotalFavorite uint64 `gorm:"column:total_fav"`
 }

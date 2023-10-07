@@ -2,10 +2,6 @@ package model
 
 import "github.com/astraprotocol/affiliate-system/internal/dto"
 
-const (
-	FavoritedBrandsInTop = 10
-)
-
 type Brand struct {
 	ID         uint    `json:"id" gorm:"primaryKey"`
 	Name       string  `json:"name"`
@@ -39,5 +35,5 @@ func (c *AffMerchantBrand) TableName() string {
 
 type TotalFavoriteBrand struct {
 	BrandId       uint   `json:"brand_id"`
-	TotalFavorite uint64 `json:"total_fav"`
+	TotalFavorite uint64 `gorm:"column:total_fav"`
 }

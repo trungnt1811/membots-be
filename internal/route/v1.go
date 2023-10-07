@@ -166,7 +166,8 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	appRouter.GET("/aff-banner/:id", affAppBannerHandler.GetBannerById)
 
 	affCategoryRepo := categoryApp.NewAppCategoryRepository(db)
-	affCategoryUCase := categoryApp.NewAffCategoryUCase(affCategoryRepo, affBrandCache, affCampAppCache, userFavoriteBrandCache, convertPriceHandler)
+	affCategoryCache := categoryApp.NewAffCategoryAppCacheRepository(affCategoryRepo, redisClient)
+	affCategoryUCase := categoryApp.NewAffCategoryUCase(affCategoryCache, affBrandCache, affCampAppCache, userFavoriteBrandCache, convertPriceHandler)
 	affCategoryHandler := categoryApp.NewAffCategoryHandler(affCategoryUCase)
 	appRouter.GET("/aff-categories", affCategoryHandler.GetAllCategory)
 	appRouter.GET("/aff-categories/:categoryId", authHandler.CheckUserHeader(), affCategoryHandler.GetListAffBrandByUser)

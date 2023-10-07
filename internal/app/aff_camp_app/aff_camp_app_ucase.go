@@ -51,12 +51,9 @@ func (s affCampAppUCase) GetAffCampaignById(ctx context.Context, id uint64, user
 	if err != nil {
 		return dto.AffCampaignAppDto{}, err
 	}
-	// Get top 10 fav brand
+	// Get top fav brand
 	favTopBrandCheck := make(map[uint]bool)
-	for index, countFavAffBrand := range listCountFavAffBrand {
-		if index >= model.FavoritedBrandsInTop {
-			break
-		}
+	for _, countFavAffBrand := range listCountFavAffBrand {
 		favTopBrandCheck[countFavAffBrand.BrandId] = true
 	}
 

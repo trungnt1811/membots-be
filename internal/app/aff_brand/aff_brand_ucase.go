@@ -53,9 +53,11 @@ func (s affBrandUCase) GetTopFavouriteAffBrand(ctx context.Context, userId uint6
 	if err != nil {
 		return dto.AffCampaignAppDtoResponse{}, err
 	}
-	favTopBrandCheck := make(map[uint]bool)
+	topFavBrandCheck := make(map[uint]bool)
 	for _, countFavAffBrand := range listCountFavAffBrand {
-		favTopBrandCheck[countFavAffBrand.BrandId] = true
+		if countFavAffBrand.TotalFavorite > 0 {
+			topFavBrandCheck[countFavAffBrand.BrandId] = true
+		}
 	}
 
 	// Get top favorited brands
@@ -93,7 +95,7 @@ func (s affBrandUCase) GetTopFavouriteAffBrand(ctx context.Context, userId uint6
 		}
 		listAffCampaignComBrandDto = append(listAffCampaignComBrandDto, listFavAffBrand[i].ToAffCampaignLessDto())
 		listAffCampaignComBrandDto[i].Brand.IsFavorited = favBrandCheck[listAffCampaignComBrandDto[i].BrandId]
-		listAffCampaignComBrandDto[i].Brand.IsTopFavorited = favTopBrandCheck[listAffCampaignComBrandDto[i].BrandId]
+		listAffCampaignComBrandDto[i].Brand.IsTopFavorited = topFavBrandCheck[listAffCampaignComBrandDto[i].BrandId]
 		listAffCampaignComBrandDto[i].StellaMaxCom = s.ConvertPrice.GetStellaMaxCommission(
 			ctx,
 			[]model.AffCampaignAttribute{campaignIdAtrributeMapping[uint64(campaign.ID)]},

@@ -22,10 +22,9 @@ func (r affBrandRepository) GetListCountFavouriteAffBrand(ctx context.Context) (
 		"GROUP BY ufb.brand_id) AS cf " +
 		"ON cf.brand_id = ac.brand_id " +
 		"WHERE ac.brand_id != 0 " +
-		"ORDER BY IFNULL(cf.total_fav, 0) DESC " +
-		"LIMIT ?"
+		"ORDER BY IFNULL(cf.total_fav, 0) DESC"
 	var listFavouriteAffBrand []model.TotalFavoriteBrand
-	err := r.db.Raw(query, model.FavoritedBrandsInTop).Scan(&listFavouriteAffBrand).Error
+	err := r.db.Raw(query).Scan(&listFavouriteAffBrand).Error
 	return listFavouriteAffBrand, err
 }
 

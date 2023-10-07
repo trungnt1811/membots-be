@@ -1206,7 +1206,7 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "name": "order_status",
+                        "name": "orderStatus",
                         "in": "query"
                     },
                     {
@@ -1216,7 +1216,7 @@
                     },
                     {
                         "type": "integer",
-                        "name": "per_page",
+                        "name": "perPage",
                         "in": "query"
                     },
                     {
@@ -1231,7 +1231,7 @@
                     },
                     {
                         "type": "integer",
-                        "name": "user_id",
+                        "name": "userId",
                         "in": "query"
                     }
                 ],
@@ -2350,6 +2350,9 @@
                 "billing": {
                     "type": "number"
                 },
+                "brand": {
+                    "$ref": "#/definitions/dto.BrandDto"
+                },
                 "cancelled_time": {
                     "description": "don hang bi huy",
                     "type": "string"
@@ -2367,10 +2370,6 @@
                 },
                 "id": {
                     "type": "integer"
-                },
-                "image_url": {
-                    "description": "brand logo",
-                    "type": "string"
                 },
                 "merchant": {
                     "type": "string"

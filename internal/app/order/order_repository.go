@@ -140,10 +140,11 @@ func (repo *orderRepository) GetOrderDetails(ctx context.Context, userId uint32,
 		var rewardEndAt sql.NullTime
 		var rewardStartAt sql.NullTime
 		var brandLogo sql.NullString
+		var brandName sql.NullString
 		err = rows.Scan(&o.ID, &o.UserId, &o.OrderStatus, &o.Billing, &o.CategoryName, &o.Merchant,
 			&o.AccessTradeOrderId, &o.PubCommission, &o.UpdateTime, &cancelledTime, &o.SalesTime, &o.ConfirmedTime, &o.CreatedAt,
 			&rewardAmount, &rewardedAmount, &commissionFee, &immediateRelease, &rewardEndAt, &rewardStartAt,
-			&brandLogo, &o.BrandName)
+			&brandLogo, &brandName)
 		if err != nil {
 			return &model.OrderDetails{}, err
 		}
@@ -154,7 +155,8 @@ func (repo *orderRepository) GetOrderDetails(ctx context.Context, userId uint32,
 		o.ImmediateRelease = immediateRelease.Float64
 		o.RewardEndAt = rewardEndAt.Time
 		o.RewardStartAt = rewardStartAt.Time
-		o.BrandLogo = brandLogo.String
+		o.Brand.Logo = brandLogo.String
+		o.Brand.Name = brandName.String
 	}
 
 	return &o, err
@@ -198,10 +200,11 @@ func (repo *orderRepository) GetOrderHistory(ctx context.Context, since time.Tim
 		var rewardEndAt sql.NullTime
 		var rewardStartAt sql.NullTime
 		var brandLogo sql.NullString
+		var brandName sql.NullString
 		err = rows.Scan(&o.ID, &o.UserId, &o.OrderStatus, &o.Billing, &o.CategoryName, &o.Merchant,
 			&o.AccessTradeOrderId, &o.PubCommission, &o.UpdateTime, &cancelledTime, &o.SalesTime, &o.ConfirmedTime, &o.CreatedAt,
 			&rewardAmount, &rewardedAmount, &commissionFee, &immediateRelease, &rewardEndAt, &rewardStartAt,
-			&brandLogo, &o.BrandName)
+			&brandLogo, &brandName)
 		if err != nil {
 			return []model.OrderDetails{}, err
 		}
@@ -212,7 +215,8 @@ func (repo *orderRepository) GetOrderHistory(ctx context.Context, since time.Tim
 		o.ImmediateRelease = immediateRelease.Float64
 		o.RewardEndAt = rewardEndAt.Time
 		o.RewardStartAt = rewardStartAt.Time
-		o.BrandLogo = brandLogo.String
+		o.Brand.Logo = brandLogo.String
+		o.Brand.Name = brandName.String
 
 		orderHistory = append(orderHistory, o)
 	}

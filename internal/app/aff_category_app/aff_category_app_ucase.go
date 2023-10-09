@@ -15,7 +15,7 @@ type categoryUCase struct {
 	ConvertPrice                interfaces.ConvertPriceHandler
 }
 
-func (c *categoryUCase) GetTopFavouriteAffBrand(ctx context.Context, categoryId uint, userId uint64, page, size int) (dto.AffCampaignAppDtoResponse, error) {
+func (c *categoryUCase) GetMostCommissionAffCampaign(ctx context.Context, categoryId uint, userId uint64, page, size int) (dto.AffCampaignAppDtoResponse, error) {
 	// Get all attributes order by most commission
 	listAffCampaignAttribute, err := c.AffCampAppRepository.GetAllAffCampaignAttribute(ctx, interfaces.ListAffCampaignOrderByMostCommission)
 	if err != nil {
@@ -87,7 +87,7 @@ func (c *categoryUCase) GetTopFavouriteAffBrand(ctx context.Context, categoryId 
 	}, nil
 }
 
-func (c *categoryUCase) GetMostCommissionAffCampaign(ctx context.Context, categoryId uint, userId uint64, page, size int) (dto.AffCampaignAppDtoResponse, error) {
+func (c *categoryUCase) GetTopFavouriteAffBrand(ctx context.Context, categoryId uint, userId uint64, page, size int) (dto.AffCampaignAppDtoResponse, error) {
 	// Get all attributes order by most commission
 	listAffCampaignAttribute, err := c.AffCampAppRepository.GetAllAffCampaignAttribute(ctx, interfaces.ListAffCampaignOrderByMostCommission)
 	if err != nil {

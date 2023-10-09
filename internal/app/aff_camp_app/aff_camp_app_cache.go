@@ -65,6 +65,24 @@ func (c affCampAppCache) GetListAffCampaignByCategoryIdAndBrandIds(ctx context.C
 	return listAffCampaign, nil
 }
 
+func (c affCampAppCache) CountTotalAffCampaignByBrandIds(ctx context.Context, brandIds []uint) (int64, error) {
+	s, _ := json.Marshal(brandIds)
+	key := &caching.Keyer{Raw: keyPrefixAffCampApp + fmt.Sprint("CountTotalAffCampaignByBrandIds_", string(s))}
+	var total int64
+	err := c.Cache.RetrieveItem(key, &total)
+	if err != nil {
+		// cache miss
+		total, err = c.AffCampAppRepository.CountTotalAffCampaignByBrandIds(ctx, brandIds)
+		if err != nil {
+			return total, err
+		}
+		if err = c.Cache.SaveItem(key, total, cacheTimeAffCampApp); err != nil {
+			return total, err
+		}
+	}
+	return total, nil
+}
+
 func (c affCampAppCache) GetAllAffCampaign(ctx context.Context, page, size int) ([]model.AffCampaignLessApp, error) {
 	key := &caching.Keyer{Raw: keyPrefixAffCampApp + fmt.Sprint("GetAllAffCampaign_", page, "_", size)}
 	var listAffCampaign []model.AffCampaignLessApp

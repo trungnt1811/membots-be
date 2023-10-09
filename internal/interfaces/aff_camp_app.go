@@ -15,6 +15,7 @@ type AffCampAppRepository interface {
 	GetAllAffCampaignInCategoryIdOrderByIds(ctx context.Context, categoryId uint, ids []uint64, page, size int) ([]model.AffCampaignLessApp, error)
 	GetAffCampaignById(ctx context.Context, id uint64) (model.AffCampaignApp, error)
 	GetListAffCampaignByBrandIds(ctx context.Context, brandIds []uint, page, size int) ([]model.AffCampaignComBrand, error)
+	CountTotalAffCampaignByBrandIds(ctx context.Context, brandIds []uint) (int64, error)
 	GetListAffCampaignByCategoryIdAndBrandIds(ctx context.Context, categoryId uint, brandIds []uint, page, size int) ([]model.AffCampaignComBrand, error)
 	GetAllAffCampaignAttribute(ctx context.Context, orderBy string) ([]model.AffCampaignAttribute, error)
 	GetListAffCampaignByIds(ctx context.Context, ids []uint64, page, size int) ([]model.AffCampaignComBrand, error)

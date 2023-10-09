@@ -193,7 +193,7 @@ type OrderDetails struct {
 	ImmediateRelease   float64   `json:"immediate_release"`
 	RewardEndAt        time.Time `json:"reward_end_at"`
 	RewardStartAt      time.Time `json:"reward_start_at"`
-	BrandLogo          string    `json:"brand_logo"`
+	Brand              Brand     `json:"brand"`
 }
 
 func BuildOrderStatusQuery(status string) (query string, params interface{}) {
@@ -257,7 +257,7 @@ func (o *OrderDetails) ToOrderDetailsDto() dto.OrderDetailsDto {
 		Billing:                        o.Billing,
 		CategoryName:                   o.CategoryName,
 		Merchant:                       o.Merchant,
-		ImageUrl:                       o.BrandLogo,
+		Brand:                          o.Brand.ToBrandDto(),
 		AccessTradeOrderId:             o.AccessTradeOrderId,
 		PubCommission:                  o.PubCommission,
 		CommissionFee:                  o.CommissionFee,

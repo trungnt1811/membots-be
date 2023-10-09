@@ -60,7 +60,7 @@ func (c *convertPriceHandler) ConvertVndPriceToAstra(ctx context.Context, attrib
 		netValue = netValue / float64(astraPrice)
 	}
 
-	return fmt.Sprintf("%.2f", netValue)
+	return fmt.Sprintf("%.1f", netValue)
 
 }
 

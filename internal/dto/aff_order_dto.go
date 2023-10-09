@@ -17,7 +17,7 @@ type OrderDetailsDto struct {
 	Billing                        float32   `json:"billing"`
 	CategoryName                   string    `json:"category_name"`
 	Merchant                       string    `json:"merchant"`
-	ImageUrl                       string    `json:"image_url"` // brand logo
+	Brand                          BrandDto  `json:"brand"`
 	AccessTradeOrderId             string    `json:"accesstrade_order_id"`
 	PubCommission                  float32   `json:"pub_commission"`
 	CommissionFee                  float64   `json:"commission_fee"`                  // commission fee (in percentage)

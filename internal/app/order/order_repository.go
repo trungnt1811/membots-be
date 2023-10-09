@@ -116,7 +116,7 @@ func (repo *orderRepository) UpdateTrackedClickOrder(trackedId uint64, order *mo
 var selectOrderDetails = "SELECT o.id, o.user_id, o.order_status, o.billing, o.category_name, o.merchant, " +
 	"o.accesstrade_order_id, o.pub_commission, o.update_time, o.cancelled_time, o.sales_time, o.confirmed_time, o.created_at, " +
 	"r.amount, r.rewarded_amount, r.commission_fee, r.immediate_release, r.end_at, r.start_at, " +
-	"b.logo " +
+	"b.logo, b.name AS brand_name " +
 	"FROM aff_order AS o " +
 	"LEFT JOIN aff_reward AS r ON r.accesstrade_order_id = o.accesstrade_order_id " +
 	"LEFT JOIN brand AS b ON b.id = o.brand_id "
@@ -140,10 +140,11 @@ func (repo *orderRepository) GetOrderDetails(ctx context.Context, userId uint32,
 		var rewardEndAt sql.NullTime
 		var rewardStartAt sql.NullTime
 		var brandLogo sql.NullString
+		var brandName sql.NullString
 		err = rows.Scan(&o.ID, &o.UserId, &o.OrderStatus, &o.Billing, &o.CategoryName, &o.Merchant,
 			&o.AccessTradeOrderId, &o.PubCommission, &o.UpdateTime, &cancelledTime, &o.SalesTime, &o.ConfirmedTime, &o.CreatedAt,
 			&rewardAmount, &rewardedAmount, &commissionFee, &immediateRelease, &rewardEndAt, &rewardStartAt,
-			&brandLogo)
+			&brandLogo, &brandName)
 		if err != nil {
 			return &model.OrderDetails{}, err
 		}
@@ -154,7 +155,8 @@ func (repo *orderRepository) GetOrderDetails(ctx context.Context, userId uint32,
 		o.ImmediateRelease = immediateRelease.Float64
 		o.RewardEndAt = rewardEndAt.Time
 		o.RewardStartAt = rewardStartAt.Time
-		o.BrandLogo = brandLogo.String
+		o.Brand.Logo = brandLogo.String
+		o.Brand.Name = brandName.String
 	}
 
 	return &o, err
@@ -198,10 +200,11 @@ func (repo *orderRepository) GetOrderHistory(ctx context.Context, since time.Tim
 		var rewardEndAt sql.NullTime
 		var rewardStartAt sql.NullTime
 		var brandLogo sql.NullString
+		var brandName sql.NullString
 		err = rows.Scan(&o.ID, &o.UserId, &o.OrderStatus, &o.Billing, &o.CategoryName, &o.Merchant,
 			&o.AccessTradeOrderId, &o.PubCommission, &o.UpdateTime, &cancelledTime, &o.SalesTime, &o.ConfirmedTime, &o.CreatedAt,
 			&rewardAmount, &rewardedAmount, &commissionFee, &immediateRelease, &rewardEndAt, &rewardStartAt,
-			&brandLogo)
+			&brandLogo, &brandName)
 		if err != nil {
 			return []model.OrderDetails{}, err
 		}
@@ -212,7 +215,8 @@ func (repo *orderRepository) GetOrderHistory(ctx context.Context, since time.Tim
 		o.ImmediateRelease = immediateRelease.Float64
 		o.RewardEndAt = rewardEndAt.Time
 		o.RewardStartAt = rewardStartAt.Time
-		o.BrandLogo = brandLogo.String
+		o.Brand.Logo = brandLogo.String
+		o.Brand.Name = brandName.String
 
 		orderHistory = append(orderHistory, o)
 	}

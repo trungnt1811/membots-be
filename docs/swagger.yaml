@@ -550,6 +550,8 @@ definitions:
         type: string
       billing:
         type: number
+      brand:
+        $ref: '#/definitions/dto.BrandDto'
       cancelled_time:
         description: don hang bi huy
         type: string
@@ -563,9 +565,6 @@ definitions:
         type: string
       id:
         type: integer
-      image_url:
-        description: brand logo
-        type: string
       merchant:
         type: string
       order_status:
@@ -1524,13 +1523,13 @@ paths:
       description: Get affiliate order list by time range and other filter
       parameters:
       - in: query
-        name: order_status
+        name: orderStatus
         type: string
       - in: query
         name: page
         type: integer
       - in: query
-        name: per_page
+        name: perPage
         type: integer
       - in: query
         name: since
@@ -1539,7 +1538,7 @@ paths:
         name: until
         type: string
       - in: query
-        name: user_id
+        name: userId
         type: integer
       produces:
       - application/json

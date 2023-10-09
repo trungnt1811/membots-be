@@ -54,7 +54,10 @@ func (s affBrandUCase) GetTopFavouriteAffBrand(ctx context.Context, userId uint6
 		return dto.AffCampaignAppDtoResponse{}, err
 	}
 	topFavBrandCheck := make(map[uint]bool)
-	for _, countFavAffBrand := range listCountFavAffBrand {
+	for index, countFavAffBrand := range listCountFavAffBrand {
+		if index >= model.FavoritedBrandsInTop {
+			break
+		}
 		if countFavAffBrand.TotalFavorite > 0 {
 			topFavBrandCheck[countFavAffBrand.BrandId] = true
 		}

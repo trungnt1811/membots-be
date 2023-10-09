@@ -88,6 +88,14 @@ func (r affCampAppRepository) GetListAffCampaignByBrandIds(ctx context.Context, 
 	return listAffCampaign, err
 }
 
+func (r affCampAppRepository) CountTotalAffCampaignByBrandIds(ctx context.Context, brandIds []uint) (int64, error) {
+	var total int64
+	err := r.db.Model(&model.AffCampaignComBrand{}).Joins("Brand").
+		Where("aff_campaign.brand_id IN ? AND stella_status = ?", brandIds, model.StellaStatusInProgress).
+		Count(&total).Error
+	return total, err
+}
+
 func (r affCampAppRepository) GetListAffCampaignByCategoryIdAndBrandIds(ctx context.Context, categoryId uint, brandIds []uint, page, size int) ([]model.AffCampaignComBrand, error) {
 	var listAffCampaign []model.AffCampaignComBrand
 	// Ordering by the order of values in a IN() clause

@@ -127,7 +127,7 @@ func (u *orderUCase) PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*m
 	// Send Kafka message if order status changed
 	if statusChanged {
 		// Order has been approved
-		u.sendOrderUpdateMsg(atOrder.OrderId, order.OrderStatus, atOrder.IsConfirmed)
+		u.sendOrderUpdateMsg(order.UserId, atOrder.OrderId, order.OrderStatus, atOrder.IsConfirmed)
 	}
 
 	// And update tracked item
@@ -274,8 +274,9 @@ func (u *orderUCase) CheckOrderConfirmed() (int, error) {
 				if err != nil {
 					log.LG.Errorf("update order cancelled err: %v", err)
 				}
+
 				// Send msg to Kafka
-				u.sendOrderUpdateMsg(atOrder.OrderId, order.OrderStatus, atOrder.IsConfirmed)
+				u.sendOrderUpdateMsg(order.UserId, atOrder.OrderId, order.OrderStatus, atOrder.IsConfirmed)
 			}
 		}
 	}
@@ -283,9 +284,10 @@ func (u *orderUCase) CheckOrderConfirmed() (int, error) {
 	return updatedCount, nil
 }
 
-func (u *orderUCase) sendOrderUpdateMsg(orderId string, orderStatus string, isConfirmed uint8) {
+func (u *orderUCase) sendOrderUpdateMsg(userId uint, orderId string, orderStatus string, isConfirmed uint8) {
 	// Order has been approved
 	msg := msgqueue.MsgOrderUpdated{
+		UserId:      userId,
 		AtOrderID:   orderId,
 		OrderStatus: orderStatus,
 		IsConfirmed: isConfirmed,

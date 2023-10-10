@@ -15,8 +15,9 @@ const (
 )
 
 type MsgOrderUpdated struct {
+	UserId      uint   `json:"user_id"`
 	AtOrderID   string `json:"accesstrade_order_id"`
-	OrderStatus string `json:"orderStatus"`
+	OrderStatus string `json:"order_status"`
 	IsConfirmed uint8  `json:"is_confirmed"`
 }
 

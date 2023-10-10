@@ -173,7 +173,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	appRouter.GET("/aff-categories/:categoryId", authHandler.CheckUserHeader(), affCategoryHandler.GetListAffBrandByUser)
 
 	affSearchRepo := aff_search.NewAffSearchRepository(db)
-	affSearchUCase := aff_search.NewAffSearchUCase(affSearchRepo)
+	affSearchUCase := aff_search.NewAffSearchUCase(affSearchRepo, convertPriceHandler)
 	affSearchHandler := aff_search.NewAffSearchHandler(affSearchUCase)
 	appRouter.GET("/aff-search", affSearchHandler.AffSearch)
 

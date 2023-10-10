@@ -20,6 +20,7 @@ func (a *affBannerRepository) Search(ctx context.Context, q string, page, size i
 
 	err := a.Db.Table("aff_campaign").
 		Joins("Brand").
+		Preload("Attributes").
 		Where("aff_campaign.stella_status = ? AND (MATCH (aff_campaign.name) AGAINST(? IN NATURAL LANGUAGE MODE) OR "+
 			"MATCH (Brand.name) AGAINST(? IN NATURAL LANGUAGE MODE))", "IN_PROGRESS", fmt.Sprint(q, " *"), fmt.Sprint(q, " *")).
 		Limit(size + 1).

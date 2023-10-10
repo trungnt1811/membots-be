@@ -7,7 +7,8 @@ import (
 )
 
 type affSearchUCase struct {
-	Repo interfaces.AffSearchRepository
+	Repo         interfaces.AffSearchRepository
+	ConvertPrice interfaces.ConvertPriceHandler
 }
 
 func (a *affSearchUCase) Search(ctx context.Context, q string, page, size int) (dto.AffSearchResponseDto, error) {
@@ -21,7 +22,9 @@ func (a *affSearchUCase) Search(ctx context.Context, q string, page, size int) (
 		if i >= size {
 			break
 		}
-		affCampaigns = append(affCampaigns, results.AffCampaign[i].ToDto())
+		tmpCampaign := results.AffCampaign[i]
+		tmpCampaign.StellaMaxCom = a.ConvertPrice.GetStellaMaxCommission(ctx, tmpCampaign.Attributes)
+		affCampaigns = append(affCampaigns, tmpCampaign.ToDto())
 	}
 	nextPage := page
 	if len(results.AffCampaign) > size {
@@ -38,8 +41,9 @@ func (a *affSearchUCase) Search(ctx context.Context, q string, page, size int) (
 	}, nil
 }
 
-func NewAffSearchUCase(repo interfaces.AffSearchRepository) interfaces.AffSearchUCase {
+func NewAffSearchUCase(repo interfaces.AffSearchRepository, convertPrice interfaces.ConvertPriceHandler) interfaces.AffSearchUCase {
 	return &affSearchUCase{
-		Repo: repo,
+		Repo:         repo,
+		ConvertPrice: convertPrice,
 	}
 }

@@ -366,6 +366,8 @@ func (u *orderUCase) CheckOrderListAndSync() (int, error) {
 				if err != nil {
 					log.LG.Errorf("order create error: %v", err)
 				} else {
+					// Order has been created, send kafka msg
+					u.sendOrderUpdateMsg(atOrder.OrderId, order.OrderStatus, atOrder.IsConfirmed)
 					newCreated += 1
 				}
 			}

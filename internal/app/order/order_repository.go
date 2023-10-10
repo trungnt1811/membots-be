@@ -3,6 +3,7 @@ package order
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"time"
 
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
@@ -97,6 +98,33 @@ func (repo *orderRepository) FindOrderByAccessTradeId(atOrderId string) (*model.
 	var order model.AffOrder
 	err := repo.db.First(&order, "accesstrade_order_id = ?", atOrderId).Error
 	return &order, err
+}
+
+func (repo *orderRepository) FindOrderMappedByAccessTradeIds(atOrderIds []string) (map[string]model.AffOrder, error) {
+	var orders []model.AffOrder
+	ret := map[string]model.AffOrder{}
+	err := repo.db.Find(&orders, "accesstrade_order_id IN ?", atOrderIds).Error
+	if err != nil {
+		return nil, err
+	}
+	for idx := range orders {
+		ret[orders[idx].AccessTradeOrderId] = orders[idx]
+	}
+	return ret, nil
+}
+
+func (repo *orderRepository) GetCampaignByTrackedClick(trackedId uint64) (*model.AffCampaign, error) {
+	var tracked model.AffTrackedClick
+
+	err := repo.db.Joins("Campaign").First(&tracked, "aff_tracked_click.id = ?", trackedId).Error
+	if err != nil {
+		return nil, err
+	}
+	if tracked.Campaign == nil {
+		return nil, errors.New("no campaign mapped for click")
+	}
+
+	return tracked.Campaign, nil
 }
 
 func (repo *orderRepository) UpdateTrackedClickOrder(trackedId uint64, order *model.AffOrder) error {

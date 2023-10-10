@@ -15,8 +15,10 @@ type OrderRepository interface {
 	CreateOrder(order *model.AffOrder) error
 	UpdateOrder(updated *model.AffOrder) (int, error)
 	FindOrderByAccessTradeId(atOrderId string) (*model.AffOrder, error)
+	FindOrderMappedByAccessTradeIds(atOrderIds []string) (map[string]model.AffOrder, error)
 	UpdateOrCreateATTransactions([]model.AffTransaction) error
 
+	GetCampaignByTrackedClick(trackedId uint64) (*model.AffCampaign, error)
 	UpdateTrackedClickOrder(trackedId uint64, order *model.AffOrder) error
 	GetOrderDetails(ctx context.Context, userId uint32, orderId uint) (*model.OrderDetails, error)
 	GetOrderHistory(ctx context.Context, since time.Time, userId uint32, status string, page, size int) ([]model.OrderDetails, error)
@@ -32,4 +34,5 @@ type OrderUCase interface {
 	SyncTransactionsByOrder(atOrderId string) (int, error)
 
 	CheckOrderConfirmed() (int, error)
+	CheckOrderListAndSync() (int, error)
 }

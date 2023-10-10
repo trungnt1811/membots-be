@@ -75,6 +75,25 @@ func (repo *MockOrderRepository) FindOrderByAccessTradeId(atOrderId string) (*mo
 	return found, nil
 }
 
+func (repo *MockOrderRepository) GetCampaignByTrackedClick(trackedId uint64) (*model.AffCampaign, error) {
+	return &model.AffCampaign{
+		ID:            14,
+		AccessTradeId: "4751584435713464237",
+		Name:          "Shopee Việt Nam Smartlink cho tất cả thiết bị ",
+	}, nil
+}
+
+func (repo *MockOrderRepository) FindOrderMappedByAccessTradeIds(atOrderIds []string) (map[string]model.AffOrder, error) {
+	ret := map[string]model.AffOrder{}
+	for idx, order := range repo.Orders {
+		if order.AccessTradeOrderId == atOrderIds[0] {
+			ret[order.AccessTradeOrderId] = repo.Orders[idx]
+		}
+	}
+
+	return ret, nil
+}
+
 func (repo *MockOrderRepository) UpdateTrackedClickOrder(trackedId uint64, order *model.AffOrder) error {
 	return nil
 }

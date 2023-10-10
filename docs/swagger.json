@@ -1206,7 +1206,7 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "name": "orderStatus",
+                        "name": "order_status",
                         "in": "query"
                     },
                     {
@@ -1216,7 +1216,7 @@
                     },
                     {
                         "type": "integer",
-                        "name": "perPage",
+                        "name": "per_page",
                         "in": "query"
                     },
                     {
@@ -1231,7 +1231,7 @@
                     },
                     {
                         "type": "integer",
-                        "name": "userId",
+                        "name": "user_id",
                         "in": "query"
                     }
                 ],

@@ -82,3 +82,10 @@ func (s *OrderUcaseTestSuite) TestCheckOrderConfirmed() {
 	s.NoError(err)
 	s.Equal(1, updatedCount)
 }
+
+func (s *OrderUcaseTestSuite) TestCheckOrderListAndSync() {
+	// run check order with one mocked order not synced
+	createdCount, err := s.uCase.CheckOrderListAndSync()
+	s.NoError(err)
+	s.Equal(1, createdCount)
+}

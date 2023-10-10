@@ -39,4 +39,10 @@ func RegisterCronJobs(config *conf.Configuration, db *gorm.DB) {
 	}()
 	notiWorker := NewNotiScheduler(appNotiQueue, rewardRepo, orderRepo)
 	go notiWorker.StartNotiDailyReward()
+
+	orderListWorker := NewOrderListWorker(rdc, orderUCase)
+	go func() {
+		// Run order list sync
+		orderListWorker.RunJob()
+	}()
 }

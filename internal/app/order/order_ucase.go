@@ -312,3 +312,77 @@ func (u *orderUCase) sendOrderUpdateMsg(userId uint, orderId string, orderStatus
 		}
 	}
 }
+
+func (u *orderUCase) CheckOrderListAndSync() (int, error) {
+	mTime := time.Now().Add(-time.Duration(15 * time.Hour * 24))
+	since, until := util.GetSinceUntilTime(mTime, 15)
+
+	page := 1
+	limit := 20
+	newCreated := 0
+	for true {
+		resp, err := u.ATRepo.QueryOrders(types.ATOrderQuery{
+			Since: since,
+			Until: until,
+		}, page, limit)
+		if err != nil {
+			return newCreated, fmt.Errorf("query order list error: %v", err)
+		}
+
+		if len(resp.Data) == 0 {
+			// no new orders
+			break
+		}
+
+		atOrderIds := make([]string, len(resp.Data))
+		for idx, order := range resp.Data {
+			atOrderIds[idx] = order.OrderId
+		}
+
+		mappedOrders, err := u.Repo.FindOrderMappedByAccessTradeIds(atOrderIds)
+		if err != nil {
+			return newCreated, fmt.Errorf("find orders error: %v", err)
+		}
+
+		// If there is some new order
+		if len(mappedOrders) != len(atOrderIds) {
+			for idx := range resp.Data {
+				atOrder := resp.Data[idx]
+				if _, ok := mappedOrders[atOrder.OrderId]; ok {
+					continue
+				}
+				// New at order, create new one
+				userId, trackedId := util.ParseUTMContent(atOrder.UTMContent)
+				campaign, err := u.Repo.GetCampaignByTrackedClick(trackedId)
+				var campaignId uint
+				var brandId uint
+				if err != nil {
+					log.LG.Errorf("order campaign error: %v", err)
+				} else {
+					campaignId = campaign.ID
+					brandId = campaign.BrandId
+				}
+
+				order := model.NewOrderFromATOrder(userId, campaignId, brandId, &atOrder)
+				err = u.Repo.CreateOrder(order)
+				if err != nil {
+					log.LG.Errorf("order create error: %v", err)
+				} else {
+					// Order has been created, send kafka msg
+					u.sendOrderUpdateMsg(atOrder.OrderId, order.OrderStatus, atOrder.IsConfirmed)
+					newCreated += 1
+				}
+			}
+		}
+
+		// No new order, continue to next page
+		if page >= resp.Page {
+			// No new page
+			break
+		}
+		// Process new page
+		page += 1
+	}
+
+	return newCreated, nil
+}

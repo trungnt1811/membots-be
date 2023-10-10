@@ -50,7 +50,7 @@ func (s homePageUCase) GetHomePage(ctx context.Context, userId uint64) (dto.Home
 	}
 
 	p1 := promise.New(func(resolve func([]model.UserViewAffCampComBrand), reject func(error)) {
-		campaign, err := s.UserViewAffCampRepository.GetListUserViewAffCampByUserId(ctx, userId, 1, 7)
+		campaign, err := s.UserViewAffCampRepository.GetListUserViewAffCampByUserId(ctx, userId, 1, 7-1)
 		if err != nil {
 			reject(err)
 		} else {
@@ -59,7 +59,7 @@ func (s homePageUCase) GetHomePage(ctx context.Context, userId uint64) (dto.Home
 	})
 
 	p2 := promise.New(func(resolve func([]model.AffCampComFavBrand), reject func(error)) {
-		campaign, err := s.AffBrandRepository.GetListFavAffBrandByUserId(ctx, userId, 1, 7)
+		campaign, err := s.AffBrandRepository.GetListFavAffBrandByUserId(ctx, userId, 1, 7-1)
 		if err != nil {
 			reject(err)
 		} else {
@@ -83,7 +83,7 @@ func (s homePageUCase) GetHomePage(ctx context.Context, userId uint64) (dto.Home
 			return
 		}
 
-		campaign, err := s.AffCampAppRepository.GetListAffCampaignByBrandIds(ctx, brandIds, 1, 12)
+		campaign, err := s.AffCampAppRepository.GetListAffCampaignByBrandIds(ctx, brandIds, 1, 12-1)
 		if err != nil {
 			reject(err)
 		} else {
@@ -93,7 +93,7 @@ func (s homePageUCase) GetHomePage(ctx context.Context, userId uint64) (dto.Home
 
 	p4 := promise.New(func(resolve func([]model.AffCampaignComBrand), reject func(error)) {
 		// Get list aff campaign by ids
-		campaign, err := s.AffCampAppRepository.GetListAffCampaignByIds(ctx, listAffCampaignId, 1, 7)
+		campaign, err := s.AffCampAppRepository.GetListAffCampaignByIds(ctx, listAffCampaignId, 1, 7-1)
 		if err != nil {
 			reject(err)
 		} else {

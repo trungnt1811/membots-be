@@ -54,7 +54,10 @@ func (s affBrandUCase) GetTopFavouriteAffBrand(ctx context.Context, userId uint6
 		return dto.AffCampaignAppDtoResponse{}, err
 	}
 	topFavBrandCheck := make(map[uint]bool)
-	for _, countFavAffBrand := range listCountFavAffBrand {
+	for index, countFavAffBrand := range listCountFavAffBrand {
+		if index >= model.FavoritedBrandsInTop {
+			break
+		}
 		if countFavAffBrand.TotalFavorite > 0 {
 			topFavBrandCheck[countFavAffBrand.BrandId] = true
 		}
@@ -101,6 +104,13 @@ func (s affBrandUCase) GetTopFavouriteAffBrand(ctx context.Context, userId uint6
 			[]model.AffCampaignAttribute{campaignIdAtrributeMapping[uint64(campaign.ID)]},
 		)
 	}
+
+	// Count total
+	total, err := s.AffCampAppRepository.CountTotalAffCampaignByBrandIds(ctx, brandIds)
+	if err != nil {
+		return dto.AffCampaignAppDtoResponse{}, err
+	}
+
 	nextPage := page
 	if len(listFavAffBrand) > size {
 		nextPage += 1
@@ -109,6 +119,7 @@ func (s affBrandUCase) GetTopFavouriteAffBrand(ctx context.Context, userId uint6
 		NextPage: nextPage,
 		Page:     page,
 		Size:     size,
+		Total:    total,
 		Data:     listAffCampaignComBrandDto,
 	}, nil
 }

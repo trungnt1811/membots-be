@@ -116,7 +116,7 @@ func (repo *orderRepository) FindOrderMappedByAccessTradeIds(atOrderIds []string
 func (repo *orderRepository) GetCampaignByTrackedClick(trackedId uint64) (*model.AffCampaign, error) {
 	var tracked model.AffTrackedClick
 
-	err := repo.db.Preload("Campaign").First(&tracked, "id = ?", trackedId).Error
+	err := repo.db.Joins("Campaign").First(&tracked, "aff_tracked_click.id = ?", trackedId).Error
 	if err != nil {
 		return nil, err
 	}

@@ -101,6 +101,12 @@ func (r *rewardRepository) GetWithdrawById(ctx context.Context, userId uint32, w
 	return withdraw, err
 }
 
+func (r *rewardRepository) GetWithdrawByShippingRequest(ctx context.Context, shippingReqId string) (model.RewardWithdraw, error) {
+	var withdraw model.RewardWithdraw
+	err := r.db.Model(&model.RewardWithdraw{}).Where("shipping_request_id = ?", shippingReqId).First(&withdraw).Error
+	return withdraw, err
+}
+
 func (r *rewardRepository) GetWithdrawHistory(ctx context.Context, userId uint32, page, size int) ([]model.RewardWithdraw, error) {
 	var withdrawHistory []model.RewardWithdraw
 	offset := (page - 1) * size

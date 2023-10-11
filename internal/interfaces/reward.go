@@ -13,6 +13,7 @@ type RewardRepository interface {
 	UpdateRewardByAtOrderId(atOrderId string, updates *model.Reward) error
 	SaveRewardWithdraw(ctx context.Context, rewardClaim *model.RewardWithdraw, rewards []model.Reward, orderRewardHistories []model.OrderRewardHistory, completeRwOrders []string) error
 	UpdateWithdrawShippingStatus(ctx context.Context, shippingReqId, txHash, status string) error
+	GetWithdrawByShippingRequest(ctx context.Context, shippingReqId string) (model.RewardWithdraw, error)
 	GetWithdrawById(ctx context.Context, userId uint32, withdrawId uint) (model.RewardWithdraw, error)
 	GetWithdrawHistory(ctx context.Context, userId uint32, page, size int) ([]model.RewardWithdraw, error)
 	CountWithdrawal(ctx context.Context, userId uint32) (int64, error)

@@ -42,6 +42,6 @@ func RegisConsumers(config *conf.Configuration, db *gorm.DB) {
 		}
 	}()
 
-	shippingReceiptListener := NewShippingReceiptListener(rewardRepo, shippingReceiptConsumer)
+	shippingReceiptListener := NewShippingReceiptListener(rewardRepo, appNotiQueue, shippingReceiptConsumer)
 	shippingReceiptListener.ListenShippingReceipt()
 }

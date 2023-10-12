@@ -122,12 +122,16 @@ func (old *AffOrder) CheckStatusChanged(newUpdate *AffOrder) bool {
 	}
 
 	if old.OrderStatus == OrderStatusRewarding {
-		if newUpdate.OrderStatus == OrderStatusApproved {
+		if newUpdate.OrderStatus == OrderStatusInitial || newUpdate.OrderStatus == OrderStatusPending || newUpdate.OrderStatus == OrderStatusApproved {
 			return false
 		}
 	}
 
 	if old.OrderStatus == OrderStatusComplete {
+		return false
+	}
+
+	if old.OrderStatus == newUpdate.OrderStatus {
 		return false
 	}
 

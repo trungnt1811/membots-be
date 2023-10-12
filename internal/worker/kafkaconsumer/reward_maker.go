@@ -20,8 +20,6 @@ import (
 	"gorm.io/gorm"
 )
 
-var BeforeRewardingStatuses = []string{model.OrderStatusInitial, model.OrderStatusPending, model.OrderStatusApproved}
-
 type RewardMaker struct {
 	rewardRepo   interfaces.RewardRepository
 	orderRepo    interfaces.OrderRepository
@@ -103,6 +101,7 @@ func (u *RewardMaker) processOrderUpdateMsg(ctx context.Context, msg msgqueue.Ms
 		return err
 	}
 
+	var BeforeRewardingStatuses = []string{model.OrderStatusInitial, model.OrderStatusPending, model.OrderStatusApproved}
 	if slices.Contains(BeforeRewardingStatuses, order.OrderStatus) {
 		currentRw, err := u.rewardRepo.GetRewardByAtOrderId(ctx, newAtOrderId)
 		if err != nil {
@@ -150,7 +149,11 @@ func (u *RewardMaker) processOrderUpdateMsg(ctx context.Context, msg msgqueue.Ms
 		}
 	}
 
-	return u.notiOrderStatus(order.UserId, order.ID, order.OrderStatus, newAtOrderId, order.Merchant, rewardAmount)
+	if msg.OrderStatus != order.OrderStatus {
+		return u.notiOrderStatus(order.UserId, order.ID, order.OrderStatus, newAtOrderId, order.Merchant, rewardAmount)
+	}
+
+	return nil
 }
 
 func (u *RewardMaker) notiOrderStatus(userId uint, orderId uint, orderStatus, atOrderId, merchant string, rewardAmount float64) error {

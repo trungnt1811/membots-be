@@ -7,6 +7,8 @@ const (
 	NotiCategoryAffiliate           = "affiliate"
 	NotiCategorySystem              = "system"
 	NotiDataTypeCouponDetail        = "coupon-detail"
+	NotiCategoryWallet              = "wallet"
+	NotiDataTypeTxDetail            = "tx-detail"
 	NotiDataTypeUrl                 = "url"
 	NotiDataKeyType                 = "type"
 	NotiDataKeyId                   = "id"
@@ -47,6 +49,13 @@ func GetDailyRewardNotiData() map[string]string {
 	data := make(map[string]string)
 	data[NotiDataKeyType] = NotiDataTypeUrl
 	data[NotiDataKeyId] = NotiDataDeepLinkAffWallet
+	return data
+}
+
+func GetTxDetailsNotiData(txHash string) map[string]string {
+	data := make(map[string]string)
+	data[NotiDataKeyType] = NotiDataTypeTxDetail
+	data[NotiDataKeyId] = txHash
 	return data
 }
 

@@ -53,7 +53,9 @@ func (ucase *StatisticUCase) GetSummaryByTimeRange(d dto.TimeRange) (*dto.Statis
 			} else {
 				customers[order.UserId] = prev + 1
 			}
-			rev += float64(order.PubCommission)
+			if order.OrderStatus == model.OrderStatusPending || order.OrderStatus == model.OrderStatusApproved || order.OrderStatus == model.OrderStatusRewarding || order.OrderStatus == model.OrderStatusComplete {
+				rev += float64(order.PubCommission)
+			}
 		}
 
 		offset += BATCH_SIZE
@@ -121,7 +123,9 @@ func (ucase *StatisticUCase) GetCampaignSummaryByTimeRange(campaignId uint, d dt
 			} else {
 				ordersByStatus[order.OrderStatus] = 1
 			}
-			rev += float64(order.PubCommission)
+			if order.OrderStatus == model.OrderStatusPending || order.OrderStatus == model.OrderStatusApproved || order.OrderStatus == model.OrderStatusRewarding || order.OrderStatus == model.OrderStatusComplete {
+				rev += float64(order.PubCommission)
+			}
 		}
 
 		offset += BATCH_SIZE

@@ -2271,6 +2271,12 @@ const docTemplate = `{
                 "num_of_orders": {
                     "type": "integer"
                 },
+                "orders_by_status": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "integer"
+                    }
+                },
                 "total_asa_cashback": {
                     "$ref": "#/definitions/dto.Cashback"
                 },

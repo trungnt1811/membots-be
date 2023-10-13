@@ -5,6 +5,7 @@ import (
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
+	"github.com/astraprotocol/affiliate-system/internal/model"
 	"github.com/astraprotocol/affiliate-system/internal/util/log"
 )
 
@@ -89,6 +90,14 @@ func (ucase *StatisticUCase) GetCampaignSummaryByTimeRange(campaignId uint, d dt
 	offset := int(0)
 	customers := map[uint]int{}
 	var rev float64 = 0
+	ordersByStatus := map[string]int{
+		model.OrderStatusPending:   0,
+		model.OrderStatusApproved:  0,
+		model.OrderStatusRejected:  0,
+		model.OrderStatusCancelled: 0,
+		model.OrderStatusRewarding: 0,
+		model.OrderStatusComplete:  0,
+	}
 	for {
 		if offset >= int(count) {
 			break
@@ -107,6 +116,11 @@ func (ucase *StatisticUCase) GetCampaignSummaryByTimeRange(campaignId uint, d dt
 			} else {
 				customers[order.UserId] = prev + 1
 			}
+			if _, ok := ordersByStatus[order.OrderStatus]; ok {
+				ordersByStatus[order.OrderStatus] += 1
+			} else {
+				ordersByStatus[order.OrderStatus] = 1
+			}
 			rev += float64(order.PubCommission)
 		}
 
@@ -116,6 +130,7 @@ func (ucase *StatisticUCase) GetCampaignSummaryByTimeRange(campaignId uint, d dt
 	resp.NumOfCustomers = len(customers)
 	resp.NumOfOrders = int(count)
 	resp.TotalRevenue = rev
+	resp.OrdersByStatus = ordersByStatus
 
 	total, err := ucase.Repo.CalculateCashbackInRange(campaignId, d)
 	if err != nil {

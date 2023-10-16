@@ -16,6 +16,8 @@ type RewardSummary struct {
 	WithdrawableReward float64 `json:"withdrawable_reward"`
 	// amount of reward still locked
 	PendingRewardAmount float64 `json:"pending_reward_amount"`
+	// number of orders still waiting for approve
+	WaitForApproveOrder int64 `json:"wait_for_approve_order"`
 }
 
 type RewardDto struct {

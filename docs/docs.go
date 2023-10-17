@@ -1214,7 +1214,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "name": "orderStatus",
+                        "name": "order_status",
                         "in": "query"
                     },
                     {
@@ -1224,7 +1224,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "name": "perPage",
+                        "name": "per_page",
                         "in": "query"
                     },
                     {
@@ -1239,7 +1239,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "name": "userId",
+                        "name": "user_id",
                         "in": "query"
                     }
                 ],

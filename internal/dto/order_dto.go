@@ -99,3 +99,7 @@ type AffOrder struct {
 	UTMContent         string           `json:"utm_content"`
 	Transactions       []AffTransaction `json:"transactions"`
 }
+
+type SyncOrderRewardPayload struct {
+	AccessTradeOrderId string `json:"accesstrade_order_id"`
+}

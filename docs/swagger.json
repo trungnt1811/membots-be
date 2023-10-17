@@ -1206,7 +1206,7 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "name": "order_status",
+                        "name": "orderStatus",
                         "in": "query"
                     },
                     {
@@ -1216,7 +1216,7 @@
                     },
                     {
                         "type": "integer",
-                        "name": "per_page",
+                        "name": "perPage",
                         "in": "query"
                     },
                     {
@@ -1231,7 +1231,7 @@
                     },
                     {
                         "type": "integer",
-                        "name": "user_id",
+                        "name": "userId",
                         "in": "query"
                     }
                 ],
@@ -1289,6 +1289,57 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/dto.AffOrder"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "424": {
+                        "description": "Failed Dependency",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/console/orders/sync-reward": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Recalculate order reward (only if order is not yet rewarding, meaning that order status must be one of 'initial','pending','approved')",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "console"
+                ],
+                "summary": "Recalculate order reward",
+                "parameters": [
+                    {
+                        "description": "accesstrade order id to sync, required",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.SyncOrderRewardPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ResponseMessage"
                         }
                     },
                     "400": {
@@ -2485,6 +2536,10 @@
                     "description": "total amount of reward already withdrawn",
                     "type": "number"
                 },
+                "wait_for_approve_order": {
+                    "description": "number of orders still waiting for approve",
+                    "type": "integer"
+                },
                 "withdrawable_reward": {
                     "description": "amount of reward can be withdrawn at the moment",
                     "type": "number"
@@ -2604,6 +2659,14 @@
                     "type": "string"
                 },
                 "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.SyncOrderRewardPayload": {
+            "type": "object",
+            "properties": {
+                "accesstrade_order_id": {
                     "type": "string"
                 }
             }

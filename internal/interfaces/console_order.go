@@ -13,4 +13,5 @@ type ConsoleOrderRepository interface {
 type ConsoleOrderUcase interface {
 	GetOrderList(q *dto.OrderListQuery) (*dto.OrderListResponse, error)
 	GetOrderByOrderId(orderId string) (*dto.AffOrder, error)
+	SyncOrderReward(atOrderId string) error
 }

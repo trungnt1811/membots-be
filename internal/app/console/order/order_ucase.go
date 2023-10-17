@@ -1,20 +1,33 @@
 package consoleOrder
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"math"
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
+	"github.com/astraprotocol/affiliate-system/internal/infra/msgqueue"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
+	"github.com/astraprotocol/affiliate-system/internal/model"
+	"github.com/astraprotocol/affiliate-system/internal/util/log"
+	"github.com/segmentio/kafka-go"
+	"golang.org/x/exp/slices"
 )
 
 type ConsoleOrderUcase struct {
-	Repo interfaces.ConsoleOrderRepository
+	Repo                interfaces.ConsoleOrderRepository
+	OrderRepo           interfaces.OrderRepository
+	OrderUpdateProducer *msgqueue.QueueWriter
 }
 
-func NewConsoleOrderUcase(repo interfaces.ConsoleOrderRepository) *ConsoleOrderUcase {
+func NewConsoleOrderUcase(repo interfaces.ConsoleOrderRepository,
+	orderRepo interfaces.OrderRepository,
+	orderUpdateProducer *msgqueue.QueueWriter) *ConsoleOrderUcase {
 	return &ConsoleOrderUcase{
-		Repo: repo,
+		Repo:                repo,
+		OrderRepo:           orderRepo,
+		OrderUpdateProducer: orderUpdateProducer,
 	}
 }
 
@@ -66,4 +79,49 @@ func (u *ConsoleOrderUcase) GetOrderByOrderId(orderId string) (*dto.AffOrder, er
 	}
 
 	return &affOrder, nil
+}
+
+func (u *ConsoleOrderUcase) SyncOrderReward(atOrderId string) error {
+	order, err := u.OrderRepo.FindOrderByAccessTradeId(atOrderId)
+	if err != nil {
+		return err
+	}
+
+	validStatuses := []string{model.OrderStatusInitial, model.OrderStatusPending, model.OrderStatusApproved}
+	if !slices.Contains(validStatuses, order.OrderStatus) {
+		return fmt.Errorf("cannot sync reward amount if order not in status %v", validStatuses)
+	}
+
+	u.sendOrderUpdateMsg(order.UserId, order.AccessTradeOrderId, order.OrderStatus, order.IsConfirmed)
+
+	return nil
+}
+
+func (u *ConsoleOrderUcase) sendOrderUpdateMsg(userId uint, orderId string, orderStatus string, isConfirmed uint8) {
+	// Order has been approved
+	msg := msgqueue.MsgOrderUpdated{
+		UserId:      userId,
+		AtOrderID:   orderId,
+		OrderStatus: orderStatus,
+		IsConfirmed: isConfirmed,
+	}
+	msgValue, err := json.Marshal(&msg)
+	if err != nil {
+		log.LG.Errorf("marshall order approved error: %v", err)
+	} else {
+		if u.OrderUpdateProducer == nil {
+			log.LG.Error("produce is nil")
+		} else {
+			err = u.OrderUpdateProducer.WriteMessages(
+				context.Background(),
+				kafka.Message{
+					Key:   []byte(orderId),
+					Value: msgValue,
+				},
+			)
+			if err != nil {
+				log.LG.Errorf("sync order reward failed: %v", err)
+			}
+		}
+	}
 }

@@ -111,6 +111,27 @@ func (repo *campaignRepository) SaveATCampaign(atCampaign *types.ATCampaign) (*m
 	return &newCampaign, nil
 }
 
+func (repo *campaignRepository) QueryActiveIds() ([]uint, error) {
+	var ids []uint
+	tx := repo.Db.Table("aff_campaign").Select("id").Where("stella_status = ?", model.StellaStatusInProgress)
+	err := tx.Scan(&ids).Error
+	return ids, err
+}
+
+func (repo *campaignRepository) DeactivateCampaign(campaignId uint) (*model2.AffCampaign, error) {
+	var campaign model.AffCampaign
+	err := repo.Db.First(&campaign, "id = ?", campaignId).Error
+	if err != nil {
+		return nil, err
+	}
+	campaign.StellaStatus = model.StellaStatusEnded
+	err = repo.Db.Model(&campaign).Where("id = ?", campaignId).Update("stella_status", campaign.StellaStatus).Error
+	if err != nil {
+		return nil, err
+	}
+	return &campaign, nil
+}
+
 func (repo *campaignRepository) GetCampaignLessById(campaignId uint) (model2.AffCampaignLess, error) {
 	var data model2.AffCampaignLess
 	err := repo.Db.

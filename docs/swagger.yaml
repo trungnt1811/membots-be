@@ -493,6 +493,10 @@ definitions:
         type: integer
       num_of_orders:
         type: integer
+      orders_by_status:
+        additionalProperties:
+          type: integer
+        type: object
       total_asa_cashback:
         $ref: '#/definitions/dto.Cashback'
       total_revenue:

@@ -14,8 +14,9 @@ type StatisticSummaryResponse struct {
 }
 
 type CampaignSummaryResponse struct {
-	NumOfOrders      int      `json:"num_of_orders"`
-	NumOfCustomers   int      `json:"num_of_customers"`
-	TotalRevenue     float64  `json:"total_revenue"`
-	TotalASACashback Cashback `json:"total_asa_cashback"`
+	OrdersByStatus   map[string]int `json:"orders_by_status"`
+	NumOfOrders      int            `json:"num_of_orders"`
+	NumOfCustomers   int            `json:"num_of_customers"`
+	TotalRevenue     float64        `json:"total_revenue"`
+	TotalASACashback Cashback       `json:"total_asa_cashback"`
 }

@@ -33,6 +33,17 @@ func (u *accessTradeUCase) QueryAndSaveCampaigns(onlyApproval bool) (int, int, e
 	totalSynced := 0
 	totalUpdated := 0
 
+	// First query all active campaign ids
+	ids, err := u.CampaignRepo.QueryActiveIds()
+	if err != nil {
+		log.LG.Errorf("query active campaigns error: %v", err)
+		return 0, 0, err
+	}
+	checkedCampaignIds := map[uint]bool{}
+	for _, id := range ids {
+		checkedCampaignIds[id] = false
+	}
+
 	for true {
 		atResp, err := u.Repo.QueryCampaigns(true, page, limit)
 		if err != nil {
@@ -54,6 +65,7 @@ func (u *accessTradeUCase) QueryAndSaveCampaigns(onlyApproval bool) (int, int, e
 		}
 
 		for _, atApproved := range atResp.Data {
+			// Take the saved campaign for update
 			oldCampaign, ok := savedCampaigns[atApproved.Id]
 			if !ok {
 				// Not yet save, insert this new campaign
@@ -69,6 +81,9 @@ func (u *accessTradeUCase) QueryAndSaveCampaigns(onlyApproval bool) (int, int, e
 					log.LG.Errorf("send msg discord error: %v", err)
 				}
 			} else {
+				// Mark this campaign as checked
+				checkedCampaignIds[oldCampaign.ID] = true
+
 				// Update campaign if changed
 				campChanges, descriptionChanges := campaign.CheckCampaignChanged(&oldCampaign, &atApproved)
 				err := u.CampaignRepo.UpdateCampaignByID(oldCampaign.ID, campChanges, descriptionChanges)
@@ -100,6 +115,25 @@ func (u *accessTradeUCase) QueryAndSaveCampaigns(onlyApproval bool) (int, int, e
 			break
 		}
 		page += 1
+	}
+	// Mark remain unchecked campaigns as ended
+	for id, checked := range checkedCampaignIds {
+		if !checked {
+			// Mark campaign as ended
+			campaign, err := u.CampaignRepo.DeactivateCampaign(id)
+			if err != nil {
+				log.LG.Errorf("deactivate campaign '%d' error: %v", id, err)
+				continue
+			}
+
+			// Update aff_link active status when campaign ended
+			err = u.CampaignRepo.DeactivateCampaignLinks(id)
+			if err != nil {
+				log.LG.Errorf("deactivate campaign '%d' links error: %v", id, err)
+				continue
+			}
+			_ = u.sendMsgCampaignUpdated(campaign, map[string]any{"stella_status": model.StellaStatusEnded}, map[string]any{})
+		}
 	}
 
 	return totalSynced, totalUpdated, nil

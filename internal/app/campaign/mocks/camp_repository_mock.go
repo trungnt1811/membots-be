@@ -23,6 +23,19 @@ func (repo *CampaignRepoMock) GetCampaignById(q map[string]any) ([]model.AffCamp
 	}, nil
 }
 
+func (repo *CampaignRepoMock) QueryActiveIds() ([]uint, error) {
+	return []uint{}, nil
+}
+
+func (repo *CampaignRepoMock) DeactivateCampaign(campaignId uint) (*model.AffCampaign, error) {
+	return &model.AffCampaign{
+		ID:            14,
+		AccessTradeId: "4751584435713464237",
+		Name:          "Shopee Việt Nam Smartlink cho tất cả thiết bị ",
+		StellaStatus:  model.StellaStatusEnded,
+	}, nil
+}
+
 func (repo *CampaignRepoMock) GetCampaignLessById(campaignId uint) (model.AffCampaignLess, error) {
 	return model.AffCampaignLess{}, nil
 }

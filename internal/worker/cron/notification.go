@@ -109,7 +109,7 @@ func (n *NotiScheduler) notiRewardInDay() func() {
 				}
 
 				if totalRewardInDay > 0 {
-					notiAmount := util.RoundFloat(totalRewardInDay, 2)
+					notiAmount := util.FormatNotiAmt(totalRewardInDay)
 					msg := msgqueue.AppNotiMsg{
 						Title:    fmt.Sprintf("Nhận %v ASA từ hoàn mua sắm", notiAmount),
 						Body:     fmt.Sprintf("Bạn nhận được %v ASA từ %v đơn hàng hoàn mua sắm hôm nay 🤗", notiAmount, orderCount),

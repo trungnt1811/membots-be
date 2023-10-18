@@ -9,6 +9,7 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/infra/msgqueue"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/model"
+	"github.com/astraprotocol/affiliate-system/internal/util"
 	"github.com/astraprotocol/affiliate-system/internal/util/log"
 	"github.com/segmentio/kafka-go"
 )
@@ -103,10 +104,11 @@ func (u *ShippingReceiptListener) commitDeliveryReceiptMsg(message kafka.Message
 }
 
 func (u *ShippingReceiptListener) notiWithdrawSuccess(userId uint, txHash string, amount float64) error {
+	notiAmt := util.FormatNotiAmt(amount)
 	notiMsg := msgqueue.AppNotiMsg{
 		Category: msgqueue.NotiCategoryWallet,
-		Title:    fmt.Sprintf("Rút thành công %v ASA từ hoàn mua sắm", amount),
-		Body:     fmt.Sprintf("%v ASA vừa được rút về ví chính từ ví hoàn mua sắm thành công 👌🏻", amount),
+		Title:    fmt.Sprintf("Rút thành công %v ASA từ hoàn mua sắm", notiAmt),
+		Body:     fmt.Sprintf("%v ASA vừa được rút về ví chính từ ví hoàn mua sắm thành công 👌🏻", notiAmt),
 		UserId:   userId,
 		Data:     msgqueue.GetTxDetailsNotiData(txHash),
 	}

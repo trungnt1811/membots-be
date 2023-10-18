@@ -646,6 +646,9 @@ definitions:
       total_withdrew_amount:
         description: total amount of reward already withdrawn
         type: number
+      wait_for_approve_order:
+        description: number of orders still waiting for approve
+        type: integer
       withdrawable_reward:
         description: amount of reward can be withdrawn at the moment
         type: number
@@ -725,6 +728,11 @@ definitions:
       thumbnail:
         type: string
       url:
+        type: string
+    type: object
+  dto.SyncOrderRewardPayload:
+    properties:
+      accesstrade_order_id:
         type: string
     type: object
   types.RedeemRequestPayload:
@@ -1593,6 +1601,39 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Get affiliate order by order id
+      tags:
+      - console
+  /api/v1/console/orders/sync-reward:
+    post:
+      consumes:
+      - application/json
+      description: Recalculate order reward (only if order is not yet rewarding, meaning
+        that order status must be one of 'initial','pending','approved')
+      parameters:
+      - description: accesstrade order id to sync, required
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SyncOrderRewardPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ResponseMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Recalculate order reward
       tags:
       - console
   /api/v1/console/summary:

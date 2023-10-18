@@ -60,6 +60,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 
 	// SECTION: Kafka Queue
 	userViewAffCampQueue := msgqueue.NewKafkaProducer(msgqueue.KAFKA_TOPIC_USER_VIEW_AFF_CAMP)
+	orderUpdateProducer := msgqueue.NewKafkaProducer(msgqueue.KAFKA_TOPIC_AFF_ORDER_UPDATE)
 
 	tikiClient := exchange.NewTikiClient(exchange.TikiClientConfig{
 		BaseUrl: config.Tiki.ApiUrl,
@@ -76,7 +77,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 
 	// SECTION: Order Module and link
 	orderRepo := order.NewOrderRepository(db)
-	orderUcase := order.NewOrderUCase(orderRepo, atRepo, msgqueue.NewKafkaProducer(msgqueue.KAFKA_TOPIC_AFF_ORDER_UPDATE))
+	orderUcase := order.NewOrderUCase(orderRepo, atRepo, orderUpdateProducer)
 	orderHandler := order.NewOrderHandler(orderUcase)
 	orderRoute := v1.Group("/order")
 	orderRoute.POST("/post-back", orderHandler.PostBackOrderHandle)
@@ -110,13 +111,14 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	consoleRouter.POST("/aff-banner", consoleBannerHandler.AddAffBanner)
 
 	consoleOrderRepo := consoleOrder.NewConsoleOrderRepository(db)
-	consoleOrderUcase := consoleOrder.NewConsoleOrderUcase(consoleOrderRepo)
+	consoleOrderUcase := consoleOrder.NewConsoleOrderUcase(consoleOrderRepo, orderRepo, orderUpdateProducer)
 	consoleOrderHandler := consoleOrder.NewConsoleOrderHandler(consoleOrderUcase)
 
 	// SECTION: Console Order
 	consoleOrderRouter := consoleRouter.Group("orders", authHandler.CheckAdminHeader())
 	consoleOrderRouter.GET("", consoleOrderHandler.GetOrderList)
 	consoleOrderRouter.GET("/:orderId", consoleOrderHandler.GetOrderByOrderId)
+	consoleOrderRouter.POST("/sync-reward", consoleOrderHandler.SyncOrderReward)
 
 	// SECTION: Console Summary
 	statisticRepo := statistic.NewStatisticRepository(db)

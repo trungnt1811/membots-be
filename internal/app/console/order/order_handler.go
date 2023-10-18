@@ -75,3 +75,33 @@ func (handler *ConsoleOrderHandler) GetOrderByOrderId(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, resp)
 }
+
+// SyncOrderReward Recalculate order reward
+// @Summary Recalculate order reward
+// @Description Recalculate order reward (only if order is not yet rewarding, meaning that order status must be one of 'initial','pending','approved')
+// @Tags 	console
+// @Accept	json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param 	payload	body 			dto.SyncOrderRewardPayload true "accesstrade order id to sync, required"
+// @Success 200 		{object}	dto.ResponseMessage
+// @Failure 424 		{object}	util.GeneralError
+// @Failure 400 		{object}	util.GeneralError
+// @Router 	/api/v1/console/orders/sync-reward [post]
+func (handler *ConsoleOrderHandler) SyncOrderReward(ctx *gin.Context) {
+	var payload dto.SyncOrderRewardPayload
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		util.RespondError(ctx, http.StatusBadRequest, "send payload is required", err)
+		return
+	}
+
+	err := handler.usecase.SyncOrderReward(payload.AccessTradeOrderId)
+	if err != nil {
+		util.RespondError(ctx, http.StatusFailedDependency, "get order error", err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, dto.ResponseMessage{
+		Message: "success",
+	})
+}

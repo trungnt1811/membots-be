@@ -159,6 +159,7 @@ func (u *RewardMaker) processOrderUpdateMsg(ctx context.Context, msg msgqueue.Ms
 func (u *RewardMaker) notiOrderStatus(userId uint, orderId uint, orderStatus, atOrderId, merchant string, rewardAmount float64) error {
 	title := ""
 	body := ""
+	notiAmt := util.FormatNotiAmt(rewardAmount)
 
 	switch orderStatus {
 	case model.OrderStatusInitial, model.OrderStatusPending:
@@ -166,7 +167,7 @@ func (u *RewardMaker) notiOrderStatus(userId uint, orderId uint, orderStatus, at
 		body = fmt.Sprintf("Đơn hàng #%v của bạn vừa được cập nhật. Bấm để xem chi tiết!", atOrderId)
 	case model.OrderStatusApproved:
 		title = "Đơn hoàn mua sắm được xác nhận"
-		body = fmt.Sprintf("%v ASA sẽ được hoàn cho đơn %v #%v vừa xác nhận hoàn tất 😝", rewardAmount, merchant, atOrderId)
+		body = fmt.Sprintf("%v ASA sẽ được hoàn cho đơn %v #%v vừa xác nhận hoàn tất 😝", notiAmt, merchant, atOrderId)
 	case model.OrderStatusCancelled:
 		title = "Đơn hoàn mua sắm đã huỷ"
 		body = fmt.Sprintf("Đơn hàng %v #%v của bạn đã huỷ. Bấm để xem chi tiết!", merchant, atOrderId)

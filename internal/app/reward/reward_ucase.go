@@ -89,6 +89,12 @@ func (u *rewardUCase) GetRewardSummary(ctx context.Context, userId uint32) (dto.
 		return dto.RewardSummary{}, err
 	}
 
+	pastTimeLimit := time.Now().Add(-6 * 30 * 24 * time.Hour)
+	waitForApproveOrder, err := u.orderRepo.CountOrders(ctx, pastTimeLimit, userId, dto.OrderStatusWaitForConfirming)
+	if err != nil {
+		return dto.RewardSummary{}, err
+	}
+
 	inProgressRewards, err := u.repo.GetInProgressRewards(ctx, userId)
 	if err != nil {
 		return dto.RewardSummary{}, err
@@ -116,6 +122,7 @@ func (u *rewardUCase) GetRewardSummary(ctx context.Context, userId uint32) (dto.
 		RewardInDay:         util.RoundFloat(totalOrderRewardInDay, 2),
 		PendingRewardOrder:  len(inProgressRewards),
 		PendingRewardAmount: pendingRewardAmount,
+		WaitForApproveOrder: waitForApproveOrder,
 	}, nil
 }
 

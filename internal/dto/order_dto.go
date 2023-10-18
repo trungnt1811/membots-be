@@ -10,12 +10,12 @@ type TimeRange struct {
 }
 
 type OrderListQuery struct {
-	Page        int       `form:"page"`
-	PerPage     int       `form:"per_page"`
-	UserId      uint      `form:"user_id"`
-	OrderStatus string    `form:"order_status"`
-	Since       time.Time `form:"since"`
-	Until       time.Time `form:"until"`
+	Page        int       `form:"page" json:"page"`
+	PerPage     int       `form:"per_page" json:"per_page"`
+	UserId      uint      `form:"user_id" json:"user_id"`
+	OrderStatus string    `form:"order_status" json:"order_status"`
+	Since       time.Time `form:"since" json:"since"`
+	Until       time.Time `form:"until" json:"until"`
 }
 
 type OrderListResponse struct {
@@ -98,4 +98,8 @@ type AffOrder struct {
 	UTMMedium          string           `json:"utm_medium"`
 	UTMContent         string           `json:"utm_content"`
 	Transactions       []AffTransaction `json:"transactions"`
+}
+
+type SyncOrderRewardPayload struct {
+	AccessTradeOrderId string `json:"accesstrade_order_id"`
 }

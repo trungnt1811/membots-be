@@ -7,6 +7,7 @@ jobs:
   build-image:
     uses: AstraProtocol/github-actions-workflows/.github/workflows/stella-deployment.yml@main
     with:
+      valueFile: .github/values/main.yml
       ingressEnabled: "yes"
       ingressHost: "affiliate-system.prod.astranet.services"
       replicas: "1"

@@ -149,11 +149,7 @@ func (u *RewardMaker) processOrderUpdateMsg(ctx context.Context, msg msgqueue.Ms
 		}
 	}
 
-	if msg.OrderStatus != order.OrderStatus {
-		return u.notiOrderStatus(order.UserId, order.ID, order.OrderStatus, newAtOrderId, order.Merchant, rewardAmount)
-	}
-
-	return nil
+	return u.notiOrderStatus(order.UserId, order.ID, order.OrderStatus, newAtOrderId, order.Merchant, rewardAmount)
 }
 
 func (u *RewardMaker) notiOrderStatus(userId uint, orderId uint, orderStatus, atOrderId, merchant string, rewardAmount float64) error {

@@ -36,6 +36,7 @@ var calculateOrderRewardTestSet = []orderRewardTest{
 	{2505, 10, MockAstraPriceRepo{200}, 11.27},
 	{10000, 10, MockAstraPriceRepo{140}, 64.29},
 	{2505, 10, MockAstraPriceRepo{140}, 16.1},
+	{2000_000, 10, MockAstraPriceRepo{100}, 10_000},
 }
 
 func Test_CalculateOrderReward(t *testing.T) {

@@ -208,8 +208,14 @@ func (u *RewardMaker) CalculateRewardAmt(affCommission float64, commissionFee fl
 	if err != nil {
 		return 0, err
 	}
+
 	tokenCommission := affCommission / float64(astraPrice) * (100 - commissionFee) / 100
-	return util.RoundFloat(tokenCommission, 2), nil
+	rewardAmount := util.RoundFloat(tokenCommission, 2)
+	if rewardAmount > reward.MaxRewardPerOrder {
+		rewardAmount = reward.MaxRewardPerOrder
+	}
+
+	return rewardAmount, nil
 }
 
 func (u *RewardMaker) commitOrderUpdateMsg(message kafka.Message) error {

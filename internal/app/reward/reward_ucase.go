@@ -16,6 +16,7 @@ const (
 	MinWithdrawReward = 0.01    // asa
 	RewardLockTime    = 60 * 24 // hours
 	AffRewardTxFee    = 0.1     // fix amount of tx fee
+	MaxRewardPerOrder = 10000
 )
 
 type RewardConfig struct {

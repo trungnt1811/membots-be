@@ -44,7 +44,7 @@ func Test_CalculateOrderReward(t *testing.T) {
 	orderRepo := order.NewOrderRepository(db)
 
 	for _, test := range calculateOrderRewardTestSet {
-		rewardMaker := kafkaconsumer.NewRewardMaker(rewardRepo, orderRepo, test.PriceRepo, nil, nil)
+		rewardMaker := kafkaconsumer.NewRewardMaker(rewardRepo, orderRepo, test.PriceRepo, nil, nil, nil)
 		rewardAmt, err := rewardMaker.CalculateRewardAmt(test.AffCommission, test.StellaCommission)
 		assert.Nil(t, err)
 		assert.Equal(t, test.RewardAmount, rewardAmt)

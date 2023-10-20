@@ -66,14 +66,9 @@ type KafkaConfiguration struct {
 }
 
 type DiscordConfig struct {
+	AlertFraudUrl string `mapstructure:"DISCORD_FRAUD_URL" yaml:"alertFraudUrl" toml:"alertFraudUrl" xml:"alertFraudUrl" json:"alertFraudUrl,omitempty"`
 	// Alert Webhook URL
 	AlertWebhookUrl string `mapstructure:"DISCORD_WEBHOOK_URL" yaml:"webhookUrl" toml:"webhookUrl" xml:"webhookUrl" json:"webhookUrl,omitempty"`
-	// Token is the OAuth token for pushing messages.
-	Token       string   `mapstructure:"DISCORD_TOKEN" yaml:"token" toml:"token" xml:"token" json:"token,omitempty"`
-	SubChannels []string `mapstructure:"DISCORD_SUB_CHANNELS" yaml:"subChannels" toml:"subChannels" xml:"subChannels" json:"subChannels,omitempty"`
-}
-type WebhookConfiguration struct {
-	DcConf DiscordConfig `mapstructure:",squash"`
 }
 
 type Configuration struct {
@@ -82,7 +77,7 @@ type Configuration struct {
 	Notify            NotificationConfiguration   `mapstructure:",squash"`
 	EvmRpc            EvmRpcEndpointConfiguration `mapstructure:",squash"`
 	Kafka             KafkaConfiguration          `mapstructure:",squash"`
-	Webhook           WebhookConfiguration        `mapstructure:",squash"`
+	Discord           DiscordConfig               `mapstructure:",squash"`
 	RewardShipping    RewardShippingConfiguration `mapstructure:",squash"`
 	Aff               AffiliateConfiguration      `mapstructure:",squash"`
 	Tiki              TikiConfiguration           `mapstructure:",squash"`

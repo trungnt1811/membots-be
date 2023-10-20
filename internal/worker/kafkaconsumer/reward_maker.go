@@ -10,6 +10,7 @@ import (
 
 	"github.com/astraprotocol/affiliate-system/conf"
 	"github.com/astraprotocol/affiliate-system/internal/app/reward"
+	"github.com/astraprotocol/affiliate-system/internal/infra/alert"
 	"github.com/astraprotocol/affiliate-system/internal/infra/msgqueue"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/model"
@@ -26,19 +27,22 @@ type RewardMaker struct {
 	priceRepo    interfaces.TokenPriceRepo
 	orderUpdateQ *msgqueue.QueueReader
 	appNotiQ     *msgqueue.QueueWriter
+	alertClient  *alert.AlertClient
 }
 
 func NewRewardMaker(rewardRepo interfaces.RewardRepository,
 	orderRepo interfaces.OrderRepository,
 	priceRepo interfaces.TokenPriceRepo,
 	orderUpdateQ *msgqueue.QueueReader,
-	appNotiQ *msgqueue.QueueWriter) *RewardMaker {
+	appNotiQ *msgqueue.QueueWriter,
+	alertClient *alert.AlertClient) *RewardMaker {
 	return &RewardMaker{
 		rewardRepo:   rewardRepo,
 		orderRepo:    orderRepo,
 		priceRepo:    priceRepo,
 		orderUpdateQ: orderUpdateQ,
 		appNotiQ:     appNotiQ,
+		alertClient:  alertClient,
 	}
 }
 
@@ -151,6 +155,21 @@ func (u *RewardMaker) processOrderUpdateMsg(ctx context.Context, msg msgqueue.Ms
 
 	if msg.OrderStatus != order.OrderStatus {
 		return u.notiOrderStatus(order.UserId, order.ID, order.OrderStatus, newAtOrderId, order.Merchant, rewardAmount)
+	}
+
+	if rewardAmount >= reward.SuspiciousRewardAmount {
+		alertMsg := alert.SuspiciousOrderMsg{
+			OrderId:   order.AccessTradeOrderId,
+			Billing:   uint(order.Billing),
+			Reward:    rewardAmount,
+			Threshold: reward.SuspiciousRewardAmount,
+		}
+		log.LG.Errorf("suspicious order: %v", alertMsg.String())
+
+		err := u.alertClient.SendMessage(alertMsg.String())
+		if err != nil {
+			log.LG.Errorf("failed to alert suspicious order: %v. Err: %v", order.AccessTradeOrderId, err)
+		}
 	}
 
 	return nil

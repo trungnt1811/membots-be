@@ -153,8 +153,9 @@ func (u *RewardMaker) processOrderUpdateMsg(ctx context.Context, msg msgqueue.Ms
 		}
 	}
 
-	if msg.OrderStatus != order.OrderStatus {
-		return u.notiOrderStatus(order.UserId, order.ID, order.OrderStatus, newAtOrderId, order.Merchant, rewardAmount)
+	err = u.notiOrderStatus(order.UserId, order.ID, order.OrderStatus, newAtOrderId, order.Merchant, rewardAmount)
+	if err != nil {
+		return err
 	}
 
 	if rewardAmount >= reward.SuspiciousRewardAmount {
@@ -231,6 +232,7 @@ func (u *RewardMaker) CalculateRewardAmt(affCommission float64, commissionFee fl
 	if err != nil {
 		return 0, err
 	}
+
 	tokenCommission := affCommission / float64(astraPrice) * (100 - commissionFee) / 100
 	return util.RoundFloat(tokenCommission, 2), nil
 }

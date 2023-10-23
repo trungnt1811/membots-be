@@ -13,10 +13,10 @@ import (
 )
 
 const (
-	MinWithdrawReward = 0.01    // asa
-	RewardLockTime    = 60 * 24 // hours
-	AffRewardTxFee    = 0.1     // fix amount of tx fee
-	MaxRewardPerOrder = 10000
+	MinWithdrawReward      = 0.01    // asa
+	RewardLockTime         = 60 * 24 // hours
+	AffRewardTxFee         = 0.1     // fix amount of tx fee
+	SuspiciousRewardAmount = 2000
 )
 
 type RewardConfig struct {

@@ -9,7 +9,6 @@ import (
 	"github.com/astraprotocol/affiliate-system/internal/middleware"
 	routeV1 "github.com/astraprotocol/affiliate-system/internal/route"
 	"github.com/astraprotocol/affiliate-system/internal/util/log"
-	"github.com/astraprotocol/affiliate-system/internal/webhook"
 	"github.com/astraprotocol/affiliate-system/internal/worker/cron"
 	"github.com/astraprotocol/affiliate-system/internal/worker/kafkaconsumer"
 
@@ -75,15 +74,6 @@ func RunApp(config *conf.Configuration) {
 	p.Use(r)
 
 	var err error
-	// SECTION: Run Discord Webhook
-	webhook.Whm, err = webhook.NewWebHookManagerFromConfig(config.Webhook)
-	if err != nil {
-		log.LG.Fatalf("failed to init webhook %v", err)
-	}
-	err = webhook.Whm.Start()
-	if err != nil {
-		log.LG.Fatalf("failed to start webhook %v", err)
-	}
 
 	// SECTION: Run worker
 	cron.RegisterCronJobs(config, db)

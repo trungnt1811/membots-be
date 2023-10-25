@@ -147,10 +147,14 @@ func (u *accessTradeUCase) sendMsgNewCampaignSync(camp *model.AffCampaign) error
 func (u *accessTradeUCase) sendMsgCampaignUpdated(camp *model.AffCampaign, changes map[string]any, description map[string]any) error {
 	fields := make([]string, 0, len(changes)+len(description))
 	for k := range changes {
-		fields = append(fields, k)
+		if k != "updated_at" {
+			fields = append(fields, k)
+		}
 	}
 	for k := range description {
-		fields = append(fields, k)
+		if k != "updated_at" {
+			fields = append(fields, k)
+		}
 	}
 
 	msg := fmt.Sprintf("Action: Campaign Updated\nCampaign ID: %d\nName: %s\nFields Changed: %s", camp.ID, camp.Name, strings.Join(fields, ","))

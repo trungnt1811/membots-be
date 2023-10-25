@@ -1,11 +1,11 @@
 package accesstrade
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/astraprotocol/affiliate-system/internal/app/campaign"
+	"github.com/astraprotocol/affiliate-system/internal/infra/discord"
 	interfaces2 "github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/model"
 	"github.com/astraprotocol/affiliate-system/internal/util/log"
@@ -15,13 +15,16 @@ type accessTradeUCase struct {
 	Repo           interfaces2.ATRepository
 	CampaignRepo   interfaces2.CampaignRepository
 	DiscordWebhook string
+	DiscordSender  discord.DiscordSender
 }
 
 func NewAccessTradeUCase(repo interfaces2.ATRepository, campRepo interfaces2.CampaignRepository, discordWebhook string) interfaces2.ATUCase {
 	return &accessTradeUCase{
-		Repo:           repo,
-		CampaignRepo:   campRepo,
-		DiscordWebhook: discordWebhook,
+		Repo:         repo,
+		CampaignRepo: campRepo,
+		DiscordSender: discord.DiscordSender{
+			DiscordWebhook: discordWebhook,
+		},
 	}
 }
 
@@ -162,17 +165,5 @@ func (u *accessTradeUCase) sendMsgCampaignUpdated(camp *model.AffCampaign, chang
 }
 
 func (u *accessTradeUCase) sendDiscordMsg(msg string) error {
-	if u.DiscordWebhook == "" {
-		return errors.New("no discord webhook")
-	}
-	resp, err := NewHttpRequestBuilder().SetBody(map[string]any{
-		"content": fmt.Sprintf("========== [AFFILIATE SYSTEM - CAMPAIGN SYNC] ==========\n%s", msg),
-	}).Build().Post(u.DiscordWebhook)
-	if err != nil {
-		return err
-	}
-	if resp.IsSuccess() {
-		return nil
-	}
-	return errors.New("send discord msg receive error")
+	return u.DiscordSender.SendMsg("CAMPAIGN SYNC", msg)
 }

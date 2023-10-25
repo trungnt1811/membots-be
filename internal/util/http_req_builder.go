@@ -1,4 +1,4 @@
-package accesstrade
+package util
 
 import (
 	"time"

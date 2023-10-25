@@ -8,6 +8,7 @@ import (
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/infra/accesstrade/types"
+	"github.com/astraprotocol/affiliate-system/internal/infra/discord"
 	"github.com/astraprotocol/affiliate-system/internal/infra/msgqueue"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/model"
@@ -18,16 +19,22 @@ import (
 )
 
 type orderUCase struct {
-	Repo     interfaces.OrderRepository
-	ATRepo   interfaces.ATRepository
-	Producer *msgqueue.QueueWriter
+	Repo          interfaces.OrderRepository
+	ATRepo        interfaces.ATRepository
+	Producer      *msgqueue.QueueWriter
+	DiscordSender discord.DiscordSender
 }
 
-func NewOrderUCase(repo interfaces.OrderRepository, atRepo interfaces.ATRepository, producer *msgqueue.QueueWriter) interfaces.OrderUCase {
+const DISCORD_TOPIC = "ORDER_POST_BACK"
+
+func NewOrderUCase(repo interfaces.OrderRepository, atRepo interfaces.ATRepository, producer *msgqueue.QueueWriter, discordUrl string) interfaces.OrderUCase {
 	return &orderUCase{
 		Repo:     repo,
 		ATRepo:   atRepo,
 		Producer: producer,
+		DiscordSender: discord.DiscordSender{
+			DiscordWebhook: discordUrl,
+		},
 	}
 }
 
@@ -51,12 +58,14 @@ func (u *orderUCase) PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*m
 	// Get campaign to make sure supported
 	campaign, err := u.Repo.GetCampaignByATId(postBackReq.CampaignId)
 	if err != nil {
+		u.DiscordSender.SendMsg(DISCORD_TOPIC, fmt.Sprintf("post_back campaign: %v", err))
 		return nil, fmt.Errorf("post_back campaign: %v", err)
 	}
 
 	// Parse sale time for later request
 	salesTime, err := util.ParsePostBackTime(postBackReq.SalesTime)
 	if err != nil {
+		u.DiscordSender.SendMsg(DISCORD_TOPIC, fmt.Sprintf("cannot parse sales_time: %v", err))
 		return nil, fmt.Errorf("cannot parse sales_time: %v", err)
 	}
 	since, until := util.GetSinceUntilTime(salesTime, 1)
@@ -67,6 +76,7 @@ func (u *orderUCase) PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*m
 		Until: until,
 	}, 0, 0)
 	if err != nil {
+		u.DiscordSender.SendMsg(DISCORD_TOPIC, fmt.Sprintf("query order-list error: %v", err))
 		return nil, fmt.Errorf("query order-list error: %v", err)
 	}
 	var atOrder *types.ATOrder
@@ -76,6 +86,7 @@ func (u *orderUCase) PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*m
 		}
 	}
 	if atOrder == nil {
+		u.DiscordSender.SendMsg(DISCORD_TOPIC, fmt.Sprintf("not found order \"%s\" in order-list", postBackReq.OrderId))
 		return nil, fmt.Errorf("not found order \"%s\" in order-list", postBackReq.OrderId)
 	}
 
@@ -92,11 +103,13 @@ func (u *orderUCase) PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*m
 			order.UpdatedAt = time.Now()
 			crErr := u.Repo.CreateOrder(order)
 			if crErr != nil {
+				u.DiscordSender.SendMsg(DISCORD_TOPIC, fmt.Sprintf("create order failed: %v", crErr))
 				return nil, fmt.Errorf("create order failed: %v", crErr)
 			}
 			// When new order created, mark as status changed
 			statusChanged = true
 		} else {
+			u.DiscordSender.SendMsg(DISCORD_TOPIC, fmt.Sprintf("find order failed: %v", err))
 			return nil, err
 		}
 	} else {
@@ -113,6 +126,7 @@ func (u *orderUCase) PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*m
 
 		_, err = u.Repo.UpdateOrder(updated)
 		if err != nil {
+			u.DiscordSender.SendMsg(DISCORD_TOPIC, fmt.Sprintf("update order failed: %v", err))
 			return nil, fmt.Errorf("update order failed: %v", err)
 		}
 		order = updated

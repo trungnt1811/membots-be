@@ -27,7 +27,7 @@ func NewOrderUcaseTestSuite() *OrderUcaseTestSuite {
 	logger.LG = logger.NewZerologLogger(os.Stdout, zerolog.InfoLevel)
 	atRepo := atMocks.NewAccessTradeRepoMock()
 	repo := mocks.NewMockOrderRepository([]model.AffOrder{})
-	ucase := order.NewOrderUCase(repo, atRepo, nil)
+	ucase := order.NewOrderUCase(repo, atRepo, nil, "")
 	return &OrderUcaseTestSuite{
 		uCase:    ucase,
 		repoMock: repo,

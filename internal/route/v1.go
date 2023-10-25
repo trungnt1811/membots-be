@@ -77,7 +77,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 
 	// SECTION: Order Module and link
 	orderRepo := order.NewOrderRepository(db)
-	orderUcase := order.NewOrderUCase(orderRepo, atRepo, orderUpdateProducer)
+	orderUcase := order.NewOrderUCase(orderRepo, atRepo, orderUpdateProducer, config.Discord.AlertWebhookUrl)
 	orderHandler := order.NewOrderHandler(orderUcase)
 	orderRoute := v1.Group("/order")
 	orderRoute.POST("/post-back", orderHandler.PostBackOrderHandle)

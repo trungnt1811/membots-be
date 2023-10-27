@@ -23,7 +23,7 @@ func RegisterCronJobs(config *conf.Configuration, db *gorm.DB) {
 	atRepository := accesstrade.NewAccessTradeRepository(config.AccessTradeAPIKey, 3, 30)
 	atUCase := accesstrade.NewAccessTradeUCase(atRepository, campRepo, config.Discord.AlertWebhookUrl)
 
-	orderUCase := order.NewOrderUCase(orderRepo, atRepository, msgqueue.NewKafkaProducer(msgqueue.KAFKA_TOPIC_AFF_ORDER_UPDATE))
+	orderUCase := order.NewOrderUCase(orderRepo, atRepository, msgqueue.NewKafkaProducer(msgqueue.KAFKA_TOPIC_AFF_ORDER_UPDATE), config.Discord.AlertWebhookUrl)
 
 	// Initialize workers
 	atWorker := NewAccessTradeWorker(rdc, atUCase)

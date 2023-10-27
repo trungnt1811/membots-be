@@ -1,11 +1,11 @@
 package accesstrade
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/astraprotocol/affiliate-system/internal/app/campaign"
+	"github.com/astraprotocol/affiliate-system/internal/infra/discord"
 	interfaces2 "github.com/astraprotocol/affiliate-system/internal/interfaces"
 	"github.com/astraprotocol/affiliate-system/internal/model"
 	"github.com/astraprotocol/affiliate-system/internal/util/log"
@@ -15,13 +15,16 @@ type accessTradeUCase struct {
 	Repo           interfaces2.ATRepository
 	CampaignRepo   interfaces2.CampaignRepository
 	DiscordWebhook string
+	DiscordSender  discord.DiscordSender
 }
 
 func NewAccessTradeUCase(repo interfaces2.ATRepository, campRepo interfaces2.CampaignRepository, discordWebhook string) interfaces2.ATUCase {
 	return &accessTradeUCase{
-		Repo:           repo,
-		CampaignRepo:   campRepo,
-		DiscordWebhook: discordWebhook,
+		Repo:         repo,
+		CampaignRepo: campRepo,
+		DiscordSender: discord.DiscordSender{
+			DiscordWebhook: discordWebhook,
+		},
 	}
 }
 
@@ -147,10 +150,14 @@ func (u *accessTradeUCase) sendMsgNewCampaignSync(camp *model.AffCampaign) error
 func (u *accessTradeUCase) sendMsgCampaignUpdated(camp *model.AffCampaign, changes map[string]any, description map[string]any) error {
 	fields := make([]string, 0, len(changes)+len(description))
 	for k := range changes {
-		fields = append(fields, k)
+		if k != "updated_at" {
+			fields = append(fields, k)
+		}
 	}
 	for k := range description {
-		fields = append(fields, k)
+		if k != "updated_at" {
+			fields = append(fields, k)
+		}
 	}
 
 	msg := fmt.Sprintf("Action: Campaign Updated\nCampaign ID: %d\nName: %s\nFields Changed: %s", camp.ID, camp.Name, strings.Join(fields, ","))
@@ -158,17 +165,5 @@ func (u *accessTradeUCase) sendMsgCampaignUpdated(camp *model.AffCampaign, chang
 }
 
 func (u *accessTradeUCase) sendDiscordMsg(msg string) error {
-	if u.DiscordWebhook == "" {
-		return errors.New("no discord webhook")
-	}
-	resp, err := NewHttpRequestBuilder().SetBody(map[string]any{
-		"content": fmt.Sprintf("========== [AFFILIATE SYSTEM - CAMPAIGN SYNC] ==========\n%s", msg),
-	}).Build().Post(u.DiscordWebhook)
-	if err != nil {
-		return err
-	}
-	if resp.IsSuccess() {
-		return nil
-	}
-	return errors.New("send discord msg receive error")
+	return u.DiscordSender.SendMsg("CAMPAIGN SYNC", msg)
 }

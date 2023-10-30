@@ -1,7 +1,9 @@
 package consoleOrder
 
 import (
+	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"github.com/astraprotocol/affiliate-system/internal/interfaces"
@@ -10,12 +12,14 @@ import (
 )
 
 type ConsoleOrderHandler struct {
-	usecase interfaces.ConsoleOrderUcase
+	usecase    interfaces.ConsoleOrderUcase
+	orderUCase interfaces.OrderUCase
 }
 
-func NewConsoleOrderHandler(usecase interfaces.ConsoleOrderUcase) *ConsoleOrderHandler {
+func NewConsoleOrderHandler(usecase interfaces.ConsoleOrderUcase, orderUCase interfaces.OrderUCase) *ConsoleOrderHandler {
 	return &ConsoleOrderHandler{
-		usecase: usecase,
+		usecase:    usecase,
+		orderUCase: orderUCase,
 	}
 }
 
@@ -133,4 +137,58 @@ func (handler *ConsoleOrderHandler) GetPostBackList(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, resp)
+}
+
+// RetryErrorPostBack Retry error post back by log
+// @Summary Retry error post back by log
+// @Description Retry error post back order by using sent data
+// @Tags 	console
+// @Accept	json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param 	pbId	path 	string true "Post back id to retry"
+// @Success 200 		{object}	dto.ATPostBackResponse
+// @Failure 424 		{object}	util.GeneralError
+// @Failure 400 		{object}	util.GeneralError
+// @Router 	/api/v1/console/orders/retry/:pbId [post]
+func (handler *ConsoleOrderHandler) RetryErrorPostBack(ctx *gin.Context) {
+	pbIdParam, ok := ctx.Params.Get("pbId")
+	if !ok {
+		util.RespondError(ctx, http.StatusBadRequest, "pbId param is required")
+		return
+	}
+	pbId, err := strconv.ParseUint(pbIdParam, 10, 64)
+	if err != nil {
+		util.RespondError(ctx, http.StatusBadRequest, "pbId param is not a number")
+		return
+	}
+
+	data, err := handler.usecase.GetPostBackList(&dto.PostBackListQuery{
+		PostBackId: uint(pbId),
+		IsError:    true,
+	})
+	if err != nil {
+		util.RespondError(ctx, http.StatusInternalServerError, "find post back error", err)
+		return
+	}
+	if len(data.Data) == 0 {
+		util.RespondError(ctx, http.StatusBadRequest, "no error post back found", err)
+		return
+	}
+
+	item := data.Data[0]
+	var pb dto.ATPostBackRequest
+	err = json.Unmarshal([]byte(item.Data), &pb)
+	if err != nil {
+		util.RespondError(ctx, http.StatusInternalServerError, "parse pb data error", err)
+		return
+	}
+
+	order, err := handler.orderUCase.PostBackUpdateOrder(&pb)
+	if err != nil {
+		util.RespondError(ctx, http.StatusInternalServerError, "post-back retry error", err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, order)
 }

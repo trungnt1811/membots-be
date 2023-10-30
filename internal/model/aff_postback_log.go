@@ -1,7 +1,6 @@
 package model
 
 import (
-	"encoding/json"
 	"time"
 
 	"github.com/astraprotocol/affiliate-system/internal/dto"
@@ -22,14 +21,11 @@ func (m *AffPostBackLog) TableName() string {
 }
 
 func (m *AffPostBackLog) ToDto() dto.AffPostBack {
-	pbData := map[string]any{}
-	json.Unmarshal(m.Data, &pbData)
-
 	return dto.AffPostBack{
 		ID:        m.ID,
 		OrderId:   m.OrderId,
 		CreatedAt: m.CreatedAt,
 		UpdatedAt: m.UpdatedAt,
-		Data:      pbData,
+		Data:      string(m.Data),
 	}
 }

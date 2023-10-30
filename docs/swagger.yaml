@@ -363,8 +363,7 @@ definitions:
       created_at:
         type: string
       data:
-        additionalProperties: {}
-        type: object
+        type: string
       error_message:
         type: string
       id:
@@ -1653,6 +1652,9 @@ paths:
         name: per_page
         type: integer
       - in: query
+        name: post_back_id
+        type: integer
+      - in: query
         name: since
         type: string
       - in: query
@@ -1676,6 +1678,37 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Get post back order list
+      tags:
+      - console
+  /api/v1/console/orders/retry/:pbId:
+    post:
+      consumes:
+      - application/json
+      description: Retry error post back order by using sent data
+      parameters:
+      - description: Post back id to retry
+        in: path
+        name: pbId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ATPostBackResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Retry error post back by log
       tags:
       - console
   /api/v1/console/orders/sync-reward:

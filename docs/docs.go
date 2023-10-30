@@ -1355,6 +1355,11 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "integer",
+                        "name": "post_back_id",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "name": "since",
                         "in": "query"
@@ -1370,6 +1375,55 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/dto.PostBackListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "424": {
+                        "description": "Failed Dependency",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/console/orders/retry/:pbId": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retry error post back order by using sent data",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "console"
+                ],
+                "summary": "Retry error post back by log",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Post back id to retry",
+                        "name": "pbId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ATPostBackResponse"
                         }
                     },
                     "400": {
@@ -2197,8 +2251,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "data": {
-                    "type": "object",
-                    "additionalProperties": {}
+                    "type": "string"
                 },
                 "error_message": {
                     "type": "string"

@@ -102,6 +102,15 @@ func (repo *ConsoleOrderRepository) FindPostBacksByQuery(timeRange dto.TimeRange
 		)
 	}
 
+	if pbId, ok := dbQuery["id"]; ok {
+		tx.Where(
+			"id = ?", pbId,
+		)
+		totalTx.Where(
+			"id = ?", pbId,
+		)
+	}
+
 	if _, ok := dbQuery["error_message"]; ok {
 		tx.Where(
 			"error_message <> \"\" AND error_message IS NOT NULL",

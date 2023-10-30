@@ -99,6 +99,9 @@ func (u *ConsoleOrderUcase) SyncOrderReward(atOrderId string) error {
 
 func (u *ConsoleOrderUcase) GetPostBackList(q *dto.PostBackListQuery) (*dto.PostBackListResponse, error) {
 	dbQuery := map[string]any{}
+	if q.PostBackId != 0 {
+		dbQuery["id"] = q.PostBackId
+	}
 	if q.OrderId != "" {
 		dbQuery["order_id"] = q.OrderId
 	}

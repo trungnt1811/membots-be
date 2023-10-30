@@ -27,12 +27,13 @@ type OrderListResponse struct {
 }
 
 type PostBackListQuery struct {
-	Page    int       `form:"page" json:"page"`
-	PerPage int       `form:"per_page" json:"per_page"`
-	OrderId string    `form:"order_id" json:"order_id"`
-	IsError bool      `form:"is_error" json:"is_error"`
-	Since   time.Time `form:"since" json:"since"`
-	Until   time.Time `form:"until" json:"until"`
+	Page       int       `form:"page" json:"page"`
+	PerPage    int       `form:"per_page" json:"per_page"`
+	PostBackId uint      `form:"post_back_id" json:"post_back_id"`
+	OrderId    string    `form:"order_id" json:"order_id"`
+	IsError    bool      `form:"is_error" json:"is_error"`
+	Since      time.Time `form:"since" json:"since"`
+	Until      time.Time `form:"until" json:"until"`
 }
 
 type PostBackListResponse struct {
@@ -118,12 +119,12 @@ type AffOrder struct {
 }
 
 type AffPostBack struct {
-	ID           uint           `json:"id" gorm:"primarykey"`
-	OrderId      string         `json:"order_id"`
-	CreatedAt    time.Time      `json:"created_at"`
-	UpdatedAt    time.Time      `json:"updated_at"`
-	Data         map[string]any `json:"data"`
-	ErrorMessage string         `json:"error_message"`
+	ID           uint      `json:"id" gorm:"primarykey"`
+	OrderId      string    `json:"order_id"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
+	Data         string    `json:"data"`
+	ErrorMessage string    `json:"error_message"`
 }
 
 type SyncOrderRewardPayload struct {

@@ -11,7 +11,8 @@ import (
 type OrderRepository interface {
 	QueryOrdersConfirmedBefore(t time.Time, q map[string]any) ([]model.AffOrder, error)
 
-	SavePostBackLog(req *model.AffPostBackLog) error
+	CreatePostBackLog(req *model.AffPostBackLog) error
+	UpdatePostBackLog(id uint, changes map[string]any) error
 	CreateOrder(order *model.AffOrder) error
 	UpdateOrder(updated *model.AffOrder) (int, error)
 	FindOrderByAccessTradeId(atOrderId string) (*model.AffOrder, error)

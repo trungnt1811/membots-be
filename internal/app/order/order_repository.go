@@ -41,8 +41,12 @@ func (repo *orderRepository) QueryOrdersConfirmedBefore(t time.Time, q map[strin
 	return orders, err
 }
 
-func (repo *orderRepository) SavePostBackLog(req *model.AffPostBackLog) error {
+func (repo *orderRepository) CreatePostBackLog(req *model.AffPostBackLog) error {
 	return repo.db.Create(req).Error
+}
+
+func (repo *orderRepository) UpdatePostBackLog(id uint, changes map[string]any) error {
+	return repo.db.Model(&model.AffPostBackLog{}).Where("id = ?", id).Updates(changes).Error
 }
 
 func (repo *orderRepository) CreateOrder(order *model.AffOrder) error {

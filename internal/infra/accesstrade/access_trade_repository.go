@@ -149,6 +149,11 @@ func (r *accessTradeRepository) QueryOrders(q types.ATOrderQuery, page int, limi
 		return nil, errors.Errorf("request error: %v", err)
 	}
 
+	if !resp.IsSuccess() {
+		errMsg := string(resp.Body())
+		return nil, errors.Errorf("response error: %d - %s", resp.StatusCode(), errMsg)
+	}
+
 	// Parse response body
 	var body types.ATOrderListResp
 	err = json.Unmarshal(resp.Body(), &body)

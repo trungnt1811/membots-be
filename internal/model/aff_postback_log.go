@@ -1,8 +1,10 @@
 package model
 
 import (
+	"encoding/json"
 	"time"
 
+	"github.com/astraprotocol/affiliate-system/internal/dto"
 	"gorm.io/datatypes"
 )
 
@@ -17,4 +19,17 @@ type AffPostBackLog struct {
 
 func (m *AffPostBackLog) TableName() string {
 	return "aff_postback_log"
+}
+
+func (m *AffPostBackLog) ToDto() dto.AffPostBack {
+	pbData := map[string]any{}
+	json.Unmarshal(m.Data, &pbData)
+
+	return dto.AffPostBack{
+		ID:        m.ID,
+		OrderId:   m.OrderId,
+		CreatedAt: m.CreatedAt,
+		UpdatedAt: m.UpdatedAt,
+		Data:      pbData,
+	}
 }

@@ -23,7 +23,7 @@ type ConsoleOrderUcase struct {
 
 func NewConsoleOrderUcase(repo interfaces.ConsoleOrderRepository,
 	orderRepo interfaces.OrderRepository,
-	orderUpdateProducer *msgqueue.QueueWriter) *ConsoleOrderUcase {
+	orderUpdateProducer *msgqueue.QueueWriter) interfaces.ConsoleOrderUcase {
 	return &ConsoleOrderUcase{
 		Repo:                repo,
 		OrderRepo:           orderRepo,
@@ -95,6 +95,42 @@ func (u *ConsoleOrderUcase) SyncOrderReward(atOrderId string) error {
 	u.sendOrderUpdateMsg(order.UserId, order.AccessTradeOrderId, order.OrderStatus, order.IsConfirmed)
 
 	return nil
+}
+
+func (u *ConsoleOrderUcase) GetPostBackList(q *dto.PostBackListQuery) (*dto.PostBackListResponse, error) {
+	dbQuery := map[string]any{}
+	if q.OrderId != "" {
+		dbQuery["order_id"] = q.OrderId
+	}
+
+	if q.IsError {
+		dbQuery["error_message"] = q.IsError
+	}
+
+	timeRange := dto.TimeRange{
+		Since: q.Since,
+		Until: q.Until,
+	}
+
+	list, total, err := u.Repo.FindPostBacksByQuery(timeRange, dbQuery, q.Page, q.PerPage)
+	if err != nil {
+		return nil, fmt.Errorf("find list failed: %v", err)
+	}
+	totalPages := 1.0
+	if q.PerPage != 0 {
+		totalPages = math.Ceil(float64(total) / float64(q.PerPage))
+	}
+	resp := dto.PostBackListResponse{
+		Total:      int(total),
+		Page:       q.Page,
+		PerPage:    q.PerPage,
+		TotalPages: int(totalPages),
+		Data:       make([]dto.AffPostBack, len(list)),
+	}
+	for idx, item := range list {
+		resp.Data[idx] = item.ToDto()
+	}
+	return &resp, err
 }
 
 func (u *ConsoleOrderUcase) sendOrderUpdateMsg(userId uint, orderId string, orderStatus string, isConfirmed uint8) {

@@ -26,6 +26,23 @@ type OrderListResponse struct {
 	TotalPages int        `json:"total_pages"`
 }
 
+type PostBackListQuery struct {
+	Page    int       `form:"page" json:"page"`
+	PerPage int       `form:"per_page" json:"per_page"`
+	OrderId string    `form:"order_id" json:"order_id"`
+	IsError bool      `form:"is_error" json:"is_error"`
+	Since   time.Time `form:"since" json:"since"`
+	Until   time.Time `form:"until" json:"until"`
+}
+
+type PostBackListResponse struct {
+	Data       []AffPostBack `json:"data"`
+	Total      int           `json:"total"`
+	Page       int           `json:"page"`
+	PerPage    int           `json:"per_page"`
+	TotalPages int           `json:"total_pages"`
+}
+
 type AffTransaction struct {
 	ID                      uint      `gorm:"primarykey" json:"id"`
 	UserId                  uint      `json:"user_id"`
@@ -98,6 +115,15 @@ type AffOrder struct {
 	UTMMedium          string           `json:"utm_medium"`
 	UTMContent         string           `json:"utm_content"`
 	Transactions       []AffTransaction `json:"transactions"`
+}
+
+type AffPostBack struct {
+	ID           uint           `json:"id" gorm:"primarykey"`
+	OrderId      string         `json:"order_id"`
+	CreatedAt    time.Time      `json:"created_at"`
+	UpdatedAt    time.Time      `json:"updated_at"`
+	Data         map[string]any `json:"data"`
+	ErrorMessage string         `json:"error_message"`
 }
 
 type SyncOrderRewardPayload struct {

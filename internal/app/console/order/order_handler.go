@@ -105,3 +105,32 @@ func (handler *ConsoleOrderHandler) SyncOrderReward(ctx *gin.Context) {
 		Message: "success",
 	})
 }
+
+// GetPostBackList Get post back order list
+// @Summary Get post back order list
+// @Description Get post back order list by time range and other filter
+// @Tags 	console
+// @Accept	json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param 	payload	query 		dto.PostBackListQuery false "Post Back list query"
+// @Success 200 		{object}	dto.PostBackListResponse
+// @Failure 424 		{object}	util.GeneralError
+// @Failure 400 		{object}	util.GeneralError
+// @Router 	/api/v1/console/orders/logs [get]
+func (handler *ConsoleOrderHandler) GetPostBackList(ctx *gin.Context) {
+	var q dto.PostBackListQuery
+	err := ctx.BindQuery(&q)
+	if err != nil {
+		util.RespondError(ctx, http.StatusBadRequest, "parse query error", err)
+		return
+	}
+
+	resp, err := handler.usecase.GetPostBackList(&q)
+	if err != nil {
+		util.RespondError(ctx, http.StatusFailedDependency, "get list error", err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}

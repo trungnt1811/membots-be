@@ -207,7 +207,7 @@ func (repo *orderRepository) GetOrderHistory(ctx context.Context, since time.Tim
 	if status != "" {
 		query += statusQuery + " "
 	}
-	query += "ORDER BY o.id DESC " +
+	query += "ORDER BY o.sales_time DESC " +
 		"LIMIT ? OFFSET ?"
 
 	var rows *sql.Rows

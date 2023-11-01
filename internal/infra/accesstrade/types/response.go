@@ -149,9 +149,9 @@ type ATOrder struct {
 	LandingPage        string     `json:"landing_page"`
 	Merchant           string     `json:"merchant"`
 	OrderId            string     `json:"order_id"`
-	OrderApproved      uint8      `json:"order_approved"`
-	OrderPending       uint8      `json:"order_pending"`
-	OrderReject        uint8      `json:"order_reject"`
+	OrderApproved      uint       `json:"order_approved"`
+	OrderPending       uint       `json:"order_pending"`
+	OrderReject        uint       `json:"order_reject"`
 	ProductCategory    string     `json:"product_category"`
 	ProductsCount      int        `json:"products_count"`
 	PubCommission      float32    `json:"pub_commission"`

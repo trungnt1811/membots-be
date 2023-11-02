@@ -38,18 +38,33 @@ func NewOrderUCase(repo interfaces.OrderRepository, atRepo interfaces.ATReposito
 	}
 }
 
+func (u *orderUCase) handlePostBackError(lg *model.AffPostBackLog, msg string) {
+	// Save error message into log
+	if lg != nil && lg.ID != 0 {
+		u.Repo.UpdatePostBackLog(lg.ID, map[string]any{
+			"error_message": msg,
+		})
+	}
+
+	// Then send to discord
+	u.DiscordSender.SendMsg(DISCORD_TOPIC, msg)
+}
+
 func (u *orderUCase) PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*model.AffOrder, error) {
 	// First, save log
 	bytes, err := json.Marshal(postBackReq)
+	var postBackLog *model.AffPostBackLog
 	if err != nil {
-		log.LG.Errorf("cannot marshall post-back req: %v", err)
+		u.handlePostBackError(nil, fmt.Sprintf("cannot marshall post-back req: %v", err))
+		return nil, fmt.Errorf("cannot marshall post-back req: %v", err)
 	} else {
-		err := u.Repo.SavePostBackLog(&model.AffPostBackLog{
+		postBackLog = &model.AffPostBackLog{
 			OrderId:   postBackReq.OrderId,
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 			Data:      datatypes.JSON(bytes),
-		})
+		}
+		err := u.Repo.CreatePostBackLog(postBackLog)
 		if err != nil {
 			log.LG.Errorf("save aff_post_back_log error: %v", err)
 		}
@@ -58,14 +73,14 @@ func (u *orderUCase) PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*m
 	// Get campaign to make sure supported
 	campaign, err := u.Repo.GetCampaignByATId(postBackReq.CampaignId)
 	if err != nil {
-		u.DiscordSender.SendMsg(DISCORD_TOPIC, fmt.Sprintf("post_back campaign: %v", err))
+		u.handlePostBackError(postBackLog, fmt.Sprintf("post_back campaign: %v", err))
 		return nil, fmt.Errorf("post_back campaign: %v", err)
 	}
 
 	// Parse sale time for later request
 	salesTime, err := util.ParsePostBackTime(postBackReq.SalesTime)
 	if err != nil {
-		u.DiscordSender.SendMsg(DISCORD_TOPIC, fmt.Sprintf("cannot parse sales_time: %v", err))
+		u.handlePostBackError(postBackLog, fmt.Sprintf("cannot parse sales_time: %v", err))
 		return nil, fmt.Errorf("cannot parse sales_time: %v", err)
 	}
 	since, until := util.GetSinceUntilTime(salesTime, 1)
@@ -76,7 +91,7 @@ func (u *orderUCase) PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*m
 		Until: until,
 	}, 0, 0)
 	if err != nil {
-		u.DiscordSender.SendMsg(DISCORD_TOPIC, fmt.Sprintf("query order-list error: %v", err))
+		u.handlePostBackError(postBackLog, fmt.Sprintf("query order-list error: %v", err))
 		return nil, fmt.Errorf("query order-list error: %v", err)
 	}
 	var atOrder *types.ATOrder
@@ -86,7 +101,7 @@ func (u *orderUCase) PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*m
 		}
 	}
 	if atOrder == nil {
-		u.DiscordSender.SendMsg(DISCORD_TOPIC, fmt.Sprintf("not found order \"%s\" in order-list", postBackReq.OrderId))
+		u.handlePostBackError(postBackLog, fmt.Sprintf("not found order \"%s\" in order-list", postBackReq.OrderId))
 		return nil, fmt.Errorf("not found order \"%s\" in order-list", postBackReq.OrderId)
 	}
 
@@ -103,13 +118,13 @@ func (u *orderUCase) PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*m
 			order.UpdatedAt = time.Now()
 			crErr := u.Repo.CreateOrder(order)
 			if crErr != nil {
-				u.DiscordSender.SendMsg(DISCORD_TOPIC, fmt.Sprintf("create order failed: %v", crErr))
+				u.handlePostBackError(postBackLog, fmt.Sprintf("create order failed: %v", crErr))
 				return nil, fmt.Errorf("create order failed: %v", crErr)
 			}
 			// When new order created, mark as status changed
 			statusChanged = true
 		} else {
-			u.DiscordSender.SendMsg(DISCORD_TOPIC, fmt.Sprintf("find order failed: %v", err))
+			u.handlePostBackError(postBackLog, fmt.Sprintf("find order failed: %v", err))
 			return nil, err
 		}
 	} else {
@@ -126,7 +141,7 @@ func (u *orderUCase) PostBackUpdateOrder(postBackReq *dto.ATPostBackRequest) (*m
 
 		_, err = u.Repo.UpdateOrder(updated)
 		if err != nil {
-			u.DiscordSender.SendMsg(DISCORD_TOPIC, fmt.Sprintf("update order failed: %v", err))
+			u.handlePostBackError(postBackLog, fmt.Sprintf("update order failed: %v", err))
 			return nil, fmt.Errorf("update order failed: %v", err)
 		}
 		order = updated

@@ -31,9 +31,18 @@ func (repo *MockOrderRepository) QueryOrdersConfirmedBefore(t time.Time, q map[s
 	}, nil
 }
 
-func (repo *MockOrderRepository) SavePostBackLog(req *model.AffPostBackLog) error {
+func (repo *MockOrderRepository) CreatePostBackLog(req *model.AffPostBackLog) error {
 	req.ID = uint(len(repo.Logs) + 1)
 	repo.Logs = append(repo.Logs, *req)
+	return nil
+}
+
+func (repo *MockOrderRepository) UpdatePostBackLog(id uint, changes map[string]any) error {
+	for _, lg := range repo.Logs {
+		if id == lg.ID {
+			// Set changes
+		}
+	}
 	return nil
 }
 

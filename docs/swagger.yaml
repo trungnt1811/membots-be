@@ -358,6 +358,21 @@ definitions:
       website_url:
         type: string
     type: object
+  dto.AffPostBack:
+    properties:
+      created_at:
+        type: string
+      data:
+        type: string
+      error_message:
+        type: string
+      id:
+        type: integer
+      order_id:
+        type: string
+      updated_at:
+        type: string
+    type: object
   dto.AffSearchDto:
     properties:
       aff_campaigns:
@@ -617,6 +632,21 @@ definitions:
       data:
         items:
           $ref: '#/definitions/dto.AffOrder'
+        type: array
+      page:
+        type: integer
+      per_page:
+        type: integer
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  dto.PostBackListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto.AffPostBack'
         type: array
       page:
         type: integer
@@ -1601,6 +1631,84 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Get affiliate order by order id
+      tags:
+      - console
+  /api/v1/console/orders/logs:
+    get:
+      consumes:
+      - application/json
+      description: Get post back order list by time range and other filter
+      parameters:
+      - in: query
+        name: is_error
+        type: boolean
+      - in: query
+        name: order_id
+        type: string
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: per_page
+        type: integer
+      - in: query
+        name: post_back_id
+        type: integer
+      - in: query
+        name: since
+        type: string
+      - in: query
+        name: until
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.PostBackListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get post back order list
+      tags:
+      - console
+  /api/v1/console/orders/retry/:pbId:
+    post:
+      consumes:
+      - application/json
+      description: Retry error post back order by using sent data
+      parameters:
+      - description: Post back id to retry
+        in: path
+        name: pbId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ATPostBackResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      security:
+      - ApiKeyAuth: []
+      summary: Retry error post back by log
       tags:
       - console
   /api/v1/console/orders/sync-reward:

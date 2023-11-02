@@ -106,13 +106,17 @@ CREATE TABLE aff_postback_log (
   order_id NVARCHAR(256),
   created_at DATETIME,
   updated_at DATETIME,
+  error_message TEXT,
   data JSON,
   PRIMARY KEY (id)
 ) ENGINE = InnoDB;
 
+ALTER TABLE aff_postback_log MODIFY COLUMN error_message NVARCHAR(256);
+
 CREATE INDEX aff_postback_log_order_id ON aff_postback_log (order_id);
 CREATE INDEX aff_postback_log_created ON aff_postback_log (created_at);
 CREATE INDEX aff_postback_log_updated ON aff_postback_log (updated_at);
+CREATE INDEX aff_postback_log_error ON aff_postback_log (error_message);
 
 CREATE TABLE aff_tracked_click (
   id INT NOT NULL AUTO_INCREMENT,

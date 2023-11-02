@@ -112,13 +112,15 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 
 	consoleOrderRepo := consoleOrder.NewConsoleOrderRepository(db)
 	consoleOrderUcase := consoleOrder.NewConsoleOrderUcase(consoleOrderRepo, orderRepo, orderUpdateProducer)
-	consoleOrderHandler := consoleOrder.NewConsoleOrderHandler(consoleOrderUcase)
+	consoleOrderHandler := consoleOrder.NewConsoleOrderHandler(consoleOrderUcase, orderUcase)
 
 	// SECTION: Console Order
 	consoleOrderRouter := consoleRouter.Group("orders", authHandler.CheckAdminHeader())
 	consoleOrderRouter.GET("", consoleOrderHandler.GetOrderList)
-	consoleOrderRouter.GET("/:orderId", consoleOrderHandler.GetOrderByOrderId)
+	consoleOrderRouter.GET("/logs", consoleOrderHandler.GetPostBackList)
+	consoleOrderRouter.POST("/retry/:pbId", consoleOrderHandler.RetryErrorPostBack)
 	consoleOrderRouter.POST("/sync-reward", consoleOrderHandler.SyncOrderReward)
+	consoleOrderRouter.GET("/:orderId", consoleOrderHandler.GetOrderByOrderId)
 
 	// SECTION: Console Summary
 	statisticRepo := statistic.NewStatisticRepository(db)

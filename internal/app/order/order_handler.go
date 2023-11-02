@@ -48,7 +48,7 @@ func (handler *OrderHandler) PostBackOrderHandle(c *gin.Context) {
 		return
 	}
 
-	m, err := handler.usecase.PostBackUpdateOrder(&req)
+	order, err := handler.usecase.PostBackUpdateOrder(&req)
 	if err != nil {
 		// Log error and return failed
 		log.LG.Errorf("save post back order error: %v", err)
@@ -60,7 +60,7 @@ func (handler *OrderHandler) PostBackOrderHandle(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, &dto.ATPostBackResponse{
 		Success: true,
-		OrderId: m.AccessTradeOrderId,
+		OrderId: order.AccessTradeOrderId,
 	})
 }
 

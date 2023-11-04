@@ -2,26 +2,29 @@ package mocks
 
 import (
 	"encoding/json"
+	"time"
 
 	"github.com/astraprotocol/affiliate-system/internal/infra/accesstrade/types"
+	"github.com/astraprotocol/affiliate-system/internal/interfaces"
 )
 
 type AccessTradeRepoMock struct{}
 
-func NewAccessTradeRepoMock() *AccessTradeRepoMock {
+func NewAccessTradeRepoMock() interfaces.ATRepository {
 	return &AccessTradeRepoMock{}
 }
 
 func (repo *AccessTradeRepoMock) QueryMerchants() ([]types.ATMerchant, error) {
 	return nil, nil
 }
-func (repo *AccessTradeRepoMock) QueryCampaigns(onlyApproval bool, page int, limit int) (*types.ATCampaignListResp, error) {
+func (repo *AccessTradeRepoMock) QueryCampaigns(onlyApproval bool, page int, limit int) (time.Time, *types.ATCampaignListResp, error) {
 	var resp types.ATCampaignListResp
+	runAt := time.Now()
 	err := json.Unmarshal([]byte(SAMPLE_CAMPAIGNS), &resp)
 	if err != nil {
-		return nil, err
+		return runAt, nil, err
 	}
-	return &resp, nil
+	return runAt, &resp, nil
 }
 func (repo *AccessTradeRepoMock) QueryTransactions(q types.ATTransactionQuery, page int, limit int) (*types.ATTransactionResp, error) {
 	var resp types.ATTransactionResp

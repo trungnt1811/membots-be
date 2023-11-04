@@ -49,7 +49,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	authHandler := auth.NewAuthUseCase(redisClient, config.CreatorAuthUrl, config.AppAuthUrl)
 
 	// SECTION: AT Module
-	atRepo := accesstrade.NewAccessTradeRepository(config.AccessTradeAPIKey, 3, 30)
+	atRepo := accesstrade.NewAccessTradeRepository(config.AccessTradeAPIKey, 3, 30, 50)
 
 	// SECTION: Shipping Reward Service
 	shippingClientConf := shipping.ShippingClientConfig{

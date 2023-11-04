@@ -2,6 +2,7 @@ package test
 
 import (
 	"os"
+	"sync"
 	"testing"
 	"time"
 
@@ -25,7 +26,7 @@ type RepositoryTestSuite struct {
 
 func NewRepositoryTestSuite() *RepositoryTestSuite {
 	logger.LG = logger.NewZerologLogger(os.Stdout, zerolog.InfoLevel)
-	repository := accesstrade.NewAccessTradeRepository(TEST_APIKEY, 3, 30)
+	repository := accesstrade.NewAccessTradeRepository(TEST_APIKEY, 3, 30, 1000)
 	return &RepositoryTestSuite{
 		repository: repository,
 	}
@@ -41,7 +42,7 @@ func (s *RepositoryTestSuite) SetupSuite() {
 
 func (s *RepositoryTestSuite) TestQueryCampaigns() {
 	page := 1
-	resp, err := s.repository.QueryCampaigns(false, page, 10)
+	_, resp, err := s.repository.QueryCampaigns(false, page, 10)
 	s.NoError(err)
 	s.Equal(page, resp.Page)
 }
@@ -60,7 +61,7 @@ func (s *RepositoryTestSuite) TestQueryOrders() {
 
 func (s *RepositoryTestSuite) TestCreateLink() {
 	page := 1
-	resp, err := s.repository.QueryCampaigns(true, page, 10)
+	_, resp, err := s.repository.QueryCampaigns(true, page, 10)
 	s.NoError(err)
 	s.GreaterOrEqual(len(resp.Data), 1)
 	camp := resp.Data[0]
@@ -85,4 +86,32 @@ func (s *RepositoryTestSuite) TestCreateLinkFailed() {
 	})
 	s.ErrorContains(err, "The link is not part of the campaign")
 	s.Nil(linkResp)
+}
+
+func (s *RepositoryTestSuite) TestRequestLimiter() {
+	// Send two requests and expect take at least 1s two start new one
+	wg := sync.WaitGroup{}
+	runTimes := make(chan time.Time, 2)
+	sendReq := func() {
+		wg.Add(1)
+		page := 1
+		runAt, _, err := s.repository.QueryCampaigns(true, page, 10)
+		s.NoError(err)
+		runTimes <- runAt
+		wg.Done()
+	}
+
+	go sendReq()
+	go sendReq()
+
+	// Wait for all requests to finished
+	wg.Wait()
+
+	// When all requests is finished, check the request time
+	runtTime1 := <-runTimes
+	runtTime2 := <-runTimes
+
+	gap := runtTime1.Sub(runtTime2).Abs()
+
+	s.LessOrEqual(time.Second, gap, "gap time must be at least 1s")
 }

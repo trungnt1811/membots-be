@@ -20,22 +20,27 @@ const (
 )
 
 type accessTradeRepository struct {
-	APIKey string
-	caller *resty.Client
+	APIKey      string
+	tickLimiter <-chan time.Time
+	caller      *resty.Client
 }
 
-func NewAccessTradeRepository(APIKey string, retry int, timeoutSec int) interfaces.ATRepository {
+func NewAccessTradeRepository(APIKey string, retry int, timeoutSec int, tickLimiterMs int) interfaces.ATRepository {
 	if APIKey == "" {
-		// TODO: Alert about required API key
+		panic(errors.New("no AccessTrade API Key"))
 	}
 	// Initialize and configure resty client
 	client := resty.New()
 	client.SetRetryCount(retry)
 	client.SetTimeout(time.Duration(timeoutSec * int(time.Second)))
 
+	// For waiting all the requests to be done before start a new one
+	tick := time.Tick(time.Duration(tickLimiterMs) * time.Millisecond)
+
 	return &accessTradeRepository{
-		APIKey: APIKey,
-		caller: client,
+		APIKey:      APIKey,
+		tickLimiter: tick,
+		caller:      client,
 	}
 }
 
@@ -63,7 +68,7 @@ func (r *accessTradeRepository) QueryMerchants() ([]types.ATMerchant, error) {
 	return body.Data, nil
 }
 
-func (r *accessTradeRepository) QueryCampaigns(onlyApproval bool, page int, limit int) (*types.ATCampaignListResp, error) {
+func (r *accessTradeRepository) QueryCampaigns(onlyApproval bool, page int, limit int) (time.Time, *types.ATCampaignListResp, error) {
 	url := fmt.Sprintf("%s/campaigns", AccesstradeEndpoint)
 	req := r.initWithHeaders()
 
@@ -77,17 +82,19 @@ func (r *accessTradeRepository) QueryCampaigns(onlyApproval bool, page int, limi
 		req.SetQueryParam("limit", fmt.Sprint(limit))
 	}
 
+	// Wait for tickLimiter to return before start new request
+	t := <-r.tickLimiter
 	resp, err := req.Get(url)
 	if err != nil {
-		return nil, err
+		return t, nil, err
 	}
 
 	var body types.ATCampaignListResp
 	err = json.Unmarshal(resp.Body(), &body)
 	if err != nil {
-		return nil, err
+		return t, nil, err
 	}
-	return &body, nil
+	return t, &body, nil
 }
 
 // The `QueryTransactions` function is used to query transactions from the AccessTrade API. It takes in parameters
@@ -110,6 +117,8 @@ func (r *accessTradeRepository) QueryTransactions(q types.ATTransactionQuery, pa
 	req.SetQueryString(params.Encode())
 
 	// Start the connection
+	// Wait for tickLimiter to return before start new request
+	<-r.tickLimiter
 	resp, err := req.Get(url)
 	if err != nil {
 		return nil, errors.Errorf("request error: %v", err)
@@ -144,6 +153,8 @@ func (r *accessTradeRepository) QueryOrders(q types.ATOrderQuery, page int, limi
 	req.SetQueryString(params.Encode())
 
 	// Start the connection
+	// Wait for tickLimiter to return before start new request
+	<-r.tickLimiter
 	resp, err := req.Get(url)
 	if err != nil {
 		return nil, errors.Errorf("request error: %v", err)
@@ -183,6 +194,8 @@ func (r *accessTradeRepository) CreateTrackingLinks(campaignId string, shorten b
 	req.SetBody(reqBody)
 
 	// Start the connection
+	// Wait for tickLimiter to return before start new request
+	<-r.tickLimiter
 	resp, err := req.Post(url)
 	if err != nil {
 		return nil, err

@@ -48,7 +48,7 @@ func (u *accessTradeUCase) QueryAndSaveCampaigns(onlyApproval bool) (int, int, e
 	}
 
 	for true {
-		atResp, err := u.Repo.QueryCampaigns(true, page, limit)
+		_, atResp, err := u.Repo.QueryCampaigns(true, page, limit)
 		if err != nil {
 			log.LG.Errorf("query AccessTrade campaign error: %v", err)
 			break

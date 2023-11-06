@@ -91,7 +91,8 @@ func (s *RepositoryTestSuite) TestCreateLinkFailed() {
 func (s *RepositoryTestSuite) TestRequestLimiter() {
 	// Send two requests and expect take at least 1s two start new one
 	wg := sync.WaitGroup{}
-	runTimes := make(chan time.Time, 2)
+	count := 5
+	runTimes := make(chan time.Time, count)
 	sendReq := func() {
 		wg.Add(1)
 		page := 1
@@ -100,18 +101,27 @@ func (s *RepositoryTestSuite) TestRequestLimiter() {
 		runTimes <- runAt
 		wg.Done()
 	}
+	time.Sleep(time.Second * 2)
 
-	go sendReq()
-	go sendReq()
+	// Run
+	for i := 0; i < count; i++ {
+		go sendReq()
+	}
 
 	// Wait for all requests to finished
 	wg.Wait()
 
 	// When all requests is finished, check the request time
-	runtTime1 := <-runTimes
-	runtTime2 := <-runTimes
+	initialTime := time.Time{}
+	lastTime := time.Time{}
+	for i := 0; i < count; i++ {
+		lastTime = <-runTimes
+		if initialTime.IsZero() {
+			initialTime = lastTime
+		}
+	}
 
-	gap := runtTime1.Sub(runtTime2).Abs()
+	gap := lastTime.Sub(initialTime).Abs().Seconds()
 
-	s.LessOrEqual(time.Second, gap, "gap time must be at least 1s")
+	s.GreaterOrEqual(gap, 3.9, "gap must be at least 4s")
 }

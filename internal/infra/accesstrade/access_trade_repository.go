@@ -16,13 +16,19 @@ import (
 )
 
 const (
-	AccesstradeEndpoint = "https://api.accesstrade.vn/v1"
+	AccesstradeEndpoint     = "https://api.accesstrade.vn/v1"
+	SERVICE_QUERY_CAMPAIGNS = "query-campaigns"
+	SERVICE_QUERY_TXS       = "query-txs"
+	SERVICE_QUERY_MERCHANTS = "query-merchants"
+	SERVICE_QUERY_ORDERS    = "query-orders"
 )
 
+var serviceKeys = []string{SERVICE_QUERY_CAMPAIGNS, SERVICE_QUERY_TXS, SERVICE_QUERY_MERCHANTS, SERVICE_QUERY_ORDERS}
+
 type accessTradeRepository struct {
-	APIKey      string
-	tickLimiter <-chan time.Time
-	caller      *resty.Client
+	APIKey       string
+	tickLimiters map[string]<-chan time.Time
+	caller       *resty.Client
 }
 
 func NewAccessTradeRepository(APIKey string, retry int, timeoutSec int, tickLimiterMs int) interfaces.ATRepository {
@@ -35,12 +41,15 @@ func NewAccessTradeRepository(APIKey string, retry int, timeoutSec int, tickLimi
 	client.SetTimeout(time.Duration(timeoutSec * int(time.Second)))
 
 	// For waiting all the requests to be done before start a new one
-	tick := time.Tick(time.Duration(tickLimiterMs) * time.Millisecond)
+	ticks := map[string]<-chan time.Time{}
+	for _, k := range serviceKeys {
+		ticks[k] = time.Tick(time.Duration(tickLimiterMs) * time.Millisecond)
+	}
 
 	return &accessTradeRepository{
-		APIKey:      APIKey,
-		tickLimiter: tick,
-		caller:      client,
+		APIKey:       APIKey,
+		tickLimiters: ticks,
+		caller:       client,
 	}
 }
 
@@ -56,6 +65,7 @@ func (r *accessTradeRepository) QueryMerchants() ([]types.ATMerchant, error) {
 	req := r.initWithHeaders()
 	fmt.Println("QueryMerchants", url)
 
+	<-r.tickLimiters[SERVICE_QUERY_MERCHANTS]
 	resp, err := req.Get(url)
 	if err != nil {
 		return nil, err
@@ -83,7 +93,7 @@ func (r *accessTradeRepository) QueryCampaigns(onlyApproval bool, page int, limi
 	}
 
 	// Wait for tickLimiter to return before start new request
-	t := <-r.tickLimiter
+	t := <-r.tickLimiters[SERVICE_QUERY_CAMPAIGNS]
 	resp, err := req.Get(url)
 	if err != nil {
 		return t, nil, err
@@ -118,7 +128,7 @@ func (r *accessTradeRepository) QueryTransactions(q types.ATTransactionQuery, pa
 
 	// Start the connection
 	// Wait for tickLimiter to return before start new request
-	<-r.tickLimiter
+	<-r.tickLimiters[SERVICE_QUERY_TXS]
 	resp, err := req.Get(url)
 	if err != nil {
 		return nil, errors.Errorf("request error: %v", err)
@@ -154,7 +164,7 @@ func (r *accessTradeRepository) QueryOrders(q types.ATOrderQuery, page int, limi
 
 	// Start the connection
 	// Wait for tickLimiter to return before start new request
-	<-r.tickLimiter
+	<-r.tickLimiters[SERVICE_QUERY_ORDERS]
 	resp, err := req.Get(url)
 	if err != nil {
 		return nil, errors.Errorf("request error: %v", err)
@@ -194,8 +204,6 @@ func (r *accessTradeRepository) CreateTrackingLinks(campaignId string, shorten b
 	req.SetBody(reqBody)
 
 	// Start the connection
-	// Wait for tickLimiter to return before start new request
-	<-r.tickLimiter
 	resp, err := req.Post(url)
 	if err != nil {
 		return nil, err

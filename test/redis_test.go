@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/astraprotocol/membots-be/conf"
+	"github.com/flexstack.ai/membots-be/conf"
 	"github.com/stretchr/testify/assert"
 )
 

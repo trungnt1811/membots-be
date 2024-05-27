@@ -3,8 +3,8 @@ package fair_launch
 import (
 	"context"
 
-	"github.com/astraprotocol/membots-be/internal/dto"
-	"github.com/astraprotocol/membots-be/internal/interfaces"
+	"github.com/flexstack.ai/membots-be/internal/dto"
+	"github.com/flexstack.ai/membots-be/internal/interfaces"
 )
 
 type fairLauchUCase struct {

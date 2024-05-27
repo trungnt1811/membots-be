@@ -1,6 +1,6 @@
 package model
 
-import "github.com/astraprotocol/membots-be/internal/dto"
+import "github.com/flexstack.ai/membots-be/internal/dto"
 
 type Meme20Meta struct {
 	ID         uint    `json:"id" gorm:"primaryKey"`

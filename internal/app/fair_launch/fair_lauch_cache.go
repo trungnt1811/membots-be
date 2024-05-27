@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/astraprotocol/membots-be/internal/infra/caching"
-	"github.com/astraprotocol/membots-be/internal/interfaces"
-	"github.com/astraprotocol/membots-be/internal/model"
+	"github.com/flexstack.ai/membots-be/internal/infra/caching"
+	"github.com/flexstack.ai/membots-be/internal/interfaces"
+	"github.com/flexstack.ai/membots-be/internal/model"
 )
 
 const keyPrefixFairLauch = "fair_lauch_"

@@ -6,15 +6,15 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/astraprotocol/membots-be/internal/middleware"
-	routeV1 "github.com/astraprotocol/membots-be/internal/route"
-	"github.com/astraprotocol/membots-be/internal/util/log"
+	"github.com/flexstack.ai/membots-be/internal/middleware"
+	routeV1 "github.com/flexstack.ai/membots-be/internal/route"
+	"github.com/flexstack.ai/membots-be/internal/util/log"
 
 	pagination "github.com/AstraProtocol/reward-libs/middleware"
 	"github.com/rs/zerolog"
 	"gorm.io/gorm/logger"
 
-	"github.com/astraprotocol/membots-be/conf"
+	"github.com/flexstack.ai/membots-be/conf"
 	"github.com/gin-gonic/gin"
 	ginPrometheus "github.com/mcuadros/go-gin-prometheus"
 	swaggerFiles "github.com/swaggo/files"

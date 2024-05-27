@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/astraprotocol/membots-be/internal/infra/caching"
+	"github.com/flexstack.ai/membots-be/internal/infra/caching"
 
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"

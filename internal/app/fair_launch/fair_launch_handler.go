@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	util "github.com/AstraProtocol/reward-libs/utils"
-	"github.com/astraprotocol/membots-be/internal/interfaces"
+	"github.com/flexstack.ai/membots-be/internal/interfaces"
 	"github.com/gin-gonic/gin"
 )
 

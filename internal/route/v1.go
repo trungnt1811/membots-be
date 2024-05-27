@@ -3,9 +3,9 @@ package route
 import (
 	"context"
 
-	"github.com/astraprotocol/membots-be/conf"
-	"github.com/astraprotocol/membots-be/internal/app/fair_launch"
-	"github.com/astraprotocol/membots-be/internal/infra/caching"
+	"github.com/flexstack.ai/membots-be/conf"
+	"github.com/flexstack.ai/membots-be/internal/app/fair_launch"
+	"github.com/flexstack.ai/membots-be/internal/infra/caching"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )

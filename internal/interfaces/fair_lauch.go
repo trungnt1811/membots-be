@@ -3,8 +3,8 @@ package interfaces
 import (
 	"context"
 
-	"github.com/astraprotocol/membots-be/internal/dto"
-	"github.com/astraprotocol/membots-be/internal/model"
+	"github.com/flexstack.ai/membots-be/internal/dto"
+	"github.com/flexstack.ai/membots-be/internal/model"
 )
 
 type FairLauchRepository interface {

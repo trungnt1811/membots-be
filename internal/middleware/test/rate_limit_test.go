@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/astraprotocol/membots-be/internal/middleware"
+	"github.com/flexstack.ai/membots-be/internal/middleware"
 
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"

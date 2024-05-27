@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/astraprotocol/membots-be/internal/util"
+	"github.com/flexstack.ai/membots-be/internal/util"
 
 	"github.com/stretchr/testify/assert"
 )

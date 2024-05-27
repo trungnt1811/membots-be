@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/astraprotocol/membots-be/conf"
-	_ "github.com/astraprotocol/membots-be/docs"
-	app "github.com/astraprotocol/membots-be/internal"
+	"github.com/flexstack.ai/membots-be/conf"
+	_ "github.com/flexstack.ai/membots-be/docs"
+	app "github.com/flexstack.ai/membots-be/internal"
 )
 
 func main() {

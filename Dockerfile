@@ -4,7 +4,7 @@ FROM golang:alpine as builder
 # ENV GO111MODULE=on
 
 # Add Maintainer info
-LABEL maintainer="Stella Labs developers"
+LABEL maintainer="Orbit Labs developers"
 
 # Install git.
 # Git is required for fetching the dependencies.

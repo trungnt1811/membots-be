@@ -1,4 +1,4 @@
-module github.com/astraprotocol/affiliate-system
+module github.com/astraprotocol/membots-be
 
 go 1.19
 

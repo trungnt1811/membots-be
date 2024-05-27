@@ -6,42 +6,31 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/astraprotocol/affiliate-system/internal/middleware"
-	routeV1 "github.com/astraprotocol/affiliate-system/internal/route"
-	"github.com/astraprotocol/affiliate-system/internal/util/log"
-	"github.com/astraprotocol/affiliate-system/internal/worker/cron"
-	"github.com/astraprotocol/affiliate-system/internal/worker/kafkaconsumer"
+	"github.com/astraprotocol/membots-be/internal/middleware"
+	routeV1 "github.com/astraprotocol/membots-be/internal/route"
+	"github.com/astraprotocol/membots-be/internal/util/log"
 
 	pagination "github.com/AstraProtocol/reward-libs/middleware"
 	"github.com/rs/zerolog"
 	"gorm.io/gorm/logger"
 
-	"github.com/astraprotocol/affiliate-system/conf"
+	"github.com/astraprotocol/membots-be/conf"
 	"github.com/gin-gonic/gin"
 	ginPrometheus "github.com/mcuadros/go-gin-prometheus"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-// @title           Affiliate System API
+// @title           membots-be API
 // @version         1.0
-// @description     This Swagger docs for Astra Affiliate System.
+// @description     This Swagger docs for membots-be.
 // @termsOfService  http://swagger.io/terms/
-// @contact.name   API Support
-// @contact.url    http://www.swagger.io/support
-// @contact.email  support@swagger.io
-// @license.name  Apache 2.0
-// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+// @contact.name    API Support
+// @contact.url     http://www.swagger.io/support
+// @contact.email   support@swagger.io
+// @license.name    Apache 2.0
+// @license.url     http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @securityDefinitions.apiKey	ApiKeyAuth
-// @in							header
-// @name						Authorization
-// @description			Use for authorization of reward creator
-
-// RunApp @securityDefinitions.apiKey	BasicKeyAuth
-// @in							header
-// @name						Authorization
-// @description			Use for authorization during server to server calls
 func RunApp(config *conf.Configuration) {
 	// Set zerolog global level
 	// zerolog.SetGlobalLevel(zerolog.InfoLevel)
@@ -74,12 +63,6 @@ func RunApp(config *conf.Configuration) {
 	p.Use(r)
 
 	var err error
-
-	// SECTION: Run worker
-	cron.RegisterCronJobs(config, db)
-
-	// SECTION: Run kafka consumer
-	kafkaconsumer.RegisConsumers(config, db)
 
 	// SECTION: Run Gin router
 	err = r.Run(fmt.Sprintf("0.0.0.0:%v", config.AppPort))

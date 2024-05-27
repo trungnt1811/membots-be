@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/astraprotocol/affiliate-system/conf"
-	_ "github.com/astraprotocol/affiliate-system/docs"
-	app "github.com/astraprotocol/affiliate-system/internal"
+	"github.com/astraprotocol/membots-be/conf"
+	_ "github.com/astraprotocol/membots-be/docs"
+	app "github.com/astraprotocol/membots-be/internal"
 )
 
 func main() {

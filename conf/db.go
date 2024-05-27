@@ -11,8 +11,8 @@ import (
 )
 
 func GetWriteDBConnectionURL() string {
-	return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", configuration.Database.WriteDbUser, configuration.Database.WriteDbPassword,
-		configuration.Database.WriteDbHost, configuration.Database.DbPort, configuration.Database.DbName)
+	return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", configuration.Database.DbUser, configuration.Database.DbPassword,
+		configuration.Database.DbHost, configuration.Database.DbPort, configuration.Database.DbName)
 }
 
 func DBConn() *gorm.DB {

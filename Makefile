@@ -1,30 +1,30 @@
-.PHONY: affiliate-system
+.PHONY: membots-be
 
-build: affiliate-system
-affiliate-system:
-	go build -o ./affiliate-system ./cmd/main.go
+build: membots-be
+membots-be:
+	go build -o ./membots-be ./cmd/main.go
 clean:
-	rm -i -f affiliate-system
+	rm -i -f membots-be
 
 run-test:
-	go test -v ./internal/app/affiliate/caching/test
-	go test -v ./internal/app/affiliate/util/test
-	# go test -v ./internal/app/affiliate/watcher/test
+	go test -v ./internal/app/membots-be/caching/test
+	go test -v ./internal/app/membots-be/util/test
+	# go test -v ./internal/app/membots-be/watcher/test
 	go test -v ./test
 
 restart: stop clean build start
-	@echo "Affiliate System restarted!"
+	@echo "membots-be restarted!"
 
 build-service: clean build
-	@echo "Restart service with cmd: 'systemctl restart affiliate-system'"
-	systemctl restart affiliate-system
+	@echo "Restart service with cmd: 'systemctl restart membots-be'"
+	systemctl restart membots-be
 
 start: build
-	@echo "Starting the Affiliate System..."
-	@env DB_PASSWORD=${DB_PASSWORD} ./affiliate-system &
-	@echo "Affiliate System running!"
+	@echo "Starting the membots-be..."
+	@env DB_PASSWORD=${DB_PASSWORD} ./membots-be &
+	@echo "membots-be running!"
 
 stop:
-	@echo "Stopping the Affiliate System..."
-	@-pkill -SIGTERM -f "affiliate-system"
-	@echo "Stopped Affiliate System"
+	@echo "Stopping the membots-be..."
+	@-pkill -SIGTERM -f "membots-be"
+	@echo "Stopped membots-be"

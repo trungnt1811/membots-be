@@ -2,11 +2,12 @@ package test
 
 import (
 	"fmt"
-	"github.com/astraprotocol/affiliate-system/internal/middleware"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"github.com/astraprotocol/membots-be/internal/middleware"
 
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
@@ -42,5 +43,5 @@ func TestRateLimit(t *testing.T) {
 	}
 	// Expect last time to be error
 	asserts.Equal(http.StatusTooManyRequests, lastResp.Code)
-	fmt.Println(string(lastResp.Body.Bytes()))
+	fmt.Println(lastResp.Body.Bytes())
 }

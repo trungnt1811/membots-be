@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/flexstack.ai/membots-be/conf"
-	"github.com/flexstack.ai/membots-be/internal/app/memeception"
+	"github.com/flexstack.ai/membots-be/internal/module/memeception"
 )
 
 func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {

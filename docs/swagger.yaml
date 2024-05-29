@@ -1,27 +1,74 @@
 definitions:
-  dto.Meme20MetaDto:
+  dto.Meme:
     properties:
-      created_at:
+      bannerUrl:
         type: string
-      creator_allocation_vestedy:
+      contractAddress:
         type: string
-      creator_swap_fee:
+      creatorAddress:
         type: string
+      decimals:
+        type: integer
       description:
-        type: string
-      fair_lauch_type:
         type: string
       id:
         type: integer
-      meme_type:
+      live:
+        type: boolean
+      logoUrl:
         type: string
-      telegram_url:
+      memeception:
+        $ref: '#/definitions/dto.Memeception'
+      memerc20:
+        type: boolean
+      name:
         type: string
-      ticker:
+      networkId:
+        type: integer
+      socials:
+        additionalProperties:
+          $ref: '#/definitions/dto.Social'
+        type: object
+      swapFeeBps:
+        type: integer
+      symbol:
         type: string
-      twitter_url:
+      totalSupply:
         type: string
-      updated_at:
+      vestingAllocBps:
+        type: integer
+      website:
+        type: string
+    type: object
+  dto.Memeception:
+    properties:
+      ama:
+        type: boolean
+      contractAddress:
+        type: string
+      startAt:
+        type: integer
+      status:
+        type: integer
+    type: object
+  dto.MemeceptionResp:
+    properties:
+      meme:
+        $ref: '#/definitions/dto.Meme'
+      price:
+        type: integer
+    type: object
+  dto.Social:
+    properties:
+      displayName:
+        type: string
+      photoUrl:
+        type: string
+      provider:
+        type: string
+      url:
+        type: string
+      username:
         type: string
     type: object
   util.GeneralError:
@@ -51,15 +98,15 @@ info:
   title: membots-be API
   version: "1.0"
 paths:
-  /api/v1/module/fair_lauch/meme/{ticker}:
+  /api/v1/memeception:
     get:
       consumes:
       - application/json
-      description: Get Meme20 metadata by ticker
+      description: Get memeception by symbol
       parameters:
-      - description: ticker to query
+      - description: 'symbol to query, default is '
         in: query
-        name: ticker
+        name: symbol
         type: string
       produces:
       - application/json
@@ -67,7 +114,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.Meme20MetaDto'
+            $ref: '#/definitions/dto.MemeceptionResp'
         "400":
           description: Bad Request
           schema:
@@ -76,7 +123,7 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/util.GeneralError'
-      summary: Get Meme20 metadata by ticker
+      summary: Get memeception by symbol
       tags:
-      - category
+      - memeception
 swagger: "2.0"

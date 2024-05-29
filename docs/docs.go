@@ -25,9 +25,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/v1/module/fair_lauch/meme/{ticker}": {
+        "/api/v1/memeception": {
             "get": {
-                "description": "Get Meme20 metadata by ticker",
+                "description": "Get memeception by symbol",
                 "consumes": [
                     "application/json"
                 ],
@@ -35,14 +35,14 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "category"
+                    "memeception"
                 ],
-                "summary": "Get Meme20 metadata by ticker",
+                "summary": "Get memeception by symbol",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ticker to query",
-                        "name": "ticker",
+                        "description": "symbol to query, default is ",
+                        "name": "symbol",
                         "in": "query"
                     }
                 ],
@@ -50,7 +50,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.Meme20MetaDto"
+                            "$ref": "#/definitions/dto.MemeceptionResp"
                         }
                     },
                     "400": {
@@ -70,40 +70,112 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "dto.Meme20MetaDto": {
+        "dto.Meme": {
             "type": "object",
             "properties": {
-                "created_at": {
+                "bannerUrl": {
                     "type": "string"
                 },
-                "creator_allocation_vestedy": {
+                "contractAddress": {
                     "type": "string"
                 },
-                "creator_swap_fee": {
+                "creatorAddress": {
                     "type": "string"
+                },
+                "decimals": {
+                    "type": "integer"
                 },
                 "description": {
-                    "type": "string"
-                },
-                "fair_lauch_type": {
                     "type": "string"
                 },
                 "id": {
                     "type": "integer"
                 },
-                "meme_type": {
+                "live": {
+                    "type": "boolean"
+                },
+                "logoUrl": {
                     "type": "string"
                 },
-                "telegram_url": {
+                "memeception": {
+                    "$ref": "#/definitions/dto.Memeception"
+                },
+                "memerc20": {
+                    "type": "boolean"
+                },
+                "name": {
                     "type": "string"
                 },
-                "ticker": {
+                "networkId": {
+                    "type": "integer"
+                },
+                "socials": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/dto.Social"
+                    }
+                },
+                "swapFeeBps": {
+                    "type": "integer"
+                },
+                "symbol": {
                     "type": "string"
                 },
-                "twitter_url": {
+                "totalSupply": {
                     "type": "string"
                 },
-                "updated_at": {
+                "vestingAllocBps": {
+                    "type": "integer"
+                },
+                "website": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.Memeception": {
+            "type": "object",
+            "properties": {
+                "ama": {
+                    "type": "boolean"
+                },
+                "contractAddress": {
+                    "type": "string"
+                },
+                "startAt": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.MemeceptionResp": {
+            "type": "object",
+            "properties": {
+                "meme": {
+                    "$ref": "#/definitions/dto.Meme"
+                },
+                "price": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.Social": {
+            "type": "object",
+            "properties": {
+                "displayName": {
+                    "type": "string"
+                },
+                "photoUrl": {
+                    "type": "string"
+                },
+                "provider": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }

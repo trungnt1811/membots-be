@@ -16,7 +16,6 @@ import (
 
 	"github.com/flexstack.ai/membots-be/conf"
 	"github.com/gin-gonic/gin"
-	ginPrometheus "github.com/mcuadros/go-gin-prometheus"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -59,13 +58,9 @@ func RunApp(config *conf.Configuration) {
 		})
 	})
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	p := ginPrometheus.NewPrometheus(config.AppName)
-	p.Use(r)
-
-	var err error
 
 	// SECTION: Run Gin router
-	err = r.Run(fmt.Sprintf("0.0.0.0:%v", config.AppPort))
+	err := r.Run(fmt.Sprintf("0.0.0.0:%v", config.AppPort))
 	if err != nil {
 		log.LG.Fatalf("failed to run gin router %v", err)
 	}

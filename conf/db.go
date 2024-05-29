@@ -7,16 +7,15 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"gorm.io/plugin/prometheus"
 )
 
-func GetWriteDBConnectionURL() string {
+func GetDBConnectionURL() string {
 	return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", configuration.Database.DbUser, configuration.Database.DbPassword,
 		configuration.Database.DbHost, configuration.Database.DbPort, configuration.Database.DbName)
 }
 
 func DBConn() *gorm.DB {
-	WriteDbUrl := GetWriteDBConnectionURL()
+	WriteDbUrl := GetDBConnectionURL()
 	fmt.Println(WriteDbUrl)
 	var db *gorm.DB
 	var err error
@@ -40,10 +39,10 @@ func DBConn() *gorm.DB {
 }
 
 func DBConnWithLoglevel(logMode logger.LogLevel) *gorm.DB {
-	WriteDbUrl := GetWriteDBConnectionURL()
+	dbUrl := GetDBConnectionURL()
 	var db *gorm.DB
 	var err error
-	db, err = gorm.Open(mysql.Open(WriteDbUrl), &gorm.Config{
+	db, err = gorm.Open(mysql.Open(dbUrl), &gorm.Config{
 		Logger: logger.Default.LogMode(logMode),
 	})
 	if err != nil {
@@ -63,16 +62,6 @@ func DBConnWithLoglevel(logMode logger.LogLevel) *gorm.DB {
 
 	// SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
 	sqlDB.SetConnMaxLifetime(time.Hour)
-
-	db.Use(prometheus.New(prometheus.Config{
-		DBName:          configuration.Database.DbName, // `DBName` as metrics label
-		RefreshInterval: 15,                            // refresh metrics interval (default 15 seconds)
-		StartServer:     false,                         // start http server to expose metrics
-		HTTPServerPort:  configuration.AppPort,         // configure http server port, default port 8080 (if you have configured multiple instances, only the first `HTTPServerPort` will be used to start server)
-		MetricsCollector: []prometheus.MetricsCollector{
-			&prometheus.MySQL{VariableNames: []string{"Threads_running"}},
-		},
-	}))
 
 	return db
 }

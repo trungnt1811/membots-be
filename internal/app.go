@@ -6,12 +6,13 @@ import (
 	"os/signal"
 	"syscall"
 
+	"gorm.io/gorm/logger"
+
 	pagination "github.com/AstraProtocol/reward-libs/middleware"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"gorm.io/gorm/logger"
 
 	"github.com/flexstack.ai/membots-be/conf"
 	"github.com/flexstack.ai/membots-be/internal/middleware"

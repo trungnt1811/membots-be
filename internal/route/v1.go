@@ -1,8 +1,9 @@
 package route
 
 import (
-	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+
+	"github.com/gin-gonic/gin"
 
 	"github.com/flexstack.ai/membots-be/conf"
 	"github.com/flexstack.ai/membots-be/internal/app/memeception"

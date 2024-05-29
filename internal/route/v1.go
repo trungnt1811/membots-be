@@ -1,11 +1,8 @@
 package route
 
 import (
-	"context"
-
 	"github.com/flexstack.ai/membots-be/conf"
-	"github.com/flexstack.ai/membots-be/internal/app/fair_launch"
-	"github.com/flexstack.ai/membots-be/internal/infra/caching"
+	"github.com/flexstack.ai/membots-be/internal/app/memeception"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -14,16 +11,16 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	v1 := r.Group("/api/v1")
 
 	// SECTION: Create redis client
-	rdb := conf.RedisConn()
-	redisClient := caching.NewCachingRepository(context.Background(), rdb)
+	//rdb := conf.RedisConn()
+	//redisClient := caching.NewCachingRepository(context.Background(), rdb)
 
-	// SECTION: fair launch module
-	appRouter := v1.Group("/fair-launch")
+	// SECTION: memeception module
+	appRouter := v1.Group("/memeception")
 
-	fairLaunchRepository := fair_launch.NewFairLauchRepository(db)
-	fairLaunchCache := fair_launch.NewFairLauchCacheRepository(fairLaunchRepository, redisClient)
-	fairLaunchUCase := fair_launch.NewFairLauchUCaseUCase(fairLaunchCache)
+	memeceptionRepository := memeception.NewMemeceptionRepository(db)
+	//memeceptionCache := memeception.NewMemeceptionCacheRepository(memeceptionRepository, redisClient)
+	memeceptionUCase := memeception.NewMemeceptionUCase(memeceptionRepository)
 
-	fairLaunchHandler := fair_launch.NewFairLaunchHandler(fairLaunchUCase)
-	appRouter.GET("/meme", fairLaunchHandler.GetMeme20MetaByTicker)
+	memeceptionHandler := memeception.NewMemeceptionHandler(memeceptionUCase)
+	appRouter.GET("", memeceptionHandler.GetMemeceptionBySymbol)
 }

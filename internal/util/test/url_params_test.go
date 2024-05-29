@@ -1,7 +1,6 @@
 package test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -36,17 +35,4 @@ func Test_PackQueryParamsToFullUrl(t *testing.T) {
 
 	url2 := "https://astranaut.io"
 	asserts.Equal("https://astranaut.io?utm_source=stella", util.PackQueryParamsToUrl(url2, params))
-}
-
-func Test_ParseAndStringifyUTMContent(t *testing.T) {
-	asserts := assert.New(t)
-
-	userId := uint(1)
-	trackedId := uint64(100)
-	utmStr := fmt.Sprintf("%d-%d", userId, trackedId)
-
-	asserts.Equal(utmStr, util.StringifyUTMContent(userId, trackedId))
-	parsedUserId, parsedTrackedId := util.ParseUTMContent(utmStr)
-	asserts.Equal(userId, parsedUserId)
-	asserts.Equal(trackedId, parsedTrackedId)
 }

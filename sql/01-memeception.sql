@@ -33,7 +33,7 @@ CREATE TABLE memeception (
     PRIMARY KEY (id),
     FOREIGN KEY (meme_id) REFERENCES meme(id)
 ) ENGINE = InnoDB;
-CREATE INDEX memeception_start_at ON memeception (start_at);
+CREATE INDEX memeception_start_at_idx ON memeception (start_at);
 -- social table
 CREATE TABLE social (
     id INT NOT NULL AUTO_INCREMENT,

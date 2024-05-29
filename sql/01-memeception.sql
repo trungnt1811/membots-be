@@ -20,7 +20,8 @@ CREATE TABLE meme (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
 ) ENGINE = InnoDB;
-CREATE INDEX meme_symbol ON meme (symbol);
+CREATE INDEX meme_symbol_idx ON meme (symbol);
+CREATE UNIQUE INDEX meme_symbol_uidx ON meme (symbol);
 -- memception table
 CREATE TABLE memeception (
     id INT NOT NULL AUTO_INCREMENT,

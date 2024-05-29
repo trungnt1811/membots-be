@@ -6,8 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/flexstack.ai/membots-be/conf"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/flexstack.ai/membots-be/conf"
 )
 
 func TestRedisConn(t *testing.T) {
@@ -23,7 +24,7 @@ func TestRedisConn(t *testing.T) {
 		fmt.Printf("cancelFunc: %v\n", cancelFunc)
 	}
 
-	cmd := rdc.Set(testCtx, "test", "test", time.Duration(time.Second*30))
+	cmd := rdc.Set(testCtx, "test", "test", time.Second*30)
 	err := cmd.Err()
 	asserts.NoError(err)
 

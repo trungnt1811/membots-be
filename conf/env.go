@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/rs/zerolog/log"
-
 	"github.com/spf13/viper"
 )
 
@@ -23,11 +22,11 @@ type DatabaseConfiguration struct {
 }
 
 type Configuration struct {
-	Database          DatabaseConfiguration       `mapstructure:",squash"`
-	Redis             RedisConfiguration          `mapstructure:",squash"`
-	AppName           string                      `mapstructure:"APP_NAME"`
-	AppPort           uint32                      `mapstructure:"APP_PORT"`
-	Env               string                      `mapstructure:"ENV"`
+	Database DatabaseConfiguration `mapstructure:",squash"`
+	Redis    RedisConfiguration    `mapstructure:",squash"`
+	AppName  string                `mapstructure:"APP_NAME"`
+	AppPort  uint32                `mapstructure:"APP_PORT"`
+	Env      string                `mapstructure:"ENV"`
 }
 
 var configuration Configuration

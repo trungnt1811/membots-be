@@ -24,7 +24,7 @@ func (u *memeceptionUCase) GetMemeceptionBySymbol(ctx context.Context, symbol st
 	}
 	// TODO: get price from RPC
 	memeceptionResp := dto.MemeceptionResp{
-		Meme: memeMeta.ToDto(),
+		Meme:  memeMeta.ToDto(),
 		Price: 0,
 	}
 	return memeceptionResp, nil

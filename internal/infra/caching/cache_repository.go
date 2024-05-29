@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/redis/go-redis/v9"
-
 	"github.com/vmihailenco/msgpack/v5"
 )
 

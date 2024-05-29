@@ -6,10 +6,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/flexstack.ai/membots-be/internal/infra/caching"
-
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/flexstack.ai/membots-be/internal/infra/caching"
 )
 
 type Keyer struct {

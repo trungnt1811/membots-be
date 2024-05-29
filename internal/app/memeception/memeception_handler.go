@@ -5,8 +5,9 @@ import (
 	"net/http"
 
 	util "github.com/AstraProtocol/reward-libs/utils"
-	"github.com/flexstack.ai/membots-be/internal/interfaces"
 	"github.com/gin-gonic/gin"
+
+	"github.com/flexstack.ai/membots-be/internal/interfaces"
 )
 
 type MemeceptionHandler struct {

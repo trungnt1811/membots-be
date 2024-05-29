@@ -15,7 +15,7 @@ func FormatJson(msg interface{}) (string, error) {
 	return string(jsb), nil
 }
 
-// MustFormatJson is the same as FormatJson, but it will panic if the given msg cannot be marshalled.
+// MustFormatJson is the same as FormatJson, but it will panic if the given msg cannot be marshaled.
 func MustFormatJson(msg interface{}) string {
 	jsb, err := json.Marshal(msg)
 	if err != nil {

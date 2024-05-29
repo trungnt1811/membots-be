@@ -3,9 +3,10 @@ package memeception
 import (
 	"context"
 
+	"gorm.io/gorm"
+
 	"github.com/flexstack.ai/membots-be/internal/interfaces"
 	"github.com/flexstack.ai/membots-be/internal/model"
-	"gorm.io/gorm"
 )
 
 type memeceptionRepository struct {

@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/flexstack.ai/membots-be/internal/util"
-
 	"github.com/stretchr/testify/assert"
+
+	"github.com/flexstack.ai/membots-be/internal/util"
 )
 
 func Test_PackQueryParamsToNoSearchUrl(t *testing.T) {

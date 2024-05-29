@@ -3,9 +3,9 @@ package test
 import (
 	"testing"
 
-	"github.com/flexstack.ai/membots-be/internal/util"
-
 	"github.com/stretchr/testify/assert"
+
+	"github.com/flexstack.ai/membots-be/internal/util"
 )
 
 func Test_ListJoin(t *testing.T) {

@@ -10,20 +10,22 @@ import (
 	"github.com/flexstack.ai/membots-be/internal/model"
 )
 
-const keyPrefixMemeception = "memeception_"
-const cacheTimeMemeception = 10 * time.Second
+const (
+	keyPrefixMemeception = "memeception_"
+	cacheTimeMemeception = 10 * time.Second
+)
 
 type memeceptionCache struct {
-	MemeceptionRepository	interfaces.MemeceptionRepository
-	Cache                   caching.Repository
+	MemeceptionRepository interfaces.MemeceptionRepository
+	Cache                 caching.Repository
 }
 
 func NewMemeceptionCacheRepository(repo interfaces.MemeceptionRepository,
 	cache caching.Repository,
 ) interfaces.MemeceptionRepository {
 	return &memeceptionCache{
-		MemeceptionRepository:	repo,
-		Cache:                	cache,
+		MemeceptionRepository: repo,
+		Cache:                 cache,
 	}
 }
 

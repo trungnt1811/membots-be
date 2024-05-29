@@ -30,3 +30,6 @@ stop:
 
 lint:
 	golangci-lint run --fix
+
+swagger:
+	swag init -g internal/app.go	

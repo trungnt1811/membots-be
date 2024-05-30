@@ -47,3 +47,23 @@ func (handler *MemeceptionHandler) GetMemeceptionBySymbol(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, response)
 }
+
+// GetMemeceptions Get memeceptions
+// @Summary Get memeceptions
+// @Description Get memeceptions
+// @Tags 	memeception
+// @Accept	json
+// @Produce json
+// @Success 200 		{object}	dto.MemeceptionResp
+// @Failure 401 		{object}	util.GeneralError
+// @Failure 400 		{object}	util.GeneralError
+// @Router 	/api/v1/memeceptions [get]
+func (handler *MemeceptionHandler) GetMemeceptions(ctx *gin.Context) {
+	response, err := handler.UCase.GetMemeceptions(ctx)
+	if err != nil {
+		util.RespondError(ctx, http.StatusInternalServerError, "Get memeceptions error: ", err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, response)
+}

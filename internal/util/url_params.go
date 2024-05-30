@@ -23,4 +23,3 @@ func PackQueryParamsToUrl(s string, params map[string]string) string {
 
 	return fmt.Sprint(s, "&", strings.Join(q, "&"))
 }
-

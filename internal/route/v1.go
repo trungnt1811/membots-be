@@ -16,13 +16,14 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 
 	// redisClient := caching.NewCachingRepository(context.Background(), rdb)
 
-	// SECTION: memeception module
-	appRouter := v1.Group("/memeception")
+	// SECTION: truglymeme
+	appRouter := v1.Group("/truglymeme")
 
 	memeceptionRepository := memeception.NewMemeceptionRepository(db)
 	// memeceptionCache := memeception.NewMemeceptionCacheRepository(memeceptionRepository, redisClient)
 	memeceptionUCase := memeception.NewMemeceptionUCase(memeceptionRepository)
 
 	memeceptionHandler := memeception.NewMemeceptionHandler(memeceptionUCase)
-	appRouter.GET("", memeceptionHandler.GetMemeceptionBySymbol)
+	appRouter.GET("/memeception", memeceptionHandler.GetMemeceptionBySymbol)
+	appRouter.GET("/memeceptions", memeceptionHandler.GetMemeceptions)
 }

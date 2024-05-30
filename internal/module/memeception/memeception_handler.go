@@ -54,7 +54,7 @@ func (handler *MemeceptionHandler) GetMemeceptionBySymbol(ctx *gin.Context) {
 // @Tags 	memeception
 // @Accept	json
 // @Produce json
-// @Success 200 		{object}	dto.MemeceptionResp
+// @Success 200 		{object}	dto.MemeceptionsResp
 // @Failure 401 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
 // @Router 	/api/v1/memeceptions [get]

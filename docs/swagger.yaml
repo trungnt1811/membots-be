@@ -84,7 +84,7 @@ definitions:
       price:
         type: integer
     type: object
-  dto.MemeceptionResp:
+  dto.MemeceptionsResp:
     properties:
       live:
         items:
@@ -178,7 +178,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.MemeceptionResp'
+            $ref: '#/definitions/dto.MemeceptionsResp'
         "400":
           description: Bad Request
           schema:

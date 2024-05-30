@@ -5,7 +5,7 @@ type MemeceptionDetailResp struct {
 	Price uint64     `json:"price"`
 }
 
-type MemeceptionResp struct {
+type MemeceptionsResp struct {
 	Live     []MemeceptionCommon `json:"live"`
 	Upcoming []MemeceptionCommon `json:"upcoming"`
 	Past     []MemeceptionCommon `json:"past"`

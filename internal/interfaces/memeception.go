@@ -16,5 +16,5 @@ type MemeceptionRepository interface {
 
 type MemeceptionUCase interface {
 	GetMemeceptionBySymbol(ctx context.Context, symbol string) (dto.MemeceptionDetailResp, error)
-	GetMemeceptions(ctx context.Context) (dto.MemeceptionResp, error)
+	GetMemeceptions(ctx context.Context) (dto.MemeceptionsResp, error)
 }

@@ -85,7 +85,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.MemeceptionResp"
+                            "$ref": "#/definitions/dto.MemeceptionsResp"
                         }
                     },
                     "400": {
@@ -235,7 +235,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.MemeceptionResp": {
+        "dto.MemeceptionsResp": {
             "type": "object",
             "properties": {
                 "live": {

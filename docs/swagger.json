@@ -58,72 +58,65 @@
                     }
                 }
             }
+        },
+        "/api/v1/memeceptions": {
+            "get": {
+                "description": "Get memeceptions",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "memeception"
+                ],
+                "summary": "Get memeceptions",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.MemeceptionResp"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
-        "dto.Meme": {
+        "dto.MemeCommon": {
             "type": "object",
             "properties": {
                 "bannerUrl": {
                     "type": "string"
                 },
-                "contractAddress": {
-                    "type": "string"
-                },
-                "creatorAddress": {
-                    "type": "string"
-                },
-                "decimals": {
-                    "type": "integer"
-                },
                 "description": {
                     "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "live": {
-                    "type": "boolean"
                 },
                 "logoUrl": {
                     "type": "string"
                 },
-                "memeception": {
-                    "$ref": "#/definitions/dto.Memeception"
-                },
-                "memerc20": {
-                    "type": "boolean"
-                },
                 "name": {
                     "type": "string"
                 },
-                "networkId": {
-                    "type": "integer"
-                },
-                "socials": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "$ref": "#/definitions/dto.Social"
-                    }
-                },
-                "swapFeeBps": {
-                    "type": "integer"
-                },
                 "symbol": {
-                    "type": "string"
-                },
-                "totalSupply": {
-                    "type": "string"
-                },
-                "vestingAllocBps": {
-                    "type": "integer"
-                },
-                "website": {
                     "type": "string"
                 }
             }
         },
-        "dto.Memeception": {
+        "dto.MemeceptionCommon": {
             "type": "object",
             "properties": {
                 "ama": {
@@ -131,6 +124,9 @@
                 },
                 "contractAddress": {
                     "type": "string"
+                },
+                "meme": {
+                    "$ref": "#/definitions/dto.MemeCommon"
                 },
                 "startAt": {
                     "type": "integer"
@@ -143,31 +139,23 @@
         "dto.MemeceptionResp": {
             "type": "object",
             "properties": {
-                "meme": {
-                    "$ref": "#/definitions/dto.Meme"
+                "live": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.MemeceptionCommon"
+                    }
                 },
-                "price": {
-                    "type": "integer"
-                }
-            }
-        },
-        "dto.Social": {
-            "type": "object",
-            "properties": {
-                "displayName": {
-                    "type": "string"
+                "past": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.MemeceptionCommon"
+                    }
                 },
-                "photoUrl": {
-                    "type": "string"
-                },
-                "provider": {
-                    "type": "string"
-                },
-                "url": {
-                    "type": "string"
-                },
-                "username": {
-                    "type": "string"
+                "upcoming": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.MemeceptionCommon"
+                    }
                 }
             }
         },

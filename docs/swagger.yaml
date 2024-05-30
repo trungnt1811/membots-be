@@ -1,51 +1,25 @@
 definitions:
-  dto.Meme:
+  dto.MemeCommon:
     properties:
       bannerUrl:
         type: string
-      contractAddress:
-        type: string
-      creatorAddress:
-        type: string
-      decimals:
-        type: integer
       description:
         type: string
-      id:
-        type: integer
-      live:
-        type: boolean
       logoUrl:
         type: string
-      memeception:
-        $ref: '#/definitions/dto.Memeception'
-      memerc20:
-        type: boolean
       name:
         type: string
-      networkId:
-        type: integer
-      socials:
-        additionalProperties:
-          $ref: '#/definitions/dto.Social'
-        type: object
-      swapFeeBps:
-        type: integer
       symbol:
         type: string
-      totalSupply:
-        type: string
-      vestingAllocBps:
-        type: integer
-      website:
-        type: string
     type: object
-  dto.Memeception:
+  dto.MemeceptionCommon:
     properties:
       ama:
         type: boolean
       contractAddress:
         type: string
+      meme:
+        $ref: '#/definitions/dto.MemeCommon'
       startAt:
         type: integer
       status:
@@ -53,23 +27,18 @@ definitions:
     type: object
   dto.MemeceptionResp:
     properties:
-      meme:
-        $ref: '#/definitions/dto.Meme'
-      price:
-        type: integer
-    type: object
-  dto.Social:
-    properties:
-      displayName:
-        type: string
-      photoUrl:
-        type: string
-      provider:
-        type: string
-      url:
-        type: string
-      username:
-        type: string
+      live:
+        items:
+          $ref: '#/definitions/dto.MemeceptionCommon'
+        type: array
+      past:
+        items:
+          $ref: '#/definitions/dto.MemeceptionCommon'
+        type: array
+      upcoming:
+        items:
+          $ref: '#/definitions/dto.MemeceptionCommon'
+        type: array
     type: object
   util.GeneralError:
     properties:
@@ -124,6 +93,29 @@ paths:
           schema:
             $ref: '#/definitions/util.GeneralError'
       summary: Get memeception by symbol
+      tags:
+      - memeception
+  /api/v1/memeceptions:
+    get:
+      consumes:
+      - application/json
+      description: Get memeceptions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.MemeceptionResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      summary: Get memeceptions
       tags:
       - memeception
 swagger: "2.0"

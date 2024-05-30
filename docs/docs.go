@@ -50,7 +50,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.MemeceptionResp"
+                            "$ref": "#/definitions/dto.MemeceptionDetailResp"
                         }
                     },
                     "400": {
@@ -125,6 +125,85 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.MemeDetail": {
+            "type": "object",
+            "properties": {
+                "bannerUrl": {
+                    "type": "string"
+                },
+                "contractAddress": {
+                    "type": "string"
+                },
+                "creatorAddress": {
+                    "type": "string"
+                },
+                "decimals": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "live": {
+                    "type": "boolean"
+                },
+                "logoUrl": {
+                    "type": "string"
+                },
+                "memeception": {
+                    "$ref": "#/definitions/dto.Memeception"
+                },
+                "memerc20": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "networkId": {
+                    "type": "integer"
+                },
+                "socials": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/dto.Social"
+                    }
+                },
+                "swapFeeBps": {
+                    "type": "integer"
+                },
+                "symbol": {
+                    "type": "string"
+                },
+                "totalSupply": {
+                    "type": "string"
+                },
+                "vestingAllocBps": {
+                    "type": "integer"
+                },
+                "website": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.Memeception": {
+            "type": "object",
+            "properties": {
+                "ama": {
+                    "type": "boolean"
+                },
+                "contractAddress": {
+                    "type": "string"
+                },
+                "startAt": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
         "dto.MemeceptionCommon": {
             "type": "object",
             "properties": {
@@ -141,6 +220,17 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.MemeceptionDetailResp": {
+            "type": "object",
+            "properties": {
+                "meme": {
+                    "$ref": "#/definitions/dto.MemeDetail"
+                },
+                "price": {
                     "type": "integer"
                 }
             }
@@ -165,6 +255,26 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/dto.MemeceptionCommon"
                     }
+                }
+            }
+        },
+        "dto.Social": {
+            "type": "object",
+            "properties": {
+                "displayName": {
+                    "type": "string"
+                },
+                "photoUrl": {
+                    "type": "string"
+                },
+                "provider": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
                 }
             }
         },

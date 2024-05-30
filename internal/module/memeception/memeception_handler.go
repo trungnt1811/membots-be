@@ -27,7 +27,7 @@ func NewMemeceptionHandler(ucase interfaces.MemeceptionUCase) *MemeceptionHandle
 // @Accept	json
 // @Produce json
 // @Param symbol query string false "symbol to query, default is "
-// @Success 200 		{object}	dto.MemeceptionResp
+// @Success 200 		{object}	dto.MemeceptionDetailResp
 // @Failure 401 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
 // @Router 	/api/v1/memeception [get]

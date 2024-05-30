@@ -12,6 +12,58 @@ definitions:
       symbol:
         type: string
     type: object
+  dto.MemeDetail:
+    properties:
+      bannerUrl:
+        type: string
+      contractAddress:
+        type: string
+      creatorAddress:
+        type: string
+      decimals:
+        type: integer
+      description:
+        type: string
+      id:
+        type: integer
+      live:
+        type: boolean
+      logoUrl:
+        type: string
+      memeception:
+        $ref: '#/definitions/dto.Memeception'
+      memerc20:
+        type: boolean
+      name:
+        type: string
+      networkId:
+        type: integer
+      socials:
+        additionalProperties:
+          $ref: '#/definitions/dto.Social'
+        type: object
+      swapFeeBps:
+        type: integer
+      symbol:
+        type: string
+      totalSupply:
+        type: string
+      vestingAllocBps:
+        type: integer
+      website:
+        type: string
+    type: object
+  dto.Memeception:
+    properties:
+      ama:
+        type: boolean
+      contractAddress:
+        type: string
+      startAt:
+        type: integer
+      status:
+        type: integer
+    type: object
   dto.MemeceptionCommon:
     properties:
       ama:
@@ -23,6 +75,13 @@ definitions:
       startAt:
         type: integer
       status:
+        type: integer
+    type: object
+  dto.MemeceptionDetailResp:
+    properties:
+      meme:
+        $ref: '#/definitions/dto.MemeDetail'
+      price:
         type: integer
     type: object
   dto.MemeceptionResp:
@@ -39,6 +98,19 @@ definitions:
         items:
           $ref: '#/definitions/dto.MemeceptionCommon'
         type: array
+    type: object
+  dto.Social:
+    properties:
+      displayName:
+        type: string
+      photoUrl:
+        type: string
+      provider:
+        type: string
+      url:
+        type: string
+      username:
+        type: string
     type: object
   util.GeneralError:
     properties:
@@ -83,7 +155,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.MemeceptionResp'
+            $ref: '#/definitions/dto.MemeceptionDetailResp'
         "400":
           description: Bad Request
           schema:

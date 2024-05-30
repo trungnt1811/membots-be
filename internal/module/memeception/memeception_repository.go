@@ -24,30 +24,37 @@ func NewMemeceptionRepository(db *gorm.DB) interfaces.MemeceptionRepository {
 
 func (r memeceptionRepository) GetMemeceptionBySymbol(ctx context.Context, symbol string) (model.Meme, error) {
 	var memeMeta model.Meme
-	err := r.db.Where("symbol = ?", symbol).Preload("Memeception").Preload("Social").First(&memeMeta).Error
+	err := r.db.Joins("Memeception").Joins("Social").
+		Where("symbol = ?", symbol).
+		First(&memeMeta).Error
 	return memeMeta, err
 }
 
 func (r memeceptionRepository) GetMemeceptionsPast(ctx context.Context) ([]model.Memeception, error) {
 	var memeceptions []model.Memeception
-	err := r.db.Where("start_at < ?", time.Now().Unix()).Preload("Meme").Find(&memeceptions).Error
+	err := r.db.Joins("Meme").
+		Where("start_at < ?", time.Now().Unix()).
+		Find(&memeceptions).Error
 	return memeceptions, err
 }
 
 func (r memeceptionRepository) GetMemeceptionsUpcoming(ctx context.Context) ([]model.Memeception, error) {
 	var memeceptions []model.Memeception
-	err := r.db.Where("start_at > ?", time.Now().Add(beforeLauchStart*time.Minute).Unix()).
-		Preload("Meme").Find(&memeceptions).Error
+	err := r.db.Joins("Meme").
+		Where("start_at > ?", time.Now().Add(beforeLauchStart*time.Minute).Unix()).
+		Find(&memeceptions).Error
 	return memeceptions, err
 }
 
 func (r memeceptionRepository) GetMemeceptionsLive(ctx context.Context) ([]model.Memeception, error) {
 	var memeceptions []model.Memeception
-	err := r.db.Where(
-		"ama = ? AND start_at >= ? AND start_at <= ?",
-		true,
-		time.Now(),
-		time.Now().Add(beforeLauchStart*time.Minute).Unix(),
-	).Preload("Meme").Find(&memeceptions).Error
+	err := r.db.Joins("Meme").
+		Where(
+			"ama = ? AND start_at >= ? AND start_at <= ?",
+			true,
+			time.Now(),
+			time.Now().Add(beforeLauchStart*time.Minute).Unix(),
+		).
+		Find(&memeceptions).Error
 	return memeceptions, err
 }

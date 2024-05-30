@@ -52,7 +52,7 @@ func (r memeceptionRepository) GetMemeceptionsLive(ctx context.Context) ([]model
 		Where(
 			"ama = ? AND start_at >= ? AND start_at <= ?",
 			true,
-			time.Now(),
+			time.Now().Unix(),
 			time.Now().Add(beforeLauchStart*time.Minute).Unix(),
 		).
 		Find(&memeceptions).Error

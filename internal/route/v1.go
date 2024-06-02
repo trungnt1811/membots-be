@@ -1,6 +1,8 @@
 package route
 
 import (
+	unigraphclient "github.com/emersonmacro/go-uniswap-subgraph-client"
+	"github.com/flexstack.ai/membots-be/internal/module/swap"
 	"gorm.io/gorm"
 
 	"github.com/gin-gonic/gin"
@@ -26,4 +28,10 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	memeceptionHandler := memeception.NewMemeceptionHandler(memeceptionUCase)
 	appRouter.GET("/memeception", memeceptionHandler.GetMemeceptionBySymbol)
 	appRouter.GET("/memeceptions", memeceptionHandler.GetMemeceptions)
+
+	client := unigraphclient.NewClient(unigraphclient.Endpoints[unigraphclient.Base], nil)
+	swapUCase := swap.NewSwapUcase(client)
+	swapHandler := swap.NewSwapHandler(swapUCase)
+	appRouter.GET("/swaps", swapHandler.GetSwapHistoryByAddress)
+
 }

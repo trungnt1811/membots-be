@@ -1,9 +1,12 @@
 module github.com/flexstack.ai/membots-be
 
-go 1.19
+go 1.21.0
+
+toolchain go1.22.3
 
 require (
 	github.com/AstraProtocol/reward-libs v0.0.8
+	github.com/emersonmacro/go-uniswap-subgraph-client v0.0.0-00010101000000-000000000000
 	github.com/gin-gonic/gin v1.9.1
 	github.com/imroc/req/v3 v3.42.1
 	github.com/rs/zerolog v1.29.0
@@ -13,6 +16,7 @@ require (
 	github.com/swaggo/gin-swagger v1.5.3
 	gorm.io/driver/mysql v1.5.0
 	gorm.io/gorm v1.25.0
+
 )
 
 require (
@@ -33,6 +37,7 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/klauspost/compress v1.17.2 // indirect
 	github.com/onsi/ginkgo/v2 v2.13.0 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/tsdb v0.10.0 // indirect
 	github.com/quic-go/qpack v0.4.0 // indirect
@@ -105,3 +110,5 @@ require (
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
 replace github.com/codahale/hdrhistogram => github.com/HdrHistogram/hdrhistogram-go v0.0.0-20200919145931-8dac23c8dac1
+
+replace github.com/emersonmacro/go-uniswap-subgraph-client => github.com/hoanguyenkh/go-uniswap-subgraph-client v0.0.0-20240601152125-3dd1bb127d29

@@ -20,6 +20,8 @@ func NewSwapUcase(client *unigraphclient.Client) interfaces.SwapUCase {
 func (uc *swapUCase) GetSwaps(ctx context.Context, address string) (dto.SwapHistoryByAddressRsp, error) {
 	requestOpts := &unigraphclient.RequestOptions{
 		IncludeFields: []string{
+			"id",
+			"timestamp",
 			"amount0",
 			"amount1",
 			"amountUSD",

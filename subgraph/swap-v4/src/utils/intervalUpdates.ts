@@ -10,7 +10,7 @@ import {
   TokenDayData,
   TokenHourData,
   UniswapDayData,
-} from './../types/schema'
+} from '../types/schema'
 import { ONE_BI, ZERO_BD, ZERO_BI } from './constants'
 import { FACTORY_ADDRESS } from './constants'
 

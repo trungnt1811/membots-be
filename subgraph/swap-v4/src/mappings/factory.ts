@@ -6,8 +6,8 @@ import { Bundle, Pool, Token } from '../types/schema'
 import { Pool as PoolTemplate } from '../types/templates'
 import { STATIC_TOKEN_DEFINITIONS, StaticTokenDefinition } from '../utils/staticTokenDefinition'
 import { fetchTokenDecimals, fetchTokenName, fetchTokenSymbol, fetchTokenTotalSupply } from '../utils/token'
-import { ADDRESS_ZERO, FACTORY_ADDRESS, ONE_BI, ZERO_BD, ZERO_BI } from './../utils/constants'
-import { WHITELIST_TOKENS } from './../utils/pricing'
+import { ADDRESS_ZERO, FACTORY_ADDRESS, ONE_BI, ZERO_BD, ZERO_BI } from '../utils/constants'
+import { WHITELIST_TOKENS } from '../utils/pricing'
 
 // The subgraph handler must have this signature to be able to handle events,
 // however, we invoke a helper in order to inject dependencies for unit tests.

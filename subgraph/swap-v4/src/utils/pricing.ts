@@ -1,7 +1,7 @@
 import { BigDecimal, BigInt } from '@graphprotocol/graph-ts'
 
-import { exponentToBigDecimal, safeDiv } from '../utils/index'
-import { Bundle, Pool, Token } from './../types/schema'
+import { exponentToBigDecimal, safeDiv } from './index'
+import { Bundle, Pool, Token } from '../types/schema'
 import { ONE_BD, ZERO_BD, ZERO_BI } from './constants'
 
 export const WETH_ADDRESS = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'

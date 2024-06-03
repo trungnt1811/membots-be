@@ -1,7 +1,7 @@
 import { BigDecimal, BigInt, ethereum } from '@graphprotocol/graph-ts'
 
 import { Transaction } from '../types/schema'
-import { ONE_BD, ZERO_BD, ZERO_BI } from '../utils/constants'
+import { ONE_BD, ZERO_BD, ZERO_BI } from './constants'
 
 export function exponentToBigDecimal(decimals: BigInt): BigDecimal {
   let resultString = '1'

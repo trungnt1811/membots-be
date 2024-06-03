@@ -8,9 +8,9 @@ import {
 } from "matchstick-as/assembly/index"
 import { Address, BigInt } from "@graphprotocol/graph-ts"
 import { CollectFees } from "../generated/schema"
-import { CollectFees as CollectFeesEvent } from "../generated/TestnetTruglyMemeception/TestnetTruglyMemeception"
-import { handleCollectFees } from "../src/testnet-trugly-memeception"
-import { createCollectFeesEvent } from "./testnet-trugly-memeception-utils"
+import { CollectFees as CollectFeesEvent } from "../generated/Memeception/Memeception"
+import { handleCollectFees } from "../src/memeception"
+import { createCollectFeesEvent } from "./memeception-utils"
 
 // Tests structure (matchstick-as >=0.5.0)
 // https://thegraph.com/docs/en/developer/matchstick/#tests-structure-0-5-0

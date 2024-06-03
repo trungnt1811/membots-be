@@ -5,11 +5,11 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum
-    name: TestnetTruglyMemeception
+    name: Memeception
     network: base
     source:
       address: "0xbf7fde5d630934f1ff1889aea15904bee920973c"
-      abi: TestnetTruglyMemeception
+      abi: Memeception
       startBlock: 15171798
     mapping:
       kind: ethereum/events
@@ -26,8 +26,8 @@ dataSources:
         - OwnershipTransferred
         - TreasuryUpdated
       abis:
-        - name: TestnetTruglyMemeception
-          file: ./abis/TestnetTruglyMemeception.json
+        - name: Memeception
+          file: ./abis/Memeception.json
       eventHandlers:
         - event: CollectFees(indexed address,indexed address,uint256,uint256,uint256,uint256)
           handler: handleCollectFees
@@ -47,4 +47,4 @@ dataSources:
           handler: handleOwnershipTransferred
         - event: TreasuryUpdated(indexed address,indexed address)
           handler: handleTreasuryUpdated
-      file: ./src/testnet-trugly-memeception.ts
+      file: ./src/memeception.ts

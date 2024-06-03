@@ -1,0 +1,50 @@
+specVersion: 1.0.0
+indexerHints:
+  prune: auto
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: TruglyMemeception
+    network: base
+    source:
+      address: "0xbf7fde5d630934f1ff1889aea15904bee920973c"
+      abi: TruglyMemeception
+      startBlock: 15171798
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - CollectFees
+        - Meme404Created
+        - MemeCreated
+        - MemeKOLCreated
+        - MemeLiquidityAdded
+        - MemecoinBuy
+        - MemecoinExit
+        - OwnershipTransferred
+        - TreasuryUpdated
+      abis:
+        - name: TruglyMemeception
+          file: ./abis/TruglyMemeception.json
+      eventHandlers:
+        - event: CollectFees(indexed address,indexed address,uint256,uint256,uint256,uint256)
+          handler: handleCollectFees
+        - event: Meme404Created(indexed address,address,(string,string,uint40,uint16,uint16,bytes32,address,uint256),(string,string,string,uint256,uint256,uint256,uint256,bool)[])
+          handler: handleMeme404Created
+        - event: MemeCreated(indexed address,address,(string,string,uint40,uint16,uint16,bytes32,address,uint256))
+          handler: handleMemeCreated
+        - event: MemeKOLCreated(indexed address,address,(string,string,uint40,uint16,uint16,bytes32,address,uint256))
+          handler: handleMemeKOLCreated
+        - event: MemeLiquidityAdded(indexed address,address,uint256,uint256)
+          handler: handleMemeLiquidityAdded
+        - event: MemecoinBuy(indexed address,indexed address,uint256,uint256)
+          handler: handleMemecoinBuy
+        - event: MemecoinExit(indexed address,indexed address,uint256,uint256)
+          handler: handleMemecoinExit
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: TreasuryUpdated(indexed address,indexed address)
+          handler: handleTreasuryUpdated
+      file: ./src/mapping/trugly-memeception.ts

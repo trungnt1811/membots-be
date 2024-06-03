@@ -1,0 +1,637 @@
+[
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_vesting", "type": "address" },
+      { "internalType": "address", "name": "_treasury", "type": "address" },
+      { "internalType": "address", "name": "_multisig", "type": "address" },
+      { "internalType": "address", "name": "_factory", "type": "address" }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  { "inputs": [], "name": "InvalidLockerFeeStructure", "type": "error" },
+  { "inputs": [], "name": "InvalidMemeAddress", "type": "error" },
+  { "inputs": [], "name": "LockerFeeTooHigh", "type": "error" },
+  { "inputs": [], "name": "MaxTargetETH", "type": "error" },
+  { "inputs": [], "name": "MemeLaunched", "type": "error" },
+  { "inputs": [], "name": "MemeSwapFeeTooHigh", "type": "error" },
+  { "inputs": [], "name": "MemeceptionNotStarted", "type": "error" },
+  { "inputs": [], "name": "VestingAllocTooHigh", "type": "error" },
+  { "inputs": [], "name": "ZeroAddress", "type": "error" },
+  { "inputs": [], "name": "ZeroAmount", "type": "error" },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "memeToken",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount0",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount1",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "fee0",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "fee1",
+        "type": "uint256"
+      }
+    ],
+    "name": "CollectFees",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "memeToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "components": [
+          { "internalType": "string", "name": "name", "type": "string" },
+          { "internalType": "string", "name": "symbol", "type": "string" },
+          { "internalType": "uint40", "name": "startAt", "type": "uint40" },
+          { "internalType": "uint16", "name": "swapFeeBps", "type": "uint16" },
+          {
+            "internalType": "uint16",
+            "name": "vestingAllocBps",
+            "type": "uint16"
+          },
+          { "internalType": "bytes32", "name": "salt", "type": "bytes32" },
+          { "internalType": "address", "name": "creator", "type": "address" },
+          { "internalType": "uint256", "name": "targetETH", "type": "uint256" }
+        ],
+        "indexed": false,
+        "internalType": "struct ITruglyMemeception.MemeceptionCreationParams",
+        "name": "params",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          { "internalType": "string", "name": "baseURL", "type": "string" },
+          { "internalType": "string", "name": "nftName", "type": "string" },
+          { "internalType": "string", "name": "nftSymbol", "type": "string" },
+          {
+            "internalType": "uint256",
+            "name": "amountThreshold",
+            "type": "uint256"
+          },
+          { "internalType": "uint256", "name": "nftId", "type": "uint256" },
+          { "internalType": "uint256", "name": "lowerId", "type": "uint256" },
+          { "internalType": "uint256", "name": "upperId", "type": "uint256" },
+          { "internalType": "bool", "name": "isFungible", "type": "bool" }
+        ],
+        "indexed": false,
+        "internalType": "struct IMEME404.TierCreateParam[]",
+        "name": "tiers",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "Meme404Created",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "memeToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "components": [
+          { "internalType": "string", "name": "name", "type": "string" },
+          { "internalType": "string", "name": "symbol", "type": "string" },
+          { "internalType": "uint40", "name": "startAt", "type": "uint40" },
+          { "internalType": "uint16", "name": "swapFeeBps", "type": "uint16" },
+          {
+            "internalType": "uint16",
+            "name": "vestingAllocBps",
+            "type": "uint16"
+          },
+          { "internalType": "bytes32", "name": "salt", "type": "bytes32" },
+          { "internalType": "address", "name": "creator", "type": "address" },
+          { "internalType": "uint256", "name": "targetETH", "type": "uint256" }
+        ],
+        "indexed": false,
+        "internalType": "struct ITruglyMemeception.MemeceptionCreationParams",
+        "name": "params",
+        "type": "tuple"
+      }
+    ],
+    "name": "MemeCreated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "memeToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "components": [
+          { "internalType": "string", "name": "name", "type": "string" },
+          { "internalType": "string", "name": "symbol", "type": "string" },
+          { "internalType": "uint40", "name": "startAt", "type": "uint40" },
+          { "internalType": "uint16", "name": "swapFeeBps", "type": "uint16" },
+          {
+            "internalType": "uint16",
+            "name": "vestingAllocBps",
+            "type": "uint16"
+          },
+          { "internalType": "bytes32", "name": "salt", "type": "bytes32" },
+          { "internalType": "address", "name": "creator", "type": "address" },
+          { "internalType": "uint256", "name": "targetETH", "type": "uint256" }
+        ],
+        "indexed": false,
+        "internalType": "struct ITruglyMemeception.MemeceptionCreationParams",
+        "name": "params",
+        "type": "tuple"
+      }
+    ],
+    "name": "MemeKOLCreated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "memeToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amountMeme",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amountETH",
+        "type": "uint256"
+      }
+    ],
+    "name": "MemeLiquidityAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "memeToken",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amountETH",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amountMeme",
+        "type": "uint256"
+      }
+    ],
+    "name": "MemecoinBuy",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "memeToken",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amountETH",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amountMeme",
+        "type": "uint256"
+      }
+    ],
+    "name": "MemecoinExit",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "oldTreasury",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newTreasury",
+        "type": "address"
+      }
+    ],
+    "name": "TreasuryUpdated",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "WETH9",
+    "outputs": [
+      { "internalType": "contract IWETH9", "name": "", "type": "address" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "memeToken", "type": "address" }
+    ],
+    "name": "buyMemecoin",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "bypassLock",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "memeToken", "type": "address" }
+    ],
+    "name": "collectFees",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          { "internalType": "string", "name": "name", "type": "string" },
+          { "internalType": "string", "name": "symbol", "type": "string" },
+          { "internalType": "uint40", "name": "startAt", "type": "uint40" },
+          { "internalType": "uint16", "name": "swapFeeBps", "type": "uint16" },
+          {
+            "internalType": "uint16",
+            "name": "vestingAllocBps",
+            "type": "uint16"
+          },
+          { "internalType": "bytes32", "name": "salt", "type": "bytes32" },
+          { "internalType": "address", "name": "creator", "type": "address" },
+          { "internalType": "uint256", "name": "targetETH", "type": "uint256" }
+        ],
+        "internalType": "struct ITruglyMemeception.MemeceptionCreationParams",
+        "name": "params",
+        "type": "tuple"
+      }
+    ],
+    "name": "createMeme",
+    "outputs": [
+      { "internalType": "address", "name": "", "type": "address" },
+      { "internalType": "address", "name": "", "type": "address" }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          { "internalType": "string", "name": "name", "type": "string" },
+          { "internalType": "string", "name": "symbol", "type": "string" },
+          { "internalType": "uint40", "name": "startAt", "type": "uint40" },
+          { "internalType": "uint16", "name": "swapFeeBps", "type": "uint16" },
+          {
+            "internalType": "uint16",
+            "name": "vestingAllocBps",
+            "type": "uint16"
+          },
+          { "internalType": "bytes32", "name": "salt", "type": "bytes32" },
+          { "internalType": "address", "name": "creator", "type": "address" },
+          { "internalType": "uint256", "name": "targetETH", "type": "uint256" }
+        ],
+        "internalType": "struct ITruglyMemeception.MemeceptionCreationParams",
+        "name": "params",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          { "internalType": "string", "name": "baseURL", "type": "string" },
+          { "internalType": "string", "name": "nftName", "type": "string" },
+          { "internalType": "string", "name": "nftSymbol", "type": "string" },
+          {
+            "internalType": "uint256",
+            "name": "amountThreshold",
+            "type": "uint256"
+          },
+          { "internalType": "uint256", "name": "nftId", "type": "uint256" },
+          { "internalType": "uint256", "name": "lowerId", "type": "uint256" },
+          { "internalType": "uint256", "name": "upperId", "type": "uint256" },
+          { "internalType": "bool", "name": "isFungible", "type": "bool" }
+        ],
+        "internalType": "struct IMEME404.TierCreateParam[]",
+        "name": "tiers",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "createMeme404",
+    "outputs": [
+      { "internalType": "address", "name": "", "type": "address" },
+      { "internalType": "address", "name": "", "type": "address" }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          { "internalType": "string", "name": "name", "type": "string" },
+          { "internalType": "string", "name": "symbol", "type": "string" },
+          { "internalType": "uint40", "name": "startAt", "type": "uint40" },
+          { "internalType": "uint16", "name": "swapFeeBps", "type": "uint16" },
+          {
+            "internalType": "uint16",
+            "name": "vestingAllocBps",
+            "type": "uint16"
+          },
+          { "internalType": "bytes32", "name": "salt", "type": "bytes32" },
+          { "internalType": "address", "name": "creator", "type": "address" },
+          { "internalType": "uint256", "name": "targetETH", "type": "uint256" }
+        ],
+        "internalType": "struct ITruglyMemeception.MemeceptionCreationParams",
+        "name": "params",
+        "type": "tuple"
+      }
+    ],
+    "name": "createMemeKOL",
+    "outputs": [
+      { "internalType": "address", "name": "", "type": "address" },
+      { "internalType": "address", "name": "", "type": "address" }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "memeToken", "type": "address" },
+      { "internalType": "uint256", "name": "amountMeme", "type": "uint256" }
+    ],
+    "name": "exitMemecoin",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "factory",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "memeToken", "type": "address" }
+    ],
+    "name": "getMemeception",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "uint256", "name": "targetETH", "type": "uint256" },
+          {
+            "internalType": "uint256",
+            "name": "collectedETH",
+            "type": "uint256"
+          },
+          { "internalType": "uint256", "name": "tokenId", "type": "uint256" },
+          { "internalType": "address", "name": "pool", "type": "address" },
+          { "internalType": "uint16", "name": "swapFeeBps", "type": "uint16" },
+          { "internalType": "address", "name": "creator", "type": "address" },
+          { "internalType": "uint40", "name": "startAt", "type": "uint40" },
+          { "internalType": "uint40", "name": "endedAt", "type": "uint40" }
+        ],
+        "internalType": "struct ITruglyMemeception.Memeception",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "memeToken", "type": "address" }
+    ],
+    "name": "getPricePerETH",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "", "type": "address" },
+      { "internalType": "address", "name": "", "type": "address" },
+      { "internalType": "uint256", "name": "", "type": "uint256" },
+      { "internalType": "bytes", "name": "", "type": "bytes" }
+    ],
+    "name": "onERC721Received",
+    "outputs": [{ "internalType": "bytes4", "name": "", "type": "bytes4" }],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "bool", "name": "_bypassLock", "type": "bool" }
+    ],
+    "name": "setBypassLock",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_newTreasury", "type": "address" }
+    ],
+    "name": "setTreasury",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "testAdmin",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "newOwner", "type": "address" }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "uncxLocker",
+    "outputs": [
+      {
+        "internalType": "contract ILiquidityLocker",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "v3Factory",
+    "outputs": [
+      {
+        "internalType": "contract IUniswapV3Factory",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "v3PositionManager",
+    "outputs": [
+      {
+        "internalType": "contract INonfungiblePositionManager",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "vesting",
+    "outputs": [
+      {
+        "internalType": "contract ITruglyVesting",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  { "stateMutability": "payable", "type": "receive" }
+]

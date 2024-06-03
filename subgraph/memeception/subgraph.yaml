@@ -5,11 +5,11 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum
-    name: TruglyMemeception
+    name: IMEME404
     network: base
     source:
       address: "0xbf7fde5d630934f1ff1889aea15904bee920973c"
-      abi: TruglyMemeception
+      abi: IMEME404
       startBlock: 15171798
     mapping:
       kind: ethereum/events
@@ -26,8 +26,8 @@ dataSources:
         - OwnershipTransferred
         - TreasuryUpdated
       abis:
-        - name: TruglyMemeception
-          file: ./abis/TruglyMemeception.json
+        - name: IMEME404
+          file: ./abis/IMEME404.json
       eventHandlers:
         - event: CollectFees(indexed address,indexed address,uint256,uint256,uint256,uint256)
           handler: handleCollectFees
@@ -47,4 +47,4 @@ dataSources:
           handler: handleOwnershipTransferred
         - event: TreasuryUpdated(indexed address,indexed address)
           handler: handleTreasuryUpdated
-      file: ./src/trugly-memeception.ts
+      file: ./src/imeme-404.ts

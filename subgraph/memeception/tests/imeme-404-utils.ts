@@ -10,7 +10,7 @@ import {
   MemecoinExit,
   OwnershipTransferred,
   TreasuryUpdated
-} from "../src/types/TruglyMemeception/TruglyMemeception"
+} from "../generated/IMEME404/IMEME404"
 
 export function createCollectFeesEvent(
   memeToken: Address,

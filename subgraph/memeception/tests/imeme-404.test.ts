@@ -7,10 +7,10 @@ import {
   afterAll
 } from "matchstick-as/assembly/index"
 import { Address, BigInt } from "@graphprotocol/graph-ts"
-import { CollectFees } from "../src/types/schema"
-import { CollectFees as CollectFeesEvent } from "../src/types/TruglyMemeception/TruglyMemeception"
-import { handleCollectFees } from "../src/mapping/trugly-memeception"
-import { createCollectFeesEvent } from "./trugly-memeception-utils"
+import { CollectFees } from "../generated/schema"
+import { CollectFees as CollectFeesEvent } from "../generated/IMEME404/IMEME404"
+import { handleCollectFees } from "../src/imeme-404"
+import { createCollectFeesEvent } from "./imeme-404-utils"
 
 // Tests structure (matchstick-as >=0.5.0)
 // https://thegraph.com/docs/en/developer/matchstick/#tests-structure-0-5-0

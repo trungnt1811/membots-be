@@ -8,7 +8,7 @@ import {
   MemecoinExit as MemecoinExitEvent,
   OwnershipTransferred as OwnershipTransferredEvent,
   TreasuryUpdated as TreasuryUpdatedEvent
-} from "../generated/IMEME404/IMEME404"
+} from "../generated/TestnetTruglyMemeception/TestnetTruglyMemeception"
 import {
   CollectFees,
   Meme404Created,

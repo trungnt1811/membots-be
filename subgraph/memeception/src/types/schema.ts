@@ -350,7 +350,8 @@ export class Meme404Created extends Entity {
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toString();
+      let result = value.toBytesArray()
+      return result.toString();
     }
   }
 

@@ -23,7 +23,7 @@ import {
 
 export function handleCollectFees(event: CollectFeesEvent): void {
   let entity = new CollectFees(
-    event.params.memeToken
+    event.transaction.hash.concatI32(event.logIndex.toI32())
   )
   entity.memeToken = event.params.memeToken
   entity.recipient = event.params.recipient
@@ -41,7 +41,7 @@ export function handleCollectFees(event: CollectFeesEvent): void {
 
 export function handleMeme404Created(event: Meme404CreatedEvent): void {
   let entity = new Meme404Created(
-    event.params.memeToken
+    event.transaction.hash.concatI32(event.logIndex.toI32())
   )
   entity.memeToken = event.params.memeToken
   entity.pool = event.params.pool
@@ -53,7 +53,7 @@ export function handleMeme404Created(event: Meme404CreatedEvent): void {
   entity.params_salt = event.params.params.salt
   entity.params_creator = event.params.params.creator
   entity.params_targetETH = event.params.params.targetETH
-  entity.tiers = event.params.tiers.toString()
+  // entity.tiers = event.params.tiers
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
   entity.transactionHash = event.transaction.hash
@@ -62,7 +62,7 @@ export function handleMeme404Created(event: Meme404CreatedEvent): void {
 
 export function handleMemeCreated(event: MemeCreatedEvent): void {
   let entity = new MemeCreated(
-    event.params.memeToken
+    event.transaction.hash.concatI32(event.logIndex.toI32())
   )
   entity.memeToken = event.params.memeToken
   entity.pool = event.params.pool
@@ -84,7 +84,7 @@ export function handleMemeCreated(event: MemeCreatedEvent): void {
 
 export function handleMemeKOLCreated(event: MemeKOLCreatedEvent): void {
   let entity = new MemeKOLCreated(
-    event.params.memeToken
+    event.transaction.hash.concatI32(event.logIndex.toI32())
   )
   entity.memeToken = event.params.memeToken
   entity.pool = event.params.pool
@@ -106,7 +106,7 @@ export function handleMemeKOLCreated(event: MemeKOLCreatedEvent): void {
 
 export function handleMemeLiquidityAdded(event: MemeLiquidityAddedEvent): void {
   let entity = new MemeLiquidityAdded(
-    event.params.memeToken
+    event.transaction.hash.concatI32(event.logIndex.toI32())
   )
   entity.memeToken = event.params.memeToken
   entity.pool = event.params.pool
@@ -122,7 +122,7 @@ export function handleMemeLiquidityAdded(event: MemeLiquidityAddedEvent): void {
 
 export function handleMemecoinBuy(event: MemecoinBuyEvent): void {
   let entity = new MemecoinBuy(
-    event.params.memeToken
+    event.transaction.hash.concatI32(event.logIndex.toI32())
   )
   entity.memeToken = event.params.memeToken
   entity.user = event.params.user
@@ -138,7 +138,7 @@ export function handleMemecoinBuy(event: MemecoinBuyEvent): void {
 
 export function handleMemecoinExit(event: MemecoinExitEvent): void {
   let entity = new MemecoinExit(
-    event.params.memeToken
+    event.transaction.hash.concatI32(event.logIndex.toI32())
   )
   entity.memeToken = event.params.memeToken
   entity.user = event.params.user
@@ -156,7 +156,7 @@ export function handleOwnershipTransferred(
   event: OwnershipTransferredEvent
 ): void {
   let entity = new OwnershipTransferred(
-    event.params.user
+    event.transaction.hash.concatI32(event.logIndex.toI32())
   )
   entity.user = event.params.user
   entity.newOwner = event.params.newOwner
@@ -170,7 +170,7 @@ export function handleOwnershipTransferred(
 
 export function handleTreasuryUpdated(event: TreasuryUpdatedEvent): void {
   let entity = new TreasuryUpdated(
-    event.params.oldTreasury
+    event.transaction.hash.concatI32(event.logIndex.toI32())
   )
   entity.oldTreasury = event.params.oldTreasury
   entity.newTreasury = event.params.newTreasury

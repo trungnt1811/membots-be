@@ -23,7 +23,7 @@ type Meme404Created @entity(immutable: true) {
   params_salt: Bytes! # bytes32
   params_creator: Bytes! # address
   params_targetETH: BigInt! # uint256
-  tiers: String! # tuple[]
+  # tiers: [Bytes!]! # tuple[]
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!

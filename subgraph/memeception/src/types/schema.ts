@@ -345,19 +345,19 @@ export class Meme404Created extends Entity {
     this.set("params_targetETH", Value.fromBigInt(value));
   }
 
-  get tiers(): string {
+  get tiers(): Array<Bytes> {
     let value = this.get("tiers");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      let result = value.toBytesArray()
-      return result.toString();
+      return value.toBytesArray();
     }
   }
 
-  set tiers(value: string) {
-    this.set("tiers", Value.fromString(value));
+  set tiers(value: Array<Bytes>) {
+    this.set("tiers", Value.fromBytesArray(value));
   }
+
 
   get blockNumber(): BigInt {
     let value = this.get("blockNumber");

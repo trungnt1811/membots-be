@@ -7,9 +7,9 @@ import {
   afterAll
 } from "matchstick-as/assembly/index"
 import { Address, BigInt } from "@graphprotocol/graph-ts"
-import { CollectFees } from "../generated/schema"
-import { CollectFees as CollectFeesEvent } from "../generated/Memeception/Memeception"
-import { handleCollectFees } from "../src/memeception"
+import { CollectFees } from "../src/types/schema"
+import { CollectFees as CollectFeesEvent } from "../src/types/Memeception/Memeception"
+import { handleCollectFees } from "../src/mapping/memeception"
 import { createCollectFeesEvent } from "./memeception-utils"
 
 // Tests structure (matchstick-as >=0.5.0)

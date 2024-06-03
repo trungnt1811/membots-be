@@ -47,4 +47,4 @@ dataSources:
           handler: handleOwnershipTransferred
         - event: TreasuryUpdated(indexed address,indexed address)
           handler: handleTreasuryUpdated
-      file: ./src/mapping/trugly-memeception.ts
+      file: ./src/trugly-memeception.ts

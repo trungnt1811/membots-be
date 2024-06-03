@@ -1,13 +1,13 @@
 {
-  "name": "membots-ai-memeception-mvp",
+  "name": "memeception",
   "license": "UNLICENSED",
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ membots-ai-memeception-mvp",
-    "create-local": "graph create --node http://localhost:8020/ membots-ai-memeception-mvp",
-    "remove-local": "graph remove --node http://localhost:8020/ membots-ai-memeception-mvp",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 membots-ai-memeception-mvp",
+    "deploy": "graph deploy --node https://api.studio.thegraph.com/deploy/ memeception",
+    "create-local": "graph create --node http://localhost:8020/ memeception",
+    "remove-local": "graph remove --node http://localhost:8020/ memeception",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 memeception",
     "test": "graph test"
   },
   "dependencies": {

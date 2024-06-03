@@ -47,4 +47,4 @@ dataSources:
           handler: handleOwnershipTransferred
         - event: TreasuryUpdated(indexed address,indexed address)
           handler: handleTreasuryUpdated
-      file: ./src/memeception.ts
+      file: ./src/mapping/memeception.ts

@@ -7,9 +7,9 @@ import {
   afterAll
 } from "matchstick-as/assembly/index"
 import { Address, BigInt } from "@graphprotocol/graph-ts"
-import { CollectFees } from "../generated/schema"
-import { CollectFees as CollectFeesEvent } from "../generated/TruglyMemeception/TruglyMemeception"
-import { handleCollectFees } from "../src/trugly-memeception"
+import { CollectFees } from "../src/types/schema"
+import { CollectFees as CollectFeesEvent } from "../src/types/TruglyMemeception/TruglyMemeception"
+import { handleCollectFees } from "../src/mapping/trugly-memeception"
 import { createCollectFeesEvent } from "./trugly-memeception-utils"
 
 // Tests structure (matchstick-as >=0.5.0)

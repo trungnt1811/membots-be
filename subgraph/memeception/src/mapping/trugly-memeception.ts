@@ -8,7 +8,7 @@ import {
   MemecoinExit as MemecoinExitEvent,
   OwnershipTransferred as OwnershipTransferredEvent,
   TreasuryUpdated as TreasuryUpdatedEvent
-} from "../generated/TruglyMemeception/TruglyMemeception"
+} from "../types/TruglyMemeception/TruglyMemeception"
 import {
   CollectFees,
   Meme404Created,
@@ -19,7 +19,7 @@ import {
   MemecoinExit,
   OwnershipTransferred,
   TreasuryUpdated
-} from "../generated/schema"
+} from "../types/schema"
 
 export function handleCollectFees(event: CollectFeesEvent): void {
   let entity = new CollectFees(
@@ -53,7 +53,7 @@ export function handleMeme404Created(event: Meme404CreatedEvent): void {
   entity.params_salt = event.params.params.salt
   entity.params_creator = event.params.params.creator
   entity.params_targetETH = event.params.params.targetETH
-  entity.tiers = event.params.tiers
+  // entity.tiers = event.params.tiers
 
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp

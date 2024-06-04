@@ -16,12 +16,11 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	v1 := r.Group("/api/v1")
 
 	// SECTION: Create redis client
-
 	// redisClient := caching.NewCachingRepository(context.Background(), rdb)
 
-	// SECTION: truglymeme
 	appRouter := v1.Group("/truglymeme")
 
+	// SECTION: meme
 	memeceptionRepository := memeception.NewMemeceptionRepository(db)
 	// memeceptionCache := memeception.NewMemeceptionCacheRepository(memeceptionRepository, redisClient)
 	memeceptionUCase := memeception.NewMemeceptionUCase(memeceptionRepository)

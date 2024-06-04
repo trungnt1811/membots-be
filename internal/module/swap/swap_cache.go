@@ -19,7 +19,7 @@ type swapCache struct {
 	Cache     caching.Repository
 }
 
-func NewSwapCacheRepository(repo interfaces.SwapUCase,
+func NewSwapCacheUCase(repo interfaces.SwapUCase,
 	cache caching.Repository,
 ) interfaces.SwapUCase {
 	return &swapCache{
@@ -34,7 +34,7 @@ func (s *swapCache) GetSwaps(ctx context.Context, address string) (dto.SwapHisto
 	err := s.Cache.RetrieveItem(key, &swaps)
 	if err != nil {
 		// cache miss
-		swaps, err = s.GetSwaps(ctx, address)
+		swaps, err = s.SwapUCase.GetSwaps(ctx, address)
 		if err != nil {
 			return swaps, err
 		}

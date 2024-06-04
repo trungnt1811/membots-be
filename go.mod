@@ -111,4 +111,4 @@ replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alp
 
 replace github.com/codahale/hdrhistogram => github.com/HdrHistogram/hdrhistogram-go v0.0.0-20200919145931-8dac23c8dac1
 
-replace github.com/emersonmacro/go-uniswap-subgraph-client => github.com/hoanguyenkh/go-uniswap-subgraph-client v0.0.0-20240602053718-25d329e13470
+replace github.com/emersonmacro/go-uniswap-subgraph-client => github.com/hoanguyenkh/go-uniswap-subgraph-client v0.0.0-20240604104806-32700c9430dc

@@ -2,6 +2,7 @@ package route
 
 import (
 	unigraphclient "github.com/emersonmacro/go-uniswap-subgraph-client"
+	"github.com/flexstack.ai/membots-be/internal/module/launchpad"
 	"github.com/flexstack.ai/membots-be/internal/module/swap"
 	"gorm.io/gorm"
 
@@ -33,5 +34,10 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	swapUCase := swap.NewSwapUcase(client)
 	swapHandler := swap.NewSwapHandler(swapUCase)
 	appRouter.GET("/swaps", swapHandler.GetSwapHistoryByAddress)
+
+	clientMeme := unigraphclient.NewClient("https://api.studio.thegraph.com/query/76502/membots-ai-memeception-mvp/version/latest", nil)
+	launchpadUCase := launchpad.NewLaunchpadUcase(clientMeme)
+	launchpadHandler := launchpad.NewLaunchpadHandler(launchpadUCase)
+	appRouter.GET("/launchpad", launchpadHandler.GetHistoryByAddress)
 
 }

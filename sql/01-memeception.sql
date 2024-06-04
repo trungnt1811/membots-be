@@ -3,24 +3,25 @@ CREATE TABLE meme (
     id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(50) NOT NULL,
     symbol VARCHAR(10) NOT NULL,
-    description TEXT,
+    description TEXT NOT NULL,
     total_supply VARCHAR(15) NOT NULL,
     decimals INT NOT NULL,
-    logo_url VARCHAR(256),
-    banner_url VARCHAR(256),
+    logo_url VARCHAR(256) NOT NULL,
+    banner_url VARCHAR(256) NOT NULL,
     creator_address VARCHAR(50) NOT NULL,
     contract_address VARCHAR(50) NOT NULL,
     swap_fee_bps SMALLINT NOT NULL,
     vesting_alloc_bps SMALLINT NOT NULL,
-    memerc20 BOOLEAN NOT NULL,
+    meta VARCHAR(10) NOT NULL,
     live BOOLEAN NOT NULL,
     network_id INT NOT NULL,
-    website VARCHAR(50),
+    website VARCHAR(50) NOT NULL,
+    status SMALLINT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
 ) ENGINE = InnoDB;
-CREATE INDEX meme_symbol_idx ON meme (symbol);
+CREATE INDEX meme_contract_address_idx ON meme (contract_address);
 CREATE UNIQUE INDEX meme_symbol_uidx ON meme (symbol);
 -- memception table
 CREATE TABLE memeception (
@@ -30,6 +31,10 @@ CREATE TABLE memeception (
     status SMALLINT NOT NULL,
     ama BOOLEAN NOT NULL,
     contract_address VARCHAR(50) NOT NULL,
+    target_eth VARCHAR(10) NOT NULL,
+    collected_eth VARCHAR(10) NOT NULL,
+    enabled BOOLEAN NOT NULL,
+    updated_at_epoch TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     FOREIGN KEY (meme_id) REFERENCES meme(id)
 ) ENGINE = InnoDB;

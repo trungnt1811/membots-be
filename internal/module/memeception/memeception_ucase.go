@@ -17,12 +17,13 @@ func NewMemeceptionUCase(memeceptionRepository interfaces.MemeceptionRepository)
 	}
 }
 
-func (u *memeceptionUCase) GetMemeceptionBySymbol(ctx context.Context, symbol string) (dto.MemeceptionDetailResp, error) {
-	memeMeta, err := u.MemeceptionRepository.GetMemeceptionBySymbol(ctx, symbol)
+func (u *memeceptionUCase) GetMemeceptionByContractAddress(ctx context.Context, contractAddress string) (dto.MemeceptionDetailResp, error) {
+	memeMeta, err := u.MemeceptionRepository.GetMemeceptionByContractAddress(ctx, contractAddress)
 	if err != nil {
 		return dto.MemeceptionDetailResp{}, err
 	}
 	// TODO: get price from RPC
+	// TODO: get nfts info from graphnode in case meta is MEME404
 	memeceptionDetailResp := dto.MemeceptionDetailResp{
 		Meme:  memeMeta.ToDto(),
 		Price: 0,
@@ -38,7 +39,7 @@ func (u *memeceptionUCase) GetMemeceptions(ctx context.Context) (dto.Memeception
 	}
 	listMemePastDto := make([]dto.MemeceptionCommon, 0)
 	for _, meme := range listMemePast {
-		listMemePastDto = append(listMemePastDto, meme.ToCommonRespDto())
+		listMemePastDto = append(listMemePastDto, meme.ToCommonDto())
 	}
 
 	// Get list meme upcoming
@@ -48,7 +49,7 @@ func (u *memeceptionUCase) GetMemeceptions(ctx context.Context) (dto.Memeception
 	}
 	listMemeUpcomingDto := make([]dto.MemeceptionCommon, 0)
 	for _, meme := range listMemeUpcoming {
-		listMemeUpcomingDto = append(listMemeUpcomingDto, meme.ToCommonRespDto())
+		listMemeUpcomingDto = append(listMemeUpcomingDto, meme.ToCommonDto())
 	}
 
 	// Get list meme live
@@ -58,7 +59,7 @@ func (u *memeceptionUCase) GetMemeceptions(ctx context.Context) (dto.Memeception
 	}
 	listMemeLiveDto := make([]dto.MemeceptionCommon, 0)
 	for _, meme := range listMemeLive {
-		listMemeLiveDto = append(listMemeLiveDto, meme.ToCommonRespDto())
+		listMemeLiveDto = append(listMemeLiveDto, meme.ToCommonDto())
 	}
 
 	memeceptionsResp := dto.MemeceptionsResp{

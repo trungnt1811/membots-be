@@ -12,7 +12,3 @@ type Swap struct {
 	SwapAt        uint64 `json:"swapAt"`
 	Token1IsMeme  bool   `json:"token1IsMeme"`
 }
-
-type SwapHistoryByAddressRsp struct {
-	Swaps []Swap `json:"swaps"`
-}

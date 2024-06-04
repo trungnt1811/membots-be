@@ -2,8 +2,9 @@ package swap
 
 import (
 	"context"
-	"github.com/flexstack.ai/membots-be/internal/interfaces"
 	"strconv"
+
+	"github.com/flexstack.ai/membots-be/internal/interfaces"
 
 	unigraphclient "github.com/emersonmacro/go-uniswap-subgraph-client"
 	"github.com/flexstack.ai/membots-be/internal/dto"
@@ -17,7 +18,7 @@ func NewSwapUcase(client *unigraphclient.Client) interfaces.SwapUCase {
 	return &swapUCase{Client: client}
 }
 
-func (uc *swapUCase) GetSwaps(ctx context.Context, address string) (dto.SwapHistoryByAddressRsp, error) {
+func (uc *swapUCase) GetSwaps(ctx context.Context, address string) (dto.SwapHistoryByAddressResp, error) {
 	requestOpts := &unigraphclient.RequestOptions{
 		IncludeFields: []string{
 			"id",
@@ -34,7 +35,7 @@ func (uc *swapUCase) GetSwaps(ctx context.Context, address string) (dto.SwapHist
 
 	response, err := uc.Client.GetSwapHistoryByPoolId(ctx, address, requestOpts)
 	if err != nil {
-		return dto.SwapHistoryByAddressRsp{}, err
+		return dto.SwapHistoryByAddressResp{}, err
 	}
 	// convert response to dto.SwapHistoryByAddressRsp
 	var swaps []dto.Swap
@@ -57,7 +58,7 @@ func (uc *swapUCase) GetSwaps(ctx context.Context, address string) (dto.SwapHist
 		}
 		swaps = append(swaps, convertedSwap)
 	}
-	swapHistoryByAddressRsp := dto.SwapHistoryByAddressRsp{
+	swapHistoryByAddressRsp := dto.SwapHistoryByAddressResp{
 		Swaps: swaps,
 	}
 	return swapHistoryByAddressRsp, nil

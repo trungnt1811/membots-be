@@ -12,6 +12,7 @@ import {
 import {
   CollectFees,
   Meme404Created,
+  Tier,
   MemeCreated,
   MemeKOLCreated,
   MemeLiquidityAdded,
@@ -53,11 +54,28 @@ export function handleMeme404Created(event: Meme404CreatedEvent): void {
   entity.params_salt = event.params.params.salt
   entity.params_creator = event.params.params.creator
   entity.params_targetETH = event.params.params.targetETH
-  // entity.tiers = event.params.tiers
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
   entity.transactionHash = event.transaction.hash
   entity.save()
+  for (let i = 0; i < event.params.tiers.length; i++) {
+    let tierParam = event.params.tiers[i];
+    let entityTier = new Tier(
+      event.transaction.hash.concatI32(
+        event.logIndex.toI32()+tierParam.nftId.toI32()+tierParam.lowerId.toI32()+tierParam.upperId.toI32()
+      )
+    )
+    entityTier.nftId = tierParam.nftId;
+    entityTier.lowerId = tierParam.lowerId;
+    entityTier.upperId = tierParam.upperId;
+    entityTier.amountThreshold = tierParam.amountThreshold;
+    entityTier.isFungible = tierParam.isFungible;
+    entityTier.baseURL = tierParam.baseURL;
+    entityTier.nftName = tierParam.nftName;
+    entityTier.nftSymbol = tierParam.nftSymbol;
+    entityTier.meme404Created = entity.id;
+    entityTier.save();
+  }
 }
 
 export function handleMemeCreated(event: MemeCreatedEvent): void {

@@ -345,20 +345,6 @@ export class Meme404Created extends Entity {
     this.set("params_targetETH", Value.fromBigInt(value));
   }
 
-  get tiers(): Array<Bytes> {
-    let value = this.get("tiers");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toBytesArray();
-    }
-  }
-
-  set tiers(value: Array<Bytes>) {
-    this.set("tiers", Value.fromBytesArray(value));
-  }
-
-
   get blockNumber(): BigInt {
     let value = this.get("blockNumber");
     if (!value || value.kind == ValueKind.NULL) {
@@ -396,6 +382,173 @@ export class Meme404Created extends Entity {
 
   set transactionHash(value: Bytes) {
     this.set("transactionHash", Value.fromBytes(value));
+  }
+
+  get tiers(): TierLoader {
+    return new TierLoader(
+      "Meme404Created",
+      this.get("id")!.toBytes().toHexString(),
+      "tiers",
+    );
+  }
+}
+
+export class Tier extends Entity {
+  constructor(id: Bytes) {
+    super();
+    this.set("id", Value.fromBytes(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Tier entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.BYTES,
+        `Entities of type Tier must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("Tier", id.toBytes().toHexString(), this);
+    }
+  }
+
+  static loadInBlock(id: Bytes): Tier | null {
+    return changetype<Tier | null>(
+      store.get_in_block("Tier", id.toHexString()),
+    );
+  }
+
+  static load(id: Bytes): Tier | null {
+    return changetype<Tier | null>(store.get("Tier", id.toHexString()));
+  }
+
+  get id(): Bytes {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set id(value: Bytes) {
+    this.set("id", Value.fromBytes(value));
+  }
+
+  get nftId(): BigInt {
+    let value = this.get("nftId");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set nftId(value: BigInt) {
+    this.set("nftId", Value.fromBigInt(value));
+  }
+
+  get lowerId(): BigInt {
+    let value = this.get("lowerId");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set lowerId(value: BigInt) {
+    this.set("lowerId", Value.fromBigInt(value));
+  }
+
+  get upperId(): BigInt {
+    let value = this.get("upperId");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set upperId(value: BigInt) {
+    this.set("upperId", Value.fromBigInt(value));
+  }
+
+  get amountThreshold(): BigInt {
+    let value = this.get("amountThreshold");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set amountThreshold(value: BigInt) {
+    this.set("amountThreshold", Value.fromBigInt(value));
+  }
+
+  get isFungible(): boolean {
+    let value = this.get("isFungible");
+    if (!value || value.kind == ValueKind.NULL) {
+      return false;
+    } else {
+      return value.toBoolean();
+    }
+  }
+
+  set isFungible(value: boolean) {
+    this.set("isFungible", Value.fromBoolean(value));
+  }
+
+  get baseURL(): string {
+    let value = this.get("baseURL");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set baseURL(value: string) {
+    this.set("baseURL", Value.fromString(value));
+  }
+
+  get nftName(): string {
+    let value = this.get("nftName");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set nftName(value: string) {
+    this.set("nftName", Value.fromString(value));
+  }
+
+  get nftSymbol(): string {
+    let value = this.get("nftSymbol");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set nftSymbol(value: string) {
+    this.set("nftSymbol", Value.fromString(value));
+  }
+
+  get meme404Created(): Bytes {
+    let value = this.get("meme404Created");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set meme404Created(value: Bytes) {
+    this.set("meme404Created", Value.fromBytes(value));
   }
 }
 
@@ -1445,5 +1598,23 @@ export class TreasuryUpdated extends Entity {
 
   set transactionHash(value: Bytes) {
     this.set("transactionHash", Value.fromBytes(value));
+  }
+}
+
+export class TierLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): Tier[] {
+    let value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<Tier[]>(value);
   }
 }

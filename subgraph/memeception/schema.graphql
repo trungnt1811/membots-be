@@ -11,7 +11,7 @@ type CollectFees @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type Meme404Created @entity(immutable: true) {
+type Meme404Created @entity {
   id: Bytes!
   memeToken: Bytes! # address
   pool: Bytes! # address
@@ -23,10 +23,23 @@ type Meme404Created @entity(immutable: true) {
   params_salt: Bytes! # bytes32
   params_creator: Bytes! # address
   params_targetETH: BigInt! # uint256
-  # tiers: [Bytes!]! # tuple[]
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
+  tiers: [Tier!]! @derivedFrom(field: "meme404Created")
+}
+
+type Tier @entity {
+  id: Bytes!
+  nftId: BigInt!
+  lowerId: BigInt!
+  upperId: BigInt!
+  amountThreshold: BigInt!
+  isFungible: Boolean!
+  baseURL: String!
+  nftName: String!
+  nftSymbol: String!
+  meme404Created: Meme404Created!
 }
 
 type MemeCreated @entity(immutable: true) {

@@ -25,9 +25,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/v1/memeception": {
+        "/api/v1/meme": {
             "get": {
-                "description": "Get memeception by symbol",
+                "description": "Get memeception by meme address",
                 "consumes": [
                     "application/json"
                 ],
@@ -37,11 +37,11 @@ const docTemplate = `{
                 "tags": [
                     "memeception"
                 ],
-                "summary": "Get memeception by symbol",
+                "summary": "Get memeception by meme address",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "symbol to query, default is ",
+                        "description": "memeAddress to query, default is ",
                         "name": "symbol",
                         "in": "query"
                     }
@@ -102,19 +102,139 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/api/v1/truglymeme/launchpad": {
+            "get": {
+                "description": "Get launchpad history by address",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "launchpad"
+                ],
+                "summary": "Get launchpad history by address",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "memeAddress to query, default is ",
+                        "name": "memeAddress",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.LaunchpadInfoResp"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/truglymeme/swaps": {
+            "get": {
+                "description": "Get swaps history by memeId",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "swap"
+                ],
+                "summary": "Get swaps history by memeId",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "memeId to query, default is ",
+                        "name": "memeId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SwapHistoryByAddressResp"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "dto.LaunchpadInfo": {
+            "type": "object",
+            "properties": {
+                "collectedETH": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "targetETH": {
+                    "type": "string"
+                },
+                "transactions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.Transaction"
+                    }
+                }
+            }
+        },
+        "dto.LaunchpadInfoResp": {
+            "type": "object",
+            "properties": {
+                "launchpadInfo": {
+                    "$ref": "#/definitions/dto.LaunchpadInfo"
+                }
+            }
+        },
         "dto.MemeCommon": {
             "type": "object",
             "properties": {
                 "bannerUrl": {
                     "type": "string"
                 },
+                "contract_address": {
+                    "type": "string"
+                },
                 "description": {
                     "type": "string"
                 },
                 "logoUrl": {
+                    "type": "string"
+                },
+                "meta": {
                     "type": "string"
                 },
                 "name": {
@@ -155,8 +275,8 @@ const docTemplate = `{
                 "memeception": {
                     "$ref": "#/definitions/dto.Memeception"
                 },
-                "memerc20": {
-                    "type": "boolean"
+                "meta": {
+                    "type": "string"
                 },
                 "name": {
                     "type": "string"
@@ -193,13 +313,31 @@ const docTemplate = `{
                 "ama": {
                     "type": "boolean"
                 },
+                "collectedETH": {
+                    "type": "string"
+                },
                 "contractAddress": {
                     "type": "string"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "meme": {
+                    "$ref": "#/definitions/dto.MemeCommon"
+                },
+                "memeID": {
+                    "type": "integer"
                 },
                 "startAt": {
                     "type": "integer"
                 },
                 "status": {
+                    "type": "integer"
+                },
+                "targetETH": {
+                    "type": "string"
+                },
+                "updatedAtEpoch": {
                     "type": "integer"
                 }
             }
@@ -210,16 +348,28 @@ const docTemplate = `{
                 "ama": {
                     "type": "boolean"
                 },
+                "collectedETH": {
+                    "type": "string"
+                },
                 "contractAddress": {
                     "type": "string"
                 },
-                "meme": {
-                    "$ref": "#/definitions/dto.MemeCommon"
+                "enabled": {
+                    "type": "boolean"
+                },
+                "memeID": {
+                    "type": "integer"
                 },
                 "startAt": {
                     "type": "integer"
                 },
                 "status": {
+                    "type": "integer"
+                },
+                "targetETH": {
+                    "type": "string"
+                },
+                "updatedAtEpoch": {
                     "type": "integer"
                 }
             }
@@ -274,6 +424,78 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.Swap": {
+            "type": "object",
+            "properties": {
+                "amount0": {
+                    "type": "string"
+                },
+                "amount1": {
+                    "type": "string"
+                },
+                "amountUSD": {
+                    "type": "string"
+                },
+                "buy": {
+                    "type": "boolean"
+                },
+                "priceETH": {
+                    "type": "string"
+                },
+                "priceUSD": {
+                    "type": "string"
+                },
+                "swapAt": {
+                    "type": "integer"
+                },
+                "token1IsMeme": {
+                    "type": "boolean"
+                },
+                "txHash": {
+                    "type": "string"
+                },
+                "walletAddress": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.SwapHistoryByAddressResp": {
+            "type": "object",
+            "properties": {
+                "swaps": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.Swap"
+                    }
+                }
+            }
+        },
+        "dto.Transaction": {
+            "type": "object",
+            "properties": {
+                "amountETH": {
+                    "type": "string"
+                },
+                "amountMeme": {
+                    "type": "string"
+                },
+                "epoch": {
+                    "type": "integer"
+                },
+                "memeId": {
+                    "type": "string"
+                },
+                "txHash": {
+                    "type": "string"
+                },
+                "txType": {
+                    "type": "string"
+                },
+                "walletAddress": {
                     "type": "string"
                 }
             }

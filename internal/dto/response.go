@@ -14,3 +14,7 @@ type MemeceptionsResp struct {
 type SwapHistoryByAddressResp struct {
 	Swaps []Swap `json:"swaps"`
 }
+
+type LaunchpadInfoResp struct {
+	LaunchpadInfo LaunchpadInfo `json:"launchpadInfo"`
+}

@@ -4,10 +4,10 @@ import (
 	"context"
 	"strconv"
 
-	"github.com/flexstack.ai/membots-be/internal/interfaces"
-
 	unigraphclient "github.com/emersonmacro/go-uniswap-subgraph-client"
+
 	"github.com/flexstack.ai/membots-be/internal/dto"
+	"github.com/flexstack.ai/membots-be/internal/interfaces"
 )
 
 type swapUCase struct {

@@ -10,6 +10,12 @@ import (
 	"github.com/flexstack.ai/membots-be/internal/model"
 )
 
+type status uint
+
+const (
+	PROCESSING status = 0
+	SUCCEED    status = 1
+)
 const beforeLauchStart = 30 // mins
 
 type memeceptionRepository struct {
@@ -22,10 +28,11 @@ func NewMemeceptionRepository(db *gorm.DB) interfaces.MemeceptionRepository {
 	}
 }
 
-func (r memeceptionRepository) GetMemeceptionBySymbol(ctx context.Context, symbol string) (model.Meme, error) {
+func (r memeceptionRepository) GetMemeceptionByContractAddress(ctx context.Context, contractAddress string) (model.Meme, error) {
 	var memeMeta model.Meme
 	err := r.db.Joins("Memeception").Joins("Social").
-		Where("symbol = ?", symbol).
+		Where("contract_address = ?", contractAddress).
+		Where("status = ?", SUCCEED).
 		First(&memeMeta).Error
 	return memeMeta, err
 }

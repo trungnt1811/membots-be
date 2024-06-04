@@ -27,7 +27,7 @@ func NewLaunchpadHandler(ucase interfaces.LaunchpadUCase) *LaunchpadHandler {
 // @Accept	json
 // @Produce json
 // @Param memeAddress query string false "memeAddress to query, default is "
-// @Success 200 		{object}	dto.LaunchpadInfoRsp
+// @Success 200 		{object}	dto.LaunchpadInfoResp
 // @Failure 401 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
 // @Router 	/api/v1/truglymeme/launchpad [get]

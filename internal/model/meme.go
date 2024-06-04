@@ -19,7 +19,7 @@ type Meme struct {
 	ContractAddress string      `json:"contract_address"`
 	SwapFeeBps      uint        `json:"swap_fee_bps"`
 	VestingAllocBps uint        `json:"vesting_alloc_bps"`
-	Memerc20        bool        `json:"memerc20"`
+	Meta            string      `json:"meta"`
 	Live            bool        `json:"live"`
 	NetworkID       uint        `json:"network_id"`
 	Website         string      `json:"website"`
@@ -47,7 +47,7 @@ func (m *Meme) ToDto() dto.MemeDetail {
 		ContractAddress: m.ContractAddress,
 		SwapFeeBps:      m.SwapFeeBps,
 		VestingAllocBps: m.VestingAllocBps,
-		Memerc20:        m.Memerc20,
+		Meta:            m.Meta,
 		Live:            m.Live,
 		NetworkID:       m.NetworkID,
 		Website:         m.Website,
@@ -57,24 +57,28 @@ func (m *Meme) ToDto() dto.MemeDetail {
 }
 
 type MemeCommon struct {
-	ID          uint   `json:"id" gorm:"primaryKey"`
-	Name        string `json:"name"`
-	Symbol      string `json:"symbol"`
-	Description string `json:"description"`
-	LogoUrl     string `json:"logo_url"`
-	BannerUrl   string `json:"banner_url"`
+	ID              uint   `json:"id" gorm:"primaryKey"`
+	Name            string `json:"name"`
+	Symbol          string `json:"symbol"`
+	Description     string `json:"description"`
+	LogoUrl         string `json:"logo_url"`
+	BannerUrl       string `json:"banner_url"`
+	ContractAddress string `json:"contract_address"`
+	Meta            string `json:"meta"`
 }
 
 func (m *MemeCommon) TableName() string {
 	return "meme"
 }
 
-func (m *MemeCommon) ToDto() dto.MemeCommon {
+func (m *MemeCommon) ToCommonDto() dto.MemeCommon {
 	return dto.MemeCommon{
-		Name:        m.Name,
-		Symbol:      m.Symbol,
-		Description: m.Description,
-		LogoUrl:     m.LogoUrl,
-		BannerUrl:   m.BannerUrl,
+		Name:            m.Name,
+		Symbol:          m.Symbol,
+		Description:     m.Description,
+		LogoUrl:         m.LogoUrl,
+		BannerUrl:       m.BannerUrl,
+		ContractAddress: m.ContractAddress,
+		Meta:            m.Meta,
 	}
 }

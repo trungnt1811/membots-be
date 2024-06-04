@@ -7,5 +7,5 @@ import (
 )
 
 type SwapUCase interface {
-	GetSwaps(ctx context.Context, address string) (dto.SwapHistoryByAddressRsp, error)
+	GetSwaps(ctx context.Context, address string) (dto.SwapHistoryByAddressResp, error)
 }

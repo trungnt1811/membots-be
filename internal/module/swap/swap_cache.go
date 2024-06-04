@@ -3,10 +3,11 @@ package swap
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/flexstack.ai/membots-be/internal/dto"
 	"github.com/flexstack.ai/membots-be/internal/infra/caching"
 	"github.com/flexstack.ai/membots-be/internal/interfaces"
-	"time"
 )
 
 const (
@@ -28,9 +29,9 @@ func NewSwapCacheUCase(repo interfaces.SwapUCase,
 	}
 }
 
-func (s *swapCache) GetSwaps(ctx context.Context, address string) (dto.SwapHistoryByAddressRsp, error) {
+func (s *swapCache) GetSwaps(ctx context.Context, address string) (dto.SwapHistoryByAddressResp, error) {
 	key := &caching.Keyer{Raw: keyPrefixSwap + fmt.Sprint("GetSwaps_", address)}
-	var swaps dto.SwapHistoryByAddressRsp
+	var swaps dto.SwapHistoryByAddressResp
 	err := s.Cache.RetrieveItem(key, &swaps)
 	if err != nil {
 		// cache miss

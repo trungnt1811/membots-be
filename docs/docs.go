@@ -103,6 +103,52 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/memes": {
+            "post": {
+                "description": "Create meme",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "memeception"
+                ],
+                "summary": "Create meme",
+                "parameters": [
+                    {
+                        "description": "Request create meme, required",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateMemePayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "When success, return success message",
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateMemePayload"
+                        }
+                    },
+                    "417": {
+                        "description": "Expectation Failed",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "424": {
+                        "description": "Failed Dependency",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/truglymeme/launchpad": {
             "get": {
                 "description": "Get launchpad history by address",
@@ -191,6 +237,37 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dto.BlockchainPayload": {
+            "type": "object",
+            "properties": {
+                "chainId": {
+                    "type": "string"
+                },
+                "creatorAddress": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CreateMemePayload": {
+            "type": "object",
+            "properties": {
+                "blockchain": {
+                    "$ref": "#/definitions/dto.BlockchainPayload"
+                },
+                "memeInfo": {
+                    "$ref": "#/definitions/dto.MemeInfoPayload"
+                },
+                "memeception": {
+                    "$ref": "#/definitions/dto.MemeceptionPayload"
+                },
+                "socials": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/dto.Social"
+                    }
+                }
+            }
+        },
         "dto.LaunchpadInfo": {
             "type": "object",
             "properties": {
@@ -333,6 +410,53 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.MemeInfoPayload": {
+            "type": "object",
+            "properties": {
+                "ama": {
+                    "type": "boolean"
+                },
+                "bannerUrl": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "logoUrl": {
+                    "type": "string"
+                },
+                "meta": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "salt": {
+                    "type": "string"
+                },
+                "swapFeeBps": {
+                    "type": "string"
+                },
+                "swapFeePct": {
+                    "type": "number"
+                },
+                "symbol": {
+                    "type": "string"
+                },
+                "targetETH": {
+                    "type": "number"
+                },
+                "telegram": {
+                    "type": "string"
+                },
+                "vestingAllocBps": {
+                    "type": "string"
+                },
+                "website": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.Memeception": {
             "type": "object",
             "properties": {
@@ -425,6 +549,20 @@ const docTemplate = `{
                 },
                 "price": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.MemeceptionPayload": {
+            "type": "object",
+            "properties": {
+                "ema": {
+                    "type": "boolean"
+                },
+                "startAt": {
+                    "type": "string"
+                },
+                "targetETH": {
+                    "type": "string"
                 }
             }
         },

@@ -7,7 +7,7 @@ type MemeceptionDetailResp struct {
 
 type MemeceptionsResp struct {
 	MemeceptionsByStatus MemeceptionByStatus `json:"memeceptionsByStatus"`
-	Price                uint                `json:"price"`
+	Price                uint64              `json:"price"`
 	LatestLaunchpadTx    []LaunchpadTx       `json:"latestLaunchpadTx"`
 	LatestCoins          []MemeceptionCommon `json:"latestCoins"`
 }

@@ -7,21 +7,21 @@ import (
 )
 
 type Meme struct {
-	ID              uint        `json:"id" gorm:"primaryKey"`
+	ID              uint64      `json:"id" gorm:"primaryKey"`
 	Name            string      `json:"name"`
 	Symbol          string      `json:"symbol"`
 	Description     string      `json:"description"`
 	TotalSupply     string      `json:"total_supply"`
-	Decimals        uint        `json:"decimals"`
+	Decimals        uint64      `json:"decimals"`
 	LogoUrl         string      `json:"logo_url"`
 	BannerUrl       string      `json:"banner_url"`
 	CreatorAddress  string      `json:"creator_address"`
 	ContractAddress string      `json:"contract_address"`
-	SwapFeeBps      uint        `json:"swap_fee_bps"`
-	VestingAllocBps uint        `json:"vesting_alloc_bps"`
+	SwapFeeBps      uint64      `json:"swap_fee_bps"`
+	VestingAllocBps uint64      `json:"vesting_alloc_bps"`
 	Meta            string      `json:"meta"`
 	Live            bool        `json:"live"`
-	NetworkID       uint        `json:"network_id"`
+	NetworkID       uint64      `json:"network_id"`
 	Website         string      `json:"website"`
 	Memeception     Memeception `json:"memeception" gorm:"foreignKey:MemeID;references:ID"`
 	Social          Social      `json:"social" gorm:"foreignKey:MemeID;references:ID"`
@@ -57,7 +57,7 @@ func (m *Meme) ToDto() dto.MemeDetail {
 }
 
 type MemeCommon struct {
-	ID              uint   `json:"id" gorm:"primaryKey"`
+	ID              uint64 `json:"id" gorm:"primaryKey"`
 	Name            string `json:"name"`
 	Symbol          string `json:"symbol"`
 	Description     string `json:"description"`

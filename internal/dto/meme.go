@@ -1,21 +1,21 @@
 package dto
 
 type MemeDetail struct {
-	ID              uint              `json:"id"`
+	ID              uint64            `json:"id"`
 	Name            string            `json:"name"`
 	Symbol          string            `json:"symbol"`
 	Description     string            `json:"description"`
 	TotalSupply     string            `json:"totalSupply"`
-	Decimals        uint              `json:"decimals"`
+	Decimals        uint64            `json:"decimals"`
 	LogoUrl         string            `json:"logoUrl"`
 	BannerUrl       string            `json:"bannerUrl"`
 	CreatorAddress  string            `json:"creatorAddress"`
 	ContractAddress string            `json:"contractAddress"`
-	SwapFeeBps      uint              `json:"swapFeeBps"`
-	VestingAllocBps uint              `json:"vestingAllocBps"`
+	SwapFeeBps      uint64            `json:"swapFeeBps"`
+	VestingAllocBps uint64            `json:"vestingAllocBps"`
 	Meta            string            `json:"meta"`
 	Live            bool              `json:"live"`
-	NetworkID       uint              `json:"networkId"`
+	NetworkID       uint64            `json:"networkId"`
 	Website         string            `json:"website"`
 	Memeception     Memeception       `json:"memeception"`
 	Socials         map[string]Social `json:"socials"`

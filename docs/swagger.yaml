@@ -1,4 +1,24 @@
 definitions:
+  dto.BlockchainPayload:
+    properties:
+      chainId:
+        type: string
+      creatorAddress:
+        type: string
+    type: object
+  dto.CreateMemePayload:
+    properties:
+      blockchain:
+        $ref: '#/definitions/dto.BlockchainPayload'
+      memeInfo:
+        $ref: '#/definitions/dto.MemeInfoPayload'
+      memeception:
+        $ref: '#/definitions/dto.MemeceptionPayload'
+      socials:
+        additionalProperties:
+          $ref: '#/definitions/dto.Social'
+        type: object
+    type: object
   dto.LaunchpadInfo:
     properties:
       collectedETH:
@@ -92,6 +112,37 @@ definitions:
       website:
         type: string
     type: object
+  dto.MemeInfoPayload:
+    properties:
+      ama:
+        type: boolean
+      bannerUrl:
+        type: string
+      description:
+        type: string
+      logoUrl:
+        type: string
+      meta:
+        type: string
+      name:
+        type: string
+      salt:
+        type: string
+      swapFeeBps:
+        type: string
+      swapFeePct:
+        type: number
+      symbol:
+        type: string
+      targetETH:
+        type: number
+      telegram:
+        type: string
+      vestingAllocBps:
+        type: string
+      website:
+        type: string
+    type: object
   dto.Memeception:
     properties:
       ama:
@@ -153,6 +204,15 @@ definitions:
         $ref: '#/definitions/dto.MemeDetail'
       price:
         type: integer
+    type: object
+  dto.MemeceptionPayload:
+    properties:
+      ema:
+        type: boolean
+      startAt:
+        type: string
+      targetETH:
+        type: string
     type: object
   dto.MemeceptionsResp:
     properties:
@@ -305,6 +365,36 @@ paths:
           schema:
             $ref: '#/definitions/util.GeneralError'
       summary: Get memeceptions
+      tags:
+      - memeception
+  /api/v1/memes:
+    post:
+      consumes:
+      - application/json
+      description: Create meme
+      parameters:
+      - description: Request create meme, required
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateMemePayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: When success, return success message
+          schema:
+            $ref: '#/definitions/dto.CreateMemePayload'
+        "417":
+          description: Expectation Failed
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "424":
+          description: Failed Dependency
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      summary: Create meme
       tags:
       - memeception
   /api/v1/truglymeme/launchpad:

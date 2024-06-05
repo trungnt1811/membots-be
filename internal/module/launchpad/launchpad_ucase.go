@@ -4,22 +4,21 @@ import (
 	"context"
 	"strconv"
 
-	unigraphclient "github.com/emersonmacro/go-uniswap-subgraph-client"
-
 	"github.com/flexstack.ai/membots-be/internal/dto"
+	"github.com/flexstack.ai/membots-be/internal/infra/subgraphclient"
 	"github.com/flexstack.ai/membots-be/internal/interfaces"
 )
 
 type launchpadUCase struct {
-	Client *unigraphclient.Client
+	Client *subgraphclient.Client
 }
 
-func NewLaunchpadUcase(client *unigraphclient.Client) interfaces.LaunchpadUCase {
+func NewLaunchpadUcase(client *subgraphclient.Client) interfaces.LaunchpadUCase {
 	return &launchpadUCase{Client: client}
 }
 
 func (uc *launchpadUCase) GetHistory(ctx context.Context, address string) (dto.LaunchpadInfoResp, error) {
-	requestOpts := &unigraphclient.RequestOptions{
+	requestOpts := &subgraphclient.RequestOptions{
 		IncludeFields: []string{
 			"*",
 		},

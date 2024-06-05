@@ -16,7 +16,7 @@ CREATE TABLE meme (
     live BOOLEAN NOT NULL,
     network_id INT NOT NULL,
     website VARCHAR(50) NOT NULL,
-    status SMALLINT NOT NULL,
+    status SMALLINT NOT NULL DEFAULT 0,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
@@ -34,7 +34,7 @@ CREATE TABLE memeception (
     target_eth FLOAT NOT NULL,
     collected_eth FLOAT NOT NULL,
     enabled BOOLEAN NOT NULL,
-    updated_at_epoch TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at_epoch INT NOT NULL DEFAULT 0,
     PRIMARY KEY (id),
     FOREIGN KEY (meme_id) REFERENCES meme(id)
 ) ENGINE = InnoDB;

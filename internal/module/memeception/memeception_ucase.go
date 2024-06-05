@@ -68,10 +68,14 @@ func (u *memeceptionUCase) CreateMeme(ctx context.Context, payload dto.CreateMem
 			StartAt:   uint64(startAt.Unix()),
 			Ama:       payload.MemeInfo.Ama,
 			TargetETH: payload.MemeInfo.TargetETH,
+			UpdatedAtEpoch: uint64(time.Now().Unix()),
 		},
 		Social: social,
 	}
-	fmt.Println(memeModel)
+	err = u.MemeceptionRepository.CreateMeme(ctx, memeModel)
+	if err != nil {
+		return fmt.Errorf("cannot create meme: %w", err)
+	}
 	return nil
 }
 

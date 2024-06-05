@@ -26,9 +26,8 @@ func NewMemeceptionRepository(db *gorm.DB) interfaces.MemeceptionRepository {
 	}
 }
 
-func (c memeceptionRepository) CreateMeme(ctx context.Context, model model.Meme) error {
-	// TODO: implement later
-	return nil
+func (r memeceptionRepository) CreateMeme(ctx context.Context, model model.Meme) error {
+	return r.db.Create(&model).Error
 }
 
 func (r memeceptionRepository) GetMemeceptionByContractAddress(ctx context.Context, contractAddress string) (model.Meme, error) {

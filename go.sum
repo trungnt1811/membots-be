@@ -249,8 +249,8 @@ github.com/hashicorp/golang-lru v0.5.0/go.mod h1:/m3WP610KZHVQ1SGc6re/UDhFvYD7pJ
 github.com/hashicorp/golang-lru v0.5.1/go.mod h1:/m3WP610KZHVQ1SGc6re/UDhFvYD7pJ4Ao+sR/qLZy8=
 github.com/hashicorp/hcl v1.0.0 h1:0Anlzjpi4vEasTeNFn2mLJgTSwt0+6sfsiTG8qcWGx4=
 github.com/hashicorp/hcl v1.0.0/go.mod h1:E5yfLk+7swimpb2L/Alb/PJmXilQ/rhwaUYs4T20WEQ=
-github.com/hoanguyenkh/go-uniswap-subgraph-client v0.0.0-20240604104806-32700c9430dc h1:Sgj3ye7gRsYvUrBF+CEfPrJiwPQAIyBsYHP6olahyoY=
-github.com/hoanguyenkh/go-uniswap-subgraph-client v0.0.0-20240604104806-32700c9430dc/go.mod h1:c4yoLTCa9eftD3INGONlyw4iWSRZ5UMiDNzMzTxwN5U=
+github.com/hoanguyenkh/go-uniswap-subgraph-client v0.0.0-20240605031158-508c741044b9 h1:AiGsnO9Ugi/ue5N8JhQF//RAg1b2tj3jZxpASFDx/b4=
+github.com/hoanguyenkh/go-uniswap-subgraph-client v0.0.0-20240605031158-508c741044b9/go.mod h1:LELN11XsDxMwD5/l37fC7kJ7k6MoYiYebtAlx+TM3RI=
 github.com/ianlancetaylor/demangle v0.0.0-20181102032728-5e5cf60278f6/go.mod h1:aSSvb/t6k1mPoxDqO4vJh6VOCGPwU4O0C2/Eqndh1Sc=
 github.com/ianlancetaylor/demangle v0.0.0-20200824232613-28f6c0f3b639/go.mod h1:aSSvb/t6k1mPoxDqO4vJh6VOCGPwU4O0C2/Eqndh1Sc=
 github.com/imroc/req/v3 v3.42.1 h1:g82SouLvX7pqwqJjpQJYrVvuI+LOycWhyuwxtLlyQJk=

@@ -30,17 +30,21 @@ func (uc *launchpadUCase) GetHistory(ctx context.Context, address string) (dto.L
 	}
 	// convert response to dto.SwapHistoryByAddressRsp
 	var transactions []dto.Transaction
-	for _, meme := range response.MemecoinExits {
+	for _, meme := range response.MemecoinBuyExits {
 		timestamp, err := strconv.ParseUint(meme.BlockTimestamp, 10, 64)
 		if err != nil {
 			timestamp = 0
+		}
+		txType := "BUY"
+		if meme.Type == "MemecoinExit" {
+			txType = "SELL"
 		}
 		transactions = append(transactions, dto.Transaction{
 			AmountETH:     meme.AmountETH,
 			AmountMeme:    meme.AmountMeme,
 			WalletAddress: meme.User,
 			TxHash:        meme.TransactionHash,
-			TxType:        "BUY",
+			TxType:        txType,
 			MemeID:        meme.ID,
 			Epoch:         timestamp,
 		})

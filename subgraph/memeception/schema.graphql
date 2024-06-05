@@ -11,7 +11,7 @@ type CollectFees @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type Meme404Created @entity(immutable: true) {
+type MemeCreated @entity {
   id: Bytes!
   memeToken: Bytes! # address
   pool: Bytes! # address
@@ -23,45 +23,27 @@ type Meme404Created @entity(immutable: true) {
   params_salt: Bytes! # bytes32
   params_creator: Bytes! # address
   params_targetETH: BigInt! # uint256
-  # tiers: [Bytes!]! # tuple[]
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
+  type: String!
+  tiers: [Tier!]! @derivedFrom(field: "memeCreated")
 }
 
-type MemeCreated @entity(immutable: true) {
+type Tier @entity {
   id: Bytes!
-  memeToken: Bytes! # address
-  pool: Bytes! # address
-  params_name: String! # string
-  params_symbol: String! # string
-  params_startAt: BigInt! # uint40
-  params_swapFeeBps: Int! # uint16
-  params_vestingAllocBps: Int! # uint16
-  params_salt: Bytes! # bytes32
-  params_creator: Bytes! # address
-  params_targetETH: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+  nftId: BigInt!
+  lowerId: BigInt!
+  upperId: BigInt!
+  amountThreshold: BigInt!
+  isFungible: Boolean!
+  baseURL: String!
+  nftName: String!
+  nftSymbol: String!
+  memeCreated: MemeCreated!
 }
-
-type MemeKOLCreated @entity(immutable: true) {
-  id: Bytes!
-  memeToken: Bytes! # address
-  pool: Bytes! # address
-  params_name: String! # string
-  params_symbol: String! # string
-  params_startAt: BigInt! # uint40
-  params_swapFeeBps: Int! # uint16
-  params_vestingAllocBps: Int! # uint16
-  params_salt: Bytes! # bytes32
-  params_creator: Bytes! # address
-  params_targetETH: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
+# MemeKOLCreated
+# Meme404Created
 
 type MemeLiquidityAdded @entity(immutable: true) {
   id: Bytes!
@@ -74,7 +56,7 @@ type MemeLiquidityAdded @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type MemecoinBuy @entity(immutable: true) {
+type MemecoinBuyExit @entity(immutable: true) {
   id: Bytes!
   memeToken: Bytes! # address
   user: Bytes! # address
@@ -83,17 +65,7 @@ type MemecoinBuy @entity(immutable: true) {
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
-}
-
-type MemecoinExit @entity(immutable: true) {
-  id: Bytes!
-  memeToken: Bytes! # address
-  user: Bytes! # address
-  amountETH: BigInt! # uint256
-  amountMeme: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+  type: String!
 }
 
 type OwnershipTransferred @entity(immutable: true) {

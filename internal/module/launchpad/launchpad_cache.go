@@ -3,10 +3,11 @@ package launchpad
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/flexstack.ai/membots-be/internal/dto"
 	"github.com/flexstack.ai/membots-be/internal/infra/caching"
 	"github.com/flexstack.ai/membots-be/internal/interfaces"
-	"time"
 )
 
 const (
@@ -28,9 +29,9 @@ func NewSwapCacheUCase(repo interfaces.LaunchpadUCase,
 	}
 }
 
-func (l *launchpadCache) GetHistory(ctx context.Context, address string) (dto.LaunchpadInfoRsp, error) {
+func (l *launchpadCache) GetHistory(ctx context.Context, address string) (dto.LaunchpadInfoResp, error) {
 	key := &caching.Keyer{Raw: keyPrefixLaunchpad + fmt.Sprint("GetHistory_", address)}
-	var launchpadInfoRsp dto.LaunchpadInfoRsp
+	var launchpadInfoRsp dto.LaunchpadInfoResp
 	err := l.Cache.RetrieveItem(key, &launchpadInfoRsp)
 	if err != nil {
 		// cache miss

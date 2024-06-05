@@ -16,7 +16,3 @@ type LaunchpadInfo struct {
 	TargetETH    string        `json:"targetETH"`
 	CollectedETH string        `json:"collectedETH"`
 }
-
-type LaunchpadInfoRsp struct {
-	LaunchpadInfo LaunchpadInfo `json:"launchpadInfo"`
-}

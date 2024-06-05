@@ -7,5 +7,5 @@ import (
 )
 
 type LaunchpadUCase interface {
-	GetHistory(ctx context.Context, address string) (dto.LaunchpadInfoRsp, error)
+	GetHistory(ctx context.Context, address string) (dto.LaunchpadInfoResp, error)
 }

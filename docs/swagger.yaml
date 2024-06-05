@@ -1,11 +1,33 @@
 definitions:
+  dto.LaunchpadInfo:
+    properties:
+      collectedETH:
+        type: string
+      status:
+        type: string
+      targetETH:
+        type: string
+      transactions:
+        items:
+          $ref: '#/definitions/dto.Transaction'
+        type: array
+    type: object
+  dto.LaunchpadInfoResp:
+    properties:
+      launchpadInfo:
+        $ref: '#/definitions/dto.LaunchpadInfo'
+    type: object
   dto.MemeCommon:
     properties:
       bannerUrl:
         type: string
+      contract_address:
+        type: string
       description:
         type: string
       logoUrl:
+        type: string
+      meta:
         type: string
       name:
         type: string
@@ -32,8 +54,8 @@ definitions:
         type: string
       memeception:
         $ref: '#/definitions/dto.Memeception'
-      memerc20:
-        type: boolean
+      meta:
+        type: string
       name:
         type: string
       networkId:
@@ -57,24 +79,44 @@ definitions:
     properties:
       ama:
         type: boolean
+      collectedETH:
+        type: string
       contractAddress:
         type: string
+      enabled:
+        type: boolean
+      meme:
+        $ref: '#/definitions/dto.MemeCommon'
+      memeID:
+        type: integer
       startAt:
         type: integer
       status:
+        type: integer
+      targetETH:
+        type: string
+      updatedAtEpoch:
         type: integer
     type: object
   dto.MemeceptionCommon:
     properties:
       ama:
         type: boolean
+      collectedETH:
+        type: string
       contractAddress:
         type: string
-      meme:
-        $ref: '#/definitions/dto.MemeCommon'
+      enabled:
+        type: boolean
+      memeID:
+        type: integer
       startAt:
         type: integer
       status:
+        type: integer
+      targetETH:
+        type: string
+      updatedAtEpoch:
         type: integer
     type: object
   dto.MemeceptionDetailResp:
@@ -112,6 +154,53 @@ definitions:
       username:
         type: string
     type: object
+  dto.Swap:
+    properties:
+      amount0:
+        type: string
+      amount1:
+        type: string
+      amountUSD:
+        type: string
+      buy:
+        type: boolean
+      priceETH:
+        type: string
+      priceUSD:
+        type: string
+      swapAt:
+        type: integer
+      token1IsMeme:
+        type: boolean
+      txHash:
+        type: string
+      walletAddress:
+        type: string
+    type: object
+  dto.SwapHistoryByAddressResp:
+    properties:
+      swaps:
+        items:
+          $ref: '#/definitions/dto.Swap'
+        type: array
+    type: object
+  dto.Transaction:
+    properties:
+      amountETH:
+        type: string
+      amountMeme:
+        type: string
+      epoch:
+        type: integer
+      memeId:
+        type: string
+      txHash:
+        type: string
+      txType:
+        type: string
+      walletAddress:
+        type: string
+    type: object
   util.GeneralError:
     properties:
       code:
@@ -139,13 +228,13 @@ info:
   title: membots-be API
   version: "1.0"
 paths:
-  /api/v1/memeception:
+  /api/v1/meme:
     get:
       consumes:
       - application/json
-      description: Get memeception by symbol
+      description: Get memeception by meme address
       parameters:
-      - description: 'symbol to query, default is '
+      - description: 'memeAddress to query, default is '
         in: query
         name: symbol
         type: string
@@ -164,7 +253,7 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/util.GeneralError'
-      summary: Get memeception by symbol
+      summary: Get memeception by meme address
       tags:
       - memeception
   /api/v1/memeceptions:
@@ -190,4 +279,60 @@ paths:
       summary: Get memeceptions
       tags:
       - memeception
+  /api/v1/truglymeme/launchpad:
+    get:
+      consumes:
+      - application/json
+      description: Get launchpad history by address
+      parameters:
+      - description: 'memeAddress to query, default is '
+        in: query
+        name: memeAddress
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.LaunchpadInfoResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      summary: Get launchpad history by address
+      tags:
+      - launchpad
+  /api/v1/truglymeme/swaps:
+    get:
+      consumes:
+      - application/json
+      description: Get swaps history by memeId
+      parameters:
+      - description: 'memeId to query, default is '
+        in: query
+        name: memeId
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.SwapHistoryByAddressResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      summary: Get swaps history by memeId
+      tags:
+      - swap
 swagger: "2.0"

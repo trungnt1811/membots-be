@@ -2,11 +2,12 @@ package launchpad
 
 import (
 	"context"
-	"github.com/flexstack.ai/membots-be/internal/interfaces"
 	"strconv"
 
 	unigraphclient "github.com/emersonmacro/go-uniswap-subgraph-client"
+
 	"github.com/flexstack.ai/membots-be/internal/dto"
+	"github.com/flexstack.ai/membots-be/internal/interfaces"
 )
 
 type launchpadUCase struct {
@@ -17,7 +18,7 @@ func NewLaunchpadUcase(client *unigraphclient.Client) interfaces.LaunchpadUCase 
 	return &launchpadUCase{Client: client}
 }
 
-func (uc *launchpadUCase) GetHistory(ctx context.Context, address string) (dto.LaunchpadInfoRsp, error) {
+func (uc *launchpadUCase) GetHistory(ctx context.Context, address string) (dto.LaunchpadInfoResp, error) {
 	requestOpts := &unigraphclient.RequestOptions{
 		IncludeFields: []string{
 			"*",
@@ -26,7 +27,7 @@ func (uc *launchpadUCase) GetHistory(ctx context.Context, address string) (dto.L
 
 	response, err := uc.Client.GetSwapHistoryByMemeToken(ctx, address, requestOpts)
 	if err != nil {
-		return dto.LaunchpadInfoRsp{}, err
+		return dto.LaunchpadInfoResp{}, err
 	}
 	// convert response to dto.SwapHistoryByAddressRsp
 	var transactions []dto.Transaction
@@ -50,7 +51,7 @@ func (uc *launchpadUCase) GetHistory(ctx context.Context, address string) (dto.L
 		})
 	}
 
-	return dto.LaunchpadInfoRsp{LaunchpadInfo: dto.LaunchpadInfo{
+	return dto.LaunchpadInfoResp{LaunchpadInfo: dto.LaunchpadInfo{
 		Transactions: transactions,
 		Status:       "",
 		TargetETH:    "",

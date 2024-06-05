@@ -13,7 +13,7 @@ type MemeDetail struct {
 	ContractAddress string            `json:"contractAddress"`
 	SwapFeeBps      uint              `json:"swapFeeBps"`
 	VestingAllocBps uint              `json:"vestingAllocBps"`
-	Memerc20        bool              `json:"memerc20"`
+	Meta            string            `json:"meta"`
 	Live            bool              `json:"live"`
 	NetworkID       uint              `json:"networkId"`
 	Website         string            `json:"website"`
@@ -22,9 +22,11 @@ type MemeDetail struct {
 }
 
 type MemeCommon struct {
-	Name        string `json:"name"`
-	Symbol      string `json:"symbol"`
-	LogoUrl     string `json:"logoUrl"`
-	BannerUrl   string `json:"bannerUrl"`
-	Description string `json:"description"`
+	Name            string `json:"name"`
+	Symbol          string `json:"symbol"`
+	LogoUrl         string `json:"logoUrl"`
+	BannerUrl       string `json:"bannerUrl"`
+	Description     string `json:"description"`
+	ContractAddress string `json:"contract_address"`
+	Meta            string `json:"meta"`
 }

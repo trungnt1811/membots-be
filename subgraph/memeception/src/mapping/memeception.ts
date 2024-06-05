@@ -11,12 +11,10 @@ import {
 } from "../types/Memeception/Memeception"
 import {
   CollectFees,
-  Meme404Created,
+  Tier,
   MemeCreated,
-  MemeKOLCreated,
   MemeLiquidityAdded,
-  MemecoinBuy,
-  MemecoinExit,
+  MemecoinBuyExit,
   OwnershipTransferred,
   TreasuryUpdated
 } from "../types/schema"
@@ -40,7 +38,7 @@ export function handleCollectFees(event: CollectFeesEvent): void {
 }
 
 export function handleMeme404Created(event: Meme404CreatedEvent): void {
-  let entity = new Meme404Created(
+  let entity = new MemeCreated(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   )
   entity.memeToken = event.params.memeToken
@@ -53,11 +51,29 @@ export function handleMeme404Created(event: Meme404CreatedEvent): void {
   entity.params_salt = event.params.params.salt
   entity.params_creator = event.params.params.creator
   entity.params_targetETH = event.params.params.targetETH
-  // entity.tiers = event.params.tiers
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
   entity.transactionHash = event.transaction.hash
+  entity.type = "Meme404Created"
   entity.save()
+  for (let i = 0; i < event.params.tiers.length; i++) {
+    let tierParam = event.params.tiers[i];
+    let entityTier = new Tier(
+      event.transaction.hash.concatI32(
+        event.logIndex.toI32()+tierParam.nftId.toI32()+tierParam.lowerId.toI32()+tierParam.upperId.toI32()
+      )
+    )
+    entityTier.nftId = tierParam.nftId;
+    entityTier.lowerId = tierParam.lowerId;
+    entityTier.upperId = tierParam.upperId;
+    entityTier.amountThreshold = tierParam.amountThreshold;
+    entityTier.isFungible = tierParam.isFungible;
+    entityTier.baseURL = tierParam.baseURL;
+    entityTier.nftName = tierParam.nftName;
+    entityTier.nftSymbol = tierParam.nftSymbol;
+    entityTier.memeCreated = entity.id;
+    entityTier.save();
+  }
 }
 
 export function handleMemeCreated(event: MemeCreatedEvent): void {
@@ -78,12 +94,13 @@ export function handleMemeCreated(event: MemeCreatedEvent): void {
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
   entity.transactionHash = event.transaction.hash
+  entity.type = "MemeCreated"
 
   entity.save()
 }
 
 export function handleMemeKOLCreated(event: MemeKOLCreatedEvent): void {
-  let entity = new MemeKOLCreated(
+  let entity = new MemeCreated(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   )
   entity.memeToken = event.params.memeToken
@@ -100,6 +117,7 @@ export function handleMemeKOLCreated(event: MemeKOLCreatedEvent): void {
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
   entity.transactionHash = event.transaction.hash
+  entity.type = "MemeKOLCreated"
 
   entity.save()
 }
@@ -121,7 +139,7 @@ export function handleMemeLiquidityAdded(event: MemeLiquidityAddedEvent): void {
 }
 
 export function handleMemecoinBuy(event: MemecoinBuyEvent): void {
-  let entity = new MemecoinBuy(
+  let entity = new MemecoinBuyExit(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   )
   entity.memeToken = event.params.memeToken
@@ -132,12 +150,13 @@ export function handleMemecoinBuy(event: MemecoinBuyEvent): void {
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
   entity.transactionHash = event.transaction.hash
+  entity.type = "MemecoinBuy"
 
   entity.save()
 }
 
 export function handleMemecoinExit(event: MemecoinExitEvent): void {
-  let entity = new MemecoinExit(
+  let entity = new MemecoinBuyExit(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   )
   entity.memeToken = event.params.memeToken
@@ -148,6 +167,7 @@ export function handleMemecoinExit(event: MemecoinExitEvent): void {
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
   entity.transactionHash = event.transaction.hash
+  entity.type = "MemecoinExit"
 
   entity.save()
 }

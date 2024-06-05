@@ -27,7 +27,7 @@ func NewSwapHandler(ucase interfaces.SwapUCase) *SwapHandler {
 // @Accept	json
 // @Produce json
 // @Param memeId query string false "memeId to query, default is "
-// @Success 200 		{object}	dto.SwapHistoryByAddressRsp
+// @Success 200 		{object}	dto.SwapHistoryByAddressResp
 // @Failure 401 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
 // @Router 	/api/v1/truglymeme/swaps [get]

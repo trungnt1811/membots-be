@@ -10,3 +10,11 @@ type MemeceptionsResp struct {
 	Upcoming []MemeceptionCommon `json:"upcoming"`
 	Past     []MemeceptionCommon `json:"past"`
 }
+
+type SwapHistoryByAddressResp struct {
+	Swaps []Swap `json:"swaps"`
+}
+
+type LaunchpadInfoResp struct {
+	LaunchpadInfo LaunchpadInfo `json:"launchpadInfo"`
+}

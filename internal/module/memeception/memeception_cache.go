@@ -29,13 +29,13 @@ func NewMemeceptionCacheRepository(repo interfaces.MemeceptionRepository,
 	}
 }
 
-func (c memeceptionCache) GetMemeceptionBySymbol(ctx context.Context, symbol string) (model.Meme, error) {
-	key := &caching.Keyer{Raw: keyPrefixMemeception + fmt.Sprint("GetMemeceptionBySymbol_", symbol)}
+func (c memeceptionCache) GetMemeceptionByContractAddress(ctx context.Context, contractAddress string) (model.Meme, error) {
+	key := &caching.Keyer{Raw: keyPrefixMemeception + fmt.Sprint("GetMemeceptionByContractAddress_", contractAddress)}
 	var memeMeta model.Meme
 	err := c.Cache.RetrieveItem(key, &memeMeta)
 	if err != nil {
 		// cache miss
-		memeMeta, err = c.GetMemeceptionBySymbol(ctx, symbol)
+		memeMeta, err = c.GetMemeceptionByContractAddress(ctx, contractAddress)
 		if err != nil {
 			return memeMeta, err
 		}

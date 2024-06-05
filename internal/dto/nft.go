@@ -14,9 +14,9 @@ type Nft struct {
 type Tier struct {
 	MemeId          string   `json:"memeId"`
 	NftId           string   `json:"nftId"`
-	Rank            uint     `json:"rank"`
+	Rank            uint64   `json:"rank"`
 	AmountThreshold string   `json:"amountThreshold"`
-	TokenIdLower    uint     `json:"tokenIdLower"`
+	TokenIdLower    uint64   `json:"tokenIdLower"`
 	TokenIdUpper    string   `json:"tokenIdUpper"`
 	TokenIdURLs     []string `json:"tokenIdURLs"`
 }

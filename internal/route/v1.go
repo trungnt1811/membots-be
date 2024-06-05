@@ -28,6 +28,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	memeceptionHandler := memeception.NewMemeceptionHandler(memeceptionUCase)
 	appRouter.GET("/meme", memeceptionHandler.GetMemeceptionByMemeAddress)
 	appRouter.GET("/memeceptions", memeceptionHandler.GetMemeceptions)
+	appRouter.POST("/memes", memeceptionHandler.CreateMeme)
 
 	// SECTION: swaps
 	client := subgraphclient.NewClient(subgraphclient.Endpoints[subgraphclient.Base], nil)

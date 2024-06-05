@@ -8,6 +8,7 @@ import (
 )
 
 type MemeceptionRepository interface {
+	CreateMeme(ctx context.Context, model model.Meme) error
 	GetMemeceptionByContractAddress(ctx context.Context, contractAddress string) (model.Meme, error)
 	GetMemeceptionsPast(ctx context.Context) ([]model.Memeception, error)
 	GetMemeceptionsLive(ctx context.Context) ([]model.Memeception, error)
@@ -15,6 +16,7 @@ type MemeceptionRepository interface {
 }
 
 type MemeceptionUCase interface {
+	CreateMeme(ctx context.Context, payload dto.CreateMemePayload) error
 	GetMemeceptionByContractAddress(ctx context.Context, contractAddress string) (dto.MemeceptionDetailResp, error)
 	GetMemeceptions(ctx context.Context) (dto.MemeceptionsResp, error)
 }

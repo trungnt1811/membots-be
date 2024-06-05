@@ -2,9 +2,13 @@ package memeception
 
 import (
 	"context"
+	"fmt"
+	"strconv"
+	"time"
 
 	"github.com/flexstack.ai/membots-be/internal/dto"
 	"github.com/flexstack.ai/membots-be/internal/interfaces"
+	"github.com/flexstack.ai/membots-be/internal/model"
 )
 
 type memeceptionUCase struct {
@@ -15,6 +19,60 @@ func NewMemeceptionUCase(memeceptionRepository interfaces.MemeceptionRepository)
 	return &memeceptionUCase{
 		MemeceptionRepository: memeceptionRepository,
 	}
+}
+
+func (u *memeceptionUCase) CreateMeme(ctx context.Context, payload dto.CreateMemePayload) error {
+	swapFeeBps, err := strconv.ParseUint(payload.MemeInfo.SwapFeeBps, 0, 64)
+	if err != nil {
+		return fmt.Errorf("cannot convert SwapFeePct to uint64: %w", err)
+	}
+
+	vestingAllocBps, err := strconv.ParseUint(payload.MemeInfo.VestingAllocBps, 0, 64)
+	if err != nil {
+		return fmt.Errorf("cannot convert VestingAllocBps to uint64: %w", err)
+	}
+
+	networkID, err := strconv.ParseUint(payload.Blockchain.ChainID, 0, 64)
+	if err != nil {
+		return fmt.Errorf("cannot convert ChainID to uint64: %w", err)
+	}
+
+	startAt, err := time.Parse(time.RFC3339, payload.Memeception.StartAt)
+	if err != nil {
+		return fmt.Errorf("cannot parse StartAt to unix timestamp: %w", err)
+	}
+
+	social := model.Social{}
+	for _, payload := range payload.Socials {
+		social.Provider = payload.Provider
+		social.Username = payload.Username
+		social.PhotoURL = payload.PhotoURL
+		social.URL = payload.URL
+		social.DisplayName = payload.DisplayName
+		break
+	}
+
+	memeModel := model.Meme{
+		Name:            payload.MemeInfo.Name,
+		Symbol:          payload.MemeInfo.Symbol,
+		Description:     payload.MemeInfo.Description,
+		LogoUrl:         payload.MemeInfo.LogoUrl,
+		BannerUrl:       payload.MemeInfo.BannerUrl,
+		CreatorAddress:  payload.Blockchain.CreatorAddress,
+		SwapFeeBps:      swapFeeBps,
+		VestingAllocBps: vestingAllocBps,
+		Meta:            payload.MemeInfo.Meta,
+		NetworkID:       networkID,
+		Website:         payload.MemeInfo.Website,
+		Memeception: model.Memeception{
+			StartAt:   uint64(startAt.Unix()),
+			Ama:       payload.MemeInfo.Ama,
+			TargetETH: payload.MemeInfo.TargetETH,
+		},
+		Social: social,
+	}
+	fmt.Println(memeModel)
+	return nil
 }
 
 func (u *memeceptionUCase) GetMemeceptionByContractAddress(ctx context.Context, contractAddress string) (dto.MemeceptionDetailResp, error) {

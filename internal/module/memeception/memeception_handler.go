@@ -7,7 +7,9 @@ import (
 	util "github.com/AstraProtocol/reward-libs/utils"
 	"github.com/gin-gonic/gin"
 
+	"github.com/flexstack.ai/membots-be/internal/dto"
 	"github.com/flexstack.ai/membots-be/internal/interfaces"
+	"github.com/flexstack.ai/membots-be/internal/util/log"
 )
 
 type MemeceptionHandler struct {
@@ -18,6 +20,41 @@ func NewMemeceptionHandler(ucase interfaces.MemeceptionUCase) *MemeceptionHandle
 	return &MemeceptionHandler{
 		UCase: ucase,
 	}
+}
+
+// CreateMeme Create meme
+// @Summary Create meme
+// @Description Create meme
+// @Tags 	memeception
+// @Accept	json
+// @Produce json
+// @Param 	payload	body 			dto.CreateMemePayload true "Request create meme, required"
+// @Success 200 		{object}	dto.CreateMemePayload "When success, return success message"
+// @Failure 424 		{object}	util.GeneralError
+// @Failure 417 		{object}	util.GeneralError
+// @Router 	/api/v1/memes [post]
+func (handler *MemeceptionHandler) CreateMeme(ctx *gin.Context) {
+	var req dto.CreateMemePayload
+	err := ctx.BindJSON(&req)
+	if err != nil {
+		log.LG.Errorf("parse create meme payload error: %v", err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	err = handler.UCase.CreateMeme(ctx, req)
+	if err != nil {
+		log.LG.Errorf("save meme error: %v", err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"success": true,
+	})
 }
 
 // GetMemeceptionByMemeAddress Get memeception by meme address

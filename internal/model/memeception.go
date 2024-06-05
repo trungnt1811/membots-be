@@ -7,16 +7,16 @@ import (
 )
 
 type Memeception struct {
-	ID              uint       `json:"id" gorm:"primaryKey"`
-	StartAt         uint       `json:"start_at"`
-	Status          uint       `json:"status"` // 2: SOLD OUT
+	ID              uint64     `json:"id" gorm:"primaryKey"`
+	StartAt         uint64     `json:"start_at"`
+	Status          uint64     `json:"status"` // 2: SOLD OUT
 	Ama             bool       `json:"ama"`
 	ContractAddress string     `json:"contract_address"`
 	TargetETH       float64    `json:"target_eth"`
 	CollectedETH    float64    `json:"collected_eth"`
 	Enabled         bool       `json:"enabled"`
-	MemeID          uint       `json:"meme_id"`
-	UpdatedAtEpoch  uint       `json:"updated_at_epoch"`
+	MemeID          uint64     `json:"meme_id"`
+	UpdatedAtEpoch  uint64     `json:"updated_at_epoch"`
 	Meme            MemeCommon `json:"meme" gorm:"foreignKey:ID;references:MemeID"`
 }
 

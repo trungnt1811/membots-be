@@ -12,7 +12,7 @@ import (
 
 const (
 	keyPrefixMemeception = "memeception_"
-	cacheTimeMemeception = 10 * time.Second
+	cacheTimeMemeception = 5 * time.Second
 )
 
 type memeceptionCache struct {
@@ -29,13 +29,17 @@ func NewMemeceptionCacheRepository(repo interfaces.MemeceptionRepository,
 	}
 }
 
+func (c memeceptionCache) CreateMeme(ctx context.Context, model model.Meme) error {
+	return c.MemeceptionRepository.CreateMeme(ctx, model)
+}
+
 func (c memeceptionCache) GetMemeceptionByContractAddress(ctx context.Context, contractAddress string) (model.Meme, error) {
 	key := &caching.Keyer{Raw: keyPrefixMemeception + fmt.Sprint("GetMemeceptionByContractAddress_", contractAddress)}
 	var memeMeta model.Meme
 	err := c.Cache.RetrieveItem(key, &memeMeta)
 	if err != nil {
 		// cache miss
-		memeMeta, err = c.GetMemeceptionByContractAddress(ctx, contractAddress)
+		memeMeta, err = c.MemeceptionRepository.GetMemeceptionByContractAddress(ctx, contractAddress)
 		if err != nil {
 			return memeMeta, err
 		}

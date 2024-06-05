@@ -129,7 +129,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "When success, return success message",
+                        "description": "When success, return {\"success\": true}",
                         "schema": {
                             "$ref": "#/definitions/dto.CreateMemePayload"
                         }

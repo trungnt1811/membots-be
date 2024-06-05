@@ -65,9 +65,9 @@ func (u *memeceptionUCase) CreateMeme(ctx context.Context, payload dto.CreateMem
 		NetworkID:       networkID,
 		Website:         payload.MemeInfo.Website,
 		Memeception: model.Memeception{
-			StartAt:   uint64(startAt.Unix()),
-			Ama:       payload.MemeInfo.Ama,
-			TargetETH: payload.MemeInfo.TargetETH,
+			StartAt:        uint64(startAt.Unix()),
+			Ama:            payload.MemeInfo.Ama,
+			TargetETH:      payload.MemeInfo.TargetETH,
 			UpdatedAtEpoch: uint64(time.Now().Unix()),
 		},
 		Social: social,

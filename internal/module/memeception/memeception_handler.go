@@ -30,7 +30,7 @@ func NewMemeceptionHandler(ucase interfaces.MemeceptionUCase) *MemeceptionHandle
 // @Accept	json
 // @Produce json
 // @Param 	payload	body 			dto.CreateMemePayload true "Request create meme, required"
-// @Success 200 		{object}	dto.CreateMemePayload "When success, return success message"
+// @Success 200 		{object}	dto.CreateMemePayload "When success, return {"success": true}"
 // @Failure 424 		{object}	util.GeneralError
 // @Failure 417 		{object}	util.GeneralError
 // @Router 	/api/v1/memes [post]

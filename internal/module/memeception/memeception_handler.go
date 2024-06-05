@@ -3,6 +3,7 @@ package memeception
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	util "github.com/AstraProtocol/reward-libs/utils"
 	"github.com/gin-gonic/gin"
@@ -47,6 +48,12 @@ func (handler *MemeceptionHandler) CreateMeme(ctx *gin.Context) {
 	err = handler.UCase.CreateMeme(ctx, req)
 	if err != nil {
 		log.LG.Errorf("save meme error: %v", err)
+		if strings.Contains(err.Error(), "Duplicate") {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"error": "Symbol is already associated with an existing meme",
+			})
+			return
+		}
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
 		})

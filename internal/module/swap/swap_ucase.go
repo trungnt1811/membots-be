@@ -4,22 +4,21 @@ import (
 	"context"
 	"strconv"
 
-	unigraphclient "github.com/emersonmacro/go-uniswap-subgraph-client"
-
 	"github.com/flexstack.ai/membots-be/internal/dto"
+	"github.com/flexstack.ai/membots-be/internal/infra/subgraphclient"
 	"github.com/flexstack.ai/membots-be/internal/interfaces"
 )
 
 type swapUCase struct {
-	Client *unigraphclient.Client
+	Client *subgraphclient.Client
 }
 
-func NewSwapUcase(client *unigraphclient.Client) interfaces.SwapUCase {
+func NewSwapUcase(client *subgraphclient.Client) interfaces.SwapUCase {
 	return &swapUCase{Client: client}
 }
 
 func (uc *swapUCase) GetSwaps(ctx context.Context, address string) (dto.SwapHistoryByAddressResp, error) {
-	requestOpts := &unigraphclient.RequestOptions{
+	requestOpts := &subgraphclient.RequestOptions{
 		IncludeFields: []string{
 			"id",
 			"timestamp",

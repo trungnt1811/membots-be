@@ -6,9 +6,10 @@ type MemeceptionDetailResp struct {
 }
 
 type MemeceptionsResp struct {
-	Live     []MemeceptionCommon `json:"live"`
-	Upcoming []MemeceptionCommon `json:"upcoming"`
-	Past     []MemeceptionCommon `json:"past"`
+	MemeceptionsByStatus MemeceptionByStatus `json:"memeceptionsByStatus"`
+	Price                uint                `json:"price"`
+	LatestLaunchpadTx    []LaunchpadTx       `json:"latestLaunchpadTx"`
+	LatestCoins          []MemeceptionCommon `json:"latestCoins"`
 }
 
 type SwapHistoryByAddressResp struct {

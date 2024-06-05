@@ -37,19 +37,9 @@ func (u *memeceptionUCase) GetMemeceptions(ctx context.Context) (dto.Memeception
 	if err != nil {
 		return dto.MemeceptionsResp{}, err
 	}
-	listMemePastDto := make([]dto.MemeceptionCommon, 0)
+	listMemePastDto := make([]dto.Memeception, 0)
 	for _, meme := range listMemePast {
-		listMemePastDto = append(listMemePastDto, meme.ToCommonDto())
-	}
-
-	// Get list meme upcoming
-	listMemeUpcoming, err := u.MemeceptionRepository.GetMemeceptionsUpcoming(ctx)
-	if err != nil {
-		return dto.MemeceptionsResp{}, err
-	}
-	listMemeUpcomingDto := make([]dto.MemeceptionCommon, 0)
-	for _, meme := range listMemeUpcoming {
-		listMemeUpcomingDto = append(listMemeUpcomingDto, meme.ToCommonDto())
+		listMemePastDto = append(listMemePastDto, meme.ToDto())
 	}
 
 	// Get list meme live
@@ -57,15 +47,16 @@ func (u *memeceptionUCase) GetMemeceptions(ctx context.Context) (dto.Memeception
 	if err != nil {
 		return dto.MemeceptionsResp{}, err
 	}
-	listMemeLiveDto := make([]dto.MemeceptionCommon, 0)
+	listMemeLiveDto := make([]dto.Memeception, 0)
 	for _, meme := range listMemeLive {
-		listMemeLiveDto = append(listMemeLiveDto, meme.ToCommonDto())
+		listMemeLiveDto = append(listMemeLiveDto, meme.ToDto())
 	}
 
 	memeceptionsResp := dto.MemeceptionsResp{
-		Live:     listMemeLiveDto,
-		Upcoming: listMemeUpcomingDto,
-		Past:     listMemePastDto,
+		MemeceptionsByStatus: dto.MemeceptionByStatus{
+			Past: listMemePastDto,
+			Live: listMemeLiveDto,
+		},
 	}
 	return memeceptionsResp, nil
 }

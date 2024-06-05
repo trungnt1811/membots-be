@@ -219,6 +219,32 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.LaunchpadTx": {
+            "type": "object",
+            "properties": {
+                "amountUSD": {
+                    "type": "string"
+                },
+                "logoUrl": {
+                    "type": "string"
+                },
+                "memeContractAddress": {
+                    "type": "string"
+                },
+                "symbol": {
+                    "type": "string"
+                },
+                "txHash": {
+                    "type": "string"
+                },
+                "txType": {
+                    "type": "string"
+                },
+                "walletAddress": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.MemeCommon": {
             "type": "object",
             "properties": {
@@ -342,6 +368,23 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.MemeceptionByStatus": {
+            "type": "object",
+            "properties": {
+                "live": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.Memeception"
+                    }
+                },
+                "past": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.Memeception"
+                    }
+                }
+            }
+        },
         "dto.MemeceptionCommon": {
             "type": "object",
             "properties": {
@@ -388,23 +431,23 @@ const docTemplate = `{
         "dto.MemeceptionsResp": {
             "type": "object",
             "properties": {
-                "live": {
+                "latestCoins": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/dto.MemeceptionCommon"
                     }
                 },
-                "past": {
+                "latestLaunchpadTx": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/dto.MemeceptionCommon"
+                        "$ref": "#/definitions/dto.LaunchpadTx"
                     }
                 },
-                "upcoming": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/dto.MemeceptionCommon"
-                    }
+                "memeceptionsByStatus": {
+                    "$ref": "#/definitions/dto.MemeceptionByStatus"
+                },
+                "price": {
+                    "type": "integer"
                 }
             }
         },

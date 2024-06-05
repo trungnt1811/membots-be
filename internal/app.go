@@ -62,7 +62,7 @@ func RunApp(config *conf.Configuration) {
 	// SECTION: Run Gin router
 	err := r.Run(fmt.Sprintf("0.0.0.0:%v", config.AppPort))
 	if err != nil {
-		log.LG.Fatalf("failed to run gin router %v", err)
+		log.LG.Fatalf("failed to run gin router: %v", err)
 	}
 
 	// Wait until some signal is captured.

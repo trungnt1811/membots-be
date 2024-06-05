@@ -10,6 +10,7 @@ import (
 	"github.com/flexstack.ai/membots-be/internal/module/launchpad"
 	"github.com/flexstack.ai/membots-be/internal/module/memeception"
 	"github.com/flexstack.ai/membots-be/internal/module/swap"
+	"github.com/flexstack.ai/membots-be/internal/worker"
 )
 
 func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
@@ -40,4 +41,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	launchpadUCase := launchpad.NewLaunchpadUcase(clientMeme)
 	launchpadHandler := launchpad.NewLaunchpadHandler(launchpadUCase)
 	appRouter.GET("/launchpad", launchpadHandler.GetHistoryByAddress)
+
+	// SECTION: cronjob
+	worker.RegisterCronJobs(db, clientMeme)
 }

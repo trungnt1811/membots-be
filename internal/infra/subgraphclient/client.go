@@ -72,12 +72,12 @@ func (c *Client) GetSwapHistoryByMemeToken(ctx context.Context, memeToken string
 	return executeRequestAndConvert(ctx, req, MemeCoinExitsResponse{}, c)
 }
 
-func (c *Client) GetMemeTiersByMemeToken(ctx context.Context, memeToken string, opts *RequestOptions) (*MemeCreatedResponse, error) {
+func (c *Client) GetMemeTiersByMemeToken(ctx context.Context, memeToken string, opts *RequestOptions) (*MemeCreatedsResponse, error) {
 	req, err := constructListQueryWithMemeToken(memeToken, MemeCreatedFields, opts)
 	if err != nil {
 		return nil, err
 	}
-	return executeRequestAndConvert(ctx, req, MemeCreatedResponse{}, c)
+	return executeRequestAndConvert(ctx, req, MemeCreatedsResponse{}, c)
 }
 
 func (c *Client) ListPools(ctx context.Context, opts *RequestOptions) (*ListPoolsResponse, error) {
@@ -358,6 +358,14 @@ func (c *Client) ListTokenHourDatas(ctx context.Context, opts *RequestOptions) (
 		return nil, err
 	}
 	return executeRequestAndConvert(ctx, req, ListTokenHourDatasResponse{}, c)
+}
+
+func (c *Client) GetMemeCreatedsByCreatorAndSymbol(ctx context.Context, creator, symbol string, opts *RequestOptions) (*MemeCreatedsResponse, error) {
+	req, err := constructListQueryWithCreatorAndSymbol(creator, symbol, MemeCreatedFields, opts)
+	if err != nil {
+		return nil, err
+	}
+	return executeRequestAndConvert(ctx, req, MemeCreatedsResponse{}, c)
 }
 
 func executeRequestAndConvert[T Response](ctx context.Context, req *graphql.Request, converted T, c *Client) (*T, error) {

@@ -1007,17 +1007,23 @@ var MemeFields modelFields = modelFields{
 	},
 }
 
-type MemeCreatedResponse struct {
+type MemeCreatedsResponse struct {
 	MemeCreateds []MemeCreated `json:"memeCreateds"`
 }
 
 type MemeCreated struct {
-	ID           string `json:"id"`
-	MemeToken    string `json:"memeToken"`
-	ParamsSymbol string `json:"params_symbol"`
-	ParamsName   string `json:"params_name"`
-	Type         string `json:"type"`
-	Tiers        []Tier `json:"tiers"`
+	ID              string  `json:"id"`
+	MemeToken       string  `json:"memeToken"`
+	Name            string  `json:"params_name"`
+	Symbol          string  `json:"params_symbol"`
+	StartAt         string  `json:"params_startAt"`
+	SwapFeeBps      float64 `json:"params_swapFeeBps"`
+	VestingAllocBps float64 `json:"params_vestingAllocBps"`
+	Salt            string  `json:"params_salt"`
+	Creator         string  `json:"params_creator"`
+	TargetETH       string  `json:"params_targetETH"`
+	Type            string  `json:"type"`
+	Tiers           []Tier  `json:"tiers"`
 }
 
 type Tier struct {
@@ -1037,8 +1043,14 @@ var MemeCreatedFields modelFields = modelFields{
 	direct: []string{
 		"id",
 		"memeToken",
-		"params_symbol",
 		"params_name",
+		"params_symbol",
+		"params_startAt",
+		"params_swapFeeBps",
+		"params_vestingAllocBps",
+		"params_salt",
+		"params_creator",
+		"params_targetETH",
 		"type",
 	},
 	reference: map[string]string{

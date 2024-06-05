@@ -6,6 +6,8 @@ import (
 	"github.com/flexstack.ai/membots-be/internal/dto"
 )
 
+const tableName = "meme"
+
 type Meme struct {
 	ID              uint64      `json:"id" gorm:"primaryKey"`
 	Name            string      `json:"name"`
@@ -23,6 +25,8 @@ type Meme struct {
 	Live            bool        `json:"live"`
 	NetworkID       uint64      `json:"network_id"`
 	Website         string      `json:"website"`
+	Salt            string      `json:"salt"`
+	Status          uint64      `json:"status"`
 	Memeception     Memeception `json:"memeception" gorm:"foreignKey:MemeID;references:ID"`
 	Social          Social      `json:"social" gorm:"foreignKey:MemeID;references:ID"`
 	CreatedAt       time.Time   `json:"created_at"`
@@ -30,7 +34,7 @@ type Meme struct {
 }
 
 func (m *Meme) TableName() string {
-	return "meme"
+	return tableName
 }
 
 func (m *Meme) ToDto() dto.MemeDetail {
@@ -68,7 +72,7 @@ type MemeCommon struct {
 }
 
 func (m *MemeCommon) TableName() string {
-	return "meme"
+	return tableName
 }
 
 func (m *MemeCommon) ToCommonDto() dto.MemeCommon {
@@ -81,4 +85,14 @@ func (m *MemeCommon) ToCommonDto() dto.MemeCommon {
 		ContractAddress: m.ContractAddress,
 		Meta:            m.Meta,
 	}
+}
+
+type MemeOnchainInfo struct {
+	ID             uint64 `json:"id" gorm:"primaryKey"`
+	Symbol         string `json:"symbol"`
+	CreatorAddress string `json:"creator_address"`
+}
+
+func (m *MemeOnchainInfo) TableName() string {
+	return tableName
 }

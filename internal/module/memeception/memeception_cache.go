@@ -33,6 +33,15 @@ func (c memeceptionCache) CreateMeme(ctx context.Context, model model.Meme) erro
 	return c.MemeceptionRepository.CreateMeme(ctx, model)
 }
 
+func (c memeceptionCache) UpdateMeme(ctx context.Context, model model.Meme) error {
+	return c.MemeceptionRepository.UpdateMeme(ctx, model)
+}
+
+func (c memeceptionCache) GetListMemeProcessing(ctx context.Context) ([]model.MemeOnchainInfo, error) {
+	// TODO: implement later
+	return nil, nil
+}
+
 func (c memeceptionCache) GetMemeceptionByContractAddress(ctx context.Context, contractAddress string) (model.Meme, error) {
 	key := &caching.Keyer{Raw: keyPrefixMemeception + fmt.Sprint("GetMemeceptionByContractAddress_", contractAddress)}
 	var memeMeta model.Meme

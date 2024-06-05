@@ -2,7 +2,6 @@ package memeception
 
 import (
 	"context"
-	"time"
 
 	"gorm.io/gorm"
 
@@ -16,7 +15,6 @@ const (
 	PROCESSING status = 0
 	SUCCEED    status = 1
 )
-const beforeLauchStart = 30 // mins
 
 type memeceptionRepository struct {
 	db *gorm.DB
@@ -40,15 +38,8 @@ func (r memeceptionRepository) GetMemeceptionByContractAddress(ctx context.Conte
 func (r memeceptionRepository) GetMemeceptionsPast(ctx context.Context) ([]model.Memeception, error) {
 	var memeceptions []model.Memeception
 	err := r.db.Joins("Meme").
-		Where("start_at < ?", time.Now().Unix()).
-		Find(&memeceptions).Error
-	return memeceptions, err
-}
-
-func (r memeceptionRepository) GetMemeceptionsUpcoming(ctx context.Context) ([]model.Memeception, error) {
-	var memeceptions []model.Memeception
-	err := r.db.Joins("Meme").
-		Where("start_at > ?", time.Now().Add(beforeLauchStart*time.Minute).Unix()).
+		Where("target_eth <= collected_eth").
+		Where("status = ?", SUCCEED).
 		Find(&memeceptions).Error
 	return memeceptions, err
 }
@@ -56,12 +47,17 @@ func (r memeceptionRepository) GetMemeceptionsUpcoming(ctx context.Context) ([]m
 func (r memeceptionRepository) GetMemeceptionsLive(ctx context.Context) ([]model.Memeception, error) {
 	var memeceptions []model.Memeception
 	err := r.db.Joins("Meme").
-		Where(
-			"ama = ? AND start_at >= ? AND start_at <= ?",
-			true,
-			time.Now().Unix(),
-			time.Now().Add(beforeLauchStart*time.Minute).Unix(),
-		).
+		Where("target_eth > collected_eth").
+		Where("status = ?", SUCCEED).
+		Find(&memeceptions).Error
+	return memeceptions, err
+}
+
+func (r memeceptionRepository) GetMemeceptionsLatest(ctx context.Context) ([]model.Memeception, error) {
+	var memeceptions []model.Memeception
+	err := r.db.Joins("Meme").
+		Where("status = ?", SUCCEED).
+		Order("id DESC").
 		Find(&memeceptions).Error
 	return memeceptions, err
 }

@@ -24,3 +24,8 @@ type Memeception struct {
 	UpdatedAtEpoch  uint       `json:"updatedAtEpoch"`
 	Meme            MemeCommon `json:"meme"`
 }
+
+type MemeceptionByStatus struct {
+	Live []Memeception `json:"live"`
+	Past []Memeception `json:"past"`
+}

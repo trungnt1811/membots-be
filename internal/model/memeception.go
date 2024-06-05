@@ -1,6 +1,8 @@
 package model
 
 import (
+	"fmt"
+
 	"github.com/flexstack.ai/membots-be/internal/dto"
 )
 
@@ -10,8 +12,8 @@ type Memeception struct {
 	Status          uint       `json:"status"` // 2: SOLD OUT
 	Ama             bool       `json:"ama"`
 	ContractAddress string     `json:"contract_address"`
-	TargetETH       string     `json:"target_eth"`
-	CollectedETH    string     `json:"collected_eth"`
+	TargetETH       float64    `json:"target_eth"`
+	CollectedETH    float64    `json:"collected_eth"`
 	Enabled         bool       `json:"enabled"`
 	MemeID          uint       `json:"meme_id"`
 	UpdatedAtEpoch  uint       `json:"updated_at_epoch"`
@@ -28,8 +30,8 @@ func (m *Memeception) ToCommonDto() dto.MemeceptionCommon {
 		Status:          m.Status,
 		Ama:             m.Ama,
 		ContractAddress: m.ContractAddress,
-		TargetETH:       m.TargetETH,
-		CollectedETH:    m.CollectedETH,
+		TargetETH:       fmt.Sprintf("%f", m.TargetETH),
+		CollectedETH:    fmt.Sprintf("%f", m.CollectedETH),
 		Enabled:         m.Enabled,
 		MemeID:          m.MemeID,
 		UpdatedAtEpoch:  m.UpdatedAtEpoch,
@@ -42,6 +44,10 @@ func (m *Memeception) ToDto() dto.Memeception {
 		Status:          m.Status,
 		Ama:             m.Ama,
 		ContractAddress: m.ContractAddress,
+		TargetETH:       fmt.Sprintf("%f", m.TargetETH),
+		CollectedETH:    fmt.Sprintf("%f", m.CollectedETH),
+		Enabled:         m.Enabled,
+		MemeID:          m.MemeID,
 		Meme:            m.Meme.ToCommonDto(),
 	}
 }

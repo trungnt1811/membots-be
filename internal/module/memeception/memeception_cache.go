@@ -51,12 +51,12 @@ func (c memeceptionCache) GetMemeceptionsPast(ctx context.Context) ([]model.Meme
 	return nil, nil
 }
 
-func (c memeceptionCache) GetMemeceptionsUpcoming(ctx context.Context) ([]model.Memeception, error) {
+func (c memeceptionCache) GetMemeceptionsLive(ctx context.Context) ([]model.Memeception, error) {
 	// TODO: implement later
 	return nil, nil
 }
 
-func (c memeceptionCache) GetMemeceptionsLive(ctx context.Context) ([]model.Memeception, error) {
+func (c memeceptionCache) GetMemeceptionsLatest(ctx context.Context) ([]model.Memeception, error) {
 	// TODO: implement later
 	return nil, nil
 }

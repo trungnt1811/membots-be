@@ -16,3 +16,13 @@ type LaunchpadInfo struct {
 	TargetETH    string        `json:"targetETH"`
 	CollectedETH string        `json:"collectedETH"`
 }
+
+type LaunchpadTx struct {
+	Symbol              string `json:"symbol"`
+	AmountUSD           string `json:"amountUSD"`
+	WalletAddress       string `json:"walletAddress"`
+	TxHash              string `json:"txHash"`
+	TxType              string `json:"txType"`
+	MemeContractAddress string `json:"memeContractAddress"`
+	LogoUrl             string `json:"logoUrl"`
+}

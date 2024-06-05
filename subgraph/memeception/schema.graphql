@@ -11,7 +11,7 @@ type CollectFees @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type Meme404Created @entity {
+type MemeCreated @entity {
   id: Bytes!
   memeToken: Bytes! # address
   pool: Bytes! # address
@@ -26,7 +26,8 @@ type Meme404Created @entity {
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
-  tiers: [Tier!]! @derivedFrom(field: "meme404Created")
+  type: String!
+  tiers: [Tier!]! @derivedFrom(field: "memeCreated")
 }
 
 type Tier @entity {
@@ -39,42 +40,10 @@ type Tier @entity {
   baseURL: String!
   nftName: String!
   nftSymbol: String!
-  meme404Created: Meme404Created!
+  memeCreated: MemeCreated!
 }
-
-type MemeCreated @entity(immutable: true) {
-  id: Bytes!
-  memeToken: Bytes! # address
-  pool: Bytes! # address
-  params_name: String! # string
-  params_symbol: String! # string
-  params_startAt: BigInt! # uint40
-  params_swapFeeBps: Int! # uint16
-  params_vestingAllocBps: Int! # uint16
-  params_salt: Bytes! # bytes32
-  params_creator: Bytes! # address
-  params_targetETH: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type MemeKOLCreated @entity(immutable: true) {
-  id: Bytes!
-  memeToken: Bytes! # address
-  pool: Bytes! # address
-  params_name: String! # string
-  params_symbol: String! # string
-  params_startAt: BigInt! # uint40
-  params_swapFeeBps: Int! # uint16
-  params_vestingAllocBps: Int! # uint16
-  params_salt: Bytes! # bytes32
-  params_creator: Bytes! # address
-  params_targetETH: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
+# MemeKOLCreated
+# Meme404Created
 
 type MemeLiquidityAdded @entity(immutable: true) {
   id: Bytes!

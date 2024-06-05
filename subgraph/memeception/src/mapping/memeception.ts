@@ -11,10 +11,8 @@ import {
 } from "../types/Memeception/Memeception"
 import {
   CollectFees,
-  Meme404Created,
   Tier,
   MemeCreated,
-  MemeKOLCreated,
   MemeLiquidityAdded,
   MemecoinBuy,
   MemecoinExit,
@@ -41,7 +39,7 @@ export function handleCollectFees(event: CollectFeesEvent): void {
 }
 
 export function handleMeme404Created(event: Meme404CreatedEvent): void {
-  let entity = new Meme404Created(
+  let entity = new MemeCreated(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   )
   entity.memeToken = event.params.memeToken
@@ -57,6 +55,7 @@ export function handleMeme404Created(event: Meme404CreatedEvent): void {
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
   entity.transactionHash = event.transaction.hash
+  entity.type = "Meme404Created"
   entity.save()
   for (let i = 0; i < event.params.tiers.length; i++) {
     let tierParam = event.params.tiers[i];
@@ -73,7 +72,7 @@ export function handleMeme404Created(event: Meme404CreatedEvent): void {
     entityTier.baseURL = tierParam.baseURL;
     entityTier.nftName = tierParam.nftName;
     entityTier.nftSymbol = tierParam.nftSymbol;
-    entityTier.meme404Created = entity.id;
+    entityTier.memeCreated = entity.id;
     entityTier.save();
   }
 }
@@ -96,12 +95,13 @@ export function handleMemeCreated(event: MemeCreatedEvent): void {
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
   entity.transactionHash = event.transaction.hash
+  entity.type = "MemeCreated"
 
   entity.save()
 }
 
 export function handleMemeKOLCreated(event: MemeKOLCreatedEvent): void {
-  let entity = new MemeKOLCreated(
+  let entity = new MemeCreated(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   )
   entity.memeToken = event.params.memeToken
@@ -118,6 +118,7 @@ export function handleMemeKOLCreated(event: MemeKOLCreatedEvent): void {
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
   entity.transactionHash = event.transaction.hash
+  entity.type = "MemeKOLCreated"
 
   entity.save()
 }

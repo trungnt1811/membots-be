@@ -14,8 +14,7 @@ import {
   Tier,
   MemeCreated,
   MemeLiquidityAdded,
-  MemecoinBuy,
-  MemecoinExit,
+  MemecoinBuyExit,
   OwnershipTransferred,
   TreasuryUpdated
 } from "../types/schema"
@@ -140,7 +139,7 @@ export function handleMemeLiquidityAdded(event: MemeLiquidityAddedEvent): void {
 }
 
 export function handleMemecoinBuy(event: MemecoinBuyEvent): void {
-  let entity = new MemecoinBuy(
+  let entity = new MemecoinBuyExit(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   )
   entity.memeToken = event.params.memeToken
@@ -151,12 +150,13 @@ export function handleMemecoinBuy(event: MemecoinBuyEvent): void {
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
   entity.transactionHash = event.transaction.hash
+  entity.type = "MemecoinBuy"
 
   entity.save()
 }
 
 export function handleMemecoinExit(event: MemecoinExitEvent): void {
-  let entity = new MemecoinExit(
+  let entity = new MemecoinBuyExit(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   )
   entity.memeToken = event.params.memeToken
@@ -167,6 +167,7 @@ export function handleMemecoinExit(event: MemecoinExitEvent): void {
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
   entity.transactionHash = event.transaction.hash
+  entity.type = "MemecoinExit"
 
   entity.save()
 }

@@ -700,7 +700,7 @@ export class MemeLiquidityAdded extends Entity {
   }
 }
 
-export class MemecoinBuy extends Entity {
+export class MemecoinBuyExit extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -708,25 +708,25 @@ export class MemecoinBuy extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save MemecoinBuy entity without an ID");
+    assert(id != null, "Cannot save MemecoinBuyExit entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type MemecoinBuy must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type MemecoinBuyExit must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("MemecoinBuy", id.toBytes().toHexString(), this);
+      store.set("MemecoinBuyExit", id.toBytes().toHexString(), this);
     }
   }
 
-  static loadInBlock(id: Bytes): MemecoinBuy | null {
-    return changetype<MemecoinBuy | null>(
-      store.get_in_block("MemecoinBuy", id.toHexString()),
+  static loadInBlock(id: Bytes): MemecoinBuyExit | null {
+    return changetype<MemecoinBuyExit | null>(
+      store.get_in_block("MemecoinBuyExit", id.toHexString()),
     );
   }
 
-  static load(id: Bytes): MemecoinBuy | null {
-    return changetype<MemecoinBuy | null>(
-      store.get("MemecoinBuy", id.toHexString()),
+  static load(id: Bytes): MemecoinBuyExit | null {
+    return changetype<MemecoinBuyExit | null>(
+      store.get("MemecoinBuyExit", id.toHexString()),
     );
   }
 
@@ -833,140 +833,18 @@ export class MemecoinBuy extends Entity {
   set transactionHash(value: Bytes) {
     this.set("transactionHash", Value.fromBytes(value));
   }
-}
 
-export class MemecoinExit extends Entity {
-  constructor(id: Bytes) {
-    super();
-    this.set("id", Value.fromBytes(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save MemecoinExit entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type MemecoinExit must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
-      );
-      store.set("MemecoinExit", id.toBytes().toHexString(), this);
-    }
-  }
-
-  static loadInBlock(id: Bytes): MemecoinExit | null {
-    return changetype<MemecoinExit | null>(
-      store.get_in_block("MemecoinExit", id.toHexString()),
-    );
-  }
-
-  static load(id: Bytes): MemecoinExit | null {
-    return changetype<MemecoinExit | null>(
-      store.get("MemecoinExit", id.toHexString()),
-    );
-  }
-
-  get id(): Bytes {
-    let value = this.get("id");
+  get type(): string {
+    let value = this.get("type");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toBytes();
+      return value.toString();
     }
   }
 
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
-  }
-
-  get memeToken(): Bytes {
-    let value = this.get("memeToken");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toBytes();
-    }
-  }
-
-  set memeToken(value: Bytes) {
-    this.set("memeToken", Value.fromBytes(value));
-  }
-
-  get user(): Bytes {
-    let value = this.get("user");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toBytes();
-    }
-  }
-
-  set user(value: Bytes) {
-    this.set("user", Value.fromBytes(value));
-  }
-
-  get amountETH(): BigInt {
-    let value = this.get("amountETH");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toBigInt();
-    }
-  }
-
-  set amountETH(value: BigInt) {
-    this.set("amountETH", Value.fromBigInt(value));
-  }
-
-  get amountMeme(): BigInt {
-    let value = this.get("amountMeme");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toBigInt();
-    }
-  }
-
-  set amountMeme(value: BigInt) {
-    this.set("amountMeme", Value.fromBigInt(value));
-  }
-
-  get blockNumber(): BigInt {
-    let value = this.get("blockNumber");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toBigInt();
-    }
-  }
-
-  set blockNumber(value: BigInt) {
-    this.set("blockNumber", Value.fromBigInt(value));
-  }
-
-  get blockTimestamp(): BigInt {
-    let value = this.get("blockTimestamp");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toBigInt();
-    }
-  }
-
-  set blockTimestamp(value: BigInt) {
-    this.set("blockTimestamp", Value.fromBigInt(value));
-  }
-
-  get transactionHash(): Bytes {
-    let value = this.get("transactionHash");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toBytes();
-    }
-  }
-
-  set transactionHash(value: Bytes) {
-    this.set("transactionHash", Value.fromBytes(value));
+  set type(value: string) {
+    this.set("type", Value.fromString(value));
   }
 }
 

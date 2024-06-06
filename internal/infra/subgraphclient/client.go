@@ -104,6 +104,14 @@ func (c *Client) ListTokens(ctx context.Context, opts *RequestOptions) (*ListTok
 	return executeRequestAndConvert(ctx, req, ListTokensResponse{}, c)
 }
 
+func (c *Client) GetTokensByNameAndSymbol(ctx context.Context, name, symbol string, opts *RequestOptions) (*ListTokensResponse, error) {
+	req, err := constructListQueryWithNameAndSymbol(name, symbol, TokenFields, opts)
+	if err != nil {
+		return nil, err
+	}
+	return executeRequestAndConvert(ctx, req, ListTokensResponse{}, c)
+}
+
 func (c *Client) GetBundleById(ctx context.Context, id string, opts *RequestOptions) (*BundleResponse, error) {
 	req, err := constructByIdQuery(id, BundleFields, opts)
 	if err != nil {

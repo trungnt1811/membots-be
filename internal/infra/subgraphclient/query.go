@@ -266,6 +266,33 @@ func assembleQueryWithMemeCreateds(queryType QueryType, model modelFields, opts 
 	return genQuery(parts, model, opts)
 }
 
+// assembles a properly formatted graphql query based on the provided includeFields
+func assembleQueryWithTokensByNameAndSymbol(queryType QueryType, model modelFields, opts *RequestOptions) (string, error) {
+	var parts []string
+
+	blockSubstr := ""
+	if opts.Block != 0 {
+		blockSubstr = fmt.Sprintf(", block: {number: %d}", opts.Block)
+	}
+
+	switch queryType {
+	case ById:
+		parts = []string{
+			fmt.Sprintf("query %s($id: ID!) {", model.name),
+			fmt.Sprintf("	%s(id: $id%s) {", model.name, blockSubstr),
+		}
+	case List:
+		parts = []string{
+			fmt.Sprintf("query %s($name: String!, $symbol: String!, $first: Int!, $skip: Int!, $orderBy: String!, $orderDir: String!) {", pluralizeModelName(model.name)),
+			fmt.Sprintf("	%s(where: {name: $name, symbol: $symbol}, first: $first, skip: $skip, orderBy: $orderBy, orderDirection: $orderDir%s) {", pluralizeModelName(model.name), blockSubstr),
+		}
+	default:
+		return "", fmt.Errorf("unrecognized query type (%v)", queryType)
+	}
+
+	return genQuery(parts, model, opts)
+}
+
 // recursively gathers all fields for the given model, while honoring fields to be excluded
 //
 //nolint:nestif
@@ -454,6 +481,45 @@ func constructListQueryWithCreatorAndSymbol(creator, symbol string, model modelF
 	req := graphql.NewRequest(query)
 	req.Var("params_creator", creator)
 	req.Var("params_symbol", symbol)
+	req.Var("first", opts.First)
+	req.Var("skip", opts.Skip)
+	req.Var("orderBy", opts.OrderBy)
+	req.Var("orderDir", opts.OrderDir)
+
+	fmt.Println("*** DEBUG req.Query() ***")
+	fmt.Println(req.Query())
+	fmt.Println("*************")
+
+	return req, nil
+}
+
+func constructListQueryWithNameAndSymbol(name, symbol string, model modelFields, opts *RequestOptions) (*graphql.Request, error) {
+	if opts == nil {
+		opts = &RequestOptions{
+			IncludeFields: []string{"*"},
+		}
+	}
+
+	err := validateRequestOpts(List, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if slices.Contains(opts.IncludeFields, "*") {
+		fields, err := gatherModelFields(model, opts.ExcludeFields, true)
+		if err != nil {
+			return nil, err
+		}
+		opts.IncludeFields = fields
+	}
+
+	query, err := assembleQueryWithTokensByNameAndSymbol(List, model, opts)
+	if err != nil {
+		return nil, err
+	}
+	req := graphql.NewRequest(query)
+	req.Var("name", name)
+	req.Var("symbol", symbol)
 	req.Var("first", opts.First)
 	req.Var("skip", opts.Skip)
 	req.Var("orderBy", opts.OrderBy)

@@ -2,7 +2,6 @@ package worker
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 
 	"github.com/robfig/cron/v3"
@@ -48,7 +47,7 @@ func (worker UpdateMemeOnchainWorker) RunJob() {
 	c.Start()
 
 	// Keep the program running
-	select {}
+	// select {}
 }
 
 func (worker UpdateMemeOnchainWorker) updateMemeOnchain(
@@ -85,6 +84,10 @@ func (worker UpdateMemeOnchainWorker) updateMemeOnchain(
 		if err != nil {
 			log.LG.Infof("GetMemeCreatedsByCreatorAndSymbol error: %v", err)
 		}
+		if len(response.MemeCreateds) == 0 {
+			log.LG.Info("MemeCreateds len is 0")
+			continue
+		}
 		// Get token's total supply and decimals
 		requestOpts = &subgraphclient.RequestOptions{
 			First: 1,
@@ -101,8 +104,10 @@ func (worker UpdateMemeOnchainWorker) updateMemeOnchain(
 		if err != nil {
 			log.LG.Infof("GetTokensByNameAndSymbol error: %v", err)
 		}
-		fmt.Println(response)
-		fmt.Println(tokenInfoResp)
+		if len(tokenInfoResp.Tokens) == 0 {
+			log.LG.Info("Tokens len is 0")
+			continue
+		}
 		// TODO: handle meme404 nft later
 		decimals, err := strconv.ParseUint(tokenInfoResp.Tokens[0].Decimals, 10, 64)
 		if err != nil {

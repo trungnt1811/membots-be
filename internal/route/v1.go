@@ -36,6 +36,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	swapUCase := swap.NewSwapUcase(client)
 	swapHandler := swap.NewSwapHandler(swapUCase)
 	appRouter.GET("/swaps", swapHandler.GetSwapHistoryByAddress)
+	appRouter.GET("/quote", swapHandler.GetSwapRouter)
 
 	clientMeme := subgraphclient.NewClient("https://api.studio.thegraph.com/query/76502/membots-ai-memeception-mvp/version/latest", nil)
 	launchpadUCase := launchpad.NewLaunchpadUcase(clientMeme)
@@ -43,5 +44,5 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	appRouter.GET("/launchpad", launchpadHandler.GetHistoryByAddress)
 
 	// SECTION: cronjob
-	worker.RegisterCronJobs(db, clientMeme)
+	go worker.RegisterCronJobs(db, clientMeme)
 }

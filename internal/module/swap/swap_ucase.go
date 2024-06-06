@@ -2,7 +2,10 @@ package swap
 
 import (
 	"context"
+	"encoding/json"
 	"strconv"
+
+	"github.com/flexstack.ai/membots-be/internal/util"
 
 	"github.com/flexstack.ai/membots-be/internal/dto"
 	"github.com/flexstack.ai/membots-be/internal/infra/subgraphclient"
@@ -61,4 +64,18 @@ func (uc *swapUCase) GetSwaps(ctx context.Context, address string) (dto.SwapHist
 		Swaps: swaps,
 	}
 	return swapHistoryByAddressRsp, nil
+}
+
+func (uc *swapUCase) GetQuote(ctx context.Context, url string) (interface{}, error) {
+	resp, err := util.NewHttpRequestBuilder().Build().Get(url)
+	if err != nil {
+		return nil, err
+	}
+	var result interface{} // This can be any type that you expect the JSON to conform to
+	err = json.Unmarshal(resp.Body(), &result)
+	if err != nil {
+		return nil, err // Handle JSON parsing error
+	}
+
+	return result, nil
 }

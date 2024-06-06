@@ -20,6 +20,11 @@ type swapCache struct {
 	Cache     caching.Repository
 }
 
+func (s *swapCache) GetQuote(ctx context.Context, url string) (interface{}, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
 func NewSwapCacheUCase(repo interfaces.SwapUCase,
 	cache caching.Repository,
 ) interfaces.SwapUCase {

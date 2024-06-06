@@ -12,7 +12,7 @@ var caller *resty.Client
 func init() {
 	caller = resty.New()                                    // Create new caller
 	caller.SetRetryCount(3)                                 // Retry 3 times
-	caller.SetTimeout(time.Duration(30 * int(time.Second))) // Set timeout 30s
+	caller.SetTimeout(time.Duration(10 * int(time.Second))) // Set timeout 30s
 }
 
 type HttpRequestBuilder struct {

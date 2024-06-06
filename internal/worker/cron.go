@@ -11,5 +11,5 @@ func RegisterCronJobs(db *gorm.DB, memeceptionClient, swapClient *subgraphclient
 	// SECTION: Update meme onchain worker
 	memeRepo := memeception.NewMemeceptionRepository(db)
 	updateMemeOnchainWorker := NewUpdateMemeOnchainWorker(memeRepo, memeceptionClient, swapClient)
-	updateMemeOnchainWorker.RunJob()
+	go updateMemeOnchainWorker.RunJob()
 }

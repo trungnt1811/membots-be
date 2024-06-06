@@ -45,6 +45,9 @@ func (worker UpdateMemeOnchainWorker) RunJob() {
 
 	// Start the cron scheduler
 	c.Start()
+
+	// Block the current goroutine so that the cron job keeps running
+	select {}
 }
 
 func (worker UpdateMemeOnchainWorker) updateMemeOnchain(

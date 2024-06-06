@@ -177,27 +177,6 @@ definitions:
           $ref: '#/definitions/dto.Memeception'
         type: array
     type: object
-  dto.MemeceptionCommon:
-    properties:
-      ama:
-        type: boolean
-      collectedETH:
-        type: string
-      contractAddress:
-        type: string
-      enabled:
-        type: boolean
-      memeID:
-        type: integer
-      startAt:
-        type: integer
-      status:
-        type: integer
-      targetETH:
-        type: string
-      updatedAtEpoch:
-        type: integer
-    type: object
   dto.MemeceptionDetailResp:
     properties:
       meme:
@@ -218,7 +197,7 @@ definitions:
     properties:
       latestCoins:
         items:
-          $ref: '#/definitions/dto.MemeceptionCommon'
+          $ref: '#/definitions/dto.Memeception'
         type: array
       latestLaunchpadTx:
         items:
@@ -425,6 +404,58 @@ paths:
       summary: Get launchpad history by address
       tags:
       - launchpad
+  /api/v1/truglymeme/quote:
+    get:
+      consumes:
+      - application/json
+      description: swap router
+      parameters:
+      - description: protocols to query, default is v3
+        in: query
+        name: protocols
+        type: string
+      - description: tokenInAddress to query
+        in: query
+        name: tokenInAddress
+        type: string
+      - description: tokenInChainId to query
+        in: query
+        name: tokenInChainId
+        type: string
+      - description: tokenOutAddress to query
+        in: query
+        name: tokenOutAddress
+        type: string
+      - description: tokenOutChainId to query
+        in: query
+        name: tokenOutChainId
+        type: string
+      - description: amount to query
+        in: query
+        name: amount
+        type: string
+      - description: type to query
+        in: query
+        name: type
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      summary: swap router
+      tags:
+      - swap
   /api/v1/truglymeme/swaps:
     get:
       consumes:

@@ -192,6 +192,85 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/truglymeme/quote": {
+            "get": {
+                "description": "swap router",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "swap"
+                ],
+                "summary": "swap router",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "protocols to query, default is v3",
+                        "name": "protocols",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "tokenInAddress to query",
+                        "name": "tokenInAddress",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "tokenInChainId to query",
+                        "name": "tokenInChainId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "tokenOutAddress to query",
+                        "name": "tokenOutAddress",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "tokenOutChainId to query",
+                        "name": "tokenOutChainId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "amount to query",
+                        "name": "amount",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "type to query",
+                        "name": "type",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/truglymeme/swaps": {
             "get": {
                 "description": "Get swaps history by memeId",
@@ -509,38 +588,6 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.MemeceptionCommon": {
-            "type": "object",
-            "properties": {
-                "ama": {
-                    "type": "boolean"
-                },
-                "collectedETH": {
-                    "type": "string"
-                },
-                "contractAddress": {
-                    "type": "string"
-                },
-                "enabled": {
-                    "type": "boolean"
-                },
-                "memeID": {
-                    "type": "integer"
-                },
-                "startAt": {
-                    "type": "integer"
-                },
-                "status": {
-                    "type": "integer"
-                },
-                "targetETH": {
-                    "type": "string"
-                },
-                "updatedAtEpoch": {
-                    "type": "integer"
-                }
-            }
-        },
         "dto.MemeceptionDetailResp": {
             "type": "object",
             "properties": {
@@ -572,7 +619,7 @@ const docTemplate = `{
                 "latestCoins": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/dto.MemeceptionCommon"
+                        "$ref": "#/definitions/dto.Memeception"
                     }
                 },
                 "latestLaunchpadTx": {

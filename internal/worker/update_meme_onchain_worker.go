@@ -85,6 +85,7 @@ func (worker UpdateMemeOnchainWorker) updateMemeOnchain(
 		)
 		if err != nil {
 			log.LG.Infof("GetMemeCreatedsByCreatorAndSymbol error: %v", err)
+			continue
 		}
 		if len(response.MemeCreateds) == 0 {
 			log.LG.Info("MemeCreateds len is 0")
@@ -106,6 +107,7 @@ func (worker UpdateMemeOnchainWorker) updateMemeOnchain(
 		)
 		if err != nil {
 			log.LG.Infof("GetTokensByNameAndSymbol error: %v", err)
+			continue
 		}
 		if len(tokenInfoResp.Tokens) == 0 {
 			log.LG.Info("Tokens len is 0")
@@ -115,6 +117,7 @@ func (worker UpdateMemeOnchainWorker) updateMemeOnchain(
 		decimals, err := strconv.ParseUint(tokenInfoResp.Tokens[0].Decimals, 10, 64)
 		if err != nil {
 			log.LG.Infof("Error parsing Decimals: %v", err)
+			continue
 		}
 		memeception := memeProcessing.Memeception
 		memeception.Status = uint64(constant.LIVE)

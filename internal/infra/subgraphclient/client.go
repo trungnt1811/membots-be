@@ -384,6 +384,14 @@ func (c *Client) GetMemeCreatedsByCreatorAndSymbol(ctx context.Context, creator,
 	return executeRequestAndConvert(ctx, req, MemeCreatedsResponse{}, c)
 }
 
+func (c *Client) GetMemeLiquidityAddedsByContractAddress(ctx context.Context, contractAddress string, opts *RequestOptions) (*MemeLiquidityAddedsResponse, error) {
+	req, err := constructListQueryWithMemeToken(contractAddress, MemeLiquidityAddedFields, opts)
+	if err != nil {
+		return nil, err
+	}
+	return executeRequestAndConvert(ctx, req, MemeLiquidityAddedsResponse{}, c)
+}
+
 func executeRequestAndConvert[T Response](ctx context.Context, req *graphql.Request, converted T, c *Client) (*T, error) {
 	var resp interface{}
 	if err := c.GqlClient.Run(ctx, req, &resp); err != nil {

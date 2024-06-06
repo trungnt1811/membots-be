@@ -4,7 +4,7 @@ CREATE TABLE meme (
     name VARCHAR(50) NOT NULL,
     symbol VARCHAR(50) NOT NULL,
     description TEXT NOT NULL,
-    total_supply VARCHAR(15) NOT NULL,
+    total_supply VARCHAR(25) NOT NULL,
     decimals SMALLINT NOT NULL,
     logo_url VARCHAR(256) NOT NULL,
     banner_url VARCHAR(256) NOT NULL,

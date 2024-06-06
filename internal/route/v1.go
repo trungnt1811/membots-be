@@ -32,13 +32,19 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	appRouter.POST("/memes", memeceptionHandler.CreateMeme)
 
 	// SECTION: swaps
-	client := subgraphclient.NewClient(subgraphclient.Endpoints[subgraphclient.Base], nil)
-	swapUCase := swap.NewSwapUcase(client)
+	clientSwap := subgraphclient.NewClient(
+		"https://api.studio.thegraph.com/query/76502/membots-ai-v3-mvp/version/latest",
+		nil,
+	)
+	swapUCase := swap.NewSwapUcase(clientSwap)
 	swapHandler := swap.NewSwapHandler(swapUCase)
 	appRouter.GET("/swaps", swapHandler.GetSwapHistoryByAddress)
 	appRouter.GET("/quote", swapHandler.GetSwapRouter)
 
-	clientMeme := subgraphclient.NewClient("https://api.studio.thegraph.com/query/76502/membots-ai-memeception-mvp/version/latest", nil)
+	clientMeme := subgraphclient.NewClient(
+		"https://api.studio.thegraph.com/query/76502/membots-ai-memeception-mvp/version/latest",
+		nil,
+	)
 	launchpadUCase := launchpad.NewLaunchpadUcase(clientMeme)
 	launchpadHandler := launchpad.NewLaunchpadHandler(launchpadUCase)
 	appRouter.GET("/launchpad", launchpadHandler.GetHistoryByAddress)

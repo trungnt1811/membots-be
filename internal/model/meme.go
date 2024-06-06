@@ -89,6 +89,7 @@ func (m *MemeCommon) ToCommonDto() dto.MemeCommon {
 
 type MemeOnchainInfo struct {
 	ID             uint64 `json:"id" gorm:"primaryKey"`
+	Name           string `json:"name"`
 	Symbol         string `json:"symbol"`
 	CreatorAddress string `json:"creator_address"`
 }

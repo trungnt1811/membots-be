@@ -39,7 +39,7 @@ func (r memeceptionRepository) GetMemeceptionByContractAddress(ctx context.Conte
 	var meme model.Meme
 	err := r.db.Joins("Memeception").Joins("Social").
 		Where("contract_address = ?", contractAddress).
-		Where("status = ?", constant.SUCCEED).
+		Where("Meme.status = ?", constant.SUCCEED).
 		First(&meme).Error
 	return meme, err
 }
@@ -48,7 +48,7 @@ func (r memeceptionRepository) GetMemeceptionsPast(ctx context.Context) ([]model
 	var memeceptions []model.Memeception
 	err := r.db.Joins("Meme").
 		Where("target_eth <= collected_eth").
-		Where("status = ?", constant.SUCCEED).
+		Where("Meme.status = ?", constant.SUCCEED).
 		Find(&memeceptions).Error
 	return memeceptions, err
 }
@@ -57,7 +57,7 @@ func (r memeceptionRepository) GetMemeceptionsLive(ctx context.Context) ([]model
 	var memeceptions []model.Memeception
 	err := r.db.Joins("Meme").
 		Where("target_eth > collected_eth").
-		Where("status = ?", constant.SUCCEED).
+		Where("Meme.status = ?", constant.SUCCEED).
 		Find(&memeceptions).Error
 	return memeceptions, err
 }

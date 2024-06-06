@@ -28,9 +28,21 @@ func (r memeceptionRepository) UpdateMeme(ctx context.Context, model model.Meme)
 	return r.db.Session(&gorm.Session{FullSaveAssociations: true}).Updates(&model).Error
 }
 
+func (r memeceptionRepository) UpdateMemeception(ctx context.Context, model model.Memeception) error {
+	return r.db.Updates(&model).Error
+}
+
 func (r memeceptionRepository) GetListMemeProcessing(ctx context.Context) ([]model.MemeOnchainInfo, error) {
 	var meme []model.MemeOnchainInfo
 	err := r.db.Joins("Memeception").Where("meme.status = ?", constant.PROCESSING).
+		Find(&meme).Error
+	return meme, err
+}
+
+func (r memeceptionRepository) GetListMemeLive(ctx context.Context) ([]model.MemeOnchainInfo, error) {
+	var meme []model.MemeOnchainInfo
+	err := r.db.Joins("Memeception").Where("meme.status = ?", constant.SUCCEED).
+		Where("Memeception.status = ?", constant.LIVE).
 		Find(&meme).Error
 	return meme, err
 }

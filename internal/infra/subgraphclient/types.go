@@ -54,7 +54,8 @@ type Response interface {
 		TickDayDataResponse | ListTickDayDatasResponse |
 		TokenDayDataResponse | ListTokenDayDatasResponse |
 		TokenHourDataResponse | ListTokenHourDatasResponse |
-		MemeCoinExitsResponse | MemeCreatedsResponse
+		MemeCoinExitsResponse | MemeCreatedsResponse |
+		MemeLiquidityAddedsResponse
 }
 
 // intermediate struct used to construct queries

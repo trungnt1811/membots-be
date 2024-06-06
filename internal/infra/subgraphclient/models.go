@@ -1072,3 +1072,32 @@ var TierFields modelFields = modelFields{
 		"isFungible",
 	},
 }
+
+type MemeLiquidityAddedsResponse struct {
+	MemeLiquidityAddeds []MemeLiquidityAddeds `json:"memeLiquidityAddeds"`
+}
+
+type MemeLiquidityAddeds struct {
+	ID              string `json:"id"`
+	MemeToken       string `json:"memeToken"`
+	Pool            string `json:"pool"`
+	AmountMeme      string `json:"amountMeme"`
+	AmountETH       string `json:"amountETH"`
+	BlockNumber     string `json:"blockNumber"`
+	BlockTimestamp  string `json:"blockTimestamp"`
+	TransactionHash string `json:"transactionHash"`
+}
+
+var MemeLiquidityAddedFields modelFields = modelFields{
+	name: "memeLiquidityAdded",
+	direct: []string{
+		"id",
+		"memeToken",
+		"pool",
+		"amountMeme",
+		"amountETH",
+		"blockNumber",
+		"blockTimestamp",
+		"transactionHash",
+	},
+}

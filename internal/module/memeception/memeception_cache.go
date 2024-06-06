@@ -37,7 +37,16 @@ func (c memeceptionCache) UpdateMeme(ctx context.Context, model model.Meme) erro
 	return c.MemeceptionRepository.UpdateMeme(ctx, model)
 }
 
+func (c memeceptionCache) UpdateMemeception(ctx context.Context, model model.Memeception) error {
+	return c.MemeceptionRepository.UpdateMemeception(ctx, model)
+}
+
 func (c memeceptionCache) GetListMemeProcessing(ctx context.Context) ([]model.MemeOnchainInfo, error) {
+	// TODO: implement later
+	return nil, nil
+}
+
+func (c memeceptionCache) GetListMemeLive(ctx context.Context) ([]model.MemeOnchainInfo, error) {
 	// TODO: implement later
 	return nil, nil
 }

@@ -7,17 +7,24 @@ import (
 	"time"
 
 	"github.com/flexstack.ai/membots-be/internal/dto"
+	"github.com/flexstack.ai/membots-be/internal/infra/subgraphclient"
 	"github.com/flexstack.ai/membots-be/internal/interfaces"
 	"github.com/flexstack.ai/membots-be/internal/model"
+	"github.com/flexstack.ai/membots-be/internal/util"
 )
 
 type memeceptionUCase struct {
 	MemeceptionRepository interfaces.MemeceptionRepository
+	ClientMemeception     *subgraphclient.Client
 }
 
-func NewMemeceptionUCase(memeceptionRepository interfaces.MemeceptionRepository) interfaces.MemeceptionUCase {
+func NewMemeceptionUCase(
+	memeceptionRepository interfaces.MemeceptionRepository,
+	clientMemeception *subgraphclient.Client,
+) interfaces.MemeceptionUCase {
 	return &memeceptionUCase{
 		MemeceptionRepository: memeceptionRepository,
+		ClientMemeception:     clientMemeception,
 	}
 }
 
@@ -84,11 +91,11 @@ func (u *memeceptionUCase) GetMemeceptionByContractAddress(ctx context.Context, 
 	if err != nil {
 		return dto.MemeceptionDetailResp{}, err
 	}
-	// TODO: get price from RPC
 	// TODO: get nfts info from graphnode in case meta is MEME404
+	ethPrice := uint64(3850) // TODO: get ETH price from RPC
 	memeceptionDetailResp := dto.MemeceptionDetailResp{
 		Meme:  memeMeta.ToDto(),
-		Price: 0,
+		Price: ethPrice,
 	}
 	return memeceptionDetailResp, nil
 }
@@ -114,11 +121,73 @@ func (u *memeceptionUCase) GetMemeceptions(ctx context.Context) (dto.Memeception
 		listMemeLiveDto = append(listMemeLiveDto, meme.ToDto())
 	}
 
+	// Get list latest coins
+	listLatest, err := u.MemeceptionRepository.GetMemeceptionsLatest(ctx)
+	if err != nil {
+		return dto.MemeceptionsResp{}, err
+	}
+	listLatestCoins := make([]dto.Memeception, 0)
+	for _, meme := range listLatest {
+		listLatestCoins = append(listLatestCoins, meme.ToDto())
+	}
+
+	ethPrice := uint64(3850) // TODO: get ETH price from RPC
+
+	// Get top 5 latest launchpad txs
+	requestOpts := &subgraphclient.RequestOptions{
+		First: 5,
+		IncludeFields: []string{
+			"memeToken",
+			"type",
+			"user",
+			"amountETH",
+			"transactionHash",
+		},
+	}
+	response, err := u.ClientMemeception.ListSwapHistories(ctx, requestOpts)
+	if err != nil {
+		return dto.MemeceptionsResp{}, err
+	}
+	var launchpadTxs []dto.LaunchpadTx
+	var memeContractAddresses []string
+	for _, meme := range response.MemecoinBuyExits {
+		txType := "BUY"
+		if meme.Type == "MemecoinExit" {
+			txType = "SELL"
+		}
+		usdAmount, err := util.ConvertWeiToUSD(ethPrice, meme.AmountETH)
+		if err != nil {
+			return dto.MemeceptionsResp{}, err
+		}
+		memeContractAddresses = append(memeContractAddresses, meme.MemeToken)
+		launchpadTxs = append(launchpadTxs, dto.LaunchpadTx{
+			TxType:              txType,
+			TxHash:              meme.TransactionHash,
+			WalletAddress:       meme.User,
+			MemeContractAddress: meme.MemeToken,
+			AmountUSD:           usdAmount,
+		})
+	}
+
+	// Update meme symbol and logo url
+	mapMeme, err := u.MemeceptionRepository.GetMapMemeSymbolAndLogoURL(ctx, memeContractAddresses)
+	if err != nil {
+		return dto.MemeceptionsResp{}, err
+	}
+	for index, launchpadTx := range launchpadTxs {
+		meme := mapMeme[launchpadTx.MemeContractAddress]
+		launchpadTxs[index].Symbol = meme.Symbol
+		launchpadTxs[index].LogoUrl = meme.LogoUrl
+	}
+
 	memeceptionsResp := dto.MemeceptionsResp{
 		MemeceptionsByStatus: dto.MemeceptionByStatus{
 			Past: listMemePastDto,
 			Live: listMemeLiveDto,
 		},
+		LatestCoins:       listLatestCoins,
+		LatestLaunchpadTx: launchpadTxs,
+		Price:             ethPrice,
 	}
 	return memeceptionsResp, nil
 }

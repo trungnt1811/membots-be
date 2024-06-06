@@ -1,9 +1,16 @@
 package constant
 
-type status uint
+type memeStatus uint
 
 const (
-	PROCESSING status = 0
-	SUCCEED    status = 1
+	PROCESSING memeStatus = 0
+	SUCCEED    memeStatus = 1
+)
+
+type memeceptionStatus uint
+
+const (
+	LIVE           memeceptionStatus = 1
+	ENDED_SOLD_OUT memeceptionStatus = 2
 )
 

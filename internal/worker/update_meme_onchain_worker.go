@@ -15,19 +15,19 @@ import (
 
 type UpdateMemeOnchainWorker struct {
 	Repo              interfaces.MemeceptionRepository
-	ClientMemeception *subgraphclient.Client
-	ClientSwap        *subgraphclient.Client
+	MemeceptionClient *subgraphclient.Client
+	SwapClient        *subgraphclient.Client
 }
 
 func NewUpdateMemeOnchainWorker(
 	repo interfaces.MemeceptionRepository,
-	clientMemeception *subgraphclient.Client,
-	clientSwap *subgraphclient.Client,
+	memeceptionClient *subgraphclient.Client,
+	swapClient *subgraphclient.Client,
 ) UpdateMemeOnchainWorker {
 	return UpdateMemeOnchainWorker{
 		Repo:              repo,
-		ClientMemeception: clientMemeception,
-		ClientSwap:        clientSwap,
+		MemeceptionClient: memeceptionClient,
+		SwapClient:        swapClient,
 	}
 }
 
@@ -37,7 +37,7 @@ func (worker UpdateMemeOnchainWorker) RunJob() {
 
 	// Add a job that runs every 15 seconds
 	_, err := c.AddFunc("*/15 * * * * *", func() {
-		worker.updateMemeOnchain(worker.Repo, worker.ClientMemeception, worker.ClientSwap)
+		worker.updateMemeOnchain(worker.Repo, worker.MemeceptionClient, worker.SwapClient)
 	})
 	if err != nil {
 		log.LG.Infof("failed to run job updateMemeOnchain: %v", err)
@@ -45,9 +45,6 @@ func (worker UpdateMemeOnchainWorker) RunJob() {
 
 	// Start the cron scheduler
 	c.Start()
-
-	// Keep the program running
-	// select {}
 }
 
 func (worker UpdateMemeOnchainWorker) updateMemeOnchain(
@@ -78,6 +75,8 @@ func (worker UpdateMemeOnchainWorker) updateMemeOnchain(
 				"tiers.isFungible",
 			},
 		}
+		// memeProcessing.CreatorAddress = "0xDaEA9Ac5e89FEB15deaF5d034cD44Bb1Ac27d46B"
+		// memeProcessing.Symbol = "TODAYISALONGDAY"
 		response, err := clientMemeception.GetMemeCreatedsByCreatorAndSymbol(
 			ctx, memeProcessing.CreatorAddress, memeProcessing.Symbol, requestOpts,
 		)
@@ -98,6 +97,7 @@ func (worker UpdateMemeOnchainWorker) updateMemeOnchain(
 			},
 		}
 		var tokenInfoResp *subgraphclient.ListTokensResponse
+		// memeProcessing.Symbol = "KITTY"
 		tokenInfoResp, err = clientSwap.GetTokensByNameAndSymbol(
 			ctx, memeProcessing.Name, memeProcessing.Symbol, requestOpts,
 		)
@@ -113,6 +113,8 @@ func (worker UpdateMemeOnchainWorker) updateMemeOnchain(
 		if err != nil {
 			log.LG.Infof("Error parsing Decimals: %v", err)
 		}
+		memeception := memeProcessing.Memeception
+		memeception.Status = uint64(constant.LIVE)
 		meme := model.Meme{
 			ID:              memeProcessing.ID,
 			Salt:            response.MemeCreateds[0].Salt,
@@ -120,6 +122,7 @@ func (worker UpdateMemeOnchainWorker) updateMemeOnchain(
 			Status:          uint64(constant.SUCCEED),
 			TotalSupply:     tokenInfoResp.Tokens[0].TotalSupply,
 			Decimals:        decimals,
+			Memeception:     memeception,
 		}
 		err = repo.UpdateMeme(ctx, meme)
 		if err != nil {

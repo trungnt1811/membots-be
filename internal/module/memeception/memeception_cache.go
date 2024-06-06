@@ -73,3 +73,11 @@ func (c memeceptionCache) GetMemeceptionsLatest(ctx context.Context) ([]model.Me
 	// TODO: implement later
 	return nil, nil
 }
+
+func (c memeceptionCache) GetMapMemeSymbolAndLogoURL(ctx context.Context, contractAddresses []string) (
+	map[string]model.MemeSymbolAndLogoURL,
+	error,
+) {
+	// TODO: implement later
+	return nil, nil
+}

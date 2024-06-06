@@ -25,12 +25,12 @@ func (r memeceptionRepository) CreateMeme(ctx context.Context, model model.Meme)
 }
 
 func (r memeceptionRepository) UpdateMeme(ctx context.Context, model model.Meme) error {
-	return r.db.Updates(&model).Error
+	return r.db.Session(&gorm.Session{FullSaveAssociations: true}).Updates(&model).Error
 }
 
 func (r memeceptionRepository) GetListMemeProcessing(ctx context.Context) ([]model.MemeOnchainInfo, error) {
 	var meme []model.MemeOnchainInfo
-	err := r.db.Where("status = ?", constant.PROCESSING).
+	err := r.db.Joins("Memeception").Where("meme.status = ?", constant.PROCESSING).
 		Find(&meme).Error
 	return meme, err
 }
@@ -47,8 +47,8 @@ func (r memeceptionRepository) GetMemeceptionByContractAddress(ctx context.Conte
 func (r memeceptionRepository) GetMemeceptionsPast(ctx context.Context) ([]model.Memeception, error) {
 	var memeceptions []model.Memeception
 	err := r.db.Joins("Meme").
-		Where("target_eth <= collected_eth").
 		Where("Meme.status = ?", constant.SUCCEED).
+		Where("memeception.status = ?", constant.ENDED_SOLD_OUT).
 		Find(&memeceptions).Error
 	return memeceptions, err
 }
@@ -56,8 +56,8 @@ func (r memeceptionRepository) GetMemeceptionsPast(ctx context.Context) ([]model
 func (r memeceptionRepository) GetMemeceptionsLive(ctx context.Context) ([]model.Memeception, error) {
 	var memeceptions []model.Memeception
 	err := r.db.Joins("Meme").
-		Where("target_eth > collected_eth").
 		Where("Meme.status = ?", constant.SUCCEED).
+		Where("memeception.status = ?", constant.LIVE).
 		Find(&memeceptions).Error
 	return memeceptions, err
 }
@@ -65,8 +65,23 @@ func (r memeceptionRepository) GetMemeceptionsLive(ctx context.Context) ([]model
 func (r memeceptionRepository) GetMemeceptionsLatest(ctx context.Context) ([]model.Memeception, error) {
 	var memeceptions []model.Memeception
 	err := r.db.Joins("Meme").
-		Where("status = ?", constant.SUCCEED).
+		Where("Meme.status = ?", constant.SUCCEED).
 		Order("id DESC").
 		Find(&memeceptions).Error
 	return memeceptions, err
+}
+
+func (r memeceptionRepository) GetMapMemeSymbolAndLogoURL(ctx context.Context, contractAddresses []string) (map[string]model.MemeSymbolAndLogoURL, error) {
+	var memes []model.MemeSymbolAndLogoURL
+	err := r.db.Where("status = ?", constant.SUCCEED).
+		Where("contract_address IN (?)", contractAddresses).
+		Find(&memes).Error
+	if err != nil {
+		return nil, err
+	}
+	memeMap := make(map[string]model.MemeSymbolAndLogoURL)
+	for _, meme := range memes {
+		memeMap[meme.ContractAddress] = meme
+	}
+	return memeMap, err
 }

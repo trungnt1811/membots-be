@@ -15,6 +15,7 @@ type MemeceptionRepository interface {
 	GetMemeceptionsPast(ctx context.Context) ([]model.Memeception, error)
 	GetMemeceptionsLive(ctx context.Context) ([]model.Memeception, error)
 	GetMemeceptionsLatest(ctx context.Context) ([]model.Memeception, error)
+	GetMapMemeSymbolAndLogoURL(ctx context.Context, contractAddresses []string) (map[string]model.MemeSymbolAndLogoURL, error)
 }
 
 type MemeceptionUCase interface {

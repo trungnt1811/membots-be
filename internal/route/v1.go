@@ -19,36 +19,38 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	// SECTION: Create redis client
 	// redisClient := caching.NewCachingRepository(context.Background(), rdb)
 
+	// SECTION: Create subgraph clients
+	swapClient := subgraphclient.NewClient(
+		"https://api.studio.thegraph.com/query/76502/membots-ai-v3-mvp/version/latest",
+		nil,
+	)
+	memeClient := subgraphclient.NewClient(
+		"https://api.studio.thegraph.com/query/76502/membots-ai-memeception-mvp/version/latest",
+		nil,
+	)
+
 	appRouter := v1.Group("/truglymeme")
 
-	// SECTION: meme
+	// SECTION: memeception
 	memeceptionRepository := memeception.NewMemeceptionRepository(db)
 	// memeceptionCache := memeception.NewMemeceptionCacheRepository(memeceptionRepository, redisClient)
-	memeceptionUCase := memeception.NewMemeceptionUCase(memeceptionRepository)
-
+	memeceptionUCase := memeception.NewMemeceptionUCase(memeceptionRepository, memeClient)
 	memeceptionHandler := memeception.NewMemeceptionHandler(memeceptionUCase)
 	appRouter.GET("/meme", memeceptionHandler.GetMemeceptionByMemeAddress)
 	appRouter.GET("/memeceptions", memeceptionHandler.GetMemeceptions)
 	appRouter.POST("/memes", memeceptionHandler.CreateMeme)
 
 	// SECTION: swaps
-	clientSwap := subgraphclient.NewClient(
-		"https://api.studio.thegraph.com/query/76502/membots-ai-v3-mvp/version/latest",
-		nil,
-	)
-	swapUCase := swap.NewSwapUcase(clientSwap)
+	swapUCase := swap.NewSwapUcase(swapClient)
 	swapHandler := swap.NewSwapHandler(swapUCase)
 	appRouter.GET("/swaps", swapHandler.GetSwapHistoryByAddress)
 	appRouter.GET("/quote", swapHandler.GetSwapRouter)
 
-	clientMeme := subgraphclient.NewClient(
-		"https://api.studio.thegraph.com/query/76502/membots-ai-memeception-mvp/version/latest",
-		nil,
-	)
-	launchpadUCase := launchpad.NewLaunchpadUcase(clientMeme)
+	// SECTION: launchpad
+	launchpadUCase := launchpad.NewLaunchpadUcase(memeClient)
 	launchpadHandler := launchpad.NewLaunchpadHandler(launchpadUCase)
 	appRouter.GET("/launchpad", launchpadHandler.GetHistoryByAddress)
 
 	// SECTION: cronjob
-	worker.RegisterCronJobs(db, clientMeme, clientSwap)
+	worker.RegisterCronJobs(db, memeClient, swapClient)
 }

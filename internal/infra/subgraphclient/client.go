@@ -72,6 +72,14 @@ func (c *Client) GetSwapHistoryByMemeToken(ctx context.Context, memeToken string
 	return executeRequestAndConvert(ctx, req, MemeCoinExitsResponse{}, c)
 }
 
+func (c *Client) ListSwapHistories(ctx context.Context, opts *RequestOptions) (*MemeCoinExitsResponse, error) {
+	req, err := constructListQuery(MemeFields, opts)
+	if err != nil {
+		return nil, err
+	}
+	return executeRequestAndConvert(ctx, req, MemeCoinExitsResponse{}, c)
+}
+
 func (c *Client) GetMemeTiersByMemeToken(ctx context.Context, memeToken string, opts *RequestOptions) (*MemeCreatedsResponse, error) {
 	req, err := constructListQueryWithMemeToken(memeToken, MemeCreatedFields, opts)
 	if err != nil {

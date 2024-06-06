@@ -21,7 +21,7 @@ type swapCache struct {
 }
 
 func (s *swapCache) GetQuote(ctx context.Context, url string) (interface{}, error) {
-	//TODO implement me
+	// TODO implement me
 	panic("implement me")
 }
 

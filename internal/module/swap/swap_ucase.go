@@ -5,11 +5,10 @@ import (
 	"encoding/json"
 	"strconv"
 
-	"github.com/flexstack.ai/membots-be/internal/util"
-
 	"github.com/flexstack.ai/membots-be/internal/dto"
 	"github.com/flexstack.ai/membots-be/internal/infra/subgraphclient"
 	"github.com/flexstack.ai/membots-be/internal/interfaces"
+	"github.com/flexstack.ai/membots-be/internal/util"
 )
 
 type swapUCase struct {

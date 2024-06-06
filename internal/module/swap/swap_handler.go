@@ -66,8 +66,9 @@ func (handler *SwapHandler) GetSwapHistoryByAddress(ctx *gin.Context) {
 // @Failure 400 		{object}	util.GeneralError
 // @Router 	/api/v1/truglymeme/quote [get]
 func (handler *SwapHandler) GetSwapRouter(ctx *gin.Context) {
-	protocols := ctx.DefaultQuery("protocols", "v3")
-	protocols = "v3"
+	// protocols := ctx.DefaultQuery("protocols", "v3")
+	// TODO: maybe use another version in the future
+	protocols := "v3"
 	tokenInAddress := ctx.DefaultQuery("tokenInAddress", "")
 	tokenInChainId := ctx.DefaultQuery("tokenInChainId", "")
 	tokenOutAddress := ctx.DefaultQuery("tokenOutAddress", "")

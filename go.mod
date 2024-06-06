@@ -7,6 +7,7 @@ toolchain go1.22.3
 require (
 	github.com/AstraProtocol/reward-libs v0.0.8
 	github.com/emersonmacro/go-uniswap-subgraph-client v0.0.0-00010101000000-000000000000
+	github.com/ethereum/go-ethereum v1.10.26
 	github.com/gin-gonic/gin v1.9.1
 	github.com/imroc/req/v3 v3.42.1
 	github.com/pkg/errors v0.9.1
@@ -28,7 +29,6 @@ require (
 	github.com/cloudflare/circl v1.3.6 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.1.0 // indirect
-	github.com/ethereum/go-ethereum v1.10.26 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/gaukas/godicttls v0.0.4 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect

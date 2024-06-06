@@ -50,5 +50,5 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	appRouter.GET("/launchpad", launchpadHandler.GetHistoryByAddress)
 
 	// SECTION: cronjob
-	go worker.RegisterCronJobs(db, clientMeme)
+	worker.RegisterCronJobs(db, clientMeme, clientSwap)
 }

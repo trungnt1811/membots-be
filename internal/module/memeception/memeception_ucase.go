@@ -154,7 +154,7 @@ func (u *memeceptionUCase) GetMemeceptions(ctx context.Context) (dto.Memeception
 	if err != nil {
 		return dto.MemeceptionsResp{}, err
 	}
-	var launchpadTxs []dto.LaunchpadTx
+	launchpadTxs := make([]dto.LaunchpadTx, 0)
 	var memeContractAddresses []string
 	for _, meme := range response.MemecoinBuyExits {
 		txType := "BUY"

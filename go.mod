@@ -2,8 +2,6 @@ module github.com/flexstack.ai/membots-be
 
 go 1.21.0
 
-toolchain go1.22.3
-
 require (
 	github.com/AstraProtocol/reward-libs v0.0.8
 	github.com/emersonmacro/go-uniswap-subgraph-client v0.0.0-00010101000000-000000000000

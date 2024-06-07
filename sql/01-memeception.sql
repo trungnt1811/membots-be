@@ -34,7 +34,7 @@ CREATE TABLE memeception (
     contract_address VARCHAR(50) NOT NULL,
     target_eth FLOAT NOT NULL,
     collected_eth FLOAT NOT NULL,
-    enabled BOOLEAN NOT NULL,
+    enabled BOOLEAN NOT NULL DEFAULT 1,
     updated_at_epoch INT NOT NULL DEFAULT 0,
     PRIMARY KEY (id),
     FOREIGN KEY (meme_id) REFERENCES meme(id)

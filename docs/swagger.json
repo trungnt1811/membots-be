@@ -173,7 +173,7 @@
         },
         "/api/v1/quote": {
             "get": {
-                "description": "swap router",
+                "description": "Swap router",
                 "consumes": [
                     "application/json"
                 ],
@@ -183,7 +183,7 @@
                 "tags": [
                     "swap"
                 ],
-                "summary": "swap router",
+                "summary": "Swap router",
                 "parameters": [
                     {
                         "type": "string",

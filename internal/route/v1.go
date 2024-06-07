@@ -29,7 +29,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 		nil,
 	)
 
-	appRouter := v1.Group("/truglymeme")
+	appRouter := v1.Group("")
 
 	// SECTION: memeception
 	memeceptionRepository := memeception.NewMemeceptionRepository(db)

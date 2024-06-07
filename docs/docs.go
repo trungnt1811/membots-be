@@ -15,6 +15,49 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/launchpad": {
+            "get": {
+                "description": "Get launchpad history by address",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "launchpad"
+                ],
+                "summary": "Get launchpad history by address",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "memeAddress to query, default is ",
+                        "name": "memeAddress",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.LaunchpadInfoResp"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/meme": {
             "get": {
                 "description": "Get memeception by meme address",
@@ -139,50 +182,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/truglymeme/launchpad": {
-            "get": {
-                "description": "Get launchpad history by address",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "launchpad"
-                ],
-                "summary": "Get launchpad history by address",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "memeAddress to query, default is ",
-                        "name": "memeAddress",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dto.LaunchpadInfoResp"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/util.GeneralError"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/util.GeneralError"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/truglymeme/quote": {
+        "/api/v1/quote": {
             "get": {
                 "description": "swap router",
                 "consumes": [
@@ -261,7 +261,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/truglymeme/swaps": {
+        "/api/v1/swaps": {
             "get": {
                 "description": "Get swaps history by memeId",
                 "consumes": [

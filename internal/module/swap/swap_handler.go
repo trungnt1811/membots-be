@@ -30,7 +30,7 @@ func NewSwapHandler(ucase interfaces.SwapUCase) *SwapHandler {
 // @Success 200 		{object}	dto.SwapHistoryByAddressResp
 // @Failure 401 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
-// @Router 	/api/v1/truglymeme/swaps [get]
+// @Router 	/api/v1/swaps [get]
 func (handler *SwapHandler) GetSwapHistoryByAddress(ctx *gin.Context) {
 	memeId := ctx.DefaultQuery("memeId", "")
 
@@ -64,7 +64,7 @@ func (handler *SwapHandler) GetSwapHistoryByAddress(ctx *gin.Context) {
 // @Success 200 		{object}	interface{}
 // @Failure 401 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
-// @Router 	/api/v1/truglymeme/quote [get]
+// @Router 	/api/v1/quote [get]
 func (handler *SwapHandler) GetSwapRouter(ctx *gin.Context) {
 	// protocols := ctx.DefaultQuery("protocols", "v3")
 	// TODO: maybe use another version in the future

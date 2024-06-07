@@ -30,7 +30,7 @@ func NewLaunchpadHandler(ucase interfaces.LaunchpadUCase) *LaunchpadHandler {
 // @Success 200 		{object}	dto.LaunchpadInfoResp
 // @Failure 401 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
-// @Router 	/api/v1/truglymeme/launchpad [get]
+// @Router 	/api/v1/launchpad [get]
 func (handler *LaunchpadHandler) GetHistoryByAddress(ctx *gin.Context) {
 	memeAddress := ctx.DefaultQuery("memeAddress", "")
 

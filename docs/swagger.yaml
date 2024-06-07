@@ -285,6 +285,34 @@ definitions:
 info:
   contact: {}
 paths:
+  /api/v1/launchpad:
+    get:
+      consumes:
+      - application/json
+      description: Get launchpad history by address
+      parameters:
+      - description: 'memeAddress to query, default is '
+        in: query
+        name: memeAddress
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.LaunchpadInfoResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      summary: Get launchpad history by address
+      tags:
+      - launchpad
   /api/v1/meme:
     get:
       consumes:
@@ -366,35 +394,7 @@ paths:
       summary: Create meme
       tags:
       - memeception
-  /api/v1/truglymeme/launchpad:
-    get:
-      consumes:
-      - application/json
-      description: Get launchpad history by address
-      parameters:
-      - description: 'memeAddress to query, default is '
-        in: query
-        name: memeAddress
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.LaunchpadInfoResp'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/util.GeneralError'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/util.GeneralError'
-      summary: Get launchpad history by address
-      tags:
-      - launchpad
-  /api/v1/truglymeme/quote:
+  /api/v1/quote:
     get:
       consumes:
       - application/json
@@ -446,7 +446,7 @@ paths:
       summary: swap router
       tags:
       - swap
-  /api/v1/truglymeme/swaps:
+  /api/v1/swaps:
     get:
       consumes:
       - application/json

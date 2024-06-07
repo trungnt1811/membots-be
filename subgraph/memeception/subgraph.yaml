@@ -8,9 +8,9 @@ dataSources:
     name: Memeception
     network: base
     source:
-      address: "0xbf7fde5d630934f1ff1889aea15904bee920973c"
+      address: "0x6c4D300B6416F3E00aEEA1E683B88ECdC1FFB9dB"
       abi: Memeception
-      startBlock: 15171798
+      startBlock: 15475838
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7

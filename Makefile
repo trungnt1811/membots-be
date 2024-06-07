@@ -32,4 +32,4 @@ lint:
 	golangci-lint run --fix
 
 swagger:
-	swag init -g internal/app.go	
+	swag init -g cmd/main.go

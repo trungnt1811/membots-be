@@ -60,7 +60,6 @@ func (uc *launchpadUCase) GetHistory(ctx context.Context, address string) (dto.L
 	}}
 
 	memeInfo, err := uc.MemeceptionRepository.GetMemeceptionByContractAddress(ctx, address)
-	fmt.Println("hoank", memeInfo, err)
 	if err != nil {
 		return lauchpadInfo, nil
 	}

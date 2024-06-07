@@ -92,7 +92,10 @@ func (u *memeceptionUCase) GetMemeceptionByContractAddress(ctx context.Context, 
 		return dto.MemeceptionDetailResp{}, err
 	}
 	// TODO: get nfts info from graphnode in case meta is MEME404
-	ethPrice := uint64(3850) // TODO: get ETH price from RPC
+	ethPrice, err := util.GetETHPrice()
+	if err != nil {
+		return dto.MemeceptionDetailResp{}, err
+	}
 	memeceptionDetailResp := dto.MemeceptionDetailResp{
 		Meme:  memeMeta.ToDto(),
 		Price: ethPrice,
@@ -131,7 +134,10 @@ func (u *memeceptionUCase) GetMemeceptions(ctx context.Context) (dto.Memeception
 		listLatestCoins = append(listLatestCoins, meme.ToDto())
 	}
 
-	ethPrice := uint64(3850) // TODO: get ETH price from RPC
+	ethPrice, err := util.GetETHPrice()
+	if err != nil {
+		return dto.MemeceptionsResp{}, err
+	}
 
 	// Get top 5 latest launchpad txs
 	requestOpts := &subgraphclient.RequestOptions{
@@ -198,7 +204,10 @@ func (u *memeceptionUCase) GetMemeceptionBySymbol(ctx context.Context, symbol st
 		return dto.MemeceptionDetailResp{}, err
 	}
 	// TODO: get nfts info from graphnode in case meta is MEME404
-	ethPrice := uint64(3850) // TODO: get ETH price from RPC
+	ethPrice, err := util.GetETHPrice()
+	if err != nil {
+		return dto.MemeceptionDetailResp{}, err
+	}
 	memeceptionDetailResp := dto.MemeceptionDetailResp{
 		Meme:  memeMeta.ToDto(),
 		Price: ethPrice,

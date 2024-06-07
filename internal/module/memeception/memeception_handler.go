@@ -65,8 +65,8 @@ func (handler *MemeceptionHandler) CreateMeme(ctx *gin.Context) {
 }
 
 // GetMemeceptionByMemeAddress Get meme by meme address
-// @Summary Get memeception by meme address
-// @Description Get memeception by meme address
+// @Summary Get meme by meme address
+// @Description Get meme by meme address
 // @Tags 	memeception
 // @Accept	json
 // @Produce json

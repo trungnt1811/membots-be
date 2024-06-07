@@ -61,7 +61,7 @@ const docTemplate = `{
         },
         "/api/v1/meme": {
             "get": {
-                "description": "Get memeception by meme address",
+                "description": "Get meme by meme address",
                 "consumes": [
                     "application/json"
                 ],
@@ -71,7 +71,7 @@ const docTemplate = `{
                 "tags": [
                     "memeception"
                 ],
-                "summary": "Get memeception by meme address",
+                "summary": "Get meme by meme address",
                 "parameters": [
                     {
                         "type": "string",

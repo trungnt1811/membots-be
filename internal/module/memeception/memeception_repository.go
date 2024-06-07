@@ -50,8 +50,8 @@ func (r memeceptionRepository) GetListMemeLive(ctx context.Context) ([]model.Mem
 func (r memeceptionRepository) GetMemeceptionByContractAddress(ctx context.Context, contractAddress string) (model.Meme, error) {
 	var meme model.Meme
 	err := r.db.Joins("Memeception").Joins("Social").
-		Where("contract_address = ?", contractAddress).
-		Where("Meme.status = ?", constant.SUCCEED).
+		Where("meme.contract_address = ?", contractAddress).
+		Where("meme.status = ?", constant.SUCCEED).
 		First(&meme).Error
 	return meme, err
 }

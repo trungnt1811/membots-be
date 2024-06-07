@@ -70,7 +70,7 @@ func (handler *MemeceptionHandler) CreateMeme(ctx *gin.Context) {
 // @Tags 	memeception
 // @Accept	json
 // @Produce json
-// @Param symbol query string false "memeAddress to query, default is "
+// @Param memeAddress query string false "memeAddress to query, default is "
 // @Success 200 		{object}	dto.MemeceptionDetailResp
 // @Failure 401 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError

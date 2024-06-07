@@ -33,8 +33,8 @@ func (worker UpdateCollectedETHWorker) RunJob() {
 	// Create a new cron scheduler
 	c := cron.New(cron.WithSeconds())
 
-	// Add a job that runs every 60 seconds
-	_, err := c.AddFunc("*/60 * * * * *", func() {
+	// Add a job that runs every 15 seconds
+	_, err := c.AddFunc("*/15 * * * * *", func() {
 		worker.updateCollectedETH(worker.Repo, worker.MemeceptionClient)
 	})
 	if err != nil {

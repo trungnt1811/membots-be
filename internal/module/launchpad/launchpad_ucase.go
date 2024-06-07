@@ -2,6 +2,7 @@ package launchpad
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 
 	"github.com/flexstack.ai/membots-be/internal/dto"
@@ -10,11 +11,12 @@ import (
 )
 
 type launchpadUCase struct {
-	Client *subgraphclient.Client
+	Client                *subgraphclient.Client
+	MemeceptionRepository interfaces.MemeceptionRepository
 }
 
-func NewLaunchpadUcase(client *subgraphclient.Client) interfaces.LaunchpadUCase {
-	return &launchpadUCase{Client: client}
+func NewLaunchpadUcase(client *subgraphclient.Client, memeceptionRepository interfaces.MemeceptionRepository) interfaces.LaunchpadUCase {
+	return &launchpadUCase{Client: client, MemeceptionRepository: memeceptionRepository}
 }
 
 func (uc *launchpadUCase) GetHistory(ctx context.Context, address string) (dto.LaunchpadInfoResp, error) {
@@ -50,10 +52,27 @@ func (uc *launchpadUCase) GetHistory(ctx context.Context, address string) (dto.L
 		})
 	}
 
-	return dto.LaunchpadInfoResp{LaunchpadInfo: dto.LaunchpadInfo{
+	lauchpadInfo := dto.LaunchpadInfoResp{LaunchpadInfo: dto.LaunchpadInfo{
 		Transactions: transactions,
 		Status:       "",
 		TargetETH:    "",
 		CollectedETH: "",
-	}}, nil
+	}}
+
+	memeInfo, err := uc.MemeceptionRepository.GetMemeceptionByContractAddress(ctx, address)
+	fmt.Println("hoank", memeInfo, err)
+	if err != nil {
+		return lauchpadInfo, nil
+	}
+
+	status := "LIVE"
+	if memeInfo.Memeception.TargetETH <= memeInfo.Memeception.CollectedETH {
+		status = "ENDED_SOLD_OUT"
+	}
+
+	lauchpadInfo.LaunchpadInfo.TargetETH = fmt.Sprintf("%f", memeInfo.Memeception.TargetETH)
+	lauchpadInfo.LaunchpadInfo.CollectedETH = fmt.Sprintf("%f", memeInfo.Memeception.CollectedETH)
+	lauchpadInfo.LaunchpadInfo.Status = status
+
+	return lauchpadInfo, nil
 }

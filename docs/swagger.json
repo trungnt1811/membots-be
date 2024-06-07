@@ -64,7 +64,7 @@
                     {
                         "type": "string",
                         "description": "memeAddress to query, default is ",
-                        "name": "symbol",
+                        "name": "memeAddress",
                         "in": "query"
                     }
                 ],

@@ -47,7 +47,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	appRouter.GET("/quote", swapHandler.GetSwapRouter)
 
 	// SECTION: launchpad
-	launchpadUCase := launchpad.NewLaunchpadUcase(memeClient)
+	launchpadUCase := launchpad.NewLaunchpadUcase(memeClient, memeceptionRepository)
 	launchpadHandler := launchpad.NewLaunchpadHandler(launchpadUCase)
 	appRouter.GET("/launchpad", launchpadHandler.GetHistoryByAddress)
 

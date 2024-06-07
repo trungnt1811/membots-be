@@ -321,7 +321,7 @@ paths:
       parameters:
       - description: 'memeAddress to query, default is '
         in: query
-        name: symbol
+        name: memeAddress
         type: string
       produces:
       - application/json

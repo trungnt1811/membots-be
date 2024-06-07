@@ -3,12 +3,12 @@ package stats
 import (
 	"context"
 	"encoding/json"
+
 	"github.com/flexstack.ai/membots-be/internal/interfaces"
 	"github.com/flexstack.ai/membots-be/internal/util"
 )
 
-type statsUCase struct {
-}
+type statsUCase struct{}
 
 func NewStatsUcase() interfaces.StatsUCase {
 	return &statsUCase{}

@@ -1,7 +1,6 @@
 package route
 
 import (
-	"github.com/flexstack.ai/membots-be/internal/module/stats"
 	"gorm.io/gorm"
 
 	"github.com/gin-gonic/gin"
@@ -10,6 +9,7 @@ import (
 	"github.com/flexstack.ai/membots-be/internal/infra/subgraphclient"
 	"github.com/flexstack.ai/membots-be/internal/module/launchpad"
 	"github.com/flexstack.ai/membots-be/internal/module/memeception"
+	"github.com/flexstack.ai/membots-be/internal/module/stats"
 	"github.com/flexstack.ai/membots-be/internal/module/swap"
 	"github.com/flexstack.ai/membots-be/internal/worker"
 )

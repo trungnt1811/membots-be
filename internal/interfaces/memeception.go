@@ -14,6 +14,7 @@ type MemeceptionRepository interface {
 	GetListMemeProcessing(ctx context.Context) ([]model.MemeOnchainInfo, error)
 	GetListMemeLive(ctx context.Context) ([]model.MemeOnchainInfo, error)
 	GetMemeceptionByContractAddress(ctx context.Context, contractAddress string) (model.Meme, error)
+	GetMemeceptionBySymbol(ctx context.Context, contractAddress string) (model.Meme, error)
 	GetMemeceptionsPast(ctx context.Context) ([]model.Memeception, error)
 	GetMemeceptionsLive(ctx context.Context) ([]model.Memeception, error)
 	GetMemeceptionsLatest(ctx context.Context) ([]model.Memeception, error)
@@ -23,5 +24,6 @@ type MemeceptionRepository interface {
 type MemeceptionUCase interface {
 	CreateMeme(ctx context.Context, payload dto.CreateMemePayload) error
 	GetMemeceptionByContractAddress(ctx context.Context, contractAddress string) (dto.MemeceptionDetailResp, error)
+	GetMemeceptionBySymbol(ctx context.Context, symbol string) (dto.MemeceptionDetailResp, error)
 	GetMemeceptions(ctx context.Context) (dto.MemeceptionsResp, error)
 }

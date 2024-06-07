@@ -323,6 +323,10 @@ paths:
         in: query
         name: memeAddress
         type: string
+      - description: 'symbol to query, default is '
+        in: query
+        name: symbol
+        type: string
       produces:
       - application/json
       responses:
@@ -446,15 +450,43 @@ paths:
       summary: Swap router
       tags:
       - swap
+  /api/v1/stats:
+    get:
+      consumes:
+      - application/json
+      description: Get stats by memeAddress
+      parameters:
+      - description: memeAddress to query
+        in: query
+        name: memeAddress
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/util.GeneralError'
+      summary: Get stats by memeAddress
+      tags:
+      - stats
   /api/v1/swaps:
     get:
       consumes:
       - application/json
-      description: Get swaps history by memeId
+      description: Get swaps history by memeAddress
       parameters:
-      - description: 'memeId to query, default is '
+      - description: 'memeAddress to query, default is '
         in: query
-        name: memeId
+        name: memeAddress
         type: string
       produces:
       - application/json
@@ -471,7 +503,7 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/util.GeneralError'
-      summary: Get swaps history by memeId
+      summary: Get swaps history by memeAddress
       tags:
       - swap
 swagger: "2.0"

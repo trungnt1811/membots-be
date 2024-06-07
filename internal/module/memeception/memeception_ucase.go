@@ -191,3 +191,17 @@ func (u *memeceptionUCase) GetMemeceptions(ctx context.Context) (dto.Memeception
 	}
 	return memeceptionsResp, nil
 }
+
+func (u *memeceptionUCase) GetMemeceptionBySymbol(ctx context.Context, symbol string) (dto.MemeceptionDetailResp, error) {
+	memeMeta, err := u.MemeceptionRepository.GetMemeceptionBySymbol(ctx, symbol)
+	if err != nil {
+		return dto.MemeceptionDetailResp{}, err
+	}
+	// TODO: get nfts info from graphnode in case meta is MEME404
+	ethPrice := uint64(3850) // TODO: get ETH price from RPC
+	memeceptionDetailResp := dto.MemeceptionDetailResp{
+		Meme:  memeMeta.ToDto(),
+		Price: ethPrice,
+	}
+	return memeceptionDetailResp, nil
+}

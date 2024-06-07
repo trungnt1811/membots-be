@@ -66,6 +66,12 @@
                         "description": "memeAddress to query, default is ",
                         "name": "memeAddress",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "symbol to query, default is ",
+                        "name": "symbol",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -250,9 +256,52 @@
                 }
             }
         },
+        "/api/v1/stats": {
+            "get": {
+                "description": "Get stats by memeAddress",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stats"
+                ],
+                "summary": "Get stats by memeAddress",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "memeAddress to query",
+                        "name": "memeAddress",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/util.GeneralError"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/swaps": {
             "get": {
-                "description": "Get swaps history by memeId",
+                "description": "Get swaps history by memeAddress",
                 "consumes": [
                     "application/json"
                 ],
@@ -262,12 +311,12 @@
                 "tags": [
                     "swap"
                 ],
-                "summary": "Get swaps history by memeId",
+                "summary": "Get swaps history by memeAddress",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "memeId to query, default is ",
-                        "name": "memeId",
+                        "description": "memeAddress to query, default is ",
+                        "name": "memeAddress",
                         "in": "query"
                     }
                 ],

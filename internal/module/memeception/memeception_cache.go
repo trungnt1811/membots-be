@@ -90,3 +90,20 @@ func (c memeceptionCache) GetMapMemeSymbolAndLogoURL(ctx context.Context, contra
 	// TODO: implement later
 	return nil, nil
 }
+
+func (c memeceptionCache) GetMemeceptionBySymbol(ctx context.Context, symbol string) (model.Meme, error) {
+	key := &caching.Keyer{Raw: keyPrefixMemeception + fmt.Sprint("GetMemeceptionBySymbol_", symbol)}
+	var memeMeta model.Meme
+	err := c.Cache.RetrieveItem(key, &memeMeta)
+	if err != nil {
+		// cache miss
+		memeMeta, err = c.MemeceptionRepository.GetMemeceptionBySymbol(ctx, symbol)
+		if err != nil {
+			return memeMeta, err
+		}
+		if err = c.Cache.SaveItem(key, memeMeta, cacheTimeMemeception); err != nil {
+			return memeMeta, err
+		}
+	}
+	return memeMeta, nil
+}

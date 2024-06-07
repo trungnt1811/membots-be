@@ -20,28 +20,28 @@ func NewSwapHandler(ucase interfaces.SwapUCase) *SwapHandler {
 	}
 }
 
-// GetSwapHistoryByAddress Get swaps history by memeId
-// @Summary Get swaps history by memeId
-// @Description Get swaps history by memeId
+// GetSwapHistoryByAddress Get swaps history by memeAddress
+// @Summary Get swaps history by memeAddress
+// @Description Get swaps history by memeAddress
 // @Tags 	swap
 // @Accept	json
 // @Produce json
-// @Param memeId query string false "memeId to query, default is "
+// @Param memeAddress query string false "memeAddress to query, default is "
 // @Success 200 		{object}	dto.SwapHistoryByAddressResp
 // @Failure 401 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
 // @Router 	/api/v1/swaps [get]
 func (handler *SwapHandler) GetSwapHistoryByAddress(ctx *gin.Context) {
-	memeId := ctx.DefaultQuery("memeId", "")
+	memeAddress := ctx.DefaultQuery("memeAddress", "")
 
-	if memeId == "" {
-		util.RespondError(ctx, http.StatusInternalServerError, "Get swaps by memeId error: ", fmt.Errorf("memeId is empty"))
+	if memeAddress == "" {
+		util.RespondError(ctx, http.StatusInternalServerError, "Get swaps by memeAddress error: ", fmt.Errorf("memeAddress is empty"))
 		return
 	}
 
-	response, err := handler.UCase.GetSwaps(ctx, memeId)
+	response, err := handler.UCase.GetSwaps(ctx, memeAddress)
 	if err != nil {
-		util.RespondError(ctx, http.StatusInternalServerError, "Get swaps by memeId error: ", err)
+		util.RespondError(ctx, http.StatusInternalServerError, "Get swaps by memeAddress error: ", err)
 		return
 	}
 

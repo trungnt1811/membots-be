@@ -71,25 +71,36 @@ func (handler *MemeceptionHandler) CreateMeme(ctx *gin.Context) {
 // @Accept	json
 // @Produce json
 // @Param memeAddress query string false "memeAddress to query, default is "
+// @Param symbol query string false "symbol to query, default is "
 // @Success 200 		{object}	dto.MemeceptionDetailResp
 // @Failure 401 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
 // @Router 	/api/v1/meme [get]
 func (handler *MemeceptionHandler) GetMemeceptionByMemeAddress(ctx *gin.Context) {
 	memeAddress := ctx.DefaultQuery("memeAddress", "")
+	symbol := ctx.DefaultQuery("symbol", "")
 
-	if memeAddress == "" {
+	if memeAddress == "" && symbol == "" {
 		util.RespondError(ctx, http.StatusInternalServerError, "Get memeception by meme address error: ", fmt.Errorf("meme address is empty"))
 		return
 	}
+	if memeAddress != "" {
+		response, err := handler.UCase.GetMemeceptionByContractAddress(ctx, memeAddress)
+		if err != nil {
+			util.RespondError(ctx, http.StatusInternalServerError, "Get memeception by meme address error: ", err)
+			return
+		}
 
-	response, err := handler.UCase.GetMemeceptionByContractAddress(ctx, memeAddress)
-	if err != nil {
-		util.RespondError(ctx, http.StatusInternalServerError, "Get memeception by meme address error: ", err)
-		return
+		ctx.JSON(http.StatusOK, response)
+	} else {
+		response, err := handler.UCase.GetMemeceptionBySymbol(ctx, symbol)
+		if err != nil {
+			util.RespondError(ctx, http.StatusInternalServerError, "Get memeception by symbol error: ", err)
+			return
+		}
+
+		ctx.JSON(http.StatusOK, response)
 	}
-
-	ctx.JSON(http.StatusOK, response)
 }
 
 // GetMemeceptions Get memeceptions

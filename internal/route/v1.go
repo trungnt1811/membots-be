@@ -1,6 +1,7 @@
 package route
 
 import (
+	"github.com/flexstack.ai/membots-be/internal/module/stats"
 	"gorm.io/gorm"
 
 	"github.com/gin-gonic/gin"
@@ -50,6 +51,11 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	launchpadUCase := launchpad.NewLaunchpadUcase(memeClient, memeceptionRepository)
 	launchpadHandler := launchpad.NewLaunchpadHandler(launchpadUCase)
 	appRouter.GET("/launchpad", launchpadHandler.GetHistoryByAddress)
+
+	// SECTION: stats
+	statsUCase := stats.NewStatsUcase()
+	statsUCaseHandler := stats.NewStatsHandler(statsUCase)
+	appRouter.GET("/stats", statsUCaseHandler.GetStatsByMemeAddress)
 
 	// SECTION: cronjob
 	worker.RegisterCronJobs(db, memeClient, swapClient)

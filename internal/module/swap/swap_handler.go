@@ -48,9 +48,9 @@ func (handler *SwapHandler) GetSwapHistoryByAddress(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response)
 }
 
-// GetSwapRouter Get swap router
-// @Summary swap router
-// @Description swap router
+// GetSwapRouter Get Swap router
+// @Summary Swap router
+// @Description Swap router
 // @Tags 	swap
 // @Accept	json
 // @Produce json

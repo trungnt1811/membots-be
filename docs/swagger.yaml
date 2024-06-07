@@ -398,7 +398,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: swap router
+      description: Swap router
       parameters:
       - description: protocols to query, default is v3
         in: query
@@ -443,7 +443,7 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/util.GeneralError'
-      summary: swap router
+      summary: Swap router
       tags:
       - swap
   /api/v1/truglymeme/swaps:

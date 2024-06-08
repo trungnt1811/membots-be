@@ -52,7 +52,7 @@ func (r memeceptionRepository) GetMemeceptionByContractAddress(ctx context.Conte
 	err := r.db.Joins("Memeception").Joins("Social").
 		Where("meme.contract_address = ?", contractAddress).
 		Where("meme.status = ?", constant.SUCCEED).
-		First(&meme).Error
+		Last(&meme).Error
 	return meme, err
 }
 

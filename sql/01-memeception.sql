@@ -23,7 +23,6 @@ CREATE TABLE meme (
     PRIMARY KEY (id)
 ) ENGINE = InnoDB;
 CREATE INDEX meme_contract_address_idx ON meme (contract_address);
-CREATE UNIQUE INDEX meme_symbol_uidx ON meme (symbol);
 -- memception table
 CREATE TABLE memeception (
     id INT NOT NULL AUTO_INCREMENT,

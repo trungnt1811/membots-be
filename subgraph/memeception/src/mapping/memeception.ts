@@ -63,6 +63,7 @@ export function handleMeme404Created(event: Meme404CreatedEvent): void {
         event.logIndex.toI32()+tierParam.nftId.toI32()+tierParam.lowerId.toI32()+tierParam.upperId.toI32()
       )
     )
+    entityTier.nftId = tierParam.nftId;
     entityTier.lowerId = tierParam.lowerId;
     entityTier.upperId = tierParam.upperId;
     entityTier.amountThreshold = tierParam.amountThreshold;

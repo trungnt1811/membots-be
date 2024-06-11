@@ -37,7 +37,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	// memeceptionCache := memeception.NewMemeceptionCacheRepository(memeceptionRepository, redisClient)
 	memeceptionUCase := memeception.NewMemeceptionUCase(memeceptionRepository, memeClient)
 	memeceptionHandler := memeception.NewMemeceptionHandler(memeceptionUCase)
-	appRouter.GET("/meme", memeceptionHandler.GetMemeceptionByMemeAddress)
+	appRouter.GET("/meme", memeceptionHandler.GetMemeDetail)
 	appRouter.GET("/memeceptions", memeceptionHandler.GetMemeceptions)
 	appRouter.POST("/memes", memeceptionHandler.CreateMeme)
 

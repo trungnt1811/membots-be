@@ -317,7 +317,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get meme by meme address
+      description: Get meme detail
       parameters:
       - description: 'memeAddress to query, default is '
         in: query
@@ -342,7 +342,7 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/util.GeneralError'
-      summary: Get meme by meme address
+      summary: Get meme detail
       tags:
       - memeception
   /api/v1/memeceptions:

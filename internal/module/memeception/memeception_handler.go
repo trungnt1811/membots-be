@@ -3,7 +3,6 @@ package memeception
 import (
 	"fmt"
 	"net/http"
-	"strings"
 
 	util "github.com/AstraProtocol/reward-libs/utils"
 	"github.com/gin-gonic/gin"
@@ -45,15 +44,10 @@ func (handler *MemeceptionHandler) CreateMeme(ctx *gin.Context) {
 		return
 	}
 
+	// TODO: add check duplicated logic later
 	err = handler.UCase.CreateMeme(ctx, req)
 	if err != nil {
 		log.LG.Errorf("save meme error: %v", err)
-		if strings.Contains(err.Error(), "Duplicate") {
-			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"error": "Symbol is already associated with an existing meme",
-			})
-			return
-		}
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
 		})
@@ -64,9 +58,9 @@ func (handler *MemeceptionHandler) CreateMeme(ctx *gin.Context) {
 	})
 }
 
-// GetMemeceptionByMemeAddress Get meme by meme address
-// @Summary Get meme by meme address
-// @Description Get meme by meme address
+// GetMemeDetail Get meme detail
+// @Summary Get meme detail
+// @Description Get meme detail
 // @Tags 	memeception
 // @Accept	json
 // @Produce json
@@ -76,7 +70,7 @@ func (handler *MemeceptionHandler) CreateMeme(ctx *gin.Context) {
 // @Failure 401 		{object}	util.GeneralError
 // @Failure 400 		{object}	util.GeneralError
 // @Router 	/api/v1/meme [get]
-func (handler *MemeceptionHandler) GetMemeceptionByMemeAddress(ctx *gin.Context) {
+func (handler *MemeceptionHandler) GetMemeDetail(ctx *gin.Context) {
 	memeAddress := ctx.DefaultQuery("memeAddress", "")
 	symbol := ctx.DefaultQuery("symbol", "")
 

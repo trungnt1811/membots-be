@@ -49,7 +49,7 @@
         },
         "/api/v1/meme": {
             "get": {
-                "description": "Get meme by meme address",
+                "description": "Get meme detail",
                 "consumes": [
                     "application/json"
                 ],
@@ -59,7 +59,7 @@
                 "tags": [
                     "memeception"
                 ],
-                "summary": "Get meme by meme address",
+                "summary": "Get meme detail",
                 "parameters": [
                     {
                         "type": "string",

@@ -112,6 +112,10 @@ export class Meme404CreatedParamsStruct extends ethereum.Tuple {
   get targetETH(): BigInt {
     return this[7].toBigInt();
   }
+
+  get maxBuyETH(): BigInt {
+    return this[8].toBigInt();
+  }
 }
 
 export class Meme404CreatedTiersStruct extends ethereum.Tuple {
@@ -208,6 +212,10 @@ export class MemeCreatedParamsStruct extends ethereum.Tuple {
   get targetETH(): BigInt {
     return this[7].toBigInt();
   }
+
+  get maxBuyETH(): BigInt {
+    return this[8].toBigInt();
+  }
 }
 
 export class MemeKOLCreated extends ethereum.Event {
@@ -269,6 +277,10 @@ export class MemeKOLCreatedParamsStruct extends ethereum.Tuple {
 
   get targetETH(): BigInt {
     return this[7].toBigInt();
+  }
+
+  get maxBuyETH(): BigInt {
+    return this[8].toBigInt();
   }
 }
 
@@ -406,7 +418,7 @@ export class TreasuryUpdated__Params {
   }
 }
 
-export class Memeception__createMemeResult {
+export class MembotMemeception__createMemeResult {
   value0: Address;
   value1: Address;
 
@@ -431,7 +443,7 @@ export class Memeception__createMemeResult {
   }
 }
 
-export class Memeception__createMemeInputParamsStruct extends ethereum.Tuple {
+export class MembotMemeception__createMemeInputParamsStruct extends ethereum.Tuple {
   get name(): string {
     return this[0].toString();
   }
@@ -463,9 +475,13 @@ export class Memeception__createMemeInputParamsStruct extends ethereum.Tuple {
   get targetETH(): BigInt {
     return this[7].toBigInt();
   }
+
+  get maxBuyETH(): BigInt {
+    return this[8].toBigInt();
+  }
 }
 
-export class Memeception__createMeme404Result {
+export class MembotMemeception__createMeme404Result {
   value0: Address;
   value1: Address;
 
@@ -490,7 +506,7 @@ export class Memeception__createMeme404Result {
   }
 }
 
-export class Memeception__createMeme404InputParamsStruct extends ethereum.Tuple {
+export class MembotMemeception__createMeme404InputParamsStruct extends ethereum.Tuple {
   get name(): string {
     return this[0].toString();
   }
@@ -522,9 +538,13 @@ export class Memeception__createMeme404InputParamsStruct extends ethereum.Tuple 
   get targetETH(): BigInt {
     return this[7].toBigInt();
   }
+
+  get maxBuyETH(): BigInt {
+    return this[8].toBigInt();
+  }
 }
 
-export class Memeception__createMeme404InputTiersStruct extends ethereum.Tuple {
+export class MembotMemeception__createMeme404InputTiersStruct extends ethereum.Tuple {
   get baseURL(): string {
     return this[0].toString();
   }
@@ -558,7 +578,7 @@ export class Memeception__createMeme404InputTiersStruct extends ethereum.Tuple {
   }
 }
 
-export class Memeception__createMemeKOLResult {
+export class MembotMemeception__createMemeKOLResult {
   value0: Address;
   value1: Address;
 
@@ -583,7 +603,7 @@ export class Memeception__createMemeKOLResult {
   }
 }
 
-export class Memeception__createMemeKOLInputParamsStruct extends ethereum.Tuple {
+export class MembotMemeception__createMemeKOLInputParamsStruct extends ethereum.Tuple {
   get name(): string {
     return this[0].toString();
   }
@@ -615,9 +635,13 @@ export class Memeception__createMemeKOLInputParamsStruct extends ethereum.Tuple 
   get targetETH(): BigInt {
     return this[7].toBigInt();
   }
+
+  get maxBuyETH(): BigInt {
+    return this[8].toBigInt();
+  }
 }
 
-export class Memeception__getMemeceptionResultValue0Struct extends ethereum.Tuple {
+export class MembotMemeception__getMemeceptionResultValue0Struct extends ethereum.Tuple {
   get targetETH(): BigInt {
     return this[0].toBigInt();
   }
@@ -649,11 +673,15 @@ export class Memeception__getMemeceptionResultValue0Struct extends ethereum.Tupl
   get endedAt(): BigInt {
     return this[7].toBigInt();
   }
+
+  get maxBuyETH(): BigInt {
+    return this[8].toBigInt();
+  }
 }
 
-export class Memeception extends ethereum.SmartContract {
-  static bind(address: Address): Memeception {
-    return new Memeception("Memeception", address);
+export class MembotMemeception extends ethereum.SmartContract {
+  static bind(address: Address): MembotMemeception {
+    return new MembotMemeception("MembotMemeception", address);
   }
 
   WETH9(): Address {
@@ -671,42 +699,27 @@ export class Memeception extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
-  bypassLock(): boolean {
-    let result = super.call("bypassLock", "bypassLock():(bool)", []);
-
-    return result[0].toBoolean();
-  }
-
-  try_bypassLock(): ethereum.CallResult<boolean> {
-    let result = super.tryCall("bypassLock", "bypassLock():(bool)", []);
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBoolean());
-  }
-
   createMeme(
-    params: Memeception__createMemeInputParamsStruct,
-  ): Memeception__createMemeResult {
+    params: MembotMemeception__createMemeInputParamsStruct,
+  ): MembotMemeception__createMemeResult {
     let result = super.call(
       "createMeme",
-      "createMeme((string,string,uint40,uint16,uint16,bytes32,address,uint256)):(address,address)",
+      "createMeme((string,string,uint40,uint16,uint16,bytes32,address,uint256,uint256)):(address,address)",
       [ethereum.Value.fromTuple(params)],
     );
 
-    return new Memeception__createMemeResult(
+    return new MembotMemeception__createMemeResult(
       result[0].toAddress(),
       result[1].toAddress(),
     );
   }
 
   try_createMeme(
-    params: Memeception__createMemeInputParamsStruct,
-  ): ethereum.CallResult<Memeception__createMemeResult> {
+    params: MembotMemeception__createMemeInputParamsStruct,
+  ): ethereum.CallResult<MembotMemeception__createMemeResult> {
     let result = super.tryCall(
       "createMeme",
-      "createMeme((string,string,uint40,uint16,uint16,bytes32,address,uint256)):(address,address)",
+      "createMeme((string,string,uint40,uint16,uint16,bytes32,address,uint256,uint256)):(address,address)",
       [ethereum.Value.fromTuple(params)],
     );
     if (result.reverted) {
@@ -714,7 +727,7 @@ export class Memeception extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      new Memeception__createMemeResult(
+      new MembotMemeception__createMemeResult(
         value[0].toAddress(),
         value[1].toAddress(),
       ),
@@ -722,28 +735,28 @@ export class Memeception extends ethereum.SmartContract {
   }
 
   createMeme404(
-    params: Memeception__createMeme404InputParamsStruct,
-    tiers: Array<Memeception__createMeme404InputTiersStruct>,
-  ): Memeception__createMeme404Result {
+    params: MembotMemeception__createMeme404InputParamsStruct,
+    tiers: Array<MembotMemeception__createMeme404InputTiersStruct>,
+  ): MembotMemeception__createMeme404Result {
     let result = super.call(
       "createMeme404",
-      "createMeme404((string,string,uint40,uint16,uint16,bytes32,address,uint256),(string,string,string,uint256,uint256,uint256,uint256,bool)[]):(address,address)",
+      "createMeme404((string,string,uint40,uint16,uint16,bytes32,address,uint256,uint256),(string,string,string,uint256,uint256,uint256,uint256,bool)[]):(address,address)",
       [ethereum.Value.fromTuple(params), ethereum.Value.fromTupleArray(tiers)],
     );
 
-    return new Memeception__createMeme404Result(
+    return new MembotMemeception__createMeme404Result(
       result[0].toAddress(),
       result[1].toAddress(),
     );
   }
 
   try_createMeme404(
-    params: Memeception__createMeme404InputParamsStruct,
-    tiers: Array<Memeception__createMeme404InputTiersStruct>,
-  ): ethereum.CallResult<Memeception__createMeme404Result> {
+    params: MembotMemeception__createMeme404InputParamsStruct,
+    tiers: Array<MembotMemeception__createMeme404InputTiersStruct>,
+  ): ethereum.CallResult<MembotMemeception__createMeme404Result> {
     let result = super.tryCall(
       "createMeme404",
-      "createMeme404((string,string,uint40,uint16,uint16,bytes32,address,uint256),(string,string,string,uint256,uint256,uint256,uint256,bool)[]):(address,address)",
+      "createMeme404((string,string,uint40,uint16,uint16,bytes32,address,uint256,uint256),(string,string,string,uint256,uint256,uint256,uint256,bool)[]):(address,address)",
       [ethereum.Value.fromTuple(params), ethereum.Value.fromTupleArray(tiers)],
     );
     if (result.reverted) {
@@ -751,7 +764,7 @@ export class Memeception extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      new Memeception__createMeme404Result(
+      new MembotMemeception__createMeme404Result(
         value[0].toAddress(),
         value[1].toAddress(),
       ),
@@ -759,26 +772,26 @@ export class Memeception extends ethereum.SmartContract {
   }
 
   createMemeKOL(
-    params: Memeception__createMemeKOLInputParamsStruct,
-  ): Memeception__createMemeKOLResult {
+    params: MembotMemeception__createMemeKOLInputParamsStruct,
+  ): MembotMemeception__createMemeKOLResult {
     let result = super.call(
       "createMemeKOL",
-      "createMemeKOL((string,string,uint40,uint16,uint16,bytes32,address,uint256)):(address,address)",
+      "createMemeKOL((string,string,uint40,uint16,uint16,bytes32,address,uint256,uint256)):(address,address)",
       [ethereum.Value.fromTuple(params)],
     );
 
-    return new Memeception__createMemeKOLResult(
+    return new MembotMemeception__createMemeKOLResult(
       result[0].toAddress(),
       result[1].toAddress(),
     );
   }
 
   try_createMemeKOL(
-    params: Memeception__createMemeKOLInputParamsStruct,
-  ): ethereum.CallResult<Memeception__createMemeKOLResult> {
+    params: MembotMemeception__createMemeKOLInputParamsStruct,
+  ): ethereum.CallResult<MembotMemeception__createMemeKOLResult> {
     let result = super.tryCall(
       "createMemeKOL",
-      "createMemeKOL((string,string,uint40,uint16,uint16,bytes32,address,uint256)):(address,address)",
+      "createMemeKOL((string,string,uint40,uint16,uint16,bytes32,address,uint256,uint256)):(address,address)",
       [ethereum.Value.fromTuple(params)],
     );
     if (result.reverted) {
@@ -786,7 +799,7 @@ export class Memeception extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      new Memeception__createMemeKOLResult(
+      new MembotMemeception__createMemeKOLResult(
         value[0].toAddress(),
         value[1].toAddress(),
       ),
@@ -808,26 +821,49 @@ export class Memeception extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
-  getMemeception(
-    memeToken: Address,
-  ): Memeception__getMemeceptionResultValue0Struct {
+  getMaxBuyAmountETH(memeToken: Address): BigInt {
     let result = super.call(
-      "getMemeception",
-      "getMemeception(address):((uint256,uint256,uint256,address,uint16,address,uint40,uint40))",
+      "getMaxBuyAmountETH",
+      "getMaxBuyAmountETH(address):(uint256)",
       [ethereum.Value.fromAddress(memeToken)],
     );
 
-    return changetype<Memeception__getMemeceptionResultValue0Struct>(
+    return result[0].toBigInt();
+  }
+
+  try_getMaxBuyAmountETH(memeToken: Address): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "getMaxBuyAmountETH",
+      "getMaxBuyAmountETH(address):(uint256)",
+      [ethereum.Value.fromAddress(memeToken)],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  getMemeception(
+    memeToken: Address,
+  ): MembotMemeception__getMemeceptionResultValue0Struct {
+    let result = super.call(
+      "getMemeception",
+      "getMemeception(address):((uint256,uint256,uint256,address,uint16,address,uint40,uint40,uint256))",
+      [ethereum.Value.fromAddress(memeToken)],
+    );
+
+    return changetype<MembotMemeception__getMemeceptionResultValue0Struct>(
       result[0].toTuple(),
     );
   }
 
   try_getMemeception(
     memeToken: Address,
-  ): ethereum.CallResult<Memeception__getMemeceptionResultValue0Struct> {
+  ): ethereum.CallResult<MembotMemeception__getMemeceptionResultValue0Struct> {
     let result = super.tryCall(
       "getMemeception",
-      "getMemeception(address):((uint256,uint256,uint256,address,uint16,address,uint40,uint40))",
+      "getMemeception(address):((uint256,uint256,uint256,address,uint16,address,uint40,uint40,uint256))",
       [ethereum.Value.fromAddress(memeToken)],
     );
     if (result.reverted) {
@@ -835,7 +871,7 @@ export class Memeception extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      changetype<Memeception__getMemeceptionResultValue0Struct>(
+      changetype<MembotMemeception__getMemeceptionResultValue0Struct>(
         value[0].toTuple(),
       ),
     );
@@ -915,21 +951,6 @@ export class Memeception extends ethereum.SmartContract {
 
   try_owner(): ethereum.CallResult<Address> {
     let result = super.tryCall("owner", "owner():(address)", []);
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toAddress());
-  }
-
-  testAdmin(): Address {
-    let result = super.call("testAdmin", "testAdmin():(address)", []);
-
-    return result[0].toAddress();
-  }
-
-  try_testAdmin(): ethereum.CallResult<Address> {
-    let result = super.tryCall("testAdmin", "testAdmin():(address)", []);
     if (result.reverted) {
       return new ethereum.CallResult();
     }
@@ -1180,6 +1201,10 @@ export class CreateMemeCallParamsStruct extends ethereum.Tuple {
   get targetETH(): BigInt {
     return this[7].toBigInt();
   }
+
+  get maxBuyETH(): BigInt {
+    return this[8].toBigInt();
+  }
 }
 
 export class CreateMeme404Call extends ethereum.Call {
@@ -1257,6 +1282,10 @@ export class CreateMeme404CallParamsStruct extends ethereum.Tuple {
 
   get targetETH(): BigInt {
     return this[7].toBigInt();
+  }
+
+  get maxBuyETH(): BigInt {
+    return this[8].toBigInt();
   }
 }
 
@@ -1366,6 +1395,10 @@ export class CreateMemeKOLCallParamsStruct extends ethereum.Tuple {
   get targetETH(): BigInt {
     return this[7].toBigInt();
   }
+
+  get maxBuyETH(): BigInt {
+    return this[8].toBigInt();
+  }
 }
 
 export class ExitMemecoinCall extends ethereum.Call {
@@ -1402,32 +1435,32 @@ export class ExitMemecoinCall__Outputs {
   }
 }
 
-export class SetBypassLockCall extends ethereum.Call {
-  get inputs(): SetBypassLockCall__Inputs {
-    return new SetBypassLockCall__Inputs(this);
+export class SetPausedCall extends ethereum.Call {
+  get inputs(): SetPausedCall__Inputs {
+    return new SetPausedCall__Inputs(this);
   }
 
-  get outputs(): SetBypassLockCall__Outputs {
-    return new SetBypassLockCall__Outputs(this);
+  get outputs(): SetPausedCall__Outputs {
+    return new SetPausedCall__Outputs(this);
   }
 }
 
-export class SetBypassLockCall__Inputs {
-  _call: SetBypassLockCall;
+export class SetPausedCall__Inputs {
+  _call: SetPausedCall;
 
-  constructor(call: SetBypassLockCall) {
+  constructor(call: SetPausedCall) {
     this._call = call;
   }
 
-  get _bypassLock(): boolean {
+  get _isPaused(): boolean {
     return this._call.inputValues[0].value.toBoolean();
   }
 }
 
-export class SetBypassLockCall__Outputs {
-  _call: SetBypassLockCall;
+export class SetPausedCall__Outputs {
+  _call: SetPausedCall;
 
-  constructor(call: SetBypassLockCall) {
+  constructor(call: SetPausedCall) {
     this._call = call;
   }
 }

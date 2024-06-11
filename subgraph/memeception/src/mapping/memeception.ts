@@ -29,11 +29,9 @@ export function handleCollectFees(event: CollectFeesEvent): void {
   entity.amount1 = event.params.amount1
   entity.fee0 = event.params.fee0
   entity.fee1 = event.params.fee1
-
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
   entity.transactionHash = event.transaction.hash
-
   entity.save()
 }
 
@@ -51,11 +49,13 @@ export function handleMeme404Created(event: Meme404CreatedEvent): void {
   entity.params_salt = event.params.params.salt
   entity.params_creator = event.params.params.creator
   entity.params_targetETH = event.params.params.targetETH
+  entity.params_maxBuyETH = event.params.params.maxBuyETH
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
   entity.transactionHash = event.transaction.hash
   entity.type = "Meme404Created"
   entity.save()
+
   for (let i = 0; i < event.params.tiers.length; i++) {
     let tierParam = event.params.tiers[i];
     let entityTier = new Tier(
@@ -63,7 +63,6 @@ export function handleMeme404Created(event: Meme404CreatedEvent): void {
         event.logIndex.toI32()+tierParam.nftId.toI32()+tierParam.lowerId.toI32()+tierParam.upperId.toI32()
       )
     )
-    entityTier.nftId = tierParam.nftId;
     entityTier.lowerId = tierParam.lowerId;
     entityTier.upperId = tierParam.upperId;
     entityTier.amountThreshold = tierParam.amountThreshold;
@@ -90,12 +89,11 @@ export function handleMemeCreated(event: MemeCreatedEvent): void {
   entity.params_salt = event.params.params.salt
   entity.params_creator = event.params.params.creator
   entity.params_targetETH = event.params.params.targetETH
-
+  entity.params_maxBuyETH = event.params.params.maxBuyETH
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
   entity.transactionHash = event.transaction.hash
   entity.type = "MemeCreated"
-
   entity.save()
 }
 
@@ -113,12 +111,11 @@ export function handleMemeKOLCreated(event: MemeKOLCreatedEvent): void {
   entity.params_salt = event.params.params.salt
   entity.params_creator = event.params.params.creator
   entity.params_targetETH = event.params.params.targetETH
-
+  entity.params_maxBuyETH = event.params.params.maxBuyETH
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
   entity.transactionHash = event.transaction.hash
   entity.type = "MemeKOLCreated"
-
   entity.save()
 }
 
@@ -130,11 +127,9 @@ export function handleMemeLiquidityAdded(event: MemeLiquidityAddedEvent): void {
   entity.pool = event.params.pool
   entity.amountMeme = event.params.amountMeme
   entity.amountETH = event.params.amountETH
-
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
   entity.transactionHash = event.transaction.hash
-
   entity.save()
 }
 
@@ -146,12 +141,10 @@ export function handleMemecoinBuy(event: MemecoinBuyEvent): void {
   entity.user = event.params.user
   entity.amountETH = event.params.amountETH
   entity.amountMeme = event.params.amountMeme
-
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
   entity.transactionHash = event.transaction.hash
   entity.type = "MemecoinBuy"
-
   entity.save()
 }
 
@@ -163,12 +156,10 @@ export function handleMemecoinExit(event: MemecoinExitEvent): void {
   entity.user = event.params.user
   entity.amountETH = event.params.amountETH
   entity.amountMeme = event.params.amountMeme
-
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
   entity.transactionHash = event.transaction.hash
   entity.type = "MemecoinExit"
-
   entity.save()
 }
 
@@ -180,11 +171,9 @@ export function handleOwnershipTransferred(
   )
   entity.user = event.params.user
   entity.newOwner = event.params.newOwner
-
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
   entity.transactionHash = event.transaction.hash
-
   entity.save()
 }
 
@@ -194,10 +183,8 @@ export function handleTreasuryUpdated(event: TreasuryUpdatedEvent): void {
   )
   entity.oldTreasury = event.params.oldTreasury
   entity.newTreasury = event.params.newTreasury
-
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
   entity.transactionHash = event.transaction.hash
-
   entity.save()
 }

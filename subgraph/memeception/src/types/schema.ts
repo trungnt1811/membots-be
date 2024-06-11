@@ -345,6 +345,27 @@ export class MemeCreated extends Entity {
     this.set("params_targetETH", Value.fromBigInt(value));
   }
 
+  get params_maxBuyETH(): BigInt {
+    let value = this.get("params_maxBuyETH");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set params_maxBuyETH(value: BigInt) {
+    this.set("params_maxBuyETH", Value.fromBigInt(value));
+  }
+
+  get tiers(): TierLoader {
+    return new TierLoader(
+      "MemeCreated",
+      this.get("id")!.toBytes().toHexString(),
+      "tiers",
+    );
+  }
+
   get blockNumber(): BigInt {
     let value = this.get("blockNumber");
     if (!value || value.kind == ValueKind.NULL) {
@@ -395,14 +416,6 @@ export class MemeCreated extends Entity {
 
   set type(value: string) {
     this.set("type", Value.fromString(value));
-  }
-
-  get tiers(): TierLoader {
-    return new TierLoader(
-      "MemeCreated",
-      this.get("id")!.toBytes().toHexString(),
-      "tiers",
-    );
   }
 }
 

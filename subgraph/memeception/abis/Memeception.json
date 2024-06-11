@@ -12,10 +12,12 @@
   { "inputs": [], "name": "InvalidLockerFeeStructure", "type": "error" },
   { "inputs": [], "name": "InvalidMemeAddress", "type": "error" },
   { "inputs": [], "name": "LockerFeeTooHigh", "type": "error" },
+  { "inputs": [], "name": "MaxBuyETHTooLow", "type": "error" },
   { "inputs": [], "name": "MaxTargetETH", "type": "error" },
   { "inputs": [], "name": "MemeLaunched", "type": "error" },
   { "inputs": [], "name": "MemeSwapFeeTooHigh", "type": "error" },
   { "inputs": [], "name": "MemeceptionNotStarted", "type": "error" },
+  { "inputs": [], "name": "Paused", "type": "error" },
   { "inputs": [], "name": "VestingAllocTooHigh", "type": "error" },
   { "inputs": [], "name": "ZeroAddress", "type": "error" },
   { "inputs": [], "name": "ZeroAmount", "type": "error" },
@@ -90,10 +92,11 @@
           },
           { "internalType": "bytes32", "name": "salt", "type": "bytes32" },
           { "internalType": "address", "name": "creator", "type": "address" },
-          { "internalType": "uint256", "name": "targetETH", "type": "uint256" }
+          { "internalType": "uint256", "name": "targetETH", "type": "uint256" },
+          { "internalType": "uint256", "name": "maxBuyETH", "type": "uint256" }
         ],
         "indexed": false,
-        "internalType": "struct ITruglyMemeception.MemeceptionCreationParams",
+        "internalType": "struct IMembotMemeception.MemeceptionCreationParams",
         "name": "params",
         "type": "tuple"
       },
@@ -149,10 +152,11 @@
           },
           { "internalType": "bytes32", "name": "salt", "type": "bytes32" },
           { "internalType": "address", "name": "creator", "type": "address" },
-          { "internalType": "uint256", "name": "targetETH", "type": "uint256" }
+          { "internalType": "uint256", "name": "targetETH", "type": "uint256" },
+          { "internalType": "uint256", "name": "maxBuyETH", "type": "uint256" }
         ],
         "indexed": false,
-        "internalType": "struct ITruglyMemeception.MemeceptionCreationParams",
+        "internalType": "struct IMembotMemeception.MemeceptionCreationParams",
         "name": "params",
         "type": "tuple"
       }
@@ -188,10 +192,11 @@
           },
           { "internalType": "bytes32", "name": "salt", "type": "bytes32" },
           { "internalType": "address", "name": "creator", "type": "address" },
-          { "internalType": "uint256", "name": "targetETH", "type": "uint256" }
+          { "internalType": "uint256", "name": "targetETH", "type": "uint256" },
+          { "internalType": "uint256", "name": "maxBuyETH", "type": "uint256" }
         ],
         "indexed": false,
-        "internalType": "struct ITruglyMemeception.MemeceptionCreationParams",
+        "internalType": "struct IMembotMemeception.MemeceptionCreationParams",
         "name": "params",
         "type": "tuple"
       }
@@ -349,13 +354,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "bypassLock",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       { "internalType": "address", "name": "memeToken", "type": "address" }
     ],
@@ -379,9 +377,10 @@
           },
           { "internalType": "bytes32", "name": "salt", "type": "bytes32" },
           { "internalType": "address", "name": "creator", "type": "address" },
-          { "internalType": "uint256", "name": "targetETH", "type": "uint256" }
+          { "internalType": "uint256", "name": "targetETH", "type": "uint256" },
+          { "internalType": "uint256", "name": "maxBuyETH", "type": "uint256" }
         ],
-        "internalType": "struct ITruglyMemeception.MemeceptionCreationParams",
+        "internalType": "struct IMembotMemeception.MemeceptionCreationParams",
         "name": "params",
         "type": "tuple"
       }
@@ -409,9 +408,10 @@
           },
           { "internalType": "bytes32", "name": "salt", "type": "bytes32" },
           { "internalType": "address", "name": "creator", "type": "address" },
-          { "internalType": "uint256", "name": "targetETH", "type": "uint256" }
+          { "internalType": "uint256", "name": "targetETH", "type": "uint256" },
+          { "internalType": "uint256", "name": "maxBuyETH", "type": "uint256" }
         ],
-        "internalType": "struct ITruglyMemeception.MemeceptionCreationParams",
+        "internalType": "struct IMembotMemeception.MemeceptionCreationParams",
         "name": "params",
         "type": "tuple"
       },
@@ -458,9 +458,10 @@
           },
           { "internalType": "bytes32", "name": "salt", "type": "bytes32" },
           { "internalType": "address", "name": "creator", "type": "address" },
-          { "internalType": "uint256", "name": "targetETH", "type": "uint256" }
+          { "internalType": "uint256", "name": "targetETH", "type": "uint256" },
+          { "internalType": "uint256", "name": "maxBuyETH", "type": "uint256" }
         ],
-        "internalType": "struct ITruglyMemeception.MemeceptionCreationParams",
+        "internalType": "struct IMembotMemeception.MemeceptionCreationParams",
         "name": "params",
         "type": "tuple"
       }
@@ -494,6 +495,15 @@
     "inputs": [
       { "internalType": "address", "name": "memeToken", "type": "address" }
     ],
+    "name": "getMaxBuyAmountETH",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "memeToken", "type": "address" }
+    ],
     "name": "getMemeception",
     "outputs": [
       {
@@ -509,9 +519,10 @@
           { "internalType": "uint16", "name": "swapFeeBps", "type": "uint16" },
           { "internalType": "address", "name": "creator", "type": "address" },
           { "internalType": "uint40", "name": "startAt", "type": "uint40" },
-          { "internalType": "uint40", "name": "endedAt", "type": "uint40" }
+          { "internalType": "uint40", "name": "endedAt", "type": "uint40" },
+          { "internalType": "uint256", "name": "maxBuyETH", "type": "uint256" }
         ],
-        "internalType": "struct ITruglyMemeception.Memeception",
+        "internalType": "struct IMembotMemeception.Memeception",
         "name": "",
         "type": "tuple"
       }
@@ -548,10 +559,8 @@
     "type": "function"
   },
   {
-    "inputs": [
-      { "internalType": "bool", "name": "_bypassLock", "type": "bool" }
-    ],
-    "name": "setBypassLock",
+    "inputs": [{ "internalType": "bool", "name": "_isPaused", "type": "bool" }],
+    "name": "setPaused",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -563,13 +572,6 @@
     "name": "setTreasury",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "testAdmin",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -625,7 +627,7 @@
     "name": "vesting",
     "outputs": [
       {
-        "internalType": "contract ITruglyVesting",
+        "internalType": "contract IMembotVesting",
         "name": "",
         "type": "address"
       }

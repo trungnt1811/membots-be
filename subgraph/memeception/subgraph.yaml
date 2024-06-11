@@ -5,12 +5,12 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum
-    name: Memeception
+    name: MembotMemeception
     network: base
     source:
-      address: "0x6c4D300B6416F3E00aEEA1E683B88ECdC1FFB9dB"
-      abi: Memeception
-      startBlock: 15475838
+      address: "0x5946c4021B511aC9EaC7D9B586c8342F9494dA46"
+      abi: MembotMemeception
+      startBlock: 15646992
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -26,16 +26,16 @@ dataSources:
         - OwnershipTransferred
         - TreasuryUpdated
       abis:
-        - name: Memeception
+        - name: MembotMemeception
           file: ./abis/Memeception.json
       eventHandlers:
         - event: CollectFees(indexed address,indexed address,uint256,uint256,uint256,uint256)
           handler: handleCollectFees
-        - event: Meme404Created(indexed address,address,(string,string,uint40,uint16,uint16,bytes32,address,uint256),(string,string,string,uint256,uint256,uint256,uint256,bool)[])
+        - event: Meme404Created(indexed address,address,(string,string,uint40,uint16,uint16,bytes32,address,uint256,uint256),(string,string,string,uint256,uint256,uint256,uint256,bool)[])
           handler: handleMeme404Created
-        - event: MemeCreated(indexed address,address,(string,string,uint40,uint16,uint16,bytes32,address,uint256))
+        - event: MemeCreated(indexed address,address,(string,string,uint40,uint16,uint16,bytes32,address,uint256,uint256))
           handler: handleMemeCreated
-        - event: MemeKOLCreated(indexed address,address,(string,string,uint40,uint16,uint16,bytes32,address,uint256))
+        - event: MemeKOLCreated(indexed address,address,(string,string,uint40,uint16,uint16,bytes32,address,uint256,uint256))
           handler: handleMemeKOLCreated
         - event: MemeLiquidityAdded(indexed address,address,uint256,uint256)
           handler: handleMemeLiquidityAdded

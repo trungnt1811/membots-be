@@ -98,10 +98,10 @@ func (r memeceptionRepository) GetMapMemeSymbolAndLogoURL(ctx context.Context, c
 	return memeMap, err
 }
 
-func (r memeceptionRepository) GetMemeceptionBySymbol(ctx context.Context, symbol string) ([]model.Meme, error) {
-	var memes []model.Meme
+func (r memeceptionRepository) GetMemeceptionBySymbol(ctx context.Context, symbol string) (model.Meme, error) {
+	var meme model.Meme
 	err := r.db.Joins("Memeception").Joins("Social").
 		Where("meme.symbol = ?", symbol).
-		Find(&memes).Error
-	return memes, err
+		Last(&meme).Error
+	return meme, err
 }

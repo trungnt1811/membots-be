@@ -198,22 +198,19 @@ func (u *memeceptionUCase) GetMemeceptions(ctx context.Context) (dto.Memeception
 	return memeceptionsResp, nil
 }
 
-func (u *memeceptionUCase) GetMemeceptionBySymbol(ctx context.Context, symbol string) ([]dto.MemeceptionDetailResp, error) {
-	memes, err := u.MemeceptionRepository.GetMemeceptionBySymbol(ctx, symbol)
+func (u *memeceptionUCase) GetMemeceptionBySymbol(ctx context.Context, symbol string) (dto.MemeceptionDetailResp, error) {
+	meme, err := u.MemeceptionRepository.GetMemeceptionBySymbol(ctx, symbol)
 	if err != nil {
-		return []dto.MemeceptionDetailResp{}, err
+		return dto.MemeceptionDetailResp{}, err
 	}
 	// TODO: get nfts info from graphnode in case meta is MEME404
 	ethPrice, err := util.GetETHPrice()
 	if err != nil {
-		return []dto.MemeceptionDetailResp{}, err
+		return dto.MemeceptionDetailResp{}, err
 	}
-	resp := make([]dto.MemeceptionDetailResp, 0)
-	for _, meme := range memes {
-		resp = append(resp, dto.MemeceptionDetailResp{
-			Meme:  meme.ToDto(),
-			Price: ethPrice,
-		})
+	resp := dto.MemeceptionDetailResp{
+		Meme:  meme.ToDto(),
+		Price: ethPrice,
 	}
 	return resp, nil
 }

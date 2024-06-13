@@ -57,6 +57,7 @@ func (m *Meme) ToDto() dto.MemeDetail {
 		Website:         m.Website,
 		Memeception:     m.Memeception.ToCommonDto(),
 		Socials:         m.Social.ToMapDto(),
+		Nfts:            make([]interface{}, 0),
 	}
 }
 

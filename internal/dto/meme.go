@@ -19,6 +19,7 @@ type MemeDetail struct {
 	Website         string            `json:"website"`
 	Memeception     MemeceptionCommon `json:"memeception"`
 	Socials         map[string]Social `json:"socials"`
+	Nfts            []interface{}     `json:"nfts"`
 }
 
 type MemeCommon struct {
@@ -27,6 +28,6 @@ type MemeCommon struct {
 	LogoUrl         string `json:"logoUrl"`
 	BannerUrl       string `json:"bannerUrl"`
 	Description     string `json:"description"`
-	ContractAddress string `json:"contract_address"`
+	ContractAddress string `json:"contractAddress"`
 	Meta            string `json:"meta"`
 }

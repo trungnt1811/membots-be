@@ -107,3 +107,11 @@ func (c memeceptionCache) GetMemeceptionBySymbol(ctx context.Context, symbol str
 	}
 	return meme, nil
 }
+
+func (c memeceptionCache) GetMemeIDAndStartAtByContractAddress(ctx context.Context, contractAddress string) (
+	model.MemeceptionMemeIDAndStartAt,
+	error,
+) {
+	// TODO: implement later
+	return model.MemeceptionMemeIDAndStartAt{}, nil
+}

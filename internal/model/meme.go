@@ -55,7 +55,7 @@ func (m *Meme) ToDto() dto.MemeDetail {
 		Live:            m.Live,
 		NetworkID:       m.NetworkID,
 		Website:         m.Website,
-		Memeception:     m.Memeception.ToDto(),
+		Memeception:     m.Memeception.ToCommonDto(),
 		Socials:         m.Social.ToMapDto(),
 	}
 }
@@ -108,5 +108,14 @@ type MemeSymbolAndLogoURL struct {
 }
 
 func (m *MemeSymbolAndLogoURL) TableName() string {
+	return tableName
+}
+
+type MemeAddress struct {
+	ID              uint64 `json:"id" gorm:"primaryKey"`
+	ContractAddress string `json:"contract_address"`
+}
+
+func (m *MemeAddress) TableName() string {
 	return tableName
 }

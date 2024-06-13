@@ -162,21 +162,22 @@ type ListTokensResponse struct {
 }
 
 type Token struct {
-	ID                           string `json:"id"`
-	Symbol                       string `json:"symbol"`
-	Name                         string `json:"name"`
-	Decimals                     string `json:"decimals"`
-	TotalSupply                  string `json:"totalSupply"`
-	Volume                       string `json:"volume"`
-	VolumeUSD                    string `json:"volumeUSD"`
-	UntrackedVolumeUSD           string `json:"untrackedVolumeUSD"`
-	FeesUSD                      string `json:"feesUSD"`
-	TxCount                      string `json:"txCount"`
-	PoolCount                    string `json:"poolCount"`
-	TotalValueLocked             string `json:"totalValueLocked"`
-	TotalValueLockedUSD          string `json:"totalValueLockedUSD"`
-	TotalValueLockedUSDUntracked string `json:"totalValueLockedUSDUntracked"`
-	DerivedETH                   string `json:"derivedETH"`
+	ID                           string           `json:"id"`
+	Symbol                       string           `json:"symbol"`
+	Name                         string           `json:"name"`
+	Decimals                     string           `json:"decimals"`
+	TotalSupply                  string           `json:"totalSupply"`
+	Volume                       string           `json:"volume"`
+	VolumeUSD                    string           `json:"volumeUSD"`
+	UntrackedVolumeUSD           string           `json:"untrackedVolumeUSD"`
+	FeesUSD                      string           `json:"feesUSD"`
+	TxCount                      string           `json:"txCount"`
+	PoolCount                    string           `json:"poolCount"`
+	TotalValueLocked             string           `json:"totalValueLocked"`
+	TotalValueLockedUSD          string           `json:"totalValueLockedUSD"`
+	TotalValueLockedUSDUntracked string           `json:"totalValueLockedUSDUntracked"`
+	DerivedETH                   string           `json:"derivedETH"`
+	TokenDayData                 []TokenDayDataET `json:"tokenDayData"`
 }
 
 var TokenFields modelFields = modelFields{
@@ -199,7 +200,8 @@ var TokenFields modelFields = modelFields{
 		"derivedETH",                   // BigDecimal!
 	},
 	reference: map[string]string{
-		"whitelistPools": "pool", // [Pool!]!
+		"whitelistPools": "pool",         // [Pool!]!
+		"tokenDayData":   "tokenDayData", // [Pool!]!
 	},
 }
 
@@ -879,6 +881,52 @@ var TickDayDataFields modelFields = modelFields{
 	reference: map[string]string{
 		"pool": "pool", // Pool!
 		"tick": "tick", // Tick!
+	},
+}
+
+type TokenDayDataETResponse struct {
+	TokenDayData TokenDayDataET
+}
+
+type ListTokenDayDatasETResponse struct {
+	TokenDayDatas []TokenDayDataET
+}
+
+type TokenDayDataET struct {
+	ID                  string `json:"id"`
+	Date                uint64 `json:"date"`
+	Volume              string `json:"volume"`
+	VolumeUSD           string `json:"volumeUSD"`
+	UntrackedVolumeUSD  string `json:"untrackedVolumeUSD"`
+	TotalValueLocked    string `json:"totalValueLocked"`
+	TotalValueLockedUSD string `json:"totalValueLockedUSD"`
+	PriceUSD            string `json:"priceUSD"`
+	FeesUSD             string `json:"feesUSD"`
+	Open                string `json:"open"`
+	High                string `json:"high"`
+	Low                 string `json:"low"`
+	Close               string `json:"close"`
+}
+
+var TokenDayDataETFields modelFields = modelFields{
+	name: "tokenDayData",
+	direct: []string{
+		"id",                  // ID!
+		"date",                // Int!
+		"volume",              // BigDecimal!
+		"volumeUSD",           // BigDecimal!
+		"untrackedVolumeUSD",  // BigDecimal!
+		"totalValueLocked",    // BigDecimal!
+		"totalValueLockedUSD", // BigDecimal!
+		"priceUSD",            // BigDecimal!
+		"feesUSD",             // BigDecimal!
+		"open",                // BigDecimal!
+		"high",                // BigDecimal!
+		"low",                 // BigDecimal!
+		"close",               // BigDecimal!
+	},
+	reference: map[string]string{
+		"token": "token", // Token!
 	},
 }
 

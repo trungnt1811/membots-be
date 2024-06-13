@@ -495,7 +495,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "memeception": {
-                    "$ref": "#/definitions/dto.Memeception"
+                    "$ref": "#/definitions/dto.MemeceptionCommon"
                 },
                 "meta": {
                     "type": "string"
@@ -625,6 +625,38 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/dto.Memeception"
                     }
+                }
+            }
+        },
+        "dto.MemeceptionCommon": {
+            "type": "object",
+            "properties": {
+                "ama": {
+                    "type": "boolean"
+                },
+                "collectedETH": {
+                    "type": "string"
+                },
+                "contractAddress": {
+                    "type": "string"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "memeID": {
+                    "type": "integer"
+                },
+                "startAt": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "targetETH": {
+                    "type": "string"
+                },
+                "updatedAtEpoch": {
+                    "type": "integer"
                 }
             }
         },

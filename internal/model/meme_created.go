@@ -1,11 +1,11 @@
 package model
 
-type Meme404Created struct {
+type MemeCreated struct {
 	ID           string `json:"id"`
 	MemeToken    string `json:"memeToken"`
 	ParamsSymbol string `json:"params_symbol"`
 	ParamsName   string `json:"params_name"`
-	Tiers        Tier   `json:"tiers"`
+	Tiers        Tier   `json:"tiers,omitempty"`
 }
 
 type Tier struct {

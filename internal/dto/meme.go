@@ -17,7 +17,7 @@ type MemeDetail struct {
 	Live            bool              `json:"live"`
 	NetworkID       uint64            `json:"networkId"`
 	Website         string            `json:"website"`
-	Memeception     Memeception       `json:"memeception"`
+	Memeception     MemeceptionCommon `json:"memeception"`
 	Socials         map[string]Social `json:"socials"`
 }
 

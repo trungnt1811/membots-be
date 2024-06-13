@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/flexstack.ai/membots-be/internal/dto"
 	"github.com/flexstack.ai/membots-be/internal/infra/caching"
 	"github.com/flexstack.ai/membots-be/internal/interfaces"
 )
@@ -28,19 +29,19 @@ func NewStatsCacheUCase(repo interfaces.StatsUCase,
 	}
 }
 
-func (s *statsCache) GetStatsByMemeAddress(ctx context.Context, address string) (interface{}, error) {
+func (s *statsCache) GetStatsByMemeAddress(ctx context.Context, address string) (dto.TokenStatsResp, error) {
 	key := &caching.Keyer{Raw: keyPrefixStats + fmt.Sprint("GetStatsByMemeAddress_", address)}
-	var swaps interface{}
-	err := s.Cache.RetrieveItem(key, &swaps)
+	var stats dto.TokenStatsResp
+	err := s.Cache.RetrieveItem(key, &stats)
 	if err != nil {
 		// cache miss
-		swaps, err = s.StatsUCase.GetStatsByMemeAddress(ctx, address)
+		stats, err = s.StatsUCase.GetStatsByMemeAddress(ctx, address)
 		if err != nil {
-			return swaps, err
+			return stats, err
 		}
-		if err = s.Cache.SaveItem(key, swaps, cacheTimeStats); err != nil {
-			return swaps, err
+		if err = s.Cache.SaveItem(key, stats, cacheTimeStats); err != nil {
+			return stats, err
 		}
 	}
-	return swaps, nil
+	return stats, nil
 }

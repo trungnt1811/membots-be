@@ -105,3 +105,14 @@ func (r memeceptionRepository) GetMemeceptionBySymbol(ctx context.Context, symbo
 		Last(&meme).Error
 	return meme, err
 }
+
+func (r memeceptionRepository) GetMemeIDAndStartAtByContractAddress(ctx context.Context, contractAddress string) (
+	model.MemeceptionMemeIDAndStartAt,
+	error,
+) {
+	var meme model.MemeceptionMemeIDAndStartAt
+	err := r.db.Joins("Meme").
+		Where("Meme.contract_address = ?", contractAddress).
+		Last(&meme).Error
+	return meme, err
+}

@@ -19,3 +19,8 @@ type SwapHistoryByAddressResp struct {
 type LaunchpadInfoResp struct {
 	LaunchpadInfo LaunchpadInfo `json:"launchpadInfo"`
 }
+
+type TokenStatsResp struct {
+	Stats        Stats        `json:"stats"`
+	DailyDiffPct DailyDiffPct `json:"dailyDiffPct"`
+}

@@ -33,10 +33,15 @@ func NewStatsHandler(ucase interfaces.StatsUCase) *StatsHandler {
 // @Router 	/api/v1/stats [get]
 func (handler *StatsHandler) GetStatsByMemeAddress(ctx *gin.Context) {
 	memeAddress := ctx.DefaultQuery("memeAddress", "")
-	url := fmt.Sprintf("https://www.trugly.meme/api/v1/stats?memeAddress=%s", memeAddress)
-	response, err := handler.UCase.GetStatsByMemeAddress(ctx, url)
+
+	if memeAddress == "" {
+		util.RespondError(ctx, http.StatusInternalServerError, "Get stats by memeAddress error: ", fmt.Errorf("memeAddress is empty"))
+		return
+	}
+
+	response, err := handler.UCase.GetStatsByMemeAddress(ctx, memeAddress)
 	if err != nil {
-		util.RespondError(ctx, http.StatusInternalServerError, "Get starts error: ", err)
+		util.RespondError(ctx, http.StatusInternalServerError, "Get stats error: ", err)
 		return
 	}
 

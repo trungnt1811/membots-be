@@ -51,3 +51,14 @@ func (m *Memeception) ToDto() dto.Memeception {
 		Meme:            m.Meme.ToCommonDto(),
 	}
 }
+
+type MemeceptionMemeIDAndStartAt struct {
+	ID      uint64      `json:"id" gorm:"primaryKey"`
+	StartAt uint64      `json:"start_at"`
+	MemeID  uint64      `json:"meme_id"`
+	Meme    MemeAddress `json:"meme" gorm:"foreignKey:ID;references:MemeID"`
+}
+
+func (m *MemeceptionMemeIDAndStartAt) TableName() string {
+	return "memeception"
+}

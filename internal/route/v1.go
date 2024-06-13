@@ -22,11 +22,11 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 
 	// SECTION: Create subgraph clients
 	swapClient := subgraphclient.NewClient(
-		"https://api.studio.thegraph.com/query/76502/membots-ai-v3-mvp/version/latest",
+		config.Blockchain.SwapSubgraphURL,
 		nil,
 	)
 	memeClient := subgraphclient.NewClient(
-		"https://api.studio.thegraph.com/query/76502/membots-ai-memeception-mvp/version/latest",
+		config.Blockchain.MemeceptionSubgraphURL,
 		nil,
 	)
 
@@ -58,5 +58,5 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	appRouter.GET("/stats", statsUCaseHandler.GetStatsByMemeAddress)
 
 	// SECTION: cronjob
-	worker.RegisterCronJobs(db, memeClient, swapClient)
+	worker.RegisterCronJobs(db, memeClient, swapClient, config.Blockchain.MemeceptionAddress)
 }

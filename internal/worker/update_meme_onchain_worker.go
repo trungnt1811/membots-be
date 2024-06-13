@@ -14,20 +14,23 @@ import (
 )
 
 type UpdateMemeOnchainWorker struct {
-	Repo              interfaces.MemeceptionRepository
-	MemeceptionClient *subgraphclient.Client
-	SwapClient        *subgraphclient.Client
+	Repo               interfaces.MemeceptionRepository
+	MemeceptionClient  *subgraphclient.Client
+	SwapClient         *subgraphclient.Client
+	MemeceptionAddress string
 }
 
 func NewUpdateMemeOnchainWorker(
 	repo interfaces.MemeceptionRepository,
 	memeceptionClient *subgraphclient.Client,
 	swapClient *subgraphclient.Client,
+	memeceptionAddress string,
 ) UpdateMemeOnchainWorker {
 	return UpdateMemeOnchainWorker{
-		Repo:              repo,
-		MemeceptionClient: memeceptionClient,
-		SwapClient:        swapClient,
+		Repo:               repo,
+		MemeceptionClient:  memeceptionClient,
+		SwapClient:         swapClient,
+		MemeceptionAddress: memeceptionAddress,
 	}
 }
 
@@ -37,7 +40,7 @@ func (worker UpdateMemeOnchainWorker) RunJob() {
 
 	// Add a job that runs every 15 seconds
 	_, err := c.AddFunc("*/15 * * * * *", func() {
-		worker.updateMemeOnchain(worker.Repo, worker.MemeceptionClient, worker.SwapClient)
+		worker.updateMemeOnchain(worker.Repo, worker.MemeceptionClient, worker.SwapClient, worker.MemeceptionAddress)
 	})
 	if err != nil {
 		log.LG.Infof("failed to run job updateMemeOnchain: %v", err)
@@ -54,6 +57,7 @@ func (worker UpdateMemeOnchainWorker) updateMemeOnchain(
 	repo interfaces.MemeceptionRepository,
 	clientMemeception *subgraphclient.Client,
 	clientSwap *subgraphclient.Client,
+	memeceptionAddress string,
 ) {
 	ctx := context.Background()
 	listMemeProcessing, err := repo.GetListMemeProcessing(ctx)
@@ -119,6 +123,7 @@ func (worker UpdateMemeOnchainWorker) updateMemeOnchain(
 		memeception := memeProcessing.Memeception
 		memeception.Status = uint64(constant.LIVE)
 		memeception.Enabled = true
+		memeception.ContractAddress = memeceptionAddress
 		meme := model.Meme{
 			ID:              memeProcessing.ID,
 			Salt:            response.MemeCreateds[0].Salt,
@@ -127,6 +132,7 @@ func (worker UpdateMemeOnchainWorker) updateMemeOnchain(
 			TotalSupply:     tokenInfoResp.Tokens[0].TotalSupply,
 			Decimals:        decimals,
 			Memeception:     memeception,
+			Live:            true,
 		}
 		err = repo.UpdateMeme(ctx, meme)
 		if err != nil {

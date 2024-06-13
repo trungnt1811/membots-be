@@ -435,7 +435,7 @@
                 "bannerUrl": {
                     "type": "string"
                 },
-                "contract_address": {
+                "contractAddress": {
                     "type": "string"
                 },
                 "description": {
@@ -493,6 +493,10 @@
                 },
                 "networkId": {
                     "type": "integer"
+                },
+                "nfts": {
+                    "type": "array",
+                    "items": {}
                 },
                 "socials": {
                     "type": "object",

@@ -7,11 +7,11 @@ import (
 	"github.com/flexstack.ai/membots-be/internal/module/memeception"
 )
 
-func RegisterCronJobs(db *gorm.DB, memeceptionClient, swapClient *subgraphclient.Client) {
+func RegisterCronJobs(db *gorm.DB, memeceptionClient, swapClient *subgraphclient.Client, memeceptionAddress string) {
 	memeRepo := memeception.NewMemeceptionRepository(db)
 
 	// SECTION: Update meme onchain worker
-	updateMemeOnchainWorker := NewUpdateMemeOnchainWorker(memeRepo, memeceptionClient, swapClient)
+	updateMemeOnchainWorker := NewUpdateMemeOnchainWorker(memeRepo, memeceptionClient, swapClient, memeceptionAddress)
 	go updateMemeOnchainWorker.RunJob()
 
 	// SECTION: Update collected ETH worker

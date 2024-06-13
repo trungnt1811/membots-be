@@ -58,7 +58,7 @@ definitions:
     properties:
       bannerUrl:
         type: string
-      contract_address:
+      contractAddress:
         type: string
       description:
         type: string
@@ -97,6 +97,9 @@ definitions:
         type: string
       networkId:
         type: integer
+      nfts:
+        items: {}
+        type: array
       socials:
         additionalProperties:
           $ref: '#/definitions/dto.Social'

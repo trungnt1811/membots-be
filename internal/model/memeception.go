@@ -48,6 +48,7 @@ func (m *Memeception) ToDto() dto.Memeception {
 		CollectedETH:    fmt.Sprintf("%f", m.CollectedETH),
 		Enabled:         m.Enabled,
 		MemeID:          m.MemeID,
+		UpdatedAtEpoch:  m.UpdatedAtEpoch,
 		Meme:            m.Meme.ToCommonDto(),
 	}
 }

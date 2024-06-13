@@ -21,12 +21,19 @@ type DatabaseConfiguration struct {
 	DbName     string `mapstructure:"DB_NAME"`
 }
 
+type BlockchainConfiguration struct {
+	MemeceptionAddress     string `mapstructure:"MEMECEPTION_ADDRESS"`
+	SwapSubgraphURL        string `mapstructure:"SWAP_SUBGRAPH_URL"`
+	MemeceptionSubgraphURL string `mapstructure:"MEMECEPTION_SUBGRAPH_URL"`
+}
+
 type Configuration struct {
-	Database DatabaseConfiguration `mapstructure:",squash"`
-	Redis    RedisConfiguration    `mapstructure:",squash"`
-	AppName  string                `mapstructure:"APP_NAME"`
-	AppPort  uint32                `mapstructure:"APP_PORT"`
-	Env      string                `mapstructure:"ENV"`
+	Database   DatabaseConfiguration   `mapstructure:",squash"`
+	Redis      RedisConfiguration      `mapstructure:",squash"`
+	Blockchain BlockchainConfiguration `mapstructure:",squash"`
+	AppName    string                  `mapstructure:"APP_NAME"`
+	AppPort    uint32                  `mapstructure:"APP_PORT"`
+	Env        string                  `mapstructure:"ENV"`
 }
 
 var configuration Configuration

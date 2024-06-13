@@ -447,7 +447,7 @@ const docTemplate = `{
                 "bannerUrl": {
                     "type": "string"
                 },
-                "contract_address": {
+                "contractAddress": {
                     "type": "string"
                 },
                 "description": {
@@ -505,6 +505,10 @@ const docTemplate = `{
                 },
                 "networkId": {
                     "type": "integer"
+                },
+                "nfts": {
+                    "type": "array",
+                    "items": {}
                 },
                 "socials": {
                     "type": "object",

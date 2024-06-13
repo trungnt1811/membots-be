@@ -2,6 +2,7 @@ package memeception
 
 import (
 	"context"
+	"errors"
 
 	"gorm.io/gorm"
 
@@ -115,4 +116,18 @@ func (r memeceptionRepository) GetMemeIDAndStartAtByContractAddress(ctx context.
 		Where("Meme.contract_address = ?", contractAddress).
 		Last(&meme).Error
 	return meme, err
+}
+
+func (r memeceptionRepository) MemeceptionExists(ctx context.Context, symbol string) (bool, error) {
+	var meme model.Meme
+	err := r.db.Where("meme.symbol = ?", symbol).
+		Where("meme.status = ?", constant.SUCCEED).
+		First(&meme).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, nil // Record not found, return false and no error
+		}
+		return false, err
+	}
+	return true, nil
 }

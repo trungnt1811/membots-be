@@ -78,8 +78,6 @@ func (worker UpdateMemeOnchainWorker) updateMemeOnchain(
 				"tiers.isFungible",
 			},
 		}
-		// memeProcessing.CreatorAddress = "0xDaEA9Ac5e89FEB15deaF5d034cD44Bb1Ac27d46B"
-		// memeProcessing.Symbol = "TODAYISALONGDAY"
 		response, err := clientMemeception.GetMemeCreatedsByCreatorAndSymbol(
 			ctx, memeProcessing.CreatorAddress, memeProcessing.Symbol, requestOpts,
 		)
@@ -101,7 +99,6 @@ func (worker UpdateMemeOnchainWorker) updateMemeOnchain(
 			},
 		}
 		var tokenInfoResp *subgraphclient.ListTokensResponse
-		// memeProcessing.Symbol = "KITTY"
 		tokenInfoResp, err = clientSwap.GetTokensByNameAndSymbol(
 			ctx, memeProcessing.Name, memeProcessing.Symbol, requestOpts,
 		)
@@ -121,6 +118,7 @@ func (worker UpdateMemeOnchainWorker) updateMemeOnchain(
 		}
 		memeception := memeProcessing.Memeception
 		memeception.Status = uint64(constant.LIVE)
+		memeception.Enabled = true
 		meme := model.Meme{
 			ID:              memeProcessing.ID,
 			Salt:            response.MemeCreateds[0].Salt,

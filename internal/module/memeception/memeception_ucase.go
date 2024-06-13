@@ -2,6 +2,7 @@ package memeception
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 	"time"
@@ -47,6 +48,14 @@ func (u *memeceptionUCase) CreateMeme(ctx context.Context, payload dto.CreateMem
 	startAt, err := time.Parse(time.RFC3339, payload.Memeception.StartAt)
 	if err != nil {
 		return fmt.Errorf("cannot parse StartAt to unix timestamp: %w", err)
+	}
+
+	isExist, err := u.MemeceptionRepository.MemeceptionExists(ctx, payload.MemeInfo.Symbol)
+	if err != nil {
+		return fmt.Errorf("cannot check MemeceptionExists: %w", err)
+	}
+	if isExist {
+		return errors.New("symbol is already associated with an existing meme")
 	}
 
 	social := model.Social{}

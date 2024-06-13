@@ -115,3 +115,8 @@ func (c memeceptionCache) GetMemeIDAndStartAtByContractAddress(ctx context.Conte
 	// TODO: implement later
 	return model.MemeceptionMemeIDAndStartAt{}, nil
 }
+
+func (c memeceptionCache) MemeceptionExists(ctx context.Context, symbol string) (bool, error) {
+	// TODO: implement later
+	return false, nil
+}

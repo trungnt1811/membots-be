@@ -53,7 +53,7 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	appRouter.GET("/launchpad", launchpadHandler.GetHistoryByAddress)
 
 	// SECTION: stats
-	statsUCase := stats.NewStatsUcase()
+	statsUCase := stats.NewStatsUcase(swapClient, memeceptionRepository)
 	statsUCaseHandler := stats.NewStatsHandler(statsUCase)
 	appRouter.GET("/stats", statsUCaseHandler.GetStatsByMemeAddress)
 

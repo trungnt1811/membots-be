@@ -31,6 +31,8 @@ definitions:
         items:
           $ref: '#/definitions/dto.Transaction'
         type: array
+      txCounter:
+        type: string
     type: object
   dto.LaunchpadInfoResp:
     properties:

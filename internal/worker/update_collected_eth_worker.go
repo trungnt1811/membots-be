@@ -85,13 +85,19 @@ func (worker UpdateCollectedETHWorker) updateCollectedETH(
 		amountETH := util.WeiToEther(amountWei)
 		collectedETH, _ := amountETH.Float64()
 		status := memeLive.Memeception.Status
+		isMemeLive := false
 		if collectedETH >= memeLive.Memeception.TargetETH {
 			status = uint64(constant.ENDED_SOLD_OUT)
+			isMemeLive = true
 		}
 		memeception := model.Memeception{
 			ID:           memeLive.Memeception.ID,
 			CollectedETH: collectedETH,
 			Status:       status,
+			Meme: model.MemeCommon{
+				ID:   memeLive.ID,
+				Live: isMemeLive,
+			},
 		}
 		err = repo.UpdateMemeception(ctx, memeception)
 		if err != nil {

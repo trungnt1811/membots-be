@@ -132,7 +132,6 @@ func (worker UpdateMemeOnchainWorker) updateMemeOnchain(
 			TotalSupply:     tokenInfoResp.Tokens[0].TotalSupply,
 			Decimals:        decimals,
 			Memeception:     memeception,
-			Live:            true,
 		}
 		err = repo.UpdateMeme(ctx, meme)
 		if err != nil {

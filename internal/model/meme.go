@@ -70,6 +70,7 @@ type MemeCommon struct {
 	BannerUrl       string `json:"banner_url"`
 	ContractAddress string `json:"contract_address"`
 	Meta            string `json:"meta"`
+	Live            bool   `json:"live"`
 }
 
 func (m *MemeCommon) TableName() string {

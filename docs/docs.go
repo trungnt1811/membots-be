@@ -404,6 +404,9 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/dto.Transaction"
                     }
+                },
+                "txCounter": {
+                    "type": "string"
                 }
             }
         },

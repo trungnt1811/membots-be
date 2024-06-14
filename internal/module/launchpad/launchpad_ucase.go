@@ -52,11 +52,16 @@ func (uc *launchpadUCase) GetHistory(ctx context.Context, address string) (dto.L
 		})
 	}
 
+	if transactions == nil {
+		transactions = []dto.Transaction{} // Assign an empty slice
+	}
+
 	lauchpadInfo := dto.LaunchpadInfoResp{LaunchpadInfo: dto.LaunchpadInfo{
 		Transactions: transactions,
-		Status:       "",
-		TargetETH:    "",
-		CollectedETH: "",
+		Status:       "LIVE",
+		TargetETH:    "0.1",
+		CollectedETH: "0",
+		TxCounter:    "0",
 	}}
 
 	memeInfo, err := uc.MemeceptionRepository.GetMemeceptionByContractAddress(ctx, address)

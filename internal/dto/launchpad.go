@@ -15,7 +15,7 @@ type LaunchpadInfo struct {
 	Status       string        `json:"status"`
 	TargetETH    string        `json:"targetETH"`
 	CollectedETH string        `json:"collectedETH"`
-	TxCounter    string        `json:"txCounter"`
+	TxCounter    int           `json:"txCounter"`
 }
 
 type LaunchpadTx struct {

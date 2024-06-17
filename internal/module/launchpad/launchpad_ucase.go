@@ -62,7 +62,7 @@ func (uc *launchpadUCase) GetHistory(ctx context.Context, address string) (dto.L
 		Status:       "LIVE",
 		TargetETH:    "0.1",
 		CollectedETH: "0",
-		TxCounter:    "0",
+		TxCounter:    len(transactions),
 	}}
 
 	memeInfo, err := uc.MemeceptionRepository.GetMemeceptionByContractAddress(ctx, address)

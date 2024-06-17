@@ -861,6 +861,63 @@ export class MemecoinBuyExit extends Entity {
   }
 }
 
+export class CollectedETH extends Entity {
+  constructor(id: Bytes) {
+    super();
+    this.set("id", Value.fromBytes(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save CollectedETH entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.BYTES,
+        `Entities of type CollectedETH must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("CollectedETH", id.toBytes().toHexString(), this);
+    }
+  }
+
+  static loadInBlock(id: Bytes): CollectedETH | null {
+    return changetype<CollectedETH | null>(
+      store.get_in_block("CollectedETH", id.toHexString()),
+    );
+  }
+
+  static load(id: Bytes): CollectedETH | null {
+    return changetype<CollectedETH | null>(
+      store.get("CollectedETH", id.toHexString()),
+    );
+  }
+
+  get id(): Bytes {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set id(value: Bytes) {
+    this.set("id", Value.fromBytes(value));
+  }
+
+  get collectedETH(): BigInt {
+    let value = this.get("collectedETH");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set collectedETH(value: BigInt) {
+    this.set("collectedETH", Value.fromBigInt(value));
+  }
+}
+
 export class OwnershipTransferred extends Entity {
   constructor(id: Bytes) {
     super();

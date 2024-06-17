@@ -69,6 +69,11 @@ type MemecoinBuyExit @entity(immutable: true) {
   type: String!
 }
 
+type CollectedETH @entity {
+  id: Bytes!
+  collectedETH: BigInt! # uint256
+}
+
 type OwnershipTransferred @entity(immutable: true) {
   id: Bytes!
   user: Bytes! # address

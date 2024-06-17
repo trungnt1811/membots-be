@@ -32,7 +32,7 @@ definitions:
           $ref: '#/definitions/dto.Transaction'
         type: array
       txCounter:
-        type: string
+        type: integer
     type: object
   dto.LaunchpadInfoResp:
     properties:

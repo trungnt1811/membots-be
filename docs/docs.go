@@ -406,7 +406,7 @@ const docTemplate = `{
                     }
                 },
                 "txCounter": {
-                    "type": "string"
+                    "type": "integer"
                 }
             }
         },

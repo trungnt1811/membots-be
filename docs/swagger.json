@@ -394,7 +394,7 @@
                     }
                 },
                 "txCounter": {
-                    "type": "string"
+                    "type": "integer"
                 }
             }
         },

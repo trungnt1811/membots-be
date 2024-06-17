@@ -59,45 +59,37 @@ func (worker UpdateCollectedETHWorker) updateCollectedETH(
 	}
 	for _, memeLive := range listMemeLive {
 		requestOpts := &subgraphclient.RequestOptions{
-			First: 1,
 			IncludeFields: []string{
-				"memeToken",
-				"amountETH",
+				"*",
 			},
 		}
-		response, err := clientMemeception.GetMemeLiquidityAddedsByContractAddress(
+		response, err := clientMemeception.GetCollectedETHById(
 			ctx, memeLive.ContractAddress, requestOpts,
 		)
 		if err != nil {
-			log.LG.Infof("GetMemeLiquidityAddedsByContractAddress error: %v", err)
+			log.LG.Infof("GetCollectedETHById: %s error: %v", memeLive.ContractAddress, err)
 			continue
 		}
-		if len(response.MemeLiquidityAddeds) == 0 {
-			log.LG.Info("MemeLiquidityAddeds len is 0")
+		if len(response.CollectedETH.AmountETH) == 0 {
+			log.LG.Infof("%s: CollectedETH is 0", memeLive.ContractAddress)
 			continue
 		}
 		amountWei := new(big.Int)
-		_, ok := amountWei.SetString(response.MemeLiquidityAddeds[0].AmountETH, 10)
+		_, ok := amountWei.SetString(response.CollectedETH.AmountETH, 10)
 		if !ok {
-			log.LG.Infof("Invalid AmountETH: %v", response.MemeLiquidityAddeds[0].AmountETH)
+			log.LG.Infof("%s: Invalid CollectedETH: %v", memeLive.ContractAddress, response.CollectedETH.AmountETH)
 			continue
 		}
 		amountETH := util.WeiToEther(amountWei)
 		collectedETH, _ := amountETH.Float64()
 		status := memeLive.Memeception.Status
-		isMemeLive := false
 		if collectedETH >= memeLive.Memeception.TargetETH {
 			status = uint64(constant.ENDED_SOLD_OUT)
-			isMemeLive = true
 		}
 		memeception := model.Memeception{
 			ID:           memeLive.Memeception.ID,
 			CollectedETH: collectedETH,
 			Status:       status,
-			Meme: model.MemeCommon{
-				ID:   memeLive.ID,
-				Live: isMemeLive,
-			},
 		}
 		err = repo.UpdateMemeception(ctx, memeception)
 		if err != nil {

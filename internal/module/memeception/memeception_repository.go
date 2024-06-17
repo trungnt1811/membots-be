@@ -30,7 +30,7 @@ func (r memeceptionRepository) UpdateMeme(ctx context.Context, model model.Meme)
 }
 
 func (r memeceptionRepository) UpdateMemeception(ctx context.Context, model model.Memeception) error {
-	return r.db.Updates(&model).Error
+	return r.db.Session(&gorm.Session{FullSaveAssociations: true}).Updates(&model).Error
 }
 
 func (r memeceptionRepository) GetListMemeProcessing(ctx context.Context) ([]model.MemeOnchainInfo, error) {

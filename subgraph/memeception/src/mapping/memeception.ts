@@ -100,7 +100,7 @@ export function handleMemeCreated(event: MemeCreatedEvent): void {
   entity.transactionHash = event.transaction.hash
   entity.type = "MemeCreated"
   let collectedETHentity = new CollectedETH(event.params.memeToken)
-  collectedETHentity.collectedETH = BigInt.fromI32(0)
+  collectedETHentity.amountETH = BigInt.fromI32(0)
   collectedETHentity.save()
   entity.save()
 }
@@ -154,7 +154,7 @@ export function handleMemecoinBuy(event: MemecoinBuyEvent): void {
   entity.transactionHash = event.transaction.hash
   entity.type = "MemecoinBuy"
   let collectedETHentity = CollectedETH.load(event.params.memeToken)!
-  collectedETHentity.collectedETH = collectedETHentity.collectedETH.plus(event.params.amountETH)
+  collectedETHentity.amountETH = collectedETHentity.amountETH.plus(event.params.amountETH)
   collectedETHentity.save()
   entity.save()
 }
@@ -172,7 +172,7 @@ export function handleMemecoinExit(event: MemecoinExitEvent): void {
   entity.transactionHash = event.transaction.hash
   entity.type = "MemecoinExit"
   let collectedETHentity = CollectedETH.load(event.params.memeToken)!
-  collectedETHentity.collectedETH = collectedETHentity.collectedETH.minus(event.params.amountETH)
+  collectedETHentity.amountETH = collectedETHentity.amountETH.minus(event.params.amountETH)
   collectedETHentity.save()
   entity.save()
 }

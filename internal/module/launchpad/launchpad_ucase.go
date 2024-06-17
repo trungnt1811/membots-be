@@ -3,12 +3,11 @@ package launchpad
 import (
 	"context"
 	"fmt"
-	"github.com/flexstack.ai/membots-be/internal/util"
 	"strconv"
-
 	"github.com/flexstack.ai/membots-be/internal/dto"
 	"github.com/flexstack.ai/membots-be/internal/infra/subgraphclient"
 	"github.com/flexstack.ai/membots-be/internal/interfaces"
+	"github.com/flexstack.ai/membots-be/internal/util"
 )
 
 type launchpadUCase struct {

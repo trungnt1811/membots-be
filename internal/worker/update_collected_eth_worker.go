@@ -70,14 +70,14 @@ func (worker UpdateCollectedETHWorker) updateCollectedETH(
 			log.LG.Infof("GetCollectedETHById: %s error: %v", memeLive.ContractAddress, err)
 			continue
 		}
-		if len(response.CollectedETH.AmountETH) == 0 {
-			log.LG.Infof("%s: CollectedETH is 0", memeLive.ContractAddress)
-			continue
-		}
 		amountWei := new(big.Int)
 		_, ok := amountWei.SetString(response.CollectedETH.AmountETH, 10)
 		if !ok {
 			log.LG.Infof("%s: Invalid CollectedETH: %v", memeLive.ContractAddress, response.CollectedETH.AmountETH)
+			continue
+		}
+		if amountWei.Int64() == 0 {
+			log.LG.Infof("%s: CollectedETH is 0", memeLive.ContractAddress)
 			continue
 		}
 		amountETH := util.WeiToEther(amountWei)

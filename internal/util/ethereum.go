@@ -27,7 +27,11 @@ func WeiToEther(wei *big.Int) *big.Float {
 func WeiStrToEtherStr(wei string) string {
 	tmp, _ := big.NewInt(0).SetString(wei, 10)
 	result := WeiToEther(tmp)
-	return result.Text('f', 8)
+	etherStr := result.Text('f', 8)
+	// Remove trailing zeros and the decimal point if necessary
+	etherStr = strings.TrimRight(etherStr, "0")
+	etherStr = strings.TrimRight(etherStr, ".")
+	return etherStr
 }
 
 func EtherToWei(eth *big.Float) *big.Int {

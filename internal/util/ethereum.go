@@ -24,6 +24,12 @@ func WeiToEther(wei *big.Int) *big.Float {
 	return f.Quo(fWei.SetInt(wei), big.NewFloat(params.Ether))
 }
 
+func WeiStrToEtherStr(wei string) string {
+	tmp, _ := big.NewInt(0).SetString(wei, 10)
+	result := WeiToEther(tmp)
+	return result.Text('f', 8)
+}
+
 func EtherToWei(eth *big.Float) *big.Int {
 	truncInt, _ := eth.Int(nil)
 	truncInt = new(big.Int).Mul(truncInt, big.NewInt(params.Ether))

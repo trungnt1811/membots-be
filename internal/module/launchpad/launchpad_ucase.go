@@ -3,6 +3,7 @@ package launchpad
 import (
 	"context"
 	"fmt"
+	"github.com/flexstack.ai/membots-be/internal/util"
 	"strconv"
 
 	"github.com/flexstack.ai/membots-be/internal/dto"
@@ -42,8 +43,8 @@ func (uc *launchpadUCase) GetHistory(ctx context.Context, address string) (dto.L
 			txType = "SELL"
 		}
 		transactions = append(transactions, dto.Transaction{
-			AmountETH:     meme.AmountETH,
-			AmountMeme:    meme.AmountMeme,
+			AmountETH:     util.WeiStrToEtherStr(meme.AmountETH),
+			AmountMeme:    util.WeiStrToEtherStr(meme.AmountMeme),
 			WalletAddress: meme.User,
 			TxHash:        meme.TransactionHash,
 			TxType:        txType,

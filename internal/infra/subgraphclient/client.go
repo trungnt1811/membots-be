@@ -384,12 +384,12 @@ func (c *Client) GetMemeCreatedsByCreatorAndSymbol(ctx context.Context, creator,
 	return executeRequestAndConvert(ctx, req, MemeCreatedsResponse{}, c)
 }
 
-func (c *Client) GetMemeLiquidityAddedsByContractAddress(ctx context.Context, contractAddress string, opts *RequestOptions) (*MemeLiquidityAddedsResponse, error) {
-	req, err := constructListQueryWithMemeToken(contractAddress, MemeLiquidityAddedFields, opts)
+func (c *Client) GetCollectedETHById(ctx context.Context, id string, opts *RequestOptions) (*CollectedETHResponse, error) {
+	req, err := constructByIdQuery(id, CollectedETHFields, opts)
 	if err != nil {
 		return nil, err
 	}
-	return executeRequestAndConvert(ctx, req, MemeLiquidityAddedsResponse{}, c)
+	return executeRequestAndConvert(ctx, req, CollectedETHResponse{}, c)
 }
 
 func executeRequestAndConvert[T Response](ctx context.Context, req *graphql.Request, converted T, c *Client) (*T, error) {

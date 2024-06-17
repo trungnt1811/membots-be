@@ -153,6 +153,23 @@ var PoolFields modelFields = modelFields{
 	},
 }
 
+type CollectedETHResponse struct {
+	CollectedETH CollectedETH
+}
+
+type CollectedETH struct {
+	ID        string `json:"id"`
+	AmountETH string `json:"amountETH"`
+}
+
+var CollectedETHFields modelFields = modelFields{
+	name: "collectedETH",
+	direct: []string{
+		"id",
+		"amountETH",
+	},
+}
+
 type TokenResponse struct {
 	Token Token
 }

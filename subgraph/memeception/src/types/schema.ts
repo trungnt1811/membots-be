@@ -904,8 +904,8 @@ export class CollectedETH extends Entity {
     this.set("id", Value.fromBytes(value));
   }
 
-  get collectedETH(): BigInt {
-    let value = this.get("collectedETH");
+  get amountETH(): BigInt {
+    let value = this.get("amountETH");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
@@ -913,8 +913,8 @@ export class CollectedETH extends Entity {
     }
   }
 
-  set collectedETH(value: BigInt) {
-    this.set("collectedETH", Value.fromBigInt(value));
+  set amountETH(value: BigInt) {
+    this.set("amountETH", Value.fromBigInt(value));
   }
 }
 

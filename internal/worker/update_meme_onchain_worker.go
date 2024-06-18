@@ -3,8 +3,7 @@ package worker
 import (
 	"context"
 	"strconv"
-
-	"github.com/robfig/cron/v3"
+	"time"
 
 	"github.com/flexstack.ai/membots-be/internal/constant"
 	"github.com/flexstack.ai/membots-be/internal/infra/subgraphclient"
@@ -35,21 +34,15 @@ func NewUpdateMemeOnchainWorker(
 }
 
 func (worker UpdateMemeOnchainWorker) RunJob() {
-	// Create a new cron scheduler
-	c := cron.New(cron.WithSeconds())
+	// Create a ticker that ticks every 15 seconds
+	ticker := time.NewTicker(15 * time.Second)
+	defer ticker.Stop()
 
-	// Add a job that runs every 15 seconds
-	_, err := c.AddFunc("*/15 * * * * *", func() {
+	for range ticker.C {
 		worker.updateMemeOnchain(worker.Repo, worker.MemeceptionClient, worker.SwapClient, worker.MemeceptionAddress)
-	})
-	if err != nil {
-		log.LG.Infof("failed to run job updateMemeOnchain: %v", err)
 	}
 
-	// Start the cron scheduler
-	c.Start()
-
-	// Block the current goroutine so that the cron job keeps running
+	// Block the current goroutine so that the ticker keeps running
 	select {}
 }
 

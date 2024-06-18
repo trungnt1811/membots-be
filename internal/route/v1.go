@@ -57,6 +57,6 @@ func RegisterRoutes(r *gin.Engine, config *conf.Configuration, db *gorm.DB) {
 	statsUCaseHandler := stats.NewStatsHandler(statsUCase)
 	appRouter.GET("/stats", statsUCaseHandler.GetStatsByMemeAddress)
 
-	// SECTION: cronjob
-	worker.RegisterCronJobs(db, memeClient, swapClient, config.Blockchain.MemeceptionAddress)
+	// SECTION: workers
+	worker.RegisterWorkers(db, memeClient, swapClient, config.Blockchain.MemeceptionAddress)
 }

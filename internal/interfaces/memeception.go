@@ -21,6 +21,7 @@ type MemeceptionRepository interface {
 	GetMapMemeSymbolAndLogoURL(ctx context.Context, contractAddresses []string) (map[string]model.MemeSymbolAndLogoURL, error)
 	GetMemeIDAndStartAtByContractAddress(ctx context.Context, contractAddress string) (model.MemeceptionMemeIDAndStartAt, error)
 	MemeceptionExists(ctx context.Context, symbol string) (bool, error)
+	GetETHPrice() (uint64, error)
 }
 
 type MemeceptionUCase interface {

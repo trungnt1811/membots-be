@@ -20,7 +20,7 @@ type launchpadCache struct {
 	Cache          caching.Repository
 }
 
-func NewSwapCacheUCase(repo interfaces.LaunchpadUCase,
+func NewLaunchpadCacheUCase(repo interfaces.LaunchpadUCase,
 	cache caching.Repository,
 ) interfaces.LaunchpadUCase {
 	return &launchpadCache{

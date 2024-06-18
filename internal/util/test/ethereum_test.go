@@ -1,9 +1,11 @@
-package util
+package test
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
+	"github.com/flexstack.ai/membots-be/internal/util"
 )
 
 func TestWeiToEther(t *testing.T) {
@@ -18,7 +20,7 @@ func TestWeiToEther(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		result := WeiStrToEtherStr(test.wei)
+		result := util.WeiStrToEtherStr(test.wei)
 		require.Equal(t, test.expected, result)
 	}
 }

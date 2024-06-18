@@ -101,7 +101,7 @@ func (u *memeceptionUCase) GetMemeceptionByContractAddress(ctx context.Context, 
 		return dto.MemeceptionDetailResp{}, err
 	}
 	// TODO: get nfts info from graphnode in case meta is MEME404
-	ethPrice, err := util.GetETHPrice()
+	ethPrice, err := u.MemeceptionRepository.GetETHPrice()
 	if err != nil {
 		return dto.MemeceptionDetailResp{}, err
 	}
@@ -143,7 +143,7 @@ func (u *memeceptionUCase) GetMemeceptions(ctx context.Context) (dto.Memeception
 		listLatestCoins = append(listLatestCoins, meme.ToDto())
 	}
 
-	ethPrice, err := util.GetETHPrice()
+	ethPrice, err := u.MemeceptionRepository.GetETHPrice()
 	if err != nil {
 		return dto.MemeceptionsResp{}, err
 	}
@@ -213,7 +213,7 @@ func (u *memeceptionUCase) GetMemeceptionBySymbol(ctx context.Context, symbol st
 		return dto.MemeceptionDetailResp{}, err
 	}
 	// TODO: get nfts info from graphnode in case meta is MEME404
-	ethPrice, err := util.GetETHPrice()
+	ethPrice, err := u.MemeceptionRepository.GetETHPrice()
 	if err != nil {
 		return dto.MemeceptionDetailResp{}, err
 	}

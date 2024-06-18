@@ -59,9 +59,6 @@ func (uc *launchpadUCase) GetHistory(ctx context.Context, address string) (dto.L
 
 	lauchpadInfo := dto.LaunchpadInfoResp{LaunchpadInfo: dto.LaunchpadInfo{
 		Transactions: transactions,
-		Status:       "LIVE",
-		TargetETH:    "0.1",
-		CollectedETH: "0",
 		TxCounter:    len(transactions),
 	}}
 

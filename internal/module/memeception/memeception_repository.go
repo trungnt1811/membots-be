@@ -9,6 +9,7 @@ import (
 	"github.com/flexstack.ai/membots-be/internal/constant"
 	"github.com/flexstack.ai/membots-be/internal/interfaces"
 	"github.com/flexstack.ai/membots-be/internal/model"
+	"github.com/flexstack.ai/membots-be/internal/util"
 )
 
 type memeceptionRepository struct {
@@ -130,4 +131,8 @@ func (r memeceptionRepository) MemeceptionExists(ctx context.Context, symbol str
 		return false, err
 	}
 	return true, nil
+}
+
+func (r memeceptionRepository) GetETHPrice() (uint64, error) {
+	return util.GetETHPrice()
 }

@@ -44,7 +44,6 @@ func (handler *MemeceptionHandler) CreateMeme(ctx *gin.Context) {
 		return
 	}
 
-	// TODO: add check duplicated logic later
 	err = handler.UCase.CreateMeme(ctx, req)
 	if err != nil {
 		log.LG.Errorf("save meme error: %v", err)

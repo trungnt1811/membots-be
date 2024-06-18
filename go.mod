@@ -4,6 +4,7 @@ go 1.21.0
 
 require (
 	github.com/AstraProtocol/reward-libs v0.0.8
+	github.com/avast/retry-go/v4 v4.6.0
 	github.com/emersonmacro/go-uniswap-subgraph-client v0.0.0-00010101000000-000000000000
 	github.com/ethereum/go-ethereum v1.10.26
 	github.com/gin-gonic/gin v1.9.1
@@ -11,7 +12,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.29.0
 	github.com/spf13/viper v1.15.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 	github.com/swaggo/files v1.0.0
 	github.com/swaggo/gin-swagger v1.5.3
 	gorm.io/driver/mysql v1.5.0

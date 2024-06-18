@@ -20,11 +20,6 @@ type swapCache struct {
 	Cache     caching.Repository
 }
 
-func (s *swapCache) GetQuote(ctx context.Context, url string) (interface{}, error) {
-	// TODO implement me
-	panic("implement me")
-}
-
 func NewSwapCacheUCase(repo interfaces.SwapUCase,
 	cache caching.Repository,
 ) interfaces.SwapUCase {
@@ -49,4 +44,21 @@ func (s *swapCache) GetSwaps(ctx context.Context, address string) (dto.SwapHisto
 		}
 	}
 	return swaps, nil
+}
+
+func (s *swapCache) GetQuote(ctx context.Context, url string) (interface{}, error) {
+	key := &caching.Keyer{Raw: keyPrefixSwap + fmt.Sprint("GetQuote_", url)}
+	var quote interface{}
+	err := s.Cache.RetrieveItem(key, &quote)
+	if err != nil {
+		// cache miss
+		quote, err = s.SwapUCase.GetQuote(ctx, url)
+		if err != nil {
+			return quote, err
+		}
+		if err = s.Cache.SaveItem(key, quote, cacheTimeSwap); err != nil {
+			return quote, err
+		}
+	}
+	return quote, nil
 }

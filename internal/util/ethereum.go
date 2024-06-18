@@ -10,7 +10,9 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
+	"github.com/avast/retry-go/v4"
 	"github.com/ethereum/go-ethereum/params"
 )
 
@@ -59,62 +61,82 @@ func ConvertWeiToUSD(ethPrice uint64, amountWei string) (string, error) {
 func GetETHPrice() (uint64, error) {
 	url := "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2"
 
-	// Define the request payload
-	requestBody, err := json.Marshal(map[string]string{
-		"query": `{
-            bundle(id: "1") {
-                ethPrice
-            }
-        }`,
-	})
+	var ethPriceUint64 uint64
+
+	err := retry.Do(
+		func() error {
+			// Define the request payload
+			requestBody, err := json.Marshal(map[string]string{
+				"query": `{
+                    bundle(id: "1") {
+                        ethPrice
+                    }
+                }`,
+			})
+			if err != nil {
+				return fmt.Errorf("error marshaling JSON: %w", err)
+			}
+
+			// Create a new HTTP POST request
+			req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
+			if err != nil {
+				return fmt.Errorf("error creating request: %w", err)
+			}
+			req.Header.Set("Content-Type", "application/json")
+			req.Header.Set("Accept", "application/json")
+
+			// Send the request
+			client := &http.Client{}
+			resp, err := client.Do(req)
+			if err != nil {
+				return fmt.Errorf("error sending request: %w", err)
+			}
+			defer resp.Body.Close()
+
+			// Check if response status is not OK
+			if resp.StatusCode != http.StatusOK {
+				return fmt.Errorf("received non-OK HTTP status: %s", resp.Status)
+			}
+
+			// Read the response
+			body, err := io.ReadAll(resp.Body)
+			if err != nil {
+				return fmt.Errorf("error reading response: %w", err)
+			}
+
+			// Define a structure to parse the response
+			var response struct {
+				Data struct {
+					Bundle struct {
+						EthPrice string `json:"ethPrice"`
+					} `json:"bundle"`
+				} `json:"data"`
+			}
+
+			// Parse the response
+			if err := json.Unmarshal(body, &response); err != nil {
+				return fmt.Errorf("error unmarshalling response: %w", err)
+			}
+
+			// Convert ethPrice string to float64
+			ethPriceFloat, err := strconv.ParseFloat(response.Data.Bundle.EthPrice, 64)
+			if err != nil {
+				return fmt.Errorf("error parsing ethPrice to float64: %w", err)
+			}
+
+			// Convert float64 to uint64
+			ethPriceUint64 = uint64(math.Round(ethPriceFloat))
+			return nil
+		},
+		retry.Attempts(5),          // Number of retry attempts
+		retry.Delay(2*time.Second), // Delay between retry attempts
+		retry.OnRetry(func(n uint, err error) {
+			fmt.Printf("Retry GetETHPrice attempt %d: %v\n", n+1, err)
+		}),
+	)
 	if err != nil {
-		return 0, fmt.Errorf("error marshaling JSON: %w", err)
+		return 0, fmt.Errorf("failed to get ETH price after retries: %w", err)
 	}
-
-	// Create a new HTTP POST request
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
-	if err != nil {
-		return 0, fmt.Errorf("error creating request: %w", err)
-	}
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Accept", "application/json")
-
-	// Send the request
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return 0, fmt.Errorf("error sending request: %w", err)
-	}
-	defer resp.Body.Close()
-
-	// Read the response
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return 0, fmt.Errorf("error reading response: %w", err)
-	}
-
-	// Define a structure to parse the response
-	var response struct {
-		Data struct {
-			Bundle struct {
-				EthPrice string `json:"ethPrice"`
-			} `json:"bundle"`
-		} `json:"data"`
-	}
-
-	// Parse the response
-	if err := json.Unmarshal(body, &response); err != nil {
-		return 0, fmt.Errorf("error unmarshalling response: %w", err)
-	}
-
-	// Convert ethPrice string to float64
-	ethPriceFloat, err := strconv.ParseFloat(response.Data.Bundle.EthPrice, 64)
-	if err != nil {
-		return 0, fmt.Errorf("error parsing ethPrice to float64: %w", err)
-	}
-
-	// Convert float64 to uint64
-	ethPriceUint64 := uint64(math.Round(ethPriceFloat))
 
 	return ethPriceUint64, nil
 }
